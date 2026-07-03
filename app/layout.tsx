@@ -16,11 +16,30 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import type { CSSProperties } from "react";
 
+const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
+
+// Brand-correct fallback metadata. Routes that need their own title/
+// description/canonical (homepage, [siteSlug] pages, faq, team) set them via
+// their own generateMetadata, which Next merges over these defaults.
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
+  const title = t("title");
+  const description = t("description");
   return {
-    title: t("title"),
-    description: t("description"),
+    metadataBase: new URL(`https://${ROOT_DOMAIN}`),
+    title: { default: title, template: "%s · Olune" },
+    description,
+    openGraph: {
+      type: "website",
+      siteName: "Olune",
+      title,
+      description,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 

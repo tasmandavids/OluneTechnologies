@@ -38,7 +38,10 @@
       "tableStatus": "状态",
       "tableJoined": "加入时间",
       "tableActions": "操作",
-      "noMatch": "没有符合此筛选条件的工作室。"
+      "noMatch": "没有符合此筛选条件的工作室。",
+      "delete": "删除",
+      "deleted": "已删除",
+      "confirmDelete": "输入 \"{name}\" 以永久删除此工作室及其所有数据。此操作无法撤销。"
     },
     "owners": {
       "title": "企业所有者",
@@ -123,7 +126,10 @@
       "draft": "草稿公告",
       "publishedAt": "发布于 {date}",
       "draftStatus": "草稿",
-      "publishNow": "立即发布"
+      "publishNow": "立即发布",
+      "stop": "停止",
+      "delete": "删除",
+      "confirmDelete": "删除此公告？此操作无法撤销。"
     },
     "settings": {
       "title": "平台设置",
