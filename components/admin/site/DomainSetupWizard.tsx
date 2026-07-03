@@ -43,6 +43,7 @@ export function DomainSetupWizard({ studioName, slug, customDomain, rootDomain }
   const [dnsMessage, setDnsMessage] = useState<string | null>(null);
   const [dnsOk, setDnsOk] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   const subdomainUrl = publicSubdomainUrl(slug, rootDomain);
@@ -74,12 +75,14 @@ export function DomainSetupWizard({ studioName, slug, customDomain, rootDomain }
     }
     startTransition(async () => {
       setError(null);
+      setWarning(null);
       const res = await saveCustomDomain({ domain: normalizedDomain, kind });
       if (!res.ok) {
         setError(res.error);
         return;
       }
       setSavedDomain(res.data.domain);
+      setWarning(res.data.warning ?? null);
       go("done");
     });
   }
@@ -111,6 +114,7 @@ export function DomainSetupWizard({ studioName, slug, customDomain, rootDomain }
       setDomainInput("");
       setDnsOk(null);
       setDnsMessage(null);
+      setWarning(null);
       setWantsCustom(null);
       go("intro");
     });
@@ -129,6 +133,12 @@ export function DomainSetupWizard({ studioName, slug, customDomain, rootDomain }
       {error && (
         <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-500">
           {error}
+        </p>
+      )}
+
+      {warning && (
+        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-600">
+          {warning}
         </p>
       )}
 

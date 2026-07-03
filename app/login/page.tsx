@@ -2,12 +2,14 @@
 
 // Minimal starter sign-in. Middleware routes you to the right /portal/<role>.
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { isTenantHost } from "@/lib/tenant-host";
 import { OluneLogo } from "@/components/brand/OluneLogo";
+import { OluneHomeLink } from "@/components/brand/OluneHomeLink";
 import { AuthDivider, OAuthButtons } from "@/components/auth/OAuthButtons";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 
@@ -26,6 +28,14 @@ function LoginForm() {
   const [resetBusy, setResetBusy] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [resetError, setResetError] = useState<string | null>(null);
+
+  // On a studio site (subdomain / custom domain) hide the create-a-studio and
+  // platform links — clients should only ever join THIS studio. Computed after
+  // mount so server and client initial HTML match.
+  const [onStudioSite, setOnStudioSite] = useState(false);
+  useEffect(() => {
+    setOnStudioSite(isTenantHost(window.location.host));
+  }, []);
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
@@ -60,7 +70,9 @@ function LoginForm() {
     <div className="w-full max-w-sm">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div className="flex-1" />
-        <OluneLogo variant="stacked" size="md" />
+        <OluneHomeLink>
+          <OluneLogo variant="stacked" size="md" />
+        </OluneHomeLink>
         <div className="flex flex-1 justify-end">
           <LanguageSwitcher compact />
         </div>
@@ -136,18 +148,22 @@ function LoginForm() {
             {t("joinLink")}
           </Link>
         </p>
-        <p className="mt-4 text-center text-sm text-muted">
-          {t("newStudio")}{" "}
-          <Link href="/onboarding" className="text-ink underline">
-            {t("getStarted")}
-          </Link>
-        </p>
-        <p className="mt-3 text-center text-xs text-muted">
-          {t("platformAdmin")}{" "}
-          <Link href="/login?next=/platform" className="text-ink underline">
-            {t("signInToPlatform")}
-          </Link>
-        </p>
+        {!onStudioSite && (
+          <>
+            <p className="mt-4 text-center text-sm text-muted">
+              {t("newStudio")}{" "}
+              <Link href="/onboarding" className="text-ink underline">
+                {t("getStarted")}
+              </Link>
+            </p>
+            <p className="mt-3 text-center text-xs text-muted">
+              {t("platformAdmin")}{" "}
+              <Link href="/login?next=/platform" className="text-ink underline">
+                {t("signInToPlatform")}
+              </Link>
+            </p>
+          </>
+        )}
       </div>
     </div>
   );

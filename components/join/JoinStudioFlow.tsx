@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { completeStudioRegistration } from "@/app/join/actions";
 import { OluneLogo } from "@/components/brand/OluneLogo";
+import { OluneHomeLink } from "@/components/brand/OluneHomeLink";
 import { AuthDivider, OAuthButtons } from "@/components/auth/OAuthButtons";
 
 type Path = "parent" | "adult_student";
@@ -108,7 +109,9 @@ export function JoinStudioFlow({
     <div className="grid min-h-screen place-items-center bg-base px-5 py-10 text-ink">
       <div className="w-full max-w-lg">
         <div className="mb-6 flex justify-center">
-          <OluneLogo variant="stacked" size="md" />
+          <OluneHomeLink>
+            <OluneLogo variant="stacked" size="md" />
+          </OluneHomeLink>
         </div>
         <div className="rounded-3xl border border-[--hair] bg-surface p-7 shadow-2xl">
           <p className="text-[0.62rem] font-semibold uppercase tracking-widest text-brand">{studioName}</p>
