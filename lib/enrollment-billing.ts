@@ -55,12 +55,18 @@ export async function studentHasActiveEnrollmentForClassName(
 /**
  * Billable cents for a new enrollment. Additional days of the same programme
  * name are included at no extra charge.
+ *
+ * `excludeClassId` must be the class row currently being billed — callers
+ * that bill *after* inserting the enrollment (see enroll/actions.ts) would
+ * otherwise find their own just-created row and conclude the student is
+ * "already in the programme", zeroing out every charge.
  */
 export async function enrollmentBillableCents(
   supabase: SupabaseClient,
   studentId: string,
   className: string,
   priceCents: number,
+  opts?: { excludeClassId?: string },
 ): Promise<number> {
   if (priceCents <= 0) return 0;
 
@@ -68,6 +74,7 @@ export async function enrollmentBillableCents(
     supabase,
     studentId,
     className,
+    { excludeClassId: opts?.excludeClassId },
   );
   if (alreadyInProgramme) return 0;
 

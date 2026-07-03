@@ -111,6 +111,26 @@ export async function createEnrollmentSubscription(
     .single();
   if (!guardianship) return { ok: false, error: "You are not a guardian of this student." };
 
+  // A programme (e.g. "Intermediate") can run on multiple days as separate
+  // class rows, but the family only pays once per programme — mirrors the
+  // enrollment invoicing rule in lib/enrollment-billing.ts. Block a second
+  // live subscription for the same programme, however it was reached.
+  const { data: existingSubs } = await supabase
+    .from("subscriptions")
+    .select("class_id, status, classes(name)")
+    .eq("student_id", studentId)
+    .in("status", ["active", "trialing", "past_due", "incomplete"]);
+  const target = className.trim().toLowerCase().replace(/\s+/g, " ");
+  const alreadySubscribed = (existingSubs ?? []).some((s) => {
+    if (s.class_id === classId) return false;
+    const clsName = (s.classes as { name: string } | { name: string }[] | null);
+    const name = Array.isArray(clsName) ? clsName[0]?.name : clsName?.name;
+    return name && name.trim().toLowerCase().replace(/\s+/g, " ") === target;
+  });
+  if (alreadySubscribed) {
+    return { ok: false, error: "This dancer already has auto-pay set up for this programme." };
+  }
+
   // Resolve / create the Stripe customer.
   const { data: profile } = await supabase
     .from("profiles")

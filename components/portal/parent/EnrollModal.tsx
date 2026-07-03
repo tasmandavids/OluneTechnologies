@@ -461,7 +461,6 @@ function Step3Review({
 
   const classes = enrollData.classes;
   const totalBillableCents = classes.reduce((sum, c) => sum + c.billableCents, 0);
-  const totalPriceCents = classes.reduce((sum, c) => sum + c.priceCents, 0);
   const isPaid = totalBillableCents > 0;
   const isSingleClass = classes.length === 1;
 
@@ -772,7 +771,6 @@ function Step4Confirmation({
   const dancerName = enrollData.childName ?? t("yourDancer");
   const classes = enrollData.classes;
   const totalBillableCents = classes.reduce((sum, c) => sum + c.billableCents, 0);
-  const totalPriceCents = classes.reduce((sum, c) => sum + c.priceCents, 0);
 
   return (
     <div className="flex flex-col items-center gap-5 py-4 text-center">
@@ -803,15 +801,15 @@ function Step4Confirmation({
         {totalBillableCents > 0 && !enrollData.waitlisted && (
           <p className="mt-2 text-xs text-muted">
             {enrollData.paidOnline
-              ? t("paidOnlineHint", { amount: NZD.format(totalPriceCents / 100) })
+              ? t("paidOnlineHint", { amount: NZD.format(totalBillableCents / 100) })
               : enrollData.payMonthly
                 ? t("termPaidHint", {
                     amount: NZD.format((enrollData.installmentCents ?? 0) / 100),
                     count: TERM_INSTALLMENT_COUNT,
                   })
                 : enrollData.payLater
-                ? t("payLaterHint", { amount: NZD.format(totalPriceCents / 100) })
-                : t("invoiceHint", { amount: NZD.format(totalPriceCents / 100) })}
+                ? t("payLaterHint", { amount: NZD.format(totalBillableCents / 100) })
+                : t("invoiceHint", { amount: NZD.format(totalBillableCents / 100) })}
           </p>
         )}
       </div>
@@ -937,6 +935,7 @@ export function EnrollModal({
                         enrollData.childId!,
                         cls.className,
                         cls.priceCents,
+                        cls.classId,
                       );
                       const billable = quote.ok ? quote.data.billableCents : cls.priceCents;
                       const included = quote.ok ? quote.data.includedInProgramme : false;
