@@ -265,8 +265,11 @@ async function enrollmentChargeCents(
   className: string,
   priceCents: number,
   mode: "parent" | "self" | null,
+  classId?: string,
 ) {
-  const baseCents = await enrollmentBillableCents(supabase, studentId, className, priceCents);
+  const baseCents = await enrollmentBillableCents(supabase, studentId, className, priceCents, {
+    excludeClassId: classId,
+  });
   if (baseCents <= 0) return 0;
 
   return mode === "self"
@@ -278,6 +281,7 @@ export async function getEnrollmentBillingQuote(
   studentId: string,
   className: string,
   priceCents: number,
+  classId?: string,
 ): Promise<ActionResult<{ billableCents: number; includedInProgramme: boolean }>> {
   const t = await getTranslations("errors.actions");
   const ctx = await getEnrollmentContext();
@@ -298,6 +302,7 @@ export async function getEnrollmentBillingQuote(
     className,
     priceCents,
     mode,
+    classId,
   );
 
   return {
@@ -375,6 +380,7 @@ export async function createEnrollmentPayLaterInvoice(
     className,
     priceCents,
     mode,
+    classId,
   );
 
   if (chargeCents <= 0) {
@@ -436,6 +442,7 @@ export async function createEnrollmentIntent(
     className,
     priceCents,
     mode,
+    classId,
   );
 
   if (chargeCents <= 0) {

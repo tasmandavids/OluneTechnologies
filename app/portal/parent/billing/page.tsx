@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ParentBillingHub } from "@/components/portal/parent/ParentBillingHub";
 import type { AutoPayItem } from "@/components/portal/parent/AutoPaySetup";
 import { getAccountBillingSummary } from "@/app/portal/parent/billing/actions";
+import { normalizeClassName } from "@/lib/enrollment-billing";
 
 export default async function ParentBillingPage() {
   const supabase = await createClient();
@@ -109,7 +110,12 @@ export default async function ParentBillingPage() {
     ]),
   );
 
-  const autoPayItems: AutoPayItem[] = [];
+  // A programme (e.g. "Intermediate") can run on multiple days as separate
+  // class rows, but the family pays once per programme — mirrors the "pay
+  // once per programme name" rule in lib/enrollment-billing.ts. Without this
+  // dedup, each day would show its own "set up auto-pay" card and a parent
+  // could accidentally create two live subscriptions for one programme.
+  const autoPayByProgramme = new Map<string, AutoPayItem>();
   for (const g of guardianshipsRes.data ?? []) {
     const profile = g.profiles as unknown as {
       full_name: string | null;
@@ -128,7 +134,7 @@ export default async function ParentBillingPage() {
       const active =
         sub && ["active", "trialing", "past_due", "incomplete"].includes(sub.status);
 
-      autoPayItems.push({
+      const item: AutoPayItem = {
         studentId: g.student_id as string,
         studentName: profile?.full_name ?? null,
         classId: cls.id,
@@ -137,9 +143,18 @@ export default async function ParentBillingPage() {
         subscriptionId: active ? (sub!.stripe_subscription_id ?? null) : null,
         status: active ? sub!.status : null,
         cancelAtPeriodEnd: active ? (sub!.cancel_at_period_end ?? false) : false,
-      });
+      };
+
+      const key = `${g.student_id}:${normalizeClassName(cls.name)}`;
+      const existing = autoPayByProgramme.get(key);
+      // Prefer the day that already has a live subscription as the
+      // representative card; otherwise keep the first day seen.
+      if (!existing || (item.subscriptionId && !existing.subscriptionId)) {
+        autoPayByProgramme.set(key, item);
+      }
     }
   }
+  const autoPayItems: AutoPayItem[] = Array.from(autoPayByProgramme.values());
 
   const stripeConfigured = !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
   const accountSummaryRes = await getAccountBillingSummary();
