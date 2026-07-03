@@ -338,25 +338,25 @@ export function ScheduleBoard({
             <div
               className="grid min-w-[640px] gap-1.5"
               style={{
-                gridTemplateColumns: `72px repeat(${timeSlots.length}, minmax(88px, 1fr))`,
+                gridTemplateColumns: `72px repeat(${SCHEDULE_DAYS.length}, minmax(88px, 1fr))`,
               }}
             >
               <div />
-              {timeSlots.map((time) => (
+              {SCHEDULE_DAYS.map((day) => (
                 <div
-                  key={time}
-                  className="pb-1 text-center text-xs font-semibold uppercase tracking-wider text-muted"
+                  key={day.dow}
+                  className="pb-1 text-center text-sm font-semibold text-ink"
                 >
-                  {formatTime(time)}
+                  {tDays(dayKey[day.label])}
                 </div>
               ))}
 
-              {SCHEDULE_DAYS.map((day) => (
-                <div key={day.dow} className="contents">
-                  <div className="flex items-center text-sm font-semibold text-ink">
-                    {tDays(dayKey[day.label])}
+              {timeSlots.map((time) => (
+                <div key={time} className="contents">
+                  <div className="flex items-center text-xs font-semibold uppercase tracking-wider text-muted">
+                    {formatTime(time)}
                   </div>
-                  {timeSlots.map((time) => {
+                  {SCHEDULE_DAYS.map((day) => {
                     const id = slotKey(String(day.dow), time);
                     return (
                       <Droppable key={id} droppableId={id}>
