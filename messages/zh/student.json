@@ -1,0 +1,23 @@
+{
+  "student": {
+    "timetable": {
+      "title": "我的课程表",
+      "greetingWithName": "{greeting}，{name}。",
+      "greetingOnly": "{greeting}。",
+      "today": "今天 · {day}",
+      "noClassesToday": "今天没有课程——好好享受休息日。",
+      "until": "至 {time}",
+      "weeklySchedule": "每周课程表",
+      "myClasses": "我的课程 · 已报名 {count} 门",
+      "noEnrolments": "未找到有效的报名。",
+      "noEnrolmentsHint": "您的工作室管理员会为您安排课程。",
+      "withTeacher": "任课老师：{name}",
+      "viewProgress": "查看进度与证书 →"
+    },
+    "progress": {
+      "back": "← 返回课程表",
+      "unnamedStudent": "学员",
+      "emptyProgress": "尚未记录任何进度。当您达成新的里程碑时，您的老师会更新此处。"
+    }
+  }
+}

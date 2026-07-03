@@ -1,0 +1,74 @@
+{
+  "errors": {
+    "generic": {
+      "eyebrow": "出错了",
+      "title": "我们遇到了意外错误",
+      "body": "请重试；若问题持续，请返回首页。",
+      "retry": "重试",
+      "signInAgain": "重新登录",
+      "goHome": "返回首页"
+    },
+    "global": {
+      "title": "出错了",
+      "body": "应用遇到严重错误。",
+      "retry": "重试",
+      "signInAgain": "重新登录"
+    },
+    "notFound": {
+      "eyebrow": "404",
+      "title": "找不到页面",
+      "platformBody": "在 <localhost>localhost</localhost> 上，此网址是 Olune 平台——而非工作室网站。您的公开页面位于您工作室的子域名上。",
+      "exampleLabel": "示例：",
+      "oluneHome": "Olune 首页",
+      "signIn": "登录",
+      "websiteAdmin": "网站管理",
+      "studioBody": "此页面尚未发布，或网址有误。请在管理后台的\"网站\"标签中检查拼写和发布状态。",
+      "backHome": "返回首页",
+      "studio": "找不到工作室。"
+    },
+    "forbidden": {
+      "adminOnly": "只有工作室管理员才能管理域名。"
+    },
+    "actions": {
+      "unknown": "未知错误",
+      "notFound": "未找到",
+      "unauthorized": "未授权",
+      "validationFailed": "验证失败",
+      "invalidInput": "输入无效",
+      "nameRequired": "请填写姓名",
+      "firstNameRequired": "请填写名字",
+      "invalidEmail": "邮箱无效",
+      "studioNotFound": "找不到工作室",
+      "invalidStatus": "状态无效",
+      "notSignedIn": "尚未登录。",
+      "parentAccessRequired": "需要家长权限。",
+      "adminOnly": "仅限管理员。",
+      "noStudioFound": "未找到工作室。",
+      "notGuardian": "您不是该学员的监护人。",
+      "invalidStudentOrClass": "学员或课程无效。",
+      "alreadyEnrolled": "已报名该课程。",
+      "classNoFee": "该课程无费用。",
+      "couldNotCreateInvoice": "无法创建账单。",
+      "stripeNoClientSecret": "Stripe 未返回 client secret。",
+      "noOutstandingInvoices": "没有需要支付的欠款。",
+      "termPlanComplete": "此付款计划已完成。",
+      "invalidInvoiceDetails": "账单详情无效。",
+      "parentNotFound": "找不到家长账户。",
+      "studentNotLinked": "所选学员未关联到此家长。",
+      "invoiceNotFound": "找不到账单。",
+      "unpaidInvoicesOnly": "只能对未付账单发送催缴提醒。",
+      "noInvoicesSelected": "未选择任何账单。",
+      "noRemindersSent": "未发送任何提醒。",
+      "cannotVoidInvoice": "此账单无法作废。",
+      "invoiceAlreadyVoid": "账单已作废。",
+      "paidInvoiceUseRefund": "已付账单必须退款，而非作废。",
+      "voidOnActivePlan": "在作废此付款计划上的账单之前，请先完成或取消该计划。",
+      "invalidSubscriptionDetails": "订阅详情无效。",
+      "monthlyTotalInvalid": "折扣后的月度总额必须大于零。",
+      "chargeAmountInvalid": "扣款金额无效。",
+      "studentNotLinkedToParent": "学员未关联到此家长。",
+      "couldNotSaveSubscription": "无法保存订阅。",
+      "subscriptionNotFound": "找不到订阅。"
+    }
+  }
+}

@@ -1032,7 +1032,7 @@ export default function OluneLanding() {
                   disabled={langPending}
                   onClick={() => switchLocale(code)}
                   className="dcl-lang"
-                  style={{ fontSize: 14, color: code === locale ? ACCENT : "rgba(255,255,255,0.45)", fontWeight: code === locale ? 700 : 500, background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: BODY, transition: "color 0.25s ease" }}
+                  style={{ fontSize: 14, color: code === locale ? ACCENT : "rgba(255,255,255,0.75)", fontWeight: 700, background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: BODY, transition: "color 0.25s ease" }}
                 >
                   {localeLabels[code]}
                 </button>

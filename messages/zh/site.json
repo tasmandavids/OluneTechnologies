@@ -1,0 +1,823 @@
+{
+  "site": {
+    "brand": {
+      "poweredBy": "技术支持",
+      "logoLabel": "Olune",
+      "poweredByOlune": "由 Olune 提供支持"
+    },
+    "payments": {
+      "paymentNotCompleted": "付款未能完成。",
+      "paymentIncomplete": "付款未完成。请尝试其他方式。",
+      "processing": "处理中…",
+      "payNow": "立即付款"
+    },
+    "manager": {
+      "title": "网站",
+      "subtitle": "搭建并发布您工作室的公开页面。",
+      "domainSetup": "域名设置",
+      "cancel": "取消",
+      "newPage": "+ 新页面",
+      "pageTitle": "页面标题",
+      "pageTitlePlaceholder": "例如：关于我们",
+      "createPage": "创建页面",
+      "createAsHomepage": "创建为首页",
+      "somethingWrong": "出错了。",
+      "chooseHomepageStyle": "选择首页风格",
+      "homepageBrowse": "浏览 {count} 个现成布局——每个模块都可完全编辑，准备好后再发布。",
+      "addPageFromTemplate": "从模板添加页面",
+      "addPageFromTemplateHint": "以已就位的合理文案和布局开始一个常见页面。",
+      "noPagesYet": "尚无页面。从上方选择模板，或用「+ 新页面」从零搭建。",
+      "home": "首页",
+      "edit": "编辑",
+      "unpublish": "取消发布",
+      "publish": "发布",
+      "setAsHome": "设为首页",
+      "confirm": "确认",
+      "delete": "删除",
+      "statusDraft": "草稿",
+      "statusPublished": "已发布",
+      "defaultHomeTitle": "首页",
+      "defaultPageTitle": "新页面"
+    },
+    "setup": {
+      "websiteReady": "您的网站已就绪",
+      "openingEditor": "正在打开可视化编辑器…",
+      "title": "设置您的网站",
+      "subtitle": "浏览 20 个起始布局和 30 种字体风格。添加您的品牌、预览，然后生成——一切在可视化编辑器中保持可编辑。",
+      "setupTab": "设置",
+      "previewTab": "预览",
+      "homepagePreview": "首页预览",
+      "pagesWillBeCreated": "{count, plural, other {将创建 # 个页面}} · 生成时发布首页",
+      "backToSetup": "返回设置",
+      "generating": "生成中…",
+      "generateWebsite": "生成我的网站",
+      "homepageTemplate": "首页模板",
+      "homepageTemplateHint": "浏览 {count} 个布局——每个都是您可以完全编辑的起点。",
+      "typography": "字体排印",
+      "typographyHint": "30 种精选搭配——点击预览您的网站阅读效果。",
+      "starterPages": "起始页面",
+      "starterPagesHint": "取消勾选您暂时不需要的页面。",
+      "sitePlan": "您的网站方案",
+      "sitePlanTemplate": "正在使用 {template} 模板为 {studio} 搭建。",
+      "homepage": "首页",
+      "liveMiniPreview": "实时迷你预览",
+      "openFullPreview": "打开完整预览",
+      "connectDomain": "连接您自己的域名 →",
+      "templateFallback": "经典",
+      "portalLabel": "门户"
+    },
+    "setupPages": {
+      "page-about": "关于",
+      "page-classes": "课程",
+      "page-contact": "联系",
+      "page-schedule": "日程",
+      "page-people": "人物 / 教师",
+      "page-news": "新闻与活动",
+      "page-shop": "商店"
+    },
+    "branding": {
+      "title": "您的品牌",
+      "subtitle": "放入您的徽标和颜色——它们会即时应用到下方预览。",
+      "taglineFallback": "您的标语",
+      "logoUrl": "徽标 URL",
+      "logoUrlPlaceholder": "https://…/logo.png",
+      "tagline": "标语",
+      "taglinePlaceholder": "例如：奥克兰 · 欢迎各年龄段",
+      "brandColor": "品牌色",
+      "brandColorAria": "品牌色",
+      "siteTheme": "网站主题",
+      "dark": "深色",
+      "light": "浅色",
+      "colorPresets": {
+        "iris": "Iris",
+        "crimson": "Crimson",
+        "voltage": "Voltage",
+        "aurum": "Aurum",
+        "bloom": "Bloom",
+        "jade": "Jade",
+        "forest": "Forest",
+        "slate": "Slate"
+      }
+    },
+    "templateGallery": {
+      "noTemplatesInCategory": "此类别中没有模板。",
+      "selected": "已选择",
+      "blockLabels": {
+        "hero": "主视觉",
+        "features": "特色",
+        "classGrid": "课程",
+        "testimonials": "评价",
+        "cta": "行动号召",
+        "contact": "联系",
+        "gallery": "画廊",
+        "statsRow": "数据",
+        "classStreams": "课程系列",
+        "newsFeed": "新闻",
+        "richText": "故事",
+        "peopleGrid": "团队",
+        "schedule": "日程",
+        "faq": "常见问题",
+        "pageHeader": "页头",
+        "videoBlock": "视频",
+        "classTabs": "课程标签",
+        "imageBlock": "图片",
+        "heading": "标题",
+        "paragraph": "文本",
+        "linkBlock": "按钮",
+        "divider": "分隔线",
+        "spacer": "间距",
+        "shopGrid": "商店",
+        "locations": "地点"
+      }
+    },
+    "templateCategories": {
+      "all": "所有模板",
+      "minimal": "简约",
+      "bold": "粗犷",
+      "visual": "视觉",
+      "community": "社区",
+      "professional": "专业",
+      "elegant": "优雅",
+      "modern": "现代",
+      "editorial": "编辑",
+      "dramatic": "戏剧",
+      "playful": "俏皮",
+      "luxe": "奢华",
+      "retro": "复古",
+      "complete": "完整"
+    },
+    "typography": {
+      "sampleText": "天地玄黄 宇宙洪荒",
+      "categories": {
+        "all": "所有风格",
+        "elegant": "优雅",
+        "modern": "现代",
+        "classic": "经典",
+        "bold": "粗犷",
+        "friendly": "友好",
+        "minimal": "简约",
+        "creative": "创意",
+        "editorial": "编辑"
+      },
+      "pairs": {
+        "fraunces-hanken": {
+          "label": "Iris & Ink",
+          "description": "温暖的衬线标题搭配利落的无衬线正文。"
+        },
+        "cormorant-inter": {
+          "label": "Editorial Classic",
+          "description": "高级时尚的编辑风格搭配。"
+        },
+        "playfair-source": {
+          "label": "Gallery White",
+          "description": "为图片主导的网站带来精致对比。"
+        },
+        "libre-lato": {
+          "label": "Heritage",
+          "description": "值得信赖且易读。"
+        },
+        "merriweather-opensans": {
+          "label": "Scholar",
+          "description": "兼具学术的清晰与温度。"
+        },
+        "lora-nunito": {
+          "label": "Soft Serif",
+          "description": "亲切而柔和。"
+        },
+        "dm-serif-dm-sans": {
+          "label": "DM Duo",
+          "description": "同一字族带来的几何和谐。"
+        },
+        "cinzel-raleway": {
+          "label": "Grand Stage",
+          "description": "为表演艺术打造的戏剧化展示。"
+        },
+        "bodoni-work": {
+          "label": "Atelier",
+          "description": "奢华时装屋般的质感。"
+        },
+        "oswald-roboto": {
+          "label": "Impact",
+          "description": "强劲的标题，中性的正文。"
+        },
+        "bebas-montserrat": {
+          "label": "Poster Bold",
+          "description": "全大写的张力搭配简洁文案。"
+        },
+        "space-inter": {
+          "label": "Tech Studio",
+          "description": "当代初创企业的美学。"
+        },
+        "archivo": {
+          "label": "Mono Modern",
+          "description": "单一字族的几何清晰感。"
+        },
+        "poppins": {
+          "label": "Rounded Pop",
+          "description": "友好且普遍易读。"
+        },
+        "nunito": {
+          "label": "Bubble Warm",
+          "description": "柔和曲线，适合家庭品牌。"
+        },
+        "lexend": {
+          "label": "Readable First",
+          "description": "为轻松阅读而优化。"
+        },
+        "rubik": {
+          "label": "Rounded Edge",
+          "description": "俏皮的几何感，毫不杂乱。"
+        },
+        "manrope": {
+          "label": "Neutral Pro",
+          "description": "均衡而专业。"
+        },
+        "jakarta": {
+          "label": "Startup Clean",
+          "description": "清新的 SaaS 落地页气质。"
+        },
+        "eb-karla": {
+          "label": "Bookshop",
+          "description": "书卷般的温度搭配现代正文。"
+        },
+        "crimson-franklin": {
+          "label": "Broadsheet",
+          "description": "报纸传统与网页的结合。"
+        },
+        "josefin-lato": {
+          "label": "Art Deco",
+          "description": "装饰艺术的复古魅力与清晰度。"
+        },
+        "albert": {
+          "label": "Swiss Lite",
+          "description": "极致简洁的单一字族。"
+        },
+        "quicksand": {
+          "label": "Playground",
+          "description": "轻盈而亲切，适合孩子。"
+        },
+        "figtree": {
+          "label": "Fig & Flow",
+          "description": "当代人文主义无衬线。"
+        },
+        "urbanist": {
+          "label": "Urban Grid",
+          "description": "都市工作室的现代主义。"
+        },
+        "instrument": {
+          "label": "Instrument",
+          "description": "独特的编辑气质。"
+        },
+        "bricolage": {
+          "label": "Bricolage",
+          "description": "富有表现力的可变无衬线。"
+        },
+        "syne-inter": {
+          "label": "Syne Pulse",
+          "description": "实验性展示搭配沉静正文。"
+        },
+        "sora-outfit": {
+          "label": "Sora & Outfit",
+          "description": "简洁、友好、亲和。"
+        }
+      }
+    },
+    "templates": {
+      "home-classic": {
+        "label": "经典",
+        "description": "主视觉、特色网格、课程展示、评价、行动号召和联系。"
+      },
+      "home-showcase": {
+        "label": "展示",
+        "description": "以图片为主导的布局：醒目主视觉、课程展示、画廊和评价。"
+      },
+      "home-minimal": {
+        "label": "极简",
+        "description": "简洁、聚焦单一信息的首页：主视觉、简介、课程和一个行动号召。"
+      },
+      "home-bold": {
+        "label": "粗犷",
+        "description": "满版主视觉、数据条、课程系列、新闻预览和报名号召。"
+      },
+      "page-schedule": {
+        "label": "日程",
+        "description": "带有星期和工作室筛选的每周课程表。"
+      },
+      "page-people": {
+        "label": "人物",
+        "description": "来自员工资料的教师网格。"
+      },
+      "page-studios": {
+        "label": "工作室",
+        "description": "多地点工作室卡片和联系方式。"
+      },
+      "page-news": {
+        "label": "新闻与活动",
+        "description": "可筛选的新闻和活动动态流。"
+      },
+      "page-shop": {
+        "label": "商店",
+        "description": "带类别筛选和结账的商品目录。"
+      },
+      "page-about": {
+        "label": "关于",
+        "description": "讲述您的故事：简介主视觉、叙事文字、价值观和收尾行动号召。"
+      },
+      "page-classes": {
+        "label": "课程",
+        "description": "专门的课程列表页面，含常见问题和报名号召。"
+      },
+      "page-contact": {
+        "label": "联系",
+        "description": "联系方式和营业时间，外加简短的常见问题。"
+      },
+      "home-academy": {
+        "label": "学院",
+        "description": "机构风格布局：醒目主视觉、资质条、课程和师资。"
+      },
+      "home-spotlight": {
+        "label": "聚光",
+        "description": "以表演者为先：戏剧化主视觉、教师聚光和照片画廊。"
+      },
+      "home-magazine": {
+        "label": "杂志",
+        "description": "新闻为先的编辑式呈现——如工作室期刊般突出课程亮点。"
+      },
+      "home-gallery": {
+        "label": "画廊",
+        "description": "照片作品集主导——极简文案，最大化视觉冲击。"
+      },
+      "home-community": {
+        "label": "社区",
+        "description": "侧重社会认同——评价、价值观和亲切的课程网格。"
+      },
+      "home-momentum": {
+        "label": "动能",
+        "description": "高能量健身氛围——数据、课程和以报名为重点的号召。"
+      },
+      "home-elegant": {
+        "label": "优雅",
+        "description": "精致奢华的质感——左对齐主视觉、故事和师资。"
+      },
+      "home-modern": {
+        "label": "现代锋芒",
+        "description": "简洁的科技初创美学——课程系列、数据和利落的行动号召。"
+      },
+      "home-festival": {
+        "label": "节庆",
+        "description": "以活动为驱动——新闻、日程预览和报名号召。"
+      },
+      "home-streams": {
+        "label": "课程系列",
+        "description": "带常见问题的课程系列浏览器——非常适合多学科工作室。"
+      },
+      "home-family": {
+        "label": "家庭欢迎",
+        "description": "温暖而亲切——为新家长提供价值观、课程和常见问题。"
+      },
+      "home-professional": {
+        "label": "专业",
+        "description": "企业级简洁布局——故事、价值观、团队和联系。"
+      },
+      "home-creative": {
+        "label": "创意粗犷",
+        "description": "代理机构式的冲击力——非对称主视觉、画廊和数据。"
+      },
+      "home-story": {
+        "label": "讲述者",
+        "description": "叙事之旅——层层展开的富文本段落，构建您的品牌故事。"
+      },
+      "home-enrol": {
+        "label": "报名聚焦",
+        "description": "为转化优化——课程、社会认同和多处报名提示。"
+      },
+      "home-complete": {
+        "label": "完整",
+        "description": "一页囊括一切——一次滚动尽览完整的工作室体验。"
+      },
+      "home-cinematic": {
+        "label": "电影感",
+        "description": "深色满版主视觉、工作室画廊、数据、喝彩和收尾行动号召。"
+      },
+      "home-noir": {
+        "label": "黑金",
+        "description": "黑金戏剧：醒目主视觉、舞团介绍、后台画廊和评价。"
+      },
+      "home-eclipse": {
+        "label": "蚀",
+        "description": "电感深色主视觉、数据、交互式课程标签和评价。"
+      },
+      "home-playful": {
+        "label": "俏皮",
+        "description": "明亮而友好：三重特色、按年龄分类的课程、画廊、常见问题和联系。"
+      },
+      "home-carnival": {
+        "label": "嘉年华",
+        "description": "高能量主视觉、数据、课程系列、评价和演出画廊。"
+      },
+      "home-sunny": {
+        "label": "阳光",
+        "description": "温暖欢快的主视觉，配以特色、课程、即将举行的活动和行动号召。"
+      },
+      "home-atelier": {
+        "label": "工坊",
+        "description": "精致的精品布局：故事、从业者、画廊和评价。"
+      },
+      "home-couture": {
+        "label": "高定",
+        "description": "时装编辑式页头、系列画廊、故事和特色课程。"
+      },
+      "home-retro": {
+        "label": "复古",
+        "description": "复古海报风格：醒目主视觉、数据、阵容、评价和联系。"
+      },
+      "home-marquee": {
+        "label": "剧场招牌",
+        "description": "剧场招牌式深色主视觉、头条活动、演出时间和画廊。"
+      },
+      "home-journal": {
+        "label": "手记",
+        "description": "长篇编辑式：主视觉、两篇随笔、一条分隔线和新闻动态流。"
+      },
+      "home-broadsheet": {
+        "label": "大报",
+        "description": "报纸质感：印刷式页头、头条、课程和评价。"
+      },
+      "home-lookbook": {
+        "label": "造型集",
+        "description": "以图片为先的布局，由宽敞的画廊、数据和评价主导。"
+      },
+      "home-reel": {
+        "label": "影像卷",
+        "description": "以动态为先：电影感主视觉、视频集锦、画廊和行动号召。"
+      },
+      "home-grid": {
+        "label": "网格",
+        "description": "系统化的现代布局，含交互式课程标签、数据和特色。"
+      },
+      "home-pulse": {
+        "label": "脉动",
+        "description": "充满活力的健身主视觉、数据、课程、评价、常见问题和行动号召。"
+      },
+      "home-impact": {
+        "label": "冲击",
+        "description": "极具冲击力的深色主视觉、数据、课程系列、画廊和醒目行动号召。"
+      },
+      "home-whitespace": {
+        "label": "留白",
+        "description": "极致极简：一句宏大宣言、一个核心理念、课程和一个行动号召。"
+      }
+    },
+    "editor": {
+      "backToPages": "← 页面",
+      "untitled": "无标题",
+      "unsavedChanges": "未保存的更改",
+      "saved": "已保存",
+      "published": "已发布",
+      "undoTitle": "撤销 (⌘Z)",
+      "redoTitle": "重做 (⌘⇧Z)",
+      "add": "+ 添加",
+      "background": "背景",
+      "settings": "设置",
+      "preview": "预览",
+      "openLiveSite": "打开线上网站",
+      "previewMode": "实时预览",
+      "exitPreview": "退出预览",
+      "previewModeBanner": "实时预览——模块以访客看到的样子呈现。点击「退出预览」进行编辑。",
+      "saving": "保存中…",
+      "saveDraft": "保存草稿",
+      "publish": "发布",
+      "confirmLeave": "您有未保存的更改。要离开此页面吗？",
+      "previewLiveTitle": "在 {url} 打开线上页面",
+      "previewDraftTitle": "预览草稿（在管理后台打开——发布后即可公开分享）",
+      "elementsSelected": "已选择 {count} 个元素",
+      "multiSelectHint": "方向键移动所有选中的元素。Delete 删除它们。不按 Shift 点击单个元素可单独编辑。",
+      "deleteSelected": "删除选中项",
+      "clickToEdit": "点击页面上的元素进行编辑。",
+      "rightClickHint": "或右键点击画布以添加标题、文本框、图片或按钮。",
+      "addElement": "添加元素",
+      "addElementHint": "点击可添加到底部，或右键点击画布指定位置。一切都会吸附到 12 列网格。",
+      "groupBasic": "基础——文字、图片和按钮",
+      "groupSections": "版块",
+      "groupStudioContent": "工作室内容",
+      "quickActions": "快捷操作",
+      "alignLeft": "⬅ 对齐",
+      "alignCenter": "↔ 居中",
+      "alignRight": "➡ 对齐",
+      "rotateMinus": "↺ −15°",
+      "rotatePlus": "↻ +15°",
+      "layerUp": "▲ 上移图层",
+      "layerDown": "▼ 下移图层",
+      "keyboardHint": "方向键微调 · ⌘D 复制 · ⌘Z 撤销 · Shift+点击 多选",
+      "sectionAppearance": "版块外观",
+      "frameEffects": "边框与效果",
+      "positionSize": "位置与尺寸",
+      "selectedMore": "（+{count} 已选择）",
+      "itemN": "第 {n} 项",
+      "addItem": "+ 添加项目",
+      "pageSettings": "页面设置",
+      "pageTitle": "标题",
+      "urlSlug": "URL 别名",
+      "homepageSlugHint": "首页始终位于 /。",
+      "publicUrlHint": "公开 URL：/{slug}",
+      "showInNav": "在导航中显示",
+      "navLabel": "导航标签（选填）",
+      "navOrder": "导航顺序",
+      "seoTitle": "SEO 标题",
+      "seoDescription": "SEO 描述",
+      "boldText": "粗体文字",
+      "linkText": "链接文字",
+      "boldTitle": "加粗",
+      "insertLinkTitle": "插入链接",
+      "linkButton": "🔗 链接",
+      "emptyPage": "您的页面是空的",
+      "emptyPageHint": "右键点击以添加内容。Shift+点击可多选。边缘对齐时会出现粉色参考线。",
+      "canvasHint": "右键添加 · Shift+点击 多选 · ⌘Z 撤销",
+      "editPageBackground": "编辑页面背景",
+      "backgroundLabel": "背景",
+      "duplicate": "复制",
+      "delete": "删除",
+      "locked": "已锁定",
+      "dragToMove": "拖动以移动（吸附到网格和参考线）",
+      "resize": "调整尺寸",
+      "resizeWidth": "调整宽度",
+      "resizeHeight": "调整高度",
+      "previewCopyPlaceholder": "在此处添加您的文案。",
+      "previewFeature": "特色",
+      "previewBlock": "{label} 预览"
+    },
+    "contextMenu": {
+      "addElement": "添加元素",
+      "groups": {
+        "basic": "基础元素",
+        "section": "版块",
+        "content": "内容模块"
+      },
+      "actions": {
+        "heading": "标题",
+        "paragraph": "文本框",
+        "imageBlock": "图片",
+        "linkBlock": "按钮",
+        "spacer": "间距",
+        "divider": "分隔线",
+        "videoBlock": "视频",
+        "pageHeader": "页头",
+        "hero": "主视觉",
+        "richText": "文本版块",
+        "cta": "行动号召",
+        "gallery": "画廊",
+        "features": "特色",
+        "testimonials": "评价"
+      }
+    },
+    "background": {
+      "title": "页面背景",
+      "subtitle": "所有元素背后的画布。可自由地将模块拖到其上。",
+      "type": "背景类型",
+      "image": "背景图片",
+      "video": "背景视频",
+      "autoplayMuted": "自动播放（静音）",
+      "opacity": "不透明度（%）",
+      "kinds": {
+        "base": "页面颜色",
+        "surface": "表面 / 卡片",
+        "tint": "品牌色调",
+        "brand": "品牌渐变",
+        "image": "图片",
+        "video": "视频"
+      }
+    },
+    "linkPicker": {
+      "pickPage": "选择一个页面…",
+      "customPath": "自定义路径…",
+      "externalUrl": "外部 URL",
+      "placeholder": "/about 或 https://…",
+      "hint": "选择现有页面或输入路径。外部链接请使用 https://。"
+    },
+    "media": {
+      "none": "无",
+      "imagePlaceholder": "粘贴图片 URL 或上传",
+      "uploading": "上传中…",
+      "replace": "替换",
+      "upload": "上传",
+      "remove": "移除",
+      "uploadFailed": "上传失败。",
+      "videoPlaceholder": "粘贴视频 URL 或上传 MP4 / WebM",
+      "replaceVideo": "替换视频",
+      "uploadVideo": "上传视频"
+    },
+    "domain": {
+      "eyebrow": "域名设置",
+      "title": "连接您的网站地址",
+      "subtitle": "为 {studio} 提供的简单分步指南。没有术语——只需复制、粘贴，即可上线。",
+      "steps": {
+        "intro": "开始",
+        "decide": "选择",
+        "kind": "类型",
+        "domain": "域名",
+        "dns": "DNS",
+        "connect": "连接",
+        "done": "完成"
+      },
+      "stepOf": "第 {current} 步，共 {total} 步",
+      "intro": {
+        "title": "您的网站已有一个地址",
+        "subtitle": "每个工作室都会获得一个免费的 Olune 地址——立即可用。",
+        "freeAddress": "免费地址",
+        "shareToday": "今天就分享此链接。家庭可从此地址查看您的网站和门户。",
+        "wantOwn": "想改用您自己的域名——比如 {example}？接下来的步骤将引导您完成。"
+      },
+      "decide": {
+        "title": "您想使用自己的域名吗？",
+        "subtitle": "可选——您的免费 Olune 地址始终有效。",
+        "yesTitle": "是的，使用我的域名",
+        "yesDesc": "我要连接 www.mystudio.co.nz（或类似地址）",
+        "noTitle": "暂时不要",
+        "noDesc": "我会继续使用 {address}"
+      },
+      "kind": {
+        "title": "您想要哪种地址？",
+        "subtitle": "选择与您从域名提供商处购买的相匹配的样式。",
+        "www": {
+          "label": "www 地址",
+          "hint": "最常见——家庭输入 www.yoursite.com"
+        },
+        "subdomain": {
+          "label": "子地址",
+          "hint": "适合专门的预约或信息页面"
+        },
+        "apex": {
+          "label": "根域名",
+          "hint": "无 www——仅 yoursite.com"
+        }
+      },
+      "domain": {
+        "title": "输入您的域名",
+        "subtitle": "输入您希望家庭在浏览器中键入的确切内容。",
+        "label": "您的域名",
+        "placeholder": "www.mystudio.co.nz",
+        "familiesVisit": "家庭将访问 {url}"
+      },
+      "dns": {
+        "title": "添加一条 DNS 记录",
+        "subtitle": "登录您购买域名的地方（GoDaddy、Cloudflare、Namecheap 等）并添加此记录。",
+        "step1": "打开您域名提供商的 DNS 设置。",
+        "step2": "添加下面的记录（复制每个值）。",
+        "step3": "保存——更改可能需要 15 分钟到 48 小时生效。",
+        "tip": "如果提供商要求填写「TTL」，请保留默认值或选择 3600。「主机」列可能被标为「名称」或「子域名」。",
+        "nextLabel": "我已添加该记录",
+        "showSteps": "显示 DNS 步骤"
+      },
+      "connect": {
+        "title": "连接到 Olune",
+        "subtitle": "告诉 Olune 您的域名，以便有人访问时我们能展示您的网站。",
+        "hint": "点击下方连接。然后使用「检查 DNS」——如果尚未就绪，请等待 30 分钟后重试。",
+        "connecting": "连接中…",
+        "connectDomain": "连接域名",
+        "checkDns": "检查 DNS"
+      },
+      "done": {
+        "connectedTitle": "您已连接！",
+        "connectedSubtitle": "您的自定义域名已关联到 Olune。",
+        "readyTitle": "一切就绪",
+        "readySubtitle": "您的免费 Olune 地址已可分享。",
+        "customDomain": "自定义域名",
+        "checking": "检查中…",
+        "checkAgain": "再次检查 DNS",
+        "removeDomain": "移除自定义域名",
+        "yourAddress": "您的地址",
+        "connectAnytime": "您可以随时从「网站 → 域名设置」连接自定义域名。",
+        "backToWebsite": "返回网站",
+        "connectDomain": "连接域名"
+      },
+      "dnsFields": {
+        "type": "类型",
+        "host": "主机 / 名称",
+        "value": "指向 / 值",
+        "copied": "已复制",
+        "copy": "复制"
+      },
+      "continue": "继续",
+      "back": "返回"
+    },
+    "urlBanner": {
+      "title": "您的公开网站 URL",
+      "openPreviewBefore": "打开",
+      "openPreviewAfter": "以预览家庭看到的内容。",
+      "localhostNote": "纯 localhost 上的页面是 Olune 平台，而非您的工作室网站。",
+      "connectDomain": "连接您的域名 →"
+    },
+    "preview": {
+      "draftTitle": "草稿预览",
+      "publishedTitle": "预览",
+      "refreshHint": "在编辑器中保存，然后刷新以查看最新更改。",
+      "backToEditor": "← 编辑器",
+      "openLiveSite": "打开线上网站"
+    },
+    "blocks": {
+      "select": "垂直间距",
+      "number": "垂直位置（px）",
+      "boolean": "锁定位置",
+      "color": "字号",
+      "text": "尺寸",
+      "textarea": "对齐",
+      "image": "视频",
+      "video": "按钮",
+      "list": "课程系列",
+      "heading": "标题",
+      "paragraph": "文本",
+      "imageBlock": "图片",
+      "videoBlock": "视频",
+      "linkBlock": "按钮",
+      "hero": "主视觉",
+      "pageHeader": "页头",
+      "statsRow": "数据",
+      "classStreams": "课程系列",
+      "classTabs": "课程标签",
+      "richText": "文本版块",
+      "features": "特色",
+      "classGrid": "课程",
+      "schedule": "日程",
+      "gallery": "画廊",
+      "testimonials": "评价",
+      "newsFeed": "新闻",
+      "peopleGrid": "团队",
+      "shopGrid": "商店",
+      "locations": "地点",
+      "cta": "行动号召",
+      "faq": "常见问题",
+      "contact": "联系",
+      "spacer": "间距",
+      "divider": "分隔线"
+    },
+    "public": {
+      "emptyPage": "此页面尚无内容。",
+      "addImage": "添加图片",
+      "addVideo": "添加视频",
+      "teamComingSoon": "团队成员即将公布。",
+      "classesComingSoon": "课程即将推出。",
+      "allLevels": "所有级别",
+      "perMonth": "/ 月",
+      "galleryEmpty": "添加图片 URL 以填充画廊。",
+      "contactLabels": {
+        "address": "地址",
+        "phone": "电话",
+        "email": "邮箱",
+        "hours": "营业时间"
+      },
+      "spacerLabel": "间距 · {height}px",
+      "defaultFooterTagline": "卓越的舞蹈教育。为各年龄段和各水平提供世界一流的训练。",
+      "defaultPortalLabel": "门户",
+      "defaultHeading": "标题",
+      "defaultImageAlt": "图片",
+      "defaultLinkLabel": "链接",
+      "navigation": "导航",
+      "studios": "工作室",
+      "contact": "联系",
+      "copyright": "© {year} {studio}。保留所有权利。",
+      "closeMenu": "关闭菜单",
+      "openMenu": "打开菜单",
+      "portalArrow": "{label} →"
+    },
+    "shop": {
+      "categoryAll": "全部",
+      "categoryGeneral": "常规",
+      "checkoutFailed": "结账失败。请登录以购买。",
+      "orderCreated": "订单已创建——请在会员门户完成付款。",
+      "orderPlaced": "下单成功！",
+      "noProducts": "暂无可购商品。",
+      "outOfStock": "缺货",
+      "addToCart": "加入购物车",
+      "cartItems": "购物车（{count} 件商品）",
+      "processing": "处理中…",
+      "checkout": "结账",
+      "signInToPurchase": "登录以购买"
+    },
+    "schedule": {
+      "days": [
+        "星期日",
+        "星期一",
+        "星期二",
+        "星期三",
+        "星期四",
+        "星期五",
+        "星期六"
+      ],
+      "allStudios": "所有工作室",
+      "noClassesDay": "这一天没有排定的课程。",
+      "streamComingSoon": "此系列的课程即将推出。",
+      "fromPerTerm": "{price} / 学期起"
+    },
+    "news": {
+      "categories": {
+        "all": "全部",
+        "news": "新闻",
+        "events": "活动",
+        "term_dates": "学期日期",
+        "productions": "演出",
+        "announcements": "公告"
+      },
+      "noItems": "暂无内容可显示。"
+    }
+  }
+}

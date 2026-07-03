@@ -1,0 +1,77 @@
+{
+  "onboarding": {
+    "progress": {
+      "account": "账户",
+      "studio": "工作室",
+      "profile": "个人资料",
+      "brand": "品牌"
+    },
+    "system": {
+      "title": "您将如何使用 Olune？",
+      "subtitle": "选择适合您的设置——您随时可以调整。",
+      "back": "返回",
+      "studioOwner": {
+        "title": "我经营一家舞蹈工作室",
+        "desc": "管理课程、家庭、账单以及您的工作室网站。"
+      },
+      "instructor": {
+        "title": "我是一名独立教师",
+        "desc": "跨工作室工作，跟踪您的日程，并管理您的教学资料。"
+      }
+    },
+    "account": {
+      "title": "创建您的工作室",
+      "subtitle": "创建您的所有者账户以开始。",
+      "instructorTitle": "创建您的教师账户",
+      "instructorSubtitle": "供您跨工作室教学的个人工作区。",
+      "divider": "或使用邮箱注册",
+      "emailPlaceholder": "you@studio.co.nz",
+      "passwordPlaceholder": "设置密码",
+      "submitting": "创建中…",
+      "submit": "使用邮箱创建账户",
+      "hasAccount": "已有账户？",
+      "logIn": "登录"
+    },
+    "confirmEmail": {
+      "title": "请查收邮件",
+      "body": "我们已向 {email} 发送确认链接。点击链接后返回——我们会从您离开的地方继续。"
+    },
+    "studio": {
+      "title": "为您的工作室命名",
+      "subtitle": "这是您的学员和家人将看到的名称。",
+      "namePlaceholder": "旭日舞蹈工作室",
+      "slugPlaceholder": "your-studio",
+      "checking": "检查中…",
+      "available": "✓ {slug}.{root} 可用",
+      "taken": "✗ 该子域名已被占用",
+      "invalid": "请使用 3 个以上小写字母、数字或连字符",
+      "back": "返回",
+      "continue": "继续"
+    },
+    "profile": {
+      "title": "您的公开名称",
+      "subtitle": "工作室和学员将如何认识您。",
+      "namePlaceholder": "张女士",
+      "slugPlaceholder": "jane-smith"
+    },
+    "brand": {
+      "title": "打造专属风格",
+      "subtitle": "选择一个品牌色——所有细节稍后都可优化。",
+      "fallbackName": "您的资料",
+      "previewCta": "预约试课",
+      "customColour": "自定义颜色",
+      "back": "返回",
+      "submitting": "正在创建您的工作室…",
+      "submit": "创建工作室",
+      "submittingInstructor": "正在创建您的工作区…",
+      "submitInstructor": "创建工作区"
+    },
+    "done": {
+      "title": "欢迎，{studioName}",
+      "subtitle": "您的工作室已上线。让我们来完成设置…",
+      "instructorSubtitle": "您的教师工作区已就绪。",
+      "continue": "继续设置 →",
+      "instructorContinue": "前往您的日程 →"
+    }
+  }
+}

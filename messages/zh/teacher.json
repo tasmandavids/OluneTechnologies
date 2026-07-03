@@ -1,0 +1,44 @@
+{
+  "teacher": {
+    "schedule": {
+      "title": "课程表与点名",
+      "greetingWithName": "{greeting}，{name}。",
+      "greetingOnly": "{greeting}。",
+      "todayRoll": "今日点名 · {day}",
+      "noClassesToday": "今天没有课程。",
+      "marked": "已点名",
+      "noStudents": "没有已报名的学员。",
+      "unknownStudent": "未知学员",
+      "attendance": {
+        "present": "出席",
+        "late": "迟到",
+        "absent": "缺席",
+        "excused": "请假"
+      },
+      "thisWeek": "本周 · {count, plural, other {共 # 门课}}",
+      "studentCount": "{count, plural, other {# 名学员}}",
+      "noClassesAssigned": "尚未为您安排任何课程。",
+      "noClassesAssignedHint": "请让您的工作室管理员为您的教师账户分配课程。",
+      "noClassesAssignedInstructorHint": "请让工作室邀请您，然后在下方接受邀请。",
+      "viewAffiliations": "查看工作室关联"
+    },
+    "affiliations": {
+      "title": "工作室关联",
+      "subtitle": "您任教的工作室以及您的个人工作区。",
+      "homeWorkspace": "您的工作区",
+      "linkedStudios": "已关联的工作室",
+      "noneYet": "尚无工作室关联。接受工作室管理员的邀请即可开始。",
+      "roleAtStudio": "{role} 权限",
+      "acceptInvite": "接受邀请",
+      "acceptInviteHint": "粘贴您工作室管理员邮件或邀请链接中的邀请令牌。",
+      "tokenPlaceholder": "邀请令牌",
+      "acceptButton": "关联工作室",
+      "accepting": "关联中…",
+      "acceptSuccess": "工作室关联成功。"
+    },
+    "studentProgress": {
+      "back": "← 返回课程表",
+      "progressLog": "进度记录"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "payments": {
+    "paymentNotCompleted": "付款未能完成。",
+    "paymentIncomplete": "付款未完成。请尝试其他方式。",
+    "processing": "处理中…",
+    "payNow": "立即付款",
+    "payAmount": "支付 {amount}",
+    "secureCheckout": "安全银行卡付款"
+  }
+}

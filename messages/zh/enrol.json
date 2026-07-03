@@ -1,0 +1,49 @@
+{
+  "enrol": {
+    "title": "预约免费试课",
+    "subtitle": "选择一门课程，我们会联系您确认孩子的名额。",
+    "steps": {
+      "pickClass": "选择课程"
+    },
+    "continue": "继续 →",
+    "backToClasses": "更换课程",
+    "selectedClass": "课程",
+    "noClassesForStyle": "没有符合该风格的课程——请尝试其他筛选条件或选择\"还不确定\"。",
+    "fields": {
+      "name": "家长／监护人姓名",
+      "namePlaceholder": "张女士",
+      "childName": "学员姓名",
+      "childNamePlaceholder": "张小美",
+      "email": "电子邮箱",
+      "emailPlaceholder": "you@example.com",
+      "phone": "电话（选填）",
+      "phonePlaceholder": "+64 21 123 4567",
+      "interest": "感兴趣的舞蹈风格"
+    },
+    "disciplines": {
+      "ballet": "芭蕾",
+      "contemporary": "现代舞",
+      "jazz": "爵士舞",
+      "hipHop": "街舞",
+      "tap": "踢踏舞",
+      "lyrical": "抒情舞",
+      "acro": "技巧舞",
+      "pointe": "足尖舞",
+      "notSure": "还不确定"
+    },
+    "submitting": "发送中…",
+    "submit": "申请免费试课 →",
+    "hasAccount": "已有账户？",
+    "signIn": "登录",
+    "success": {
+      "title": "您已在名单上！",
+      "body": "我们会尽快与您联系，{name}。请留意 {email}。",
+      "backHome": "返回首页"
+    },
+    "noStudio": {
+      "title": "访问您工作室的网站",
+      "body": "试课预约可在每个工作室的子域名上进行——例如 yourstudio.olune.app/enrol",
+      "back": "返回 Olune"
+    }
+  }
+}
