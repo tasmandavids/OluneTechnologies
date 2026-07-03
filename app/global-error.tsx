@@ -6,12 +6,14 @@ import enErrors from "@/messages/en/errors.json";
 import frErrors from "@/messages/fr/errors.json";
 import itErrors from "@/messages/it/errors.json";
 import ruErrors from "@/messages/ru/errors.json";
+import zhErrors from "@/messages/zh/errors.json";
 
 const ERROR_MESSAGES: Record<Locale, typeof enErrors> = {
   en: enErrors,
   fr: frErrors,
   it: itErrors,
   ru: ruErrors,
+  zh: zhErrors,
 };
 
 function resolveClientLocale(): Locale {
