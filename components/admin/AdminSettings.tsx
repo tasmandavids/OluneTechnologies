@@ -12,6 +12,7 @@ import {
   updateStudioRegistration,
 } from "@/app/portal/admin/settings/actions";
 import PortalEmbed from "@/components/admin/PortalEmbed";
+import BillingPeriodSettings, { type StudioTermInfo } from "@/components/admin/BillingPeriodSettings";
 
 const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
 
@@ -43,9 +44,16 @@ type StudioInfo = {
   timezone: string;
   registrationEnabled: boolean;
   registrationRoles: string[];
+  billingPeriod: "monthly" | "termly";
 };
 
-export default function AdminSettings({ studio }: { studio: StudioInfo | null }) {
+export default function AdminSettings({
+  studio,
+  terms,
+}: {
+  studio: StudioInfo | null;
+  terms: StudioTermInfo[];
+}) {
   const t = useTranslations("admin.settings");
   const tShared = useTranslations("admin.shared");
   const tStatus = useTranslations("admin.shared.status");
@@ -246,6 +254,8 @@ export default function AdminSettings({ studio }: { studio: StudioInfo | null })
             </p>
           )}
         </div>
+
+        <BillingPeriodSettings billingPeriod={studio.billingPeriod} terms={terms} />
       </section>
 
       <section className="space-y-6 rounded-2xl border border-[--hair] bg-surface p-6">

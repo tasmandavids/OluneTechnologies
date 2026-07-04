@@ -172,6 +172,159 @@ export async function updateStudioTimezone(input: unknown): Promise<SettingsResu
   return { ok: true };
 }
 
+// ─── Billing period (monthly vs. termly) ──────────────────────────────────────
+// Studios that invoice per-term (e.g. 4 terms/year) instead of monthly need
+// their own term calendar — the subscription-invoices cron reads this instead
+// of assuming every studio bills on the 1st of the month.
+
+const BillingPeriodSchema = z.object({
+  billingPeriod: z.enum(["monthly", "termly"]),
+});
+
+export async function updateBillingPeriod(input: unknown): Promise<SettingsResult> {
+  const parsed = BillingPeriodSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not signed in." };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("studio_id, role")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.studio_id) return { ok: false, error: "No studio found." };
+  if (profile.role !== "admin") return { ok: false, error: "Only admins can change studio settings." };
+
+  const { error } = await supabase
+    .from("studios")
+    .update({ billing_period: parsed.data.billingPeriod })
+    .eq("id", profile.studio_id);
+
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/portal/admin/settings");
+  return { ok: true };
+}
+
+const StudioTermSchema = z.object({
+  name: z.string().min(1, "Term name is required").max(60, "Term name is too long").trim(),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid start date"),
+  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid end date"),
+  invoiceLeadDays: z.coerce.number().int().min(0, "Must be 0 or more").max(120, "Must be 120 or less"),
+});
+
+async function requireStudioAdmin(): Promise<
+  { ok: true; supabase: Awaited<ReturnType<typeof createClient>>; studioId: string } | { ok: false; error: string }
+> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not signed in." };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("studio_id, role")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.studio_id) return { ok: false, error: "No studio found." };
+  if (profile.role !== "admin") return { ok: false, error: "Only admins can change studio settings." };
+
+  return { ok: true, supabase, studioId: profile.studio_id as string };
+}
+
+export type StudioTermResult = { ok: true; id: string } | { ok: false; error: string };
+
+export async function createStudioTerm(input: unknown): Promise<StudioTermResult> {
+  const parsed = StudioTermSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+  if (parsed.data.endDate <= parsed.data.startDate) {
+    return { ok: false, error: "End date must be after the start date." };
+  }
+
+  const ctx = await requireStudioAdmin();
+  if (!ctx.ok) return ctx;
+
+  const { data, error } = await ctx.supabase
+    .from("studio_terms")
+    .insert({
+      studio_id: ctx.studioId,
+      name: parsed.data.name,
+      start_date: parsed.data.startDate,
+      end_date: parsed.data.endDate,
+      invoice_lead_days: parsed.data.invoiceLeadDays,
+    })
+    .select("id")
+    .single();
+
+  if (error || !data) return { ok: false, error: error?.message ?? "Could not create term." };
+
+  revalidatePath("/portal/admin/settings");
+  return { ok: true, id: data.id as string };
+}
+
+const UpdateStudioTermSchema = StudioTermSchema.extend({ id: z.string().uuid() });
+
+export async function updateStudioTerm(input: unknown): Promise<SettingsResult> {
+  const parsed = UpdateStudioTermSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+  if (parsed.data.endDate <= parsed.data.startDate) {
+    return { ok: false, error: "End date must be after the start date." };
+  }
+
+  const ctx = await requireStudioAdmin();
+  if (!ctx.ok) return ctx;
+
+  const { error } = await ctx.supabase
+    .from("studio_terms")
+    .update({
+      name: parsed.data.name,
+      start_date: parsed.data.startDate,
+      end_date: parsed.data.endDate,
+      invoice_lead_days: parsed.data.invoiceLeadDays,
+    })
+    .eq("id", parsed.data.id)
+    .eq("studio_id", ctx.studioId);
+
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/portal/admin/settings");
+  return { ok: true };
+}
+
+export async function deleteStudioTerm(input: unknown): Promise<SettingsResult> {
+  const parsed = z.object({ id: z.string().uuid() }).safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const ctx = await requireStudioAdmin();
+  if (!ctx.ok) return ctx;
+
+  const { error } = await ctx.supabase
+    .from("studio_terms")
+    .delete()
+    .eq("id", parsed.data.id)
+    .eq("studio_id", ctx.studioId);
+
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/portal/admin/settings");
+  return { ok: true };
+}
+
 const RegistrationSchema = z.object({
   enabled: z.coerce.boolean(),
   roles: z.array(z.enum(["parent", "student"])).min(1, "Select at least one role"),

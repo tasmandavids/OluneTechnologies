@@ -30,6 +30,24 @@ export function chargeAmountCents(monthlyCents: number, interval: BillingInterva
   return Math.round((monthlyCents * 12) / 52);
 }
 
+/** Average Gregorian month length in days (365.2425 / 12), for prorating a
+ * monthly rate across a term of arbitrary length. */
+const AVG_DAYS_PER_MONTH = 30.4369;
+
+/**
+ * Scale factor to turn a monthly rate into the amount owed for a term that
+ * runs from startDate to endDate (both "YYYY-MM-DD"). A term doesn't line up
+ * with calendar months, so this prorates by day count rather than assuming a
+ * fixed number of months — a 10-week term and a 14-week term charge
+ * proportionally different totals off the same monthly price.
+ */
+export function termLengthMonths(startDate: string, endDate: string): number {
+  const start = new Date(`${startDate}T00:00:00Z`);
+  const end = new Date(`${endDate}T00:00:00Z`);
+  const days = Math.max(0, (end.getTime() - start.getTime()) / 86_400_000);
+  return days / AVG_DAYS_PER_MONTH;
+}
+
 export function intervalLabel(interval: BillingInterval): string {
   if (interval === "week") return "weekly";
   if (interval === "fortnight") return "fortnightly";

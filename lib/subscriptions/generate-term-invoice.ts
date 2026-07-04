@@ -1,21 +1,23 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { insertSubscriptionInvoice, type LineRow } from "./generate-invoice-shared";
+import { termLengthMonths } from "./pricing";
 
-function dueDateFromIssue(issueDate: string): string {
-  const d = new Date(`${issueDate}T12:00:00`);
-  d.setDate(d.getDate() + 14);
-  return d.toISOString().slice(0, 10);
-}
+export type StudioTerm = {
+  id: string;
+  name: string;
+  start_date: string;
+  end_date: string;
+};
 
-export async function generateSubscriptionMonthlyInvoice(
+export async function generateSubscriptionTermInvoice(
   supabase: SupabaseClient,
   subscriptionId: string,
-  billingMonth: string,
+  term: StudioTerm,
 ): Promise<{ ok: true; invoiceId: string } | { ok: false; error: string; skipped?: boolean }> {
   const { data: sub } = await supabase
     .from("subscriptions")
     .select(
-      "id, studio_id, payer_id, student_id, status, monthly_amount_cents, plan_label, last_invoiced_month",
+      "id, studio_id, payer_id, student_id, status, monthly_amount_cents, plan_label, last_invoiced_term_id",
     )
     .eq("id", subscriptionId)
     .single();
@@ -24,8 +26,8 @@ export async function generateSubscriptionMonthlyInvoice(
   if (!["active", "trialing", "past_due"].includes(sub.status as string)) {
     return { ok: false, error: "Subscription not active", skipped: true };
   }
-  if (sub.last_invoiced_month === billingMonth) {
-    return { ok: false, error: "Already invoiced this month", skipped: true };
+  if (sub.last_invoiced_term_id === term.id) {
+    return { ok: false, error: "Already invoiced this term", skipped: true };
   }
   if ((sub.monthly_amount_cents as number) <= 0) {
     return { ok: false, error: "Zero amount plan", skipped: true };
@@ -37,12 +39,10 @@ export async function generateSubscriptionMonthlyInvoice(
     .eq("subscription_id", subscriptionId)
     .order("sort_order");
 
-  const issueDate = `${billingMonth}-01`;
-  const amountCents = sub.monthly_amount_cents as number;
-  const monthLabel = new Date(`${billingMonth}-01T12:00:00`).toLocaleDateString("en-NZ", {
-    month: "long",
-    year: "numeric",
-  });
+  const monthsInTerm = termLengthMonths(term.start_date, term.end_date);
+  const amountCents = Math.round((sub.monthly_amount_cents as number) * monthsInTerm);
+
+  const dateRange = `${formatDate(term.start_date)} – ${formatDate(term.end_date)}`;
 
   const result = await insertSubscriptionInvoice(supabase, {
     studioId: sub.studio_id as string,
@@ -50,21 +50,25 @@ export async function generateSubscriptionMonthlyInvoice(
     studentId: sub.student_id as string | null,
     subscriptionId,
     amountCents,
-    dueDate: dueDateFromIssue(issueDate),
+    dueDate: term.start_date,
     lines: (lines ?? []) as LineRow[],
-    lineScale: 1,
-    notificationTitle: "Monthly subscription invoice",
-    notificationBody: `${sub.plan_label ?? "Your subscription"} — ${monthLabel}. Please review and pay in Olune.`,
-    notificationPayload: { subscription_id: subscriptionId, billing_month: billingMonth },
-    xeroLineDescription: `${sub.plan_label ?? "Subscription"} — ${monthLabel}`,
+    lineScale: monthsInTerm,
+    notificationTitle: `${term.name} invoice`,
+    notificationBody: `${sub.plan_label ?? "Your subscription"} — ${term.name} (${dateRange}). Please review and pay in Olune.`,
+    notificationPayload: { subscription_id: subscriptionId, term_id: term.id },
+    xeroLineDescription: `${sub.plan_label ?? "Subscription"} — ${term.name} (${dateRange})`,
   });
 
   if (!result.ok) return result;
 
   await supabase
     .from("subscriptions")
-    .update({ last_invoiced_month: billingMonth })
+    .update({ last_invoiced_term_id: term.id })
     .eq("id", subscriptionId);
 
   return result;
+}
+
+function formatDate(ymd: string): string {
+  return new Date(`${ymd}T12:00:00`).toLocaleDateString("en-NZ", { day: "numeric", month: "short" });
 }
