@@ -12,6 +12,7 @@ export type ClassRow = {
   name: string;
   discipline: string | null;
   level: string | null;
+  room: string | null;
   dayOfWeek: number;
   startTime: string | null;
   endTime: string | null;
@@ -38,7 +39,7 @@ export default async function ClassesPage() {
     supabase
       .from("class_capacity")
       .select(
-        "id, name, discipline, level, day_of_week, start_time, end_time, capacity, enrolled, teacher_id",
+        "id, name, discipline, level, room, day_of_week, start_time, end_time, capacity, enrolled, teacher_id",
       )
       .eq("studio_id", studioId ?? "")
       .order("day_of_week")
@@ -89,6 +90,7 @@ export default async function ClassesPage() {
     name:        c.name as string,
     discipline:  c.discipline as string | null,
     level:       c.level as string | null,
+    room:        c.room as string | null,
     dayOfWeek:   c.day_of_week as number,
     startTime:   c.start_time as string | null,
     endTime:     c.end_time as string | null,

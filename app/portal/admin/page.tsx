@@ -58,7 +58,7 @@ export default async function AdminDashboardPage() {
     supabase
       .from("class_capacity")
       .select(
-        "id, name, discipline, level, day_of_week, start_time, end_time, enrolled, capacity, teacher_id",
+        "id, name, discipline, level, room, day_of_week, start_time, end_time, enrolled, capacity, teacher_id",
       )
       .eq("studio_id", studioId)
       .order("name"),
@@ -128,6 +128,7 @@ export default async function AdminDashboardPage() {
       name: r.name as string,
       discipline: (r.discipline as string | null) ?? "",
       level: (r.level as string | null) ?? "",
+      room: (r.room as string | null) ?? null,
       durationMin,
       dayOfWeek: (r.day_of_week as number | null) ?? null,
       startTime,

@@ -38,6 +38,7 @@ type FormState = {
   name: string;
   discipline: string;
   level: string;
+  room: string;
   dayOfWeek: number;
   days: number[];
   startTime: string;
@@ -51,6 +52,7 @@ const EMPTY_FORM: FormState = {
   name: "",
   discipline: "",
   level: "",
+  room: "",
   dayOfWeek: 1,
   days: [1],
   startTime: "16:00",
@@ -65,6 +67,7 @@ function formFromClass(c: ClassRow): FormState {
     name: c.name,
     discipline: c.discipline ?? "",
     level: c.level ?? "",
+    room: c.room ?? "",
     dayOfWeek: c.dayOfWeek,
     days: [c.dayOfWeek],
     startTime: c.startTime?.slice(0, 5) ?? "",
@@ -163,6 +166,7 @@ export function ClassEditPanel({
       name: form.name,
       discipline: form.discipline,
       level: form.level,
+      room: form.room,
       startTime: form.startTime || undefined,
       endTime: form.endTime || undefined,
       capacity: form.capacity,
@@ -254,6 +258,15 @@ export function ClassEditPanel({
                 placeholder={t("levelPlaceholder")}
               />
             </div>
+          </div>
+
+          <div>
+            <Label>{t("room")}</Label>
+            <Input
+              value={form.room}
+              onChange={(v) => set("room", v)}
+              placeholder={t("roomPlaceholder")}
+            />
           </div>
 
           {mode === "edit" ? (
