@@ -13,6 +13,7 @@
 // ============================================================================
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useShortDayNames, useFormatTimeShort } from "@/lib/i18n/client";
@@ -152,6 +153,70 @@ function ClassCard({
   );
 }
 
+function SuggestedClassesPanel({
+  childName,
+  suggestions,
+  onAdd,
+}: {
+  childName: string | null;
+  suggestions: AvailableClass[];
+  onAdd: (id: string) => void;
+}) {
+  const t = useTranslations("parent.enroll");
+  const dayShort = useShortDayNames();
+  const fmtTime = useFormatTimeShort();
+
+  if (suggestions.length === 0 || typeof document === "undefined") return null;
+
+  return createPortal(
+    <AnimatePresence>
+      <motion.div
+        initial={{ x: 336, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: 336, opacity: 0 }}
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed inset-y-0 right-0 z-[60] hidden w-80 flex-col gap-3 overflow-y-auto border-l border-[--hair] bg-base p-5 shadow-2xl lg:flex"
+      >
+        <div>
+          <p className="text-[0.62rem] font-semibold uppercase tracking-wider text-muted">
+            {t("suggestedTitle", { name: childName ?? t("yourDancer") })}
+          </p>
+          <p className="mt-1 text-xs text-muted">{t("suggestedHint")}</p>
+        </div>
+        <div className="flex flex-col gap-2">
+          {suggestions.map((cls) => (
+            <div key={cls.id} className="rounded-xl border border-[--hair] bg-surface p-3">
+              <p className="text-sm font-semibold text-ink">{cls.name}</p>
+              <p className="mt-0.5 text-xs text-muted">
+                {cls.discipline}
+                {cls.level ? ` · ${cls.level}` : ""}
+              </p>
+              <p className="mt-0.5 text-xs text-muted">
+                {cls.dayOfWeek !== null ? dayShort[cls.dayOfWeek] : ""}
+                {cls.startTime ? ` · ${fmtTime(cls.startTime)}` : ""}
+              </p>
+              <div className="mt-2 flex items-center justify-between">
+                <span className="text-xs font-bold" style={{ color: "var(--brand)" }}>
+                  {t("programIncluded")}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onAdd(cls.id)}
+                  className="rounded-lg px-3 py-1 text-xs font-bold text-white transition-opacity hover:opacity-90"
+                  style={{ background: "var(--brand)" }}
+                >
+                  {t("addClass")}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </AnimatePresence>,
+    document.body,
+  );
+}
+
 // ─── Step screens ────────────────────────────────────────────────────────────
 
 type EnrollData = {
@@ -226,6 +291,22 @@ function Step1SelectClass({
   const totalCents = selectedClasses
     .filter((c) => !includedInBatchIds.has(c.id))
     .reduce((sum, c) => sum + c.priceCents, 0);
+
+  // Suggested classes: other sessions of a programme the dancer is already
+  // enrolled in (or has just selected) — same normalized name, so they'd be
+  // billed as "Included" per lib/enrollment-billing.ts.
+  const activeClassIds = new Set((selectedChild?.classes ?? []).map((c) => c.id));
+  const relevantProgrammeNames = new Set([
+    ...(selectedChild?.classes ?? []).map((c) => normProgramme(c.name)),
+    ...selectedClasses.map((c) => normProgramme(c.name)),
+  ]);
+  const suggestions = classes.filter(
+    (c) =>
+      !selectedIds.has(c.id) &&
+      !activeClassIds.has(c.id) &&
+      c.capacity - c.enrolled > 0 &&
+      relevantProgrammeNames.has(normProgramme(c.name)),
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -308,6 +389,12 @@ function Step1SelectClass({
       >
         {t("continue")}
       </button>
+
+      <SuggestedClassesPanel
+        childName={selectedChild?.name ?? null}
+        suggestions={suggestions}
+        onAdd={toggleClass}
+      />
     </div>
   );
 }
