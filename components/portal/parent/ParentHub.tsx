@@ -8,6 +8,7 @@ import { useShortDayNames, useTimeGreeting, useFormatTimeShort } from "@/lib/i18
 import type { Child, Invoice } from "@/app/portal/parent/page";
 import { EnrollModal } from "./EnrollModal";
 import { AddChildModal } from "./AddChildModal";
+import { InviteCoParentModal } from "./InviteCoParentModal";
 import { PayInvoiceModal } from "./PayInvoiceModal";
 import { CommandCentre, type CommandCentreProps } from "./CommandCentre";
 
@@ -61,6 +62,7 @@ export default function ParentHub({
   const fmt = useFormatTimeShort();
   const [showEnroll, setShowEnroll] = useState(false);
   const [showAddChild, setShowAddChild] = useState(false);
+  const [showInviteCoParent, setShowInviteCoParent] = useState(false);
   const [payInvoice, setPayInvoice] = useState<Invoice | null>(null);
 
   const firstName = parentName?.split(" ")[0];
@@ -128,6 +130,15 @@ export default function ParentHub({
               className="rounded-xl border border-[--hair] px-5 py-2.5 text-sm font-semibold text-ink hover:bg-surface"
             >
               {t("addChild")}
+            </button>
+          )}
+          {!selfManaged && familyChildren.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowInviteCoParent(true)}
+              className="rounded-xl border border-[--hair] px-5 py-2.5 text-sm font-semibold text-ink hover:bg-surface"
+            >
+              {t("inviteCoParent")}
             </button>
           )}
         </div>
@@ -296,6 +307,9 @@ export default function ParentHub({
         )}
         {showAddChild && (
           <AddChildModal onClose={() => setShowAddChild(false)} onAdded={() => window.location.reload()} />
+        )}
+        {showInviteCoParent && (
+          <InviteCoParentModal onClose={() => setShowInviteCoParent(false)} />
         )}
         {payInvoice && (
           <PayInvoiceModal
