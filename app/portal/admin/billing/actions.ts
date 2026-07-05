@@ -5,7 +5,12 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCY, gstComponentCents } from "@/lib/currency";
 import { stripe } from "@/lib/stripe";
-import { xeroSyncOutstandingInvoice, xeroVoidInvoice } from "@/lib/xero/webhook-sync";
+import {
+  xeroAuthoriseOutstandingInvoice,
+  xeroSyncOutstandingInvoice,
+  xeroUpdateOutstandingInvoice,
+  xeroVoidInvoice,
+} from "@/lib/xero/webhook-sync";
 import { removeInvoiceFromActivePlan } from "@/lib/term-payment-plan-service";
 import { getTranslations } from "@/lib/i18n/server";
 
@@ -64,6 +69,28 @@ function lineItemRows(invoiceId: string, lineItems: InvoiceLineItemInput[]) {
       sort_order: idx,
     };
   });
+}
+
+function invoiceSentNotification(
+  studioId: string,
+  payerId: string,
+  invoiceId: string,
+  label: string,
+  amountCents: number,
+  dueDate: string | null,
+) {
+  const amount = (amountCents / 100).toFixed(2);
+  return {
+    studio_id: studioId,
+    user_id: payerId,
+    type: "invoice_sent",
+    title: "New invoice from your studio",
+    body: dueDate
+      ? `${label} — $${amount} due ${dueDate}. Sign in to Olune to pay.`
+      : `${label} — $${amount}. Sign in to Olune to pay.`,
+    link: "/portal/parent",
+    payload: { invoice_id: invoiceId, amount_cents: amountCents },
+  };
 }
 
 async function ensureStripeCustomer(
@@ -187,16 +214,9 @@ export async function createInvoice(
       };
     }
 
-    const amount = (amountCents / 100).toFixed(2);
-    await supabase.from("notifications").insert({
-      studio_id: studioId,
-      user_id: payerId,
-      type: "invoice_sent",
-      title: "New invoice from your studio",
-      body: `${label} — $${amount} due ${dueDate}. Sign in to Olune to pay.`,
-      link: "/portal/parent",
-      payload: { invoice_id: invoice.id, amount_cents: amountCents },
-    });
+    await supabase
+      .from("notifications")
+      .insert(invoiceSentNotification(studioId, payerId, invoice.id as string, label, amountCents, dueDate));
   }
 
   let xeroInvoiceId: string | undefined;
@@ -211,6 +231,76 @@ export async function createInvoice(
 
   revalidatePath("/portal/admin/billing");
   return { ok: true, invoiceId: invoice.id as string, xeroInvoiceId, xeroError };
+}
+
+/**
+ * Promotes a local draft invoice to sent: attaches the Stripe payment link,
+ * emails the parent, and either creates its Xero Draft (if the backfill/first
+ * sync never ran) or flips an existing Xero Draft to Authorised — so Xero
+ * only ever goes live for a customer at the exact moment they're actually
+ * billed, never before.
+ */
+export async function sendInvoiceNow(
+  invoiceId: string,
+): Promise<{ ok: true; xeroError?: string } | { ok: false; error: string }> {
+  const t = await getTranslations("errors.actions");
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? t("unknown") };
+
+  const { data: invoice } = await supabase
+    .from("invoices")
+    .select("id, payer_id, amount_cents, due_date, status, description, stripe_payment_intent_id, xero_invoice_id")
+    .eq("id", invoiceId)
+    .eq("studio_id", studioId)
+    .single();
+
+  if (!invoice) return { ok: false, error: t("invoiceNotFound") };
+  if (invoice.status !== "draft") return { ok: false, error: t("onlyDraftsCanBeSent") };
+
+  const payerId = invoice.payer_id as string;
+  const amountCents = invoice.amount_cents as number;
+  const dueDate = (invoice.due_date as string | null) ?? null;
+  const label = (invoice.description as string | null)?.trim() || "Studio invoice";
+  const now = new Date().toISOString();
+
+  if (!invoice.stripe_payment_intent_id) {
+    try {
+      await attachPaymentIntent(
+        supabase,
+        invoice as { id: string; amount_cents: number },
+        payerId,
+        studioId,
+        label,
+      );
+    } catch (err) {
+      return {
+        ok: false,
+        error: err instanceof Error ? err.message : "Could not prepare payment link.",
+      };
+    }
+  }
+
+  const { error: updErr } = await supabase
+    .from("invoices")
+    .update({ status: "sent", issued_at: now })
+    .eq("id", invoiceId);
+  if (updErr) return { ok: false, error: updErr.message };
+
+  await supabase
+    .from("notifications")
+    .insert(invoiceSentNotification(studioId, payerId, invoiceId, label, amountCents, dueDate));
+
+  let xeroError: string | undefined;
+  if (invoice.xero_invoice_id) {
+    const xero = await xeroAuthoriseOutstandingInvoice(supabase, invoiceId);
+    if (!xero.ok) xeroError = xero.error;
+  } else {
+    const xero = await xeroSyncOutstandingInvoice(supabase, invoiceId, { lineDescription: label });
+    if (!xero.ok) xeroError = xero.error;
+  }
+
+  revalidatePath("/portal/admin/billing");
+  return { ok: true, xeroError };
 }
 
 export async function sendPaymentReminder(
@@ -364,7 +454,7 @@ export type UpdateInvoiceInput = z.infer<typeof UpdateInvoiceSchema>;
  */
 export async function updateInvoice(
   input: UpdateInvoiceInput,
-): Promise<{ ok: true } | { ok: false; error: string }> {
+): Promise<{ ok: true; xeroError?: string } | { ok: false; error: string }> {
   const t = await getTranslations("errors.actions");
   const parsed = UpdateInvoiceSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: t("invalidInvoiceDetails") };
@@ -427,7 +517,14 @@ export async function updateInvoice(
   }
 
   revalidatePath("/portal/admin/billing");
-  return { ok: true };
+
+  let xeroError: string | undefined;
+  if (Object.keys(updates).length > 0 || changingAmount) {
+    const xero = await xeroUpdateOutstandingInvoice(supabase, invoiceId);
+    if (!xero.ok) xeroError = xero.error;
+  }
+
+  return { ok: true, xeroError };
 }
 
 const InvoiceTemplateSchema = z.object({

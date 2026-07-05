@@ -124,7 +124,10 @@ async function createOutstandingInvoice(
     dueDate,
     reference,
     lineAmountTypes: LineAmountTypes.Inclusive,
-    status: Invoice.StatusEnum.AUTHORISED,
+    // Draft, not Authorised: keeps it out of Xero reporting/emailable-to-contact
+    // until a bookkeeper reviews it, so nobody in Xero can send the customer a
+    // copy that looks different from the one Olune already sent them.
+    status: Invoice.StatusEnum.DRAFT,
     currencyCode: CurrencyCode.NZD,
   };
 
@@ -136,6 +139,24 @@ async function createOutstandingInvoice(
   return invoice.invoiceID;
 }
 
+/**
+ * Payments can only be recorded against an Authorised (or Paid) Xero invoice —
+ * ours start life as Draft (see createOutstandingInvoice), so flip it over
+ * first if a payment is about to land on it.
+ */
+async function ensureXeroInvoiceAuthorised(
+  loaded: NonNullable<Awaited<ReturnType<typeof loadStudioXeroClient>>>,
+  xeroInvoiceId: string,
+): Promise<void> {
+  const res = await loaded.client.accountingApi.getInvoice(loaded.tenantId, xeroInvoiceId);
+  const status = res.body.invoices?.[0]?.status;
+  if (status === Invoice.StatusEnum.DRAFT || status === Invoice.StatusEnum.SUBMITTED) {
+    await loaded.client.accountingApi.updateInvoice(loaded.tenantId, xeroInvoiceId, {
+      invoices: [{ invoiceID: xeroInvoiceId, status: Invoice.StatusEnum.AUTHORISED }],
+    } as Invoices);
+  }
+}
+
 async function recordXeroPayment(
   loaded: NonNullable<Awaited<ReturnType<typeof loadStudioXeroClient>>>,
   cfg: XeroConnectionSettings,
@@ -143,6 +164,7 @@ async function recordXeroPayment(
   amountCents: number,
   reference: string,
 ) {
+  await ensureXeroInvoiceAuthorised(loaded, xeroInvoiceId);
   const today = new Date().toISOString().slice(0, 10);
   const payment: Payment = {
     invoice: { invoiceID: xeroInvoiceId },
@@ -198,12 +220,15 @@ async function loadInvoiceRecord(
   lineDescription: string;
   reference: string;
   lineItems: LineItem[];
+  /** True when lineItems came from real invoice_line_items rows, not a synthesized fallback. */
+  hasLineItems: boolean;
 }> {
   const { data: inv } = await supabase
     .from("invoices")
     .select(`
-      id, studio_id, payer_id, amount_cents, due_date, issued_at, xero_invoice_id, invoice_number,
-      student:profiles!student_id ( full_name )
+      id, studio_id, payer_id, amount_cents, due_date, issued_at, xero_invoice_id, invoice_number, description,
+      student:profiles!student_id ( full_name ),
+      invoice_line_items ( description, quantity, unit_cents, sort_order )
     `)
     .eq("id", invoiceId)
     .single();
@@ -211,9 +236,37 @@ async function loadInvoiceRecord(
   if (!inv) throw new Error("Invoice not found");
 
   const student = inv.student as unknown as { full_name: string | null } | null;
-  const lineDescription = student?.full_name
-    ? `Tuition & fees — ${student.full_name}`
-    : "Tuition & fees";
+  const fallbackDescription =
+    (inv.description as string | null)?.trim() ||
+    (student?.full_name ? `Tuition & fees — ${student.full_name}` : "Tuition & fees");
+
+  const rawLineItems = (
+    (inv.invoice_line_items ?? []) as { description: string; quantity: number; unit_cents: number; sort_order: number }[]
+  )
+    .slice()
+    .sort((a, b) => a.sort_order - b.sort_order);
+
+  // Mirror each real invoice_line_items row into Xero — never flatten an
+  // itemized invoice into one generic line, or the copy in Xero silently
+  // stops matching what the parent was actually billed for.
+  const lineItems: LineItem[] =
+    rawLineItems.length > 0
+      ? rawLineItems.map((li) => ({
+          description: li.description,
+          quantity: li.quantity,
+          unitAmount: dollarsFromCents(li.unit_cents),
+          accountCode: DEFAULT_XERO_SETTINGS.sales_account_code,
+          taxType: "OUTPUT2",
+        }))
+      : [
+          {
+            description: fallbackDescription,
+            quantity: 1,
+            unitAmount: dollarsFromCents(inv.amount_cents as number),
+            accountCode: DEFAULT_XERO_SETTINGS.sales_account_code,
+            taxType: "OUTPUT2",
+          },
+        ];
 
   return {
     studioId: inv.studio_id as string,
@@ -223,16 +276,9 @@ async function loadInvoiceRecord(
     issuedAt: (inv.issued_at as string | null) ?? null,
     xeroInvoiceId: (inv.xero_invoice_id as string | null) ?? null,
     reference: formatInvoiceNumber(inv.invoice_number as number),
-    lineDescription,
-    lineItems: [
-      {
-        description: lineDescription,
-        quantity: 1,
-        unitAmount: dollarsFromCents(inv.amount_cents as number),
-        accountCode: DEFAULT_XERO_SETTINGS.sales_account_code,
-        taxType: "OUTPUT2",
-      },
-    ],
+    lineDescription: fallbackDescription,
+    lineItems,
+    hasLineItems: rawLineItems.length > 0,
   };
 }
 
@@ -420,10 +466,12 @@ export async function syncOutstandingInvoiceToXero(
     const cfg = settings(loaded.connection.settings);
     if (cfg.sync_enabled === false) return { ok: false, error: "Xero sync disabled" };
 
-    const lineDescription = options?.lineDescription ?? record.lineDescription;
+    // Only the single synthesized fallback line (no real invoice_line_items)
+    // takes a caller-supplied description override — real itemized lines keep
+    // their own description so Xero matches what the parent was actually billed.
     const lineItems = record.lineItems.map((li) => ({
       ...li,
-      description: lineDescription,
+      description: !record.hasLineItems && options?.lineDescription ? options.lineDescription : li.description,
       accountCode: li.accountCode ?? cfg.sales_account_code ?? DEFAULT_XERO_SETTINGS.sales_account_code,
     }));
 
@@ -465,6 +513,104 @@ export async function syncOutstandingInvoiceToXero(
       await supabase.from("xero_connections").update({ sync_error: message }).eq("studio_id", row.studio_id);
     }
 
+    return { ok: false, error: message };
+  }
+}
+
+/**
+ * Flips a Draft Xero invoice to Authorised — used when an admin clicks "Send"
+ * on a local draft invoice, so the Xero copy goes live at the same moment the
+ * customer actually gets billed, not before. No-op if there's nothing synced
+ * yet (the caller should run syncOutstandingInvoiceToXero first in that case).
+ */
+export async function authoriseOutstandingInvoiceInXero(
+  supabase: SupabaseClient,
+  invoiceId: string,
+  redirectUri: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const record = await loadInvoiceRecord(supabase, invoiceId);
+    if (!record.xeroInvoiceId) return { ok: true };
+
+    const loaded = await loadStudioXeroClient(supabase, record.studioId, redirectUri);
+    if (!loaded) return { ok: false, error: "Xero not connected" };
+
+    const cfg = settings(loaded.connection.settings);
+    if (cfg.sync_enabled === false) return { ok: false, error: "Xero sync disabled" };
+
+    await ensureXeroInvoiceAuthorised(loaded, record.xeroInvoiceId);
+
+    await supabase
+      .from("xero_connections")
+      .update({ last_sync_at: new Date().toISOString(), sync_error: null })
+      .eq("studio_id", record.studioId);
+
+    return { ok: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Xero authorise failed";
+    return { ok: false, error: message };
+  }
+}
+
+/**
+ * Pushes a local invoice edit (due date, description, amount/line items)
+ * onto its still-Draft Xero counterpart, so admins editing an invoice from
+ * the Billing page can't drift the Xero copy out from under what the parent
+ * was actually sent. No-ops if the invoice was never synced, or if Xero
+ * already has it Authorised/Paid/Voided — at that point a bookkeeper may have
+ * already acted on it, so we don't silently rewrite it.
+ */
+export async function updateOutstandingInvoiceInXero(
+  supabase: SupabaseClient,
+  invoiceId: string,
+  redirectUri: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const record = await loadInvoiceRecord(supabase, invoiceId);
+    if (!record.xeroInvoiceId) return { ok: true };
+
+    const loaded = await loadStudioXeroClient(supabase, record.studioId, redirectUri);
+    if (!loaded) return { ok: false, error: "Xero not connected" };
+
+    const cfg = settings(loaded.connection.settings);
+    if (cfg.sync_enabled === false) return { ok: false, error: "Xero sync disabled" };
+
+    const current = await loaded.client.accountingApi.getInvoice(loaded.tenantId, record.xeroInvoiceId);
+    const currentStatus = current.body.invoices?.[0]?.status;
+    if (currentStatus !== Invoice.StatusEnum.DRAFT) {
+      return { ok: true };
+    }
+
+    const lineItems = record.lineItems.map((li) => ({
+      ...li,
+      accountCode: li.accountCode ?? cfg.sales_account_code ?? DEFAULT_XERO_SETTINGS.sales_account_code,
+    }));
+
+    const today = new Date().toISOString().slice(0, 10);
+    const issueDate = record.issuedAt?.slice(0, 10) ?? today;
+    const dueDate = record.dueDate ?? issueDate;
+
+    await loaded.client.accountingApi.updateInvoice(loaded.tenantId, record.xeroInvoiceId, {
+      invoices: [
+        {
+          invoiceID: record.xeroInvoiceId,
+          lineItems,
+          date: issueDate,
+          dueDate,
+          reference: record.reference,
+          lineAmountTypes: LineAmountTypes.Inclusive,
+        },
+      ],
+    } as Invoices);
+
+    await supabase
+      .from("xero_connections")
+      .update({ last_sync_at: new Date().toISOString(), sync_error: null })
+      .eq("studio_id", record.studioId);
+
+    return { ok: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Xero update failed";
     return { ok: false, error: message };
   }
 }
@@ -648,8 +794,18 @@ export async function voidInvoiceInXero(
   if (cfg.sync_enabled === false) return { ok: false, error: "Xero sync disabled" };
 
   try {
+    // Xero rejects VOIDED on a Draft/Submitted invoice — those cancel via
+    // DELETED instead. Ours start as Draft (see createOutstandingInvoice), so
+    // check current status rather than assuming it's been authorised.
+    const current = await loaded.client.accountingApi.getInvoice(loaded.tenantId, xeroInvoiceId);
+    const currentStatus = current.body.invoices?.[0]?.status;
+    const nextStatus =
+      currentStatus === Invoice.StatusEnum.DRAFT || currentStatus === Invoice.StatusEnum.SUBMITTED
+        ? Invoice.StatusEnum.DELETED
+        : Invoice.StatusEnum.VOIDED;
+
     await loaded.client.accountingApi.updateInvoice(loaded.tenantId, xeroInvoiceId, {
-      invoices: [{ invoiceID: xeroInvoiceId, status: Invoice.StatusEnum.VOIDED }],
+      invoices: [{ invoiceID: xeroInvoiceId, status: nextStatus }],
     } as Invoices);
 
     await supabase

@@ -548,8 +548,11 @@
         "noLineItems": "Pas de détail par ligne — montant forfaitaire unique.",
         "amountLabel": "Montant (NZD)",
         "invalidLineItemsError": "Chaque ligne nécessite une description, une quantité et un prix unitaire.",
-        "validAmountError": "Saisissez un montant valide."
-      }
+        "validAmountError": "Saisissez un montant valide.",
+        "xeroSyncError": "Enregistré, mais la synchronisation Xero a échoué : {error}"
+      },
+      "send": "Envoyer",
+      "sendXeroSyncError": "Facture envoyée, mais la synchronisation Xero a échoué : {error}"
     },
     "accounting": {
       "title": "Comptabilité",

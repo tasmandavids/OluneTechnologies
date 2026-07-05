@@ -73,7 +73,8 @@
       "invoiceNotDraft": "Сумму и позиции можно менять только у счетов-черновиков.",
       "invalidLineItems": "Некорректные позиции.",
       "invalidTemplateDetails": "Некорректные данные шаблона.",
-      "templateNotFound": "Шаблон не найден."
+      "templateNotFound": "Шаблон не найден.",
+      "onlyDraftsCanBeSent": "Таким образом можно отправить только счета-черновики."
     }
   }
 }

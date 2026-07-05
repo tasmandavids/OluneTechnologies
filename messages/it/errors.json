@@ -73,7 +73,8 @@
       "invoiceNotDraft": "Importo e voci possono essere modificati solo per le fatture in bozza.",
       "invalidLineItems": "Voci non valide.",
       "invalidTemplateDetails": "Dettagli del modello non validi.",
-      "templateNotFound": "Modello non trovato."
+      "templateNotFound": "Modello non trovato.",
+      "onlyDraftsCanBeSent": "Solo le fatture in bozza possono essere inviate in questo modo."
     }
   }
 }

@@ -548,8 +548,11 @@
         "noLineItems": "Nessuna suddivisione in voci — importo unico.",
         "amountLabel": "Importo (NZD)",
         "invalidLineItemsError": "Ogni riga richiede una descrizione, una quantità e un prezzo unitario.",
-        "validAmountError": "Inserisci un importo valido."
-      }
+        "validAmountError": "Inserisci un importo valido.",
+        "xeroSyncError": "Salvato, ma la sincronizzazione con Xero non è riuscita: {error}"
+      },
+      "send": "Invia",
+      "sendXeroSyncError": "Fattura inviata, ma la sincronizzazione con Xero non è riuscita: {error}"
     },
     "accounting": {
       "title": "Contabilità",

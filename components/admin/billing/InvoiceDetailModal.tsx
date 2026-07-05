@@ -94,7 +94,11 @@ export function InvoiceDetailModal({
       if (!res.ok) setError(res.error);
       else {
         onUpdated(patch);
-        onClose();
+        if (res.xeroError) {
+          setError(t("xeroSyncError", { error: res.xeroError }));
+        } else {
+          onClose();
+        }
       }
     });
   };

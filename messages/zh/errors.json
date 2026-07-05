@@ -73,7 +73,8 @@
       "invoiceNotDraft": "只有草稿状态的账单才能修改金额和明细项目。",
       "invalidLineItems": "明细项目无效。",
       "invalidTemplateDetails": "模板信息无效。",
-      "templateNotFound": "未找到模板。"
+      "templateNotFound": "未找到模板。",
+      "onlyDraftsCanBeSent": "只有草稿状态的账单才能以此方式发送。"
     }
   }
 }

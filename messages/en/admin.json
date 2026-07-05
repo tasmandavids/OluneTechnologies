@@ -584,8 +584,11 @@
         "noLineItems": "No itemized breakdown — single flat amount.",
         "amountLabel": "Amount (NZD)",
         "invalidLineItemsError": "Each line needs a description, quantity, and unit price.",
-        "validAmountError": "Enter a valid amount."
-      }
+        "validAmountError": "Enter a valid amount.",
+        "xeroSyncError": "Saved, but Xero sync failed: {error}"
+      },
+      "send": "Send",
+      "sendXeroSyncError": "Invoice sent, but Xero sync failed: {error}"
     },
     "accounting": {
       "title": "Accounting",

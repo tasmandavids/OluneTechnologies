@@ -73,7 +73,8 @@
       "invoiceNotDraft": "Le montant et les lignes ne peuvent être modifiés que pour les factures en brouillon.",
       "invalidLineItems": "Lignes invalides.",
       "invalidTemplateDetails": "Détails du modèle invalides.",
-      "templateNotFound": "Modèle introuvable."
+      "templateNotFound": "Modèle introuvable.",
+      "onlyDraftsCanBeSent": "Seules les factures en brouillon peuvent être envoyées ainsi."
     }
   }
 }

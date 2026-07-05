@@ -2,9 +2,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { xeroRedirectUriForJobs } from "./config";
 import {
+  authoriseOutstandingInvoiceInXero,
   syncOutstandingInvoiceToXero,
   syncRefundToXero,
   syncSaleToXero,
+  updateOutstandingInvoiceInXero,
   voidInvoiceInXero,
 } from "./sync-sale";
 import type { XeroSyncSourceType } from "./types";
@@ -78,6 +80,32 @@ export async function xeroSyncAfterRefund(
     await syncRefundToXero(syncSupabase(supabase), sourceType, sourceId, refundCents, redirectUri());
   } catch (err) {
     console.warn(`[xero-sync] refund ${sourceType} ${sourceId} failed:`, err);
+  }
+}
+
+export async function xeroUpdateOutstandingInvoice(
+  supabase: SupabaseClient,
+  invoiceId: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    return await updateOutstandingInvoiceInXero(syncSupabase(supabase), invoiceId, redirectUri());
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Xero update failed";
+    console.warn(`[xero-sync] update invoice ${invoiceId}: ${message}`);
+    return { ok: false, error: message };
+  }
+}
+
+export async function xeroAuthoriseOutstandingInvoice(
+  supabase: SupabaseClient,
+  invoiceId: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    return await authoriseOutstandingInvoiceInXero(syncSupabase(supabase), invoiceId, redirectUri());
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Xero authorise failed";
+    console.warn(`[xero-sync] authorise invoice ${invoiceId}: ${message}`);
+    return { ok: false, error: message };
   }
 }
 

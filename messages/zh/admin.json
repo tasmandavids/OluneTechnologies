@@ -584,8 +584,11 @@
         "noLineItems": "没有明细拆分 —— 单一固定金额。",
         "amountLabel": "金额（NZD）",
         "invalidLineItemsError": "每一行都需要填写描述、数量和单价。",
-        "validAmountError": "请输入有效金额。"
-      }
+        "validAmountError": "请输入有效金额。",
+        "xeroSyncError": "已保存，但同步到 Xero 失败：{error}"
+      },
+      "send": "发送",
+      "sendXeroSyncError": "账单已发送，但同步到 Xero 失败：{error}"
     },
     "accounting": {
       "title": "会计",

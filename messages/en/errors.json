@@ -73,7 +73,8 @@
       "invoiceNotDraft": "Amount and line items can only be changed on draft invoices.",
       "invalidLineItems": "Invalid line items.",
       "invalidTemplateDetails": "Invalid template details.",
-      "templateNotFound": "Template not found."
+      "templateNotFound": "Template not found.",
+      "onlyDraftsCanBeSent": "Only draft invoices can be sent this way."
     }
   }
 }

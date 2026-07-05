@@ -26,6 +26,7 @@ import type {
 import {
   createInvoice,
   sendBulkPaymentReminders,
+  sendInvoiceNow,
   sendPaymentReminder,
   voidInvoice,
 } from "@/app/portal/admin/billing/actions";
@@ -403,6 +404,49 @@ function CreateInvoiceModal({
   );
 }
 
+function SendInvoiceButton({
+  invoice,
+  onSent,
+}: {
+  invoice: InvoiceRow;
+  onSent: (id: string) => void;
+}) {
+  const t = useTranslations("admin.billing");
+  const tShared = useTranslations("admin.shared");
+  const [pending, startTransition] = useTransition();
+  const [err, setErr] = useState<string | null>(null);
+  const [xeroWarn, setXeroWarn] = useState<string | null>(null);
+
+  if (invoice.status !== "draft") return null;
+
+  return (
+    <div className="flex flex-col items-start gap-0.5">
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() => {
+          setErr(null);
+          setXeroWarn(null);
+          startTransition(async () => {
+            const res = await sendInvoiceNow(invoice.id);
+            if (res.ok) {
+              onSent(invoice.id);
+              if (res.xeroError) setXeroWarn(t("sendXeroSyncError", { error: res.xeroError }));
+            } else {
+              setErr(res.error);
+            }
+          });
+        }}
+        className="rounded-lg border border-[--hair] bg-ink px-2.5 py-1 text-[0.7rem] font-semibold text-paper hover:opacity-90 disabled:opacity-50"
+      >
+        {pending ? tShared("sending") : t("send")}
+      </button>
+      {err && <span className="text-[0.65rem] text-[#dc2626]">{err}</span>}
+      {xeroWarn && <span className="text-[0.65rem] text-amber-700">{xeroWarn}</span>}
+    </div>
+  );
+}
+
 function RemindButton({
   invoiceId,
   label,
@@ -631,6 +675,13 @@ export function BillingDashboard({
 
   const markVoided = (id: string) =>
     setInvoices((prev) => prev.map((i) => (i.id === id ? { ...i, status: "void" } : i)));
+
+  const markSent = (id: string) => {
+    setInvoices((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, status: "sent", issuedAt: new Date().toISOString() } : i)),
+    );
+    router.refresh();
+  };
 
   const applyInvoiceUpdate = (id: string, patch: Partial<InvoiceRow>) => {
     setInvoices((prev) => prev.map((i) => (i.id === id ? { ...i, ...patch } : i)));
@@ -1165,6 +1216,7 @@ export function BillingDashboard({
                           >
                             {t("view")}
                           </button>
+                          <SendInvoiceButton invoice={inv} onSent={markSent} />
                           {["sent", "overdue"].includes(inv.status) && (
                             <RemindButton invoiceId={inv.id} onDone={refresh} />
                           )}
