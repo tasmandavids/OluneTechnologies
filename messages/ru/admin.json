@@ -231,6 +231,10 @@
         "priceCents": "Цена (центов NZD)",
         "pricePlaceholder": "например 2000 = 20 долларов",
         "teacher": "Учитель",
+        "xeroAccountCode": "Код счёта Xero",
+        "xeroAccountCodeNone": "Код не назначен",
+        "xeroAccountCodeConnectHint": "Подключите Xero в настройках бухгалтерии, чтобы назначить код счёта.",
+        "xeroAccountCodeNotFound": "(не найден в Xero)",
         "pickDayError": "Выберите хотя бы один день.",
         "createClass": "Создать класс",
         "saveChanges": "Сохранить изменения"
@@ -468,6 +472,9 @@
         "title": "Все счета",
         "searchPlaceholder": "Поиск…",
         "empty": "Счета-фактуры не найдены.",
+        "sendAllDrafts": "Отправить все черновики ({count})",
+        "draftsSent": "Отправлено черновиков: {sent}.",
+        "draftsSentWithFailures": "Отправлено черновиков: {sent} — не удалось: {failed}.",
         "table": {
           "number": "№ счёта",
           "dancer": "Танцор",

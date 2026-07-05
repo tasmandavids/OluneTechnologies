@@ -25,6 +25,7 @@ import type {
 } from "@/app/portal/admin/billing/page";
 import {
   createInvoice,
+  sendAllDraftInvoices,
   sendBulkPaymentReminders,
   sendInvoiceNow,
   sendPaymentReminder,
@@ -669,6 +670,9 @@ export function BillingDashboard({
   const [templates, setTemplates] = useState<InvoiceTemplate[]>(initialTemplates);
   const [bulkPending, startBulk] = useTransition();
   const [bulkError, setBulkError] = useState<string | null>(null);
+  const [draftBulkPending, startDraftBulk] = useTransition();
+  const [draftBulkError, setDraftBulkError] = useState<string | null>(null);
+  const [draftBulkResult, setDraftBulkResult] = useState<{ sent: number; failed: number } | null>(null);
 
   const markRefunded = (id: string) =>
     setInvoices((prev) => prev.map((i) => (i.id === id ? { ...i, status: "refunded" } : i)));
@@ -730,6 +734,21 @@ export function BillingDashboard({
       const res = await sendBulkPaymentReminders(overdueIds);
       if (!res.ok) setBulkError(res.error);
       else refresh();
+    });
+  };
+
+  const draftIds = useMemo(() => invoices.filter((i) => i.status === "draft").map((i) => i.id), [invoices]);
+
+  const sendAllDrafts = () => {
+    setDraftBulkError(null);
+    setDraftBulkResult(null);
+    startDraftBulk(async () => {
+      const res = await sendAllDraftInvoices();
+      if (!res.ok) setDraftBulkError(res.error);
+      else {
+        setDraftBulkResult({ sent: res.sent, failed: res.failed.length });
+        refresh();
+      }
     });
   };
 
@@ -1136,6 +1155,18 @@ export function BillingDashboard({
               {t("allInvoices.title")}
               <span className="ml-2 font-normal text-muted">({filtered.length})</span>
             </h2>
+            {draftIds.length > 0 && (
+              <button
+                type="button"
+                onClick={sendAllDrafts}
+                disabled={draftBulkPending}
+                className="rounded-xl border border-[--hair] bg-base px-3 py-1.5 text-xs font-semibold text-ink hover:bg-surface disabled:opacity-50"
+              >
+                {draftBulkPending
+                  ? tShared("sending")
+                  : t("allInvoices.sendAllDrafts", { count: draftIds.length })}
+              </button>
+            )}
             <input
               type="text"
               placeholder={t("allInvoices.searchPlaceholder")}
@@ -1156,6 +1187,20 @@ export function BillingDashboard({
               <option value="refunded">{tStatus("refunded")}</option>
             </select>
           </div>
+
+          {draftBulkError && (
+            <p className="border-b border-[--hair] px-6 py-2 text-sm text-red-600">{draftBulkError}</p>
+          )}
+          {draftBulkResult && (
+            <p className="border-b border-[--hair] px-6 py-2 text-sm text-muted">
+              {draftBulkResult.failed > 0
+                ? t("allInvoices.draftsSentWithFailures", {
+                    sent: draftBulkResult.sent,
+                    failed: draftBulkResult.failed,
+                  })
+                : t("allInvoices.draftsSent", { sent: draftBulkResult.sent })}
+            </p>
+          )}
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-sm">

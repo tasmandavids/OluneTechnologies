@@ -592,11 +592,12 @@ function Step3Review({
       return;
     }
 
-    for (const cls of classes) {
-      if (cls.billableCents <= 0) continue;
-      const invRes = await createEnrollmentPayLaterInvoice(childId, cls.classId, cls.className, cls.priceCents);
-      if (!invRes.ok) { setError(invRes.error); setBusy(false); return; }
-    }
+    const invRes = await createEnrollmentPayLaterInvoice(
+      childId,
+      classes.map((cls) => ({ classId: cls.classId, className: cls.className, priceCents: cls.priceCents })),
+      false,
+    );
+    if (!invRes.ok) { setError(invRes.error); setBusy(false); return; }
 
     onComplete(false, { payLater: true });
     setBusy(false);
@@ -615,21 +616,20 @@ function Step3Review({
       return;
     }
 
-    let lastInvoiceId: string | null = null;
-    for (const cls of classes) {
-      if (cls.billableCents <= 0) continue;
-      const invRes = await createEnrollmentPayLaterInvoice(childId, cls.classId, cls.className, cls.priceCents);
-      if (!invRes.ok) { setError(invRes.error); setBusy(false); return; }
-      if (invRes.data.invoiceId) lastInvoiceId = invRes.data.invoiceId;
-    }
+    const invRes = await createEnrollmentPayLaterInvoice(
+      childId,
+      classes.map((cls) => ({ classId: cls.classId, className: cls.className, priceCents: cls.priceCents })),
+      true,
+    );
+    if (!invRes.ok) { setError(invRes.error); setBusy(false); return; }
 
-    if (!lastInvoiceId) {
+    if (!invRes.data.invoiceId) {
       onComplete(false);
       setBusy(false);
       return;
     }
 
-    const termRes = await startTermPlanAfterEnrollment(lastInvoiceId);
+    const termRes = await startTermPlanAfterEnrollment(invRes.data.invoiceId);
     if (!termRes.ok) { setError(termRes.error); setBusy(false); return; }
 
     setPayMeta({

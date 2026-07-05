@@ -74,7 +74,8 @@
       "invalidLineItems": "Invalid line items.",
       "invalidTemplateDetails": "Invalid template details.",
       "templateNotFound": "Template not found.",
-      "onlyDraftsCanBeSent": "Only draft invoices can be sent this way."
+      "onlyDraftsCanBeSent": "Only draft invoices can be sent this way.",
+      "noDraftInvoices": "No draft invoices to send."
     }
   }
 }

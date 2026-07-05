@@ -228,7 +228,7 @@ async function loadInvoiceRecord(
     .select(`
       id, studio_id, payer_id, amount_cents, due_date, issued_at, xero_invoice_id, invoice_number, description,
       student:profiles!student_id ( full_name ),
-      invoice_line_items ( description, quantity, unit_cents, sort_order )
+      invoice_line_items ( description, quantity, unit_cents, sort_order, account_code )
     `)
     .eq("id", invoiceId)
     .single();
@@ -241,21 +241,30 @@ async function loadInvoiceRecord(
     (student?.full_name ? `Tuition & fees — ${student.full_name}` : "Tuition & fees");
 
   const rawLineItems = (
-    (inv.invoice_line_items ?? []) as { description: string; quantity: number; unit_cents: number; sort_order: number }[]
+    (inv.invoice_line_items ?? []) as {
+      description: string;
+      quantity: number;
+      unit_cents: number;
+      sort_order: number;
+      account_code: string | null;
+    }[]
   )
     .slice()
     .sort((a, b) => a.sort_order - b.sort_order);
 
   // Mirror each real invoice_line_items row into Xero — never flatten an
   // itemized invoice into one generic line, or the copy in Xero silently
-  // stops matching what the parent was actually billed for.
+  // stops matching what the parent was actually billed for. Leave
+  // accountCode unset here (rather than hardcoding the studio default) so
+  // callers' `li.accountCode ?? cfg.sales_account_code ?? DEFAULT...` fallback
+  // chain can actually take effect for a line item with its own code.
   const lineItems: LineItem[] =
     rawLineItems.length > 0
       ? rawLineItems.map((li) => ({
           description: li.description,
           quantity: li.quantity,
           unitAmount: dollarsFromCents(li.unit_cents),
-          accountCode: DEFAULT_XERO_SETTINGS.sales_account_code,
+          accountCode: li.account_code ?? undefined,
           taxType: "OUTPUT2",
         }))
       : [
@@ -263,7 +272,6 @@ async function loadInvoiceRecord(
             description: fallbackDescription,
             quantity: 1,
             unitAmount: dollarsFromCents(inv.amount_cents as number),
-            accountCode: DEFAULT_XERO_SETTINGS.sales_account_code,
             taxType: "OUTPUT2",
           },
         ];

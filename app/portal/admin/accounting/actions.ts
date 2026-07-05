@@ -5,6 +5,7 @@ import { getAdminXeroContext } from "@/lib/xero/admin-context";
 import { revokeXeroConnection, xeroRedirectUri } from "@/lib/xero/client";
 import { resolveAppOriginFromHeaders } from "@/lib/xero/app-origin";
 import { xeroSettingsSchema } from "@/lib/xero/schemas";
+import { listXeroSalesAccounts, type XeroAccountOption } from "@/lib/xero/chart-of-accounts";
 
 export async function disconnectXero(): Promise<{ ok: true } | { ok: false; error: string }> {
   const ctx = await getAdminXeroContext();
@@ -26,6 +27,21 @@ export async function refreshAccountingData(): Promise<{ ok: true } | { ok: fals
 
   revalidatePath("/portal/admin/accounting");
   return { ok: true };
+}
+
+export async function getXeroSalesAccountOptions(): Promise<
+  { ok: true; data: XeroAccountOption[] | null } | { ok: false; error: string }
+> {
+  const ctx = await getAdminXeroContext();
+  if (ctx.error) return { ok: false, error: ctx.error };
+
+  try {
+    const origin = await resolveAppOriginFromHeaders();
+    const accounts = await listXeroSalesAccounts(ctx.supabase, ctx.studioId, xeroRedirectUri(origin));
+    return { ok: true, data: accounts };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Could not load Xero accounts" };
+  }
 }
 
 export async function updateXeroSettings(

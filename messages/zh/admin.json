@@ -233,6 +233,10 @@
         "priceCents": "价格（新西兰元分）",
         "pricePlaceholder": "例如：2000 = $20",
         "teacher": "老师",
+        "xeroAccountCode": "Xero 总账代码",
+        "xeroAccountCodeNone": "未分配代码",
+        "xeroAccountCodeConnectHint": "请先在会计设置中连接 Xero，然后再分配总账代码。",
+        "xeroAccountCodeNotFound": "（在 Xero 中未找到）",
         "pickDayError": "请至少选择一天。",
         "createClass": "创建课程",
         "saveChanges": "保存更改"
@@ -504,6 +508,9 @@
         "title": "所有账单",
         "searchPlaceholder": "搜索…",
         "empty": "未找到账单。",
+        "sendAllDrafts": "发送所有草稿（{count}）",
+        "draftsSent": "已发送 {sent} 份草稿账单。",
+        "draftsSentWithFailures": "已发送 {sent} 份草稿账单，{failed} 份失败。",
         "table": {
           "number": "账单号",
           "dancer": "舞者",

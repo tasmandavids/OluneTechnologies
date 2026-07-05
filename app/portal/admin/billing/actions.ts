@@ -219,15 +219,17 @@ export async function createInvoice(
       .insert(invoiceSentNotification(studioId, payerId, invoice.id as string, label, amountCents, dueDate));
   }
 
+  // Sync to Xero as a Draft regardless of sendNow — Xero always mirrors
+  // Olune's own draft state from the moment of creation. Sending later (via
+  // sendInvoiceNow) flips this same Xero draft to Authorised rather than
+  // creating a second copy.
   let xeroInvoiceId: string | undefined;
   let xeroError: string | undefined;
-  if (sendNow) {
-    const xero = await xeroSyncOutstandingInvoice(supabase, invoice.id as string, {
-      lineDescription: label,
-    });
-    if (xero.ok) xeroInvoiceId = xero.xeroInvoiceId;
-    else xeroError = xero.error;
-  }
+  const xero = await xeroSyncOutstandingInvoice(supabase, invoice.id as string, {
+    lineDescription: label,
+  });
+  if (xero.ok) xeroInvoiceId = xero.xeroInvoiceId;
+  else xeroError = xero.error;
 
   revalidatePath("/portal/admin/billing");
   return { ok: true, invoiceId: invoice.id as string, xeroInvoiceId, xeroError };
@@ -301,6 +303,39 @@ export async function sendInvoiceNow(
 
   revalidatePath("/portal/admin/billing");
   return { ok: true, xeroError };
+}
+
+/**
+ * Sends every outstanding draft invoice for the studio in one pass — reuses
+ * sendInvoiceNow per invoice so a batch of enrollment/manual drafts can be
+ * reviewed once and approved together instead of one at a time.
+ */
+export async function sendAllDraftInvoices(): Promise<
+  | { ok: true; sent: number; failed: { invoiceId: string; error: string }[] }
+  | { ok: false; error: string }
+> {
+  const t = await getTranslations("errors.actions");
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? t("unknown") };
+
+  const { data: drafts } = await supabase
+    .from("invoices")
+    .select("id")
+    .eq("studio_id", studioId)
+    .eq("status", "draft");
+
+  const ids = (drafts ?? []).map((d) => d.id as string);
+  if (!ids.length) return { ok: false, error: t("noDraftInvoices") };
+
+  let sent = 0;
+  const failed: { invoiceId: string; error: string }[] = [];
+  for (const id of ids) {
+    const res = await sendInvoiceNow(id);
+    if (res.ok) sent += 1;
+    else failed.push({ invoiceId: id, error: res.error });
+  }
+
+  return { ok: true, sent, failed };
 }
 
 export async function sendPaymentReminder(

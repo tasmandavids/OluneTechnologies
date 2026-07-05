@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { deleteClass, deleteRecurringGroup } from "@/app/portal/admin/classes/actions";
 import type { ClassRow, TeacherOption } from "@/app/portal/admin/classes/page";
+import type { XeroAccountOption } from "@/lib/xero/chart-of-accounts";
 import { ClassDetailPanel } from "@/components/admin/classes/ClassDetailPanel";
 import { ClassEditPanel } from "@/components/admin/classes/ClassEditPanel";
 import { formatMoney } from "@/lib/currency";
@@ -193,10 +194,12 @@ function ClassRowItem({
 export default function ClassesManager({
   classes,
   teachers,
+  xeroAccounts,
   readOnly = false,
 }: {
   classes: ClassRow[];
   teachers: TeacherOption[];
+  xeroAccounts: XeroAccountOption[];
   readOnly?: boolean;
 }) {
   const t = useTranslations("admin.classes");
@@ -336,6 +339,7 @@ export default function ClassesManager({
             mode={panel.type}
             editing={panel.type === "edit" ? panel.cls : null}
             teachers={teachers}
+            xeroAccounts={xeroAccounts}
             onClose={() => setPanel(null)}
           />
         )}

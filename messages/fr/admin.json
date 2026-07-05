@@ -231,6 +231,10 @@
         "priceCents": "Prix ​​(centimes NZD)",
         "pricePlaceholder": "par ex. 2000 = 20$",
         "teacher": "Professeur",
+        "xeroAccountCode": "Code comptable Xero",
+        "xeroAccountCodeNone": "Aucun code attribué",
+        "xeroAccountCodeConnectHint": "Connectez Xero dans les paramètres comptables pour attribuer un code comptable.",
+        "xeroAccountCodeNotFound": "(introuvable dans Xero)",
         "pickDayError": "Choisissez au moins un jour.",
         "createClass": "Créer une classe",
         "saveChanges": "Enregistrer les modifications"
@@ -468,6 +472,9 @@
         "title": "Toutes les factures",
         "searchPlaceholder": "Rechercher…",
         "empty": "Aucune facture trouvée.",
+        "sendAllDrafts": "Envoyer tous les brouillons ({count})",
+        "draftsSent": "{sent} facture(s) brouillon envoyée(s).",
+        "draftsSentWithFailures": "{sent} facture(s) brouillon envoyée(s) — {failed} échec(s).",
         "table": {
           "number": "N° facture",
           "dancer": "Danseur",

@@ -233,6 +233,10 @@
         "priceCents": "Price (cents NZD)",
         "pricePlaceholder": "e.g. 2000 = $20",
         "teacher": "Teacher",
+        "xeroAccountCode": "Xero ledger code",
+        "xeroAccountCodeNone": "No code assigned",
+        "xeroAccountCodeConnectHint": "Connect Xero in Accounting settings to assign a ledger code.",
+        "xeroAccountCodeNotFound": "(not found in Xero)",
         "pickDayError": "Pick at least one day.",
         "createClass": "Create class",
         "saveChanges": "Save changes"
@@ -504,6 +508,9 @@
         "title": "All invoices",
         "searchPlaceholder": "Search…",
         "empty": "No invoices found.",
+        "sendAllDrafts": "Send all drafts ({count})",
+        "draftsSent": "Sent {sent} draft invoice(s).",
+        "draftsSentWithFailures": "Sent {sent} draft invoice(s) — {failed} failed.",
         "table": {
           "number": "Invoice #",
           "dancer": "Dancer",

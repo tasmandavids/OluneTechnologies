@@ -74,7 +74,8 @@
       "invalidLineItems": "Lignes invalides.",
       "invalidTemplateDetails": "Détails du modèle invalides.",
       "templateNotFound": "Modèle introuvable.",
-      "onlyDraftsCanBeSent": "Seules les factures en brouillon peuvent être envoyées ainsi."
+      "onlyDraftsCanBeSent": "Seules les factures en brouillon peuvent être envoyées ainsi.",
+      "noDraftInvoices": "Aucune facture brouillon à envoyer."
     }
   }
 }

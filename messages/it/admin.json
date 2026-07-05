@@ -231,6 +231,10 @@
         "priceCents": "Prezzo (centesimi NZD)",
         "pricePlaceholder": "ad es. 2000 = $ 20",
         "teacher": "Insegnante",
+        "xeroAccountCode": "Codice contabile Xero",
+        "xeroAccountCodeNone": "Nessun codice assegnato",
+        "xeroAccountCodeConnectHint": "Collega Xero nelle impostazioni contabili per assegnare un codice contabile.",
+        "xeroAccountCodeNotFound": "(non trovato in Xero)",
         "pickDayError": "Scegli almeno un giorno.",
         "createClass": "Crea classe",
         "saveChanges": "Salva modifiche"
@@ -468,6 +472,9 @@
         "title": "Tutte le fatture",
         "searchPlaceholder": "Cerca...",
         "empty": "Nessuna fattura trovata.",
+        "sendAllDrafts": "Invia tutte le bozze ({count})",
+        "draftsSent": "Inviate {sent} fattura/e in bozza.",
+        "draftsSentWithFailures": "Inviate {sent} fattura/e in bozza — {failed} non riuscita/e.",
         "table": {
           "number": "N. fattura",
           "dancer": "Ballerino",
