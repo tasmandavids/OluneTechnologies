@@ -37,12 +37,14 @@ const ClassSchema = z.object({
   name:       z.string().min(1, "Name is required").max(100),
   discipline: z.string().max(80).optional(),
   level:      z.string().max(80).optional(),
+  room:       z.string().max(80).optional(),
   dayOfWeek:  z.coerce.number().int().min(0).max(6),
   startTime:  z.string().regex(/^\d{2}:\d{2}$/, "Use HH:MM format").optional(),
   endTime:    z.string().regex(/^\d{2}:\d{2}$/, "Use HH:MM format").optional().or(z.literal("")),
   capacity:   z.coerce.number().int().min(1).max(500),
   priceCents: z.coerce.number().int().min(0),
   teacherId:  z.string().uuid().optional().or(z.literal("")),
+  xeroAccountCode: z.string().max(20).optional().or(z.literal("")),
 });
 
 export type ClassFormData = z.infer<typeof ClassSchema>;
@@ -187,12 +189,14 @@ export async function createClass(input: unknown): Promise<ActionResult> {
     name:        d.name,
     discipline:  d.discipline || null,
     level:       d.level || null,
+    room:        d.room || null,
     day_of_week: d.dayOfWeek,
     start_time:  d.startTime || null,
     end_time:    d.endTime || null,
     capacity:    d.capacity,
     price_cents: d.priceCents,
     teacher_id:  d.teacherId || null,
+    xero_account_code: d.xeroAccountCode || null,
   });
 
   if (dbError) return { ok: false, error: dbError.message };
@@ -226,12 +230,14 @@ export async function updateClass(
       name:        d.name,
       discipline:  d.discipline || null,
       level:       d.level || null,
+      room:        d.room || null,
       day_of_week: d.dayOfWeek,
       start_time:  d.startTime || null,
       end_time:    d.endTime || null,
       capacity:    d.capacity,
       price_cents: d.priceCents,
       teacher_id:  d.teacherId || null,
+      xero_account_code: d.xeroAccountCode || null,
     })
     .eq("id", classId)
     .eq("studio_id", studioId);
@@ -271,12 +277,14 @@ export async function createRecurringClasses(input: unknown): Promise<ActionResu
     name:               d.name,
     discipline:         d.discipline || null,
     level:              d.level || null,
+    room:               d.room || null,
     day_of_week:        day,
     start_time:         d.startTime || null,
     end_time:           d.endTime || null,
     capacity:           d.capacity,
     price_cents:        d.priceCents,
     teacher_id:         d.teacherId || null,
+    xero_account_code:  d.xeroAccountCode || null,
   }));
 
   const { error: dbError } = await supabase.from("classes").insert(rows);

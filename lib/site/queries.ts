@@ -25,6 +25,13 @@ export type NavLink = {
   isHome: boolean;
 };
 
+/** Minimal shape for sitemap generation — every published page, nav or not. */
+export type SitemapPage = {
+  slug: string;
+  isHome: boolean;
+  updatedAt: string;
+};
+
 /** A class summary for site blocks. */
 export type SiteClass = {
   id: string;
@@ -94,6 +101,22 @@ export async function getPublishedPage(
     .eq("slug", slug)
     .maybeSingle();
   return data ? toPublicPage(data) : null;
+}
+
+/** Every published page for a studio, incl. pages hidden from nav — sitemap source. */
+export async function getSitemapPages(studioId: string): Promise<SitemapPage[]> {
+  const supabase = createPublicClient();
+  const { data } = await supabase
+    .from("site_pages")
+    .select("slug, is_home, updated_at")
+    .eq("studio_id", studioId)
+    .eq("status", "published");
+
+  return (data ?? []).map((row) => ({
+    slug: row.slug,
+    isHome: row.is_home,
+    updatedAt: row.updated_at,
+  }));
 }
 
 /** Navigation links from published, in-nav pages (home first). */

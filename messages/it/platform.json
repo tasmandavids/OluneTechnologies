@@ -38,7 +38,10 @@
       "tableStatus": "Stato",
       "tableJoined": "Iscritto",
       "tableActions": "Azioni",
-      "noMatch": "Nessuno studio corrisponde a questo filtro."
+      "noMatch": "Nessuno studio corrisponde a questo filtro.",
+      "delete": "Elimina",
+      "deleted": "Eliminato",
+      "confirmDelete": "Digita \"{name}\" per eliminare definitivamente questo studio e tutti i suoi dati. Questa azione non può essere annullata."
     },
     "owners": {
       "title": "Proprietari",
@@ -123,7 +126,10 @@
       "draft": "Bozza annuncio",
       "publishedAt": "pubblicato {date}",
       "draftStatus": "bozza",
-      "publishNow": "Pubblica ora"
+      "publishNow": "Pubblica ora",
+      "stop": "Interrompi",
+      "delete": "Elimina",
+      "confirmDelete": "Eliminare questo annuncio? Questa azione non può essere annullata."
     },
     "settings": {
       "title": "Impostazioni piattaforma",

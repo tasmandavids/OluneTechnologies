@@ -42,6 +42,7 @@ export interface ScheduleClass {
   name: string;
   discipline: string;
   level: string;
+  room: string | null;
   durationMin: number;
   /** DB values — null means unscheduled */
   dayOfWeek: number | null;
@@ -161,11 +162,11 @@ export const SLOTS: TimeSlot[] = [
 ];
 
 export const UNSCHEDULED: ScheduleClass[] = [
-  { id: "c1", name: "Ballet Jr", discipline: "Ballet", level: "Grade 2", durationMin: 60, dayOfWeek: null, startTime: null, endTime: null, enrolled: 0, capacity: 16, priceCents: 0, teacherId: null, teacherName: null, recurringGroupId: null },
-  { id: "c2", name: "Hip-Hop Teens", discipline: "Hip-Hop", level: "Teens", durationMin: 60, dayOfWeek: null, startTime: null, endTime: null, enrolled: 0, capacity: 22, priceCents: 0, teacherId: null, teacherName: null, recurringGroupId: null },
-  { id: "c3", name: "Contemporary", discipline: "Contemporary", level: "Open", durationMin: 75, dayOfWeek: null, startTime: null, endTime: null, enrolled: 0, capacity: 20, priceCents: 0, teacherId: null, teacherName: null, recurringGroupId: null },
-  { id: "c4", name: "Tap Beginners", discipline: "Tap", level: "Beginner", durationMin: 45, dayOfWeek: null, startTime: null, endTime: null, enrolled: 0, capacity: 18, priceCents: 0, teacherId: null, teacherName: null, recurringGroupId: null },
-  { id: "c5", name: "Jazz Int.", discipline: "Jazz", level: "Intermediate", durationMin: 60, dayOfWeek: null, startTime: null, endTime: null, enrolled: 0, capacity: 20, priceCents: 0, teacherId: null, teacherName: null, recurringGroupId: null },
+  { id: "c1", name: "Ballet Jr", discipline: "Ballet", level: "Grade 2", room: null, durationMin: 60, dayOfWeek: null, startTime: null, endTime: null, enrolled: 0, capacity: 16, priceCents: 0, teacherId: null, teacherName: null, recurringGroupId: null },
+  { id: "c2", name: "Hip-Hop Teens", discipline: "Hip-Hop", level: "Teens", room: null, durationMin: 60, dayOfWeek: null, startTime: null, endTime: null, enrolled: 0, capacity: 22, priceCents: 0, teacherId: null, teacherName: null, recurringGroupId: null },
+  { id: "c3", name: "Contemporary", discipline: "Contemporary", level: "Open", room: null, durationMin: 75, dayOfWeek: null, startTime: null, endTime: null, enrolled: 0, capacity: 20, priceCents: 0, teacherId: null, teacherName: null, recurringGroupId: null },
+  { id: "c4", name: "Tap Beginners", discipline: "Tap", level: "Beginner", room: null, durationMin: 45, dayOfWeek: null, startTime: null, endTime: null, enrolled: 0, capacity: 18, priceCents: 0, teacherId: null, teacherName: null, recurringGroupId: null },
+  { id: "c5", name: "Jazz Int.", discipline: "Jazz", level: "Intermediate", room: null, durationMin: 60, dayOfWeek: null, startTime: null, endTime: null, enrolled: 0, capacity: 20, priceCents: 0, teacherId: null, teacherName: null, recurringGroupId: null },
 ];
 
 /** droppableId for a board cell. */

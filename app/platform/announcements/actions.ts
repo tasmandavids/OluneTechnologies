@@ -85,3 +85,46 @@ export async function publishAnnouncement(id: string): Promise<ActionResult> {
   revalidatePath("/platform/announcements");
   return { ok: true };
 }
+
+export async function stopAnnouncement(id: string): Promise<ActionResult> {
+  const auth = await requirePlatformOperator();
+  if (!auth.ok) return auth;
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("platform_announcements")
+    .update({ published_at: null, expires_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) return { ok: false, error: error.message };
+
+  await logPlatformAudit({
+    operatorId: auth.userId,
+    action: "announcement.stop",
+    targetType: "announcement",
+    targetId: id,
+  });
+
+  revalidatePath("/platform/announcements");
+  return { ok: true };
+}
+
+export async function deleteAnnouncement(id: string): Promise<ActionResult> {
+  const auth = await requirePlatformOperator();
+  if (!auth.ok) return auth;
+
+  const admin = createAdminClient();
+  const { error } = await admin.from("platform_announcements").delete().eq("id", id);
+
+  if (error) return { ok: false, error: error.message };
+
+  await logPlatformAudit({
+    operatorId: auth.userId,
+    action: "announcement.delete",
+    targetType: "announcement",
+    targetId: id,
+  });
+
+  revalidatePath("/platform/announcements");
+  return { ok: true };
+}

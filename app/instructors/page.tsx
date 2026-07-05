@@ -1,7 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { InstructorDirectory } from "@/components/network/InstructorDirectory";
 
-export const metadata = { title: "Find an Instructor — Olune Network" };
+export const metadata = {
+  // Already carries "Olune" in the string — bypass the root layout's
+  // "· Olune" title template so it isn't appended twice.
+  title: { absolute: "Find an Instructor — Olune Network" },
+  description:
+    "Browse dance and fitness instructors available for cover classes and guest teaching through the Olune Network.",
+};
 
 export type DirectoryInstructor = {
   slug: string;

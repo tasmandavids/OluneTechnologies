@@ -38,7 +38,10 @@
       "tableStatus": "Statut",
       "tableJoined": "Inscription",
       "tableActions": "Actions",
-      "noMatch": "Aucun studio ne correspond à ce filtre."
+      "noMatch": "Aucun studio ne correspond à ce filtre.",
+      "delete": "Supprimer",
+      "deleted": "Supprimé",
+      "confirmDelete": "Tapez \"{name}\" pour supprimer définitivement ce studio et toutes ses données. Cette action est irréversible."
     },
     "owners": {
       "title": "Propriétaires",
@@ -123,7 +126,10 @@
       "draft": "Brouillon d'annonce",
       "publishedAt": "publié {date}",
       "draftStatus": "brouillon",
-      "publishNow": "Publier maintenant"
+      "publishNow": "Publier maintenant",
+      "stop": "Arrêter",
+      "delete": "Supprimer",
+      "confirmDelete": "Supprimer cette annonce ? Cette action est irréversible."
     },
     "settings": {
       "title": "Paramètres de la plateforme",

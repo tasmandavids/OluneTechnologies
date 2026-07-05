@@ -38,7 +38,7 @@ export function LanguageSwitcher({ className = "", compact = false }: Props) {
         disabled={pending}
         aria-label={t("selectLanguage")}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-xs text-ink outline-none transition hover:bg-base disabled:opacity-60"
+        className="rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-xs font-bold text-ink outline-none transition hover:bg-base disabled:opacity-60"
       >
         {locales.map((code) => (
           <option key={code} value={code}>

@@ -25,6 +25,20 @@ This adds:
 - `http://127.0.0.1:3000/auth/callback`
 - Production URLs when `NEXT_PUBLIC_APP_URL` or `NEXT_PUBLIC_ROOT_DOMAIN` is set
 
+### Custom studio domains (self-serve)
+
+Studios can connect their own domain (e.g. `book.mystudio.co.nz`) from
+**Admin → Website → Domain**. Because these domains are arbitrary they can't be
+covered by a wildcard, so the save action registers each one in the Supabase
+redirect allow-list at runtime via the Management API
+(`lib/supabase/auth-redirects.ts`).
+
+**Required in production:** `SUPABASE_ACCESS_TOKEN` must be set as a **Vercel
+environment variable** (Production scope), not just in `.env.local`. Without it
+the domain still saves, but Google sign-in from that domain will fail and the
+admin sees a warning. The Supabase project ref is read from
+`NEXT_PUBLIC_SUPABASE_URL` (override with `SUPABASE_PROJECT_REF`).
+
 ---
 
 ## 2. Google

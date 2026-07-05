@@ -19,6 +19,7 @@ import type { AccountKind } from "@/lib/account/kinds";
 import { checkPlatformOperator } from "@/lib/platform/operator-edge";
 import { canAccessPortalPath } from "@/lib/portal/office-access";
 import { mergeSessionCookies, redirectWithSession, refreshSession } from "@/lib/supabase/middleware";
+import { isTenantHost } from "@/lib/tenant-host";
 import type { Role } from "@/lib/types";
 
 type ProfileAccess = {
@@ -50,6 +51,15 @@ function resolveHome(profile: ProfileAccess): string {
 
 function isSafeRelativePath(path: string): boolean {
   return path.startsWith("/") && !path.startsWith("//");
+}
+
+/**
+ * Where a signed-in user with no studio belongs. On a studio host (slug
+ * subdomain / custom domain) that is the studio's own /join registration —
+ * NEVER the create-your-own-studio wizard, which is a platform-site concept.
+ */
+function noStudioDestination(request: NextRequest): string {
+  return isTenantHost(request.headers.get("host")) ? "/join" : "/onboarding";
 }
 
 /** DB fallback for sessions that pre-date the JWT claims hook being enabled. */
@@ -112,7 +122,7 @@ export async function middleware(request: NextRequest) {
     if (!isOperator) {
       const { data: { session } } = await supabase.auth.getSession();
       const profile = await resolveProfileAccess(supabase, session?.access_token, user.id);
-      const dest = profile?.studioId ? resolveHome(profile) : "/onboarding";
+      const dest = profile?.studioId ? resolveHome(profile) : noStudioDestination(request);
       return mergeSessionCookies(NextResponse.redirect(new URL(dest, request.url)), response);
     }
     return response;
@@ -133,7 +143,7 @@ export async function middleware(request: NextRequest) {
       if (inJoin) return response;
       if (inPortal || inLogin || inRoot) {
         return mergeSessionCookies(
-          NextResponse.redirect(new URL("/onboarding", request.url)),
+          NextResponse.redirect(new URL(noStudioDestination(request), request.url)),
           response,
         );
       }

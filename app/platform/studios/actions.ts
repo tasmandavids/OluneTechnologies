@@ -42,3 +42,40 @@ export async function updateStudioStatus(input: unknown): Promise<ActionResult> 
   revalidatePath("/platform");
   return { ok: true };
 }
+
+const DeleteSchema = z.object({
+  studioId: z.string().uuid(),
+});
+
+export async function deleteStudio(input: unknown): Promise<ActionResult> {
+  const auth = await requirePlatformOperator();
+  if (!auth.ok) return auth;
+
+  const parsed = DeleteSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const admin = createAdminClient();
+  const { data: studio } = await admin
+    .from("studios")
+    .select("name")
+    .eq("id", parsed.data.studioId)
+    .single();
+
+  const { error } = await admin.from("studios").delete().eq("id", parsed.data.studioId);
+
+  if (error) return { ok: false, error: error.message };
+
+  await logPlatformAudit({
+    operatorId: auth.userId,
+    action: "studio.delete",
+    targetType: "studio",
+    targetId: parsed.data.studioId,
+    metadata: { name: studio?.name ?? null },
+  });
+
+  revalidatePath("/platform/studios");
+  revalidatePath("/platform");
+  return { ok: true };
+}

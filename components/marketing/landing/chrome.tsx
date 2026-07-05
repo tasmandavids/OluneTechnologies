@@ -130,7 +130,7 @@ export function LandingFooter() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 24, paddingTop: 40, borderTop: "1px solid rgba(255,255,255,0.12)" }}>
           <div style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
             {locales.map((code) => (
-              <button key={code} type="button" disabled={pending} onClick={() => switchLocale(code)} className="dcl-lang" style={{ fontSize: 14, color: code === locale ? ACCENT : "rgba(255,255,255,0.45)", fontWeight: code === locale ? 700 : 500, background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: BODY, transition: "color 0.25s ease" }}>{localeLabels[code]}</button>
+              <button key={code} type="button" disabled={pending} onClick={() => switchLocale(code)} className="dcl-lang" style={{ fontSize: 14, color: code === locale ? ACCENT : "rgba(255,255,255,0.75)", fontWeight: 700, background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: BODY, transition: "color 0.25s ease" }}>{localeLabels[code]}</button>
             ))}
           </div>
           <div style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>

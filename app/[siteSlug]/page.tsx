@@ -11,6 +11,7 @@ import { notFound } from "next/navigation";
 import { resolveStudio } from "@/lib/tenant";
 import { getPublishedPageCached } from "@/lib/site/cached-queries";
 import { PublicSite } from "@/components/site/PublicSite";
+import { originForHost } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -25,9 +26,16 @@ export async function generateMetadata({
   const page = await getPublishedPageCached(studio.id, siteSlug);
   if (!page) return {};
 
+  const origin = originForHost(host);
+  const title = page.seoTitle || `${page.title} · ${studio.name}`;
+
   return {
-    title: page.seoTitle || `${page.title} · ${studio.name}`,
+    // Bypass the root layout's "· Olune" title template — this is the
+    // tenant's own storefront page, not an Olune platform page.
+    title: { absolute: title },
     description: page.seoDescription || undefined,
+    alternates: { canonical: `${origin}/${siteSlug}` },
+    openGraph: { title, description: page.seoDescription || undefined, url: `${origin}/${siteSlug}` },
   };
 }
 

@@ -17,12 +17,23 @@ const BillingDashboard = dynamic(
   },
 );
 
+export type InvoiceLineItem = {
+  id: string;
+  description: string;
+  quantity: number;
+  unitCents: number;
+  lineTotalCents: number;
+  sortOrder: number;
+};
+
 export type InvoiceRow = {
   id: string;
   invoiceNumber: number;
   payerId: string;
+  studentId: string | null;
   amountCents: number;
   status: string;
+  description: string | null;
   dueDate: string | null;
   issuedAt: string | null;
   paidAt: string | null;
@@ -30,6 +41,21 @@ export type InvoiceRow = {
   payerName: string | null;
   stripePaymentIntentId: string | null;
   xeroInvoiceId: string | null;
+  lineItems: InvoiceLineItem[];
+};
+
+export type TemplateLineItem = {
+  description: string;
+  quantity: number;
+  unitCents: number;
+};
+
+export type InvoiceTemplate = {
+  id: string;
+  name: string;
+  description: string | null;
+  defaultDueDays: number;
+  lineItems: TemplateLineItem[];
 };
 
 export type ParentOption = {
@@ -72,15 +98,20 @@ export type BillingSubscriptionRow = {
 const YEAR_AGO = () => new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
 const YEAR_START = () => `${new Date().getFullYear()}-01-01`;
 
-function mapInvoice(inv: Record<string, unknown>): InvoiceRow {
+function mapInvoice(
+  inv: Record<string, unknown>,
+  lineItemsByInvoice: Map<string, InvoiceLineItem[]>,
+): InvoiceRow {
   const student = inv.profiles as { full_name: string | null } | null;
   const payer = inv.payer as { full_name: string | null } | null;
   return {
     id: inv.id as string,
     invoiceNumber: inv.invoice_number as number,
     payerId: inv.payer_id as string,
+    studentId: (inv.student_id as string | null) ?? null,
     amountCents: inv.amount_cents as number,
     status: inv.status as string,
+    description: (inv.description as string | null) ?? null,
     dueDate: (inv.due_date as string | null) ?? null,
     issuedAt: (inv.issued_at as string | null) ?? null,
     paidAt: (inv.paid_at as string | null) ?? null,
@@ -88,6 +119,7 @@ function mapInvoice(inv: Record<string, unknown>): InvoiceRow {
     payerName: payer?.full_name ?? null,
     stripePaymentIntentId: (inv.stripe_payment_intent_id as string | null) ?? null,
     xeroInvoiceId: (inv.xero_invoice_id as string | null) ?? null,
+    lineItems: lineItemsByInvoice.get(inv.id as string) ?? [],
   };
 }
 
@@ -96,7 +128,7 @@ export default async function BillingPage() {
   const tCommon = await getTranslations("common");
 
   const invoiceSelect = `
-    id, invoice_number, payer_id, amount_cents, status, due_date, issued_at, paid_at,
+    id, invoice_number, payer_id, student_id, amount_cents, status, description, due_date, issued_at, paid_at,
     stripe_payment_intent_id, xero_invoice_id,
     profiles!student_id ( full_name ),
     payer:profiles!payer_id ( full_name )
@@ -112,6 +144,7 @@ export default async function BillingPage() {
     ordersRes,
     ticketsRes,
     subsRes,
+    templatesRes,
   ] = await Promise.all([
     supabase
       .from("invoices")
@@ -179,6 +212,12 @@ export default async function BillingPage() {
       .eq("studio_id", studioId)
       .order("created_at", { ascending: false })
       .limit(50),
+
+    supabase
+      .from("invoice_templates")
+      .select("id, name, description, default_due_days, invoice_template_line_items ( description, quantity, unit_cents, sort_order )")
+      .eq("studio_id", studioId)
+      .order("name"),
   ]);
 
   const subProfileIds = [
@@ -199,8 +238,60 @@ export default async function BillingPage() {
     if (p.full_name) subNameMap.set(p.id as string, p.full_name as string);
   }
 
-  const invoices = (invoicesRes.data ?? []).map((inv) => mapInvoice(inv as Record<string, unknown>));
-  const unpaidInvoices = (unpaidRes.data ?? []).map((inv) => mapInvoice(inv as Record<string, unknown>));
+  const invoiceIds = [
+    ...new Set([
+      ...(invoicesRes.data ?? []).map((inv) => inv.id as string),
+      ...(unpaidRes.data ?? []).map((inv) => inv.id as string),
+    ]),
+  ];
+
+  const lineItemsRes =
+    invoiceIds.length > 0
+      ? await supabase
+          .from("invoice_line_items")
+          .select("id, invoice_id, description, quantity, unit_cents, line_total_cents, sort_order")
+          .in("invoice_id", invoiceIds)
+          .order("sort_order")
+      : { data: [] as Record<string, unknown>[] };
+
+  const lineItemsByInvoice = new Map<string, InvoiceLineItem[]>();
+  for (const row of lineItemsRes.data ?? []) {
+    const invoiceId = row.invoice_id as string;
+    const list = lineItemsByInvoice.get(invoiceId) ?? [];
+    list.push({
+      id: row.id as string,
+      description: row.description as string,
+      quantity: row.quantity as number,
+      unitCents: row.unit_cents as number,
+      lineTotalCents: row.line_total_cents as number,
+      sortOrder: row.sort_order as number,
+    });
+    lineItemsByInvoice.set(invoiceId, list);
+  }
+
+  const invoices = (invoicesRes.data ?? []).map((inv) =>
+    mapInvoice(inv as Record<string, unknown>, lineItemsByInvoice),
+  );
+  const unpaidInvoices = (unpaidRes.data ?? []).map((inv) =>
+    mapInvoice(inv as Record<string, unknown>, lineItemsByInvoice),
+  );
+
+  const templates: InvoiceTemplate[] = (templatesRes.data ?? []).map((tpl) => {
+    const rawLines = (tpl.invoice_template_line_items ?? []) as Record<string, unknown>[];
+    return {
+      id: tpl.id as string,
+      name: tpl.name as string,
+      description: (tpl.description as string | null) ?? null,
+      defaultDueDays: tpl.default_due_days as number,
+      lineItems: [...rawLines]
+        .sort((a, b) => (a.sort_order as number) - (b.sort_order as number))
+        .map((line) => ({
+          description: line.description as string,
+          quantity: line.quantity as number,
+          unitCents: line.unit_cents as number,
+        })),
+    };
+  });
 
   const studentsByParent = new Map<string, { id: string; name: string }[]>();
   for (const row of guardianshipsRes.data ?? []) {
@@ -306,6 +397,7 @@ export default async function BillingPage() {
       totalOutstandingCents={totalOutstandingCents}
       overdueCount={overdueCount}
       subscriptions={subscriptions}
+      templates={templates}
     />
   );
 }

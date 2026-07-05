@@ -1,0 +1,157 @@
+{
+  "platform": {
+    "dashboard": {
+      "title": "平台概览",
+      "greeting": "{greeting}，",
+      "stats": {
+        "totalStudios": "工作室总数",
+        "activeHint": "{count} 个活跃",
+        "onTrial": "试用中",
+        "suspended": "已暂停",
+        "studentsPlatformWide": "全平台学员"
+      },
+      "recentSignups": "最近注册",
+      "allStudios": "所有工作室 →",
+      "noStudios": "暂无工作室。",
+      "openSupport": "打开支持",
+      "inbox": "收件箱 →",
+      "inboxClear": "收件箱已清空。",
+      "opsQueue": "运营队列",
+      "allTasks": "所有任务 →",
+      "noOpenTasks": "没有待办任务。",
+      "dueDate": "截止 {date}",
+      "unknownStudio": "未知"
+    },
+    "studios": {
+      "title": "工作室",
+      "subtitle": "Olune 平台上的所有租户。",
+      "filters": {
+        "all": "全部",
+        "trial": "试用",
+        "active": "活跃",
+        "suspended": "已暂停"
+      },
+      "updated": "已更新",
+      "tableStudio": "工作室",
+      "tableOwner": "所有者",
+      "tableStudents": "学员",
+      "tableStatus": "状态",
+      "tableJoined": "加入时间",
+      "tableActions": "操作",
+      "noMatch": "没有符合此筛选条件的工作室。",
+      "delete": "删除",
+      "deleted": "已删除",
+      "confirmDelete": "输入 \"{name}\" 以永久删除此工作室及其所有数据。此操作无法撤销。"
+    },
+    "owners": {
+      "title": "企业所有者",
+      "subtitle": "工作室管理员——您与每位租户的直接联系人。",
+      "searchPlaceholder": "按工作室、姓名或邮箱搜索…",
+      "unnamedOwner": "未命名所有者",
+      "ownerFallback": "所有者",
+      "adminSince": "自 {date} 起担任管理员",
+      "privateNotes": "私人备注",
+      "notesPlaceholder": "客户关系备注、通话摘要、偏好…",
+      "saveNotes": "保存备注",
+      "messageOwner": "给所有者发消息",
+      "subjectDefault": "回复：{studioName}",
+      "messagePlaceholder": "您的消息将出现在他们的支持会话中…",
+      "sendViaSupport": "通过支持发送",
+      "notesSaved": "备注已保存",
+      "messageSent": "消息已发送——请查看支持收件箱"
+    },
+    "support": {
+      "title": "支持收件箱",
+      "noThreads": "暂无支持会话。",
+      "selectThread": "选择一个会话以查看对话。",
+      "status": {
+        "open": "待处理",
+        "pending": "处理中",
+        "resolved": "已解决"
+      },
+      "senderOperator": "Olune",
+      "senderOwner": "所有者",
+      "replyPlaceholder": "回复工作室所有者…",
+      "sendReply": "发送回复"
+    },
+    "tasks": {
+      "title": "运营任务",
+      "subtitle": "后端工作队列——入驻审核、账单、域名、上线等。",
+      "newTask": "新任务",
+      "cancel": "取消",
+      "type": "类型",
+      "priority": "优先级",
+      "priorities": {
+        "low": "低",
+        "normal": "普通",
+        "high": "高",
+        "urgent": "紧急"
+      },
+      "titleLabel": "标题",
+      "studioOptional": "工作室（选填）",
+      "platformWide": "全平台",
+      "detailsPlaceholder": "详情、链接、背景…",
+      "createTask": "创建任务",
+      "columns": {
+        "todo": "待办",
+        "in_progress": "进行中",
+        "blocked": "受阻",
+        "done": "已完成"
+      }
+    },
+    "features": {
+      "title": "功能开关",
+      "subtitle": "全局或按工作室切换平台模块——商店、活动、短信、AI 测试版等。",
+      "globalDefaults": "全局默认",
+      "studioOverrides": "工作室覆盖设置",
+      "on": "开",
+      "off": "关"
+    },
+    "announcements": {
+      "title": "公告",
+      "subtitle": "向工作室管理员广播更新——维护、新功能、政策变更。",
+      "titlePlaceholder": "标题",
+      "bodyPlaceholder": "消息正文（显示在工作室管理后台）…",
+      "severity": {
+        "info": "信息",
+        "warning": "警告",
+        "critical": "严重"
+      },
+      "target": {
+        "all": "所有工作室",
+        "trial": "仅试用",
+        "active": "仅活跃",
+        "suspended": "仅已暂停"
+      },
+      "draft": "草稿公告",
+      "publishedAt": "发布于 {date}",
+      "draftStatus": "草稿",
+      "publishNow": "立即发布",
+      "stop": "停止",
+      "delete": "删除",
+      "confirmDelete": "删除此公告？此操作无法撤销。"
+    },
+    "settings": {
+      "title": "平台设置",
+      "subtitle": "Olune 全局配置——注册、试用、维护。",
+      "maintenanceMode": "维护模式",
+      "signupEnabled": "启用注册",
+      "defaultTrialDays": "默认试用天数",
+      "supportEmail": "支持邮箱",
+      "welcomeMessage": "欢迎消息",
+      "saveSettings": "保存设置",
+      "saved": "已保存",
+      "operatorAccessTitle": "运营者访问权限",
+      "operatorAccessBody": "通过在环境变量 <envVar></envVar> 中添加邮箱来授予平台访问权限，或在 <table></table> 中插入一行并关联到某个认证用户。"
+    },
+    "audit": {
+      "title": "审计日志",
+      "subtitle": "平台运营者操作的不可篡改记录。",
+      "when": "时间",
+      "operator": "运营者",
+      "action": "操作",
+      "target": "对象",
+      "noEntries": "暂无审计记录。"
+    }
+  }
+}

@@ -314,17 +314,40 @@ export async function getEnrollmentBillingQuote(
   };
 }
 
+/**
+ * Shared write path for an enrollment invoice: creates one `invoices` row and
+ * one `invoice_line_items` row per billable class. Used by the pay-later flow
+ * (one call per enrollment session, N classes, always a draft — see
+ * `sendNow` below), the pay-monthly flow (one call, N classes, sent
+ * immediately because it's about to be folded into an active term payment
+ * plan that starts charging the card right away), and the pay-now flow (one
+ * call, one class, sent immediately) — so a parent enrolling in several
+ * classes at once gets a single itemized invoice instead of one flat-amount
+ * invoice per class.
+ *
+ * `sendNow` controls whether this lands as a draft awaiting manual review
+ * (pay-later — nothing has been charged yet, so nothing should go out to the
+ * parent until an admin checks it) or as sent immediately (pay-now /
+ * pay-monthly — the parent is already being charged as part of enrolling, so
+ * there's no meaningful "draft" moment to insert). Either way the invoice is
+ * synced to Xero immediately as a Xero Draft — Xero always mirrors Olune's
+ * own draft state — and later sending it (via sendInvoiceNow) flips that
+ * existing Xero draft to Authorised rather than creating a second copy.
+ */
 async function insertEnrollmentInvoice(
   supabase: Awaited<ReturnType<typeof createClient>>,
   studioId: string,
   userId: string,
   studentId: string,
-  chargeCents: number,
-  className: string,
+  charges: { classId: string; className: string; chargeCents: number }[],
+  sendNow: boolean,
   t: Awaited<ReturnType<typeof getTranslations>>,
 ) {
   const dueDate = new Date();
   dueDate.setDate(dueDate.getDate() + 7);
+
+  const totalCents = charges.reduce((sum, c) => sum + c.chargeCents, 0);
+  const now = new Date().toISOString();
 
   const { data: invoice, error: invErr } = await supabase
     .from("invoices")
@@ -332,11 +355,11 @@ async function insertEnrollmentInvoice(
       studio_id: studioId,
       payer_id: userId,
       student_id: studentId,
-      amount_cents: chargeCents,
-      gst_cents: gstComponentCents(chargeCents),
-      status: "sent",
+      amount_cents: totalCents,
+      gst_cents: gstComponentCents(totalCents),
+      status: sendNow ? "sent" : "draft",
       due_date: dueDate.toISOString().slice(0, 10),
-      issued_at: new Date().toISOString(),
+      issued_at: sendNow ? now : null,
     })
     .select("id")
     .single();
@@ -345,60 +368,86 @@ async function insertEnrollmentInvoice(
     return { ok: false as const, error: invErr?.message ?? t("couldNotCreateInvoice") };
   }
 
-  await xeroSyncOutstandingInvoice(supabase, invoice.id as string, {
-    lineDescription: `Enrollment — ${className}`,
+  const invoiceId = invoice.id as string;
+
+  const { data: classRows } = await supabase
+    .from("classes")
+    .select("id, xero_account_code")
+    .in("id", charges.map((c) => c.classId));
+  const accountCodeByClassId = new Map(
+    (classRows ?? []).map((c) => [c.id as string, c.xero_account_code as string | null]),
+  );
+
+  await supabase.from("invoice_line_items").insert(
+    charges.map((c, idx) => ({
+      invoice_id: invoiceId,
+      item_type: "class",
+      reference_id: c.classId,
+      description: c.className,
+      quantity: 1,
+      unit_cents: c.chargeCents,
+      line_total_cents: c.chargeCents,
+      sort_order: idx,
+      account_code: accountCodeByClassId.get(c.classId) ?? null,
+    })),
+  );
+
+  await xeroSyncOutstandingInvoice(supabase, invoiceId, {
+    lineDescription:
+      charges.length === 1 ? `Enrollment — ${charges[0].className}` : "Enrollment",
   });
 
-  return { ok: true as const, invoiceId: invoice.id as string };
+  return { ok: true as const, invoiceId };
 }
 
 // ─── Create invoice only (pay later — no Stripe charge at enrollment) ───────
+//  `sendNow` distinguishes true pay-later (draft, admin sends manually later)
+//  from pay-monthly (sent immediately — see insertEnrollmentInvoice above).
 
 export async function createEnrollmentPayLaterInvoice(
   studentId: string,
-  classId: string,
-  className: string,
-  priceCents: number,
+  classes: { classId: string; className: string; priceCents: number }[],
+  sendNow: boolean,
 ): Promise<ActionResult<{ invoiceId?: string; billingSkipped?: boolean }>> {
   const t = await getTranslations("errors.actions");
   const ctx = await getEnrollmentContext();
   const { error, supabase, userId, studioId, mode } = ctx;
   if (error || !userId || !studioId) return { ok: false, error: error ?? t("unknown") };
-  if (!uuidField.safeParse(studentId).success || !uuidField.safeParse(classId).success) {
+  if (
+    !uuidField.safeParse(studentId).success ||
+    !classes.length ||
+    classes.some((c) => !uuidField.safeParse(c.classId).success)
+  ) {
     return { ok: false, error: t("invalidStudentOrClass") };
   }
-  if (priceCents <= 0) return { ok: false, error: t("classNoFee") };
 
   const accessErr = await assertStudentAccess(ctx, studentId, t);
   if (accessErr) return { ok: false, error: accessErr };
 
-  const chargeCents = await enrollmentChargeCents(
-    supabase,
-    studioId,
-    userId,
-    studentId,
-    className,
-    priceCents,
-    mode,
-    classId,
-  );
+  const charges: { classId: string; className: string; chargeCents: number }[] = [];
+  for (const cls of classes) {
+    if (cls.priceCents <= 0) continue;
+    const chargeCents = await enrollmentChargeCents(
+      supabase,
+      studioId,
+      userId,
+      studentId,
+      cls.className,
+      cls.priceCents,
+      mode,
+      cls.classId,
+    );
+    if (chargeCents > 0) charges.push({ classId: cls.classId, className: cls.className, chargeCents });
+  }
 
-  if (chargeCents <= 0) {
+  if (!charges.length) {
     revalidatePath("/portal/parent");
     revalidatePath("/portal/student");
     revalidatePath("/portal/parent/billing");
     return { ok: true, data: { billingSkipped: true } };
   }
 
-  const invoiceRes = await insertEnrollmentInvoice(
-    supabase,
-    studioId,
-    userId,
-    studentId,
-    chargeCents,
-    className,
-    t,
-  );
+  const invoiceRes = await insertEnrollmentInvoice(supabase, studioId, userId, studentId, charges, sendNow, t);
   if (!invoiceRes.ok) return { ok: false, error: invoiceRes.error };
 
   revalidatePath("/portal/parent");
@@ -457,8 +506,8 @@ export async function createEnrollmentIntent(
     studioId,
     userId,
     studentId,
-    chargeCents,
-    className,
+    [{ classId, className, chargeCents }],
+    true,
     t,
   );
   if (!invoiceRes.ok) return { ok: false, error: invoiceRes.error };

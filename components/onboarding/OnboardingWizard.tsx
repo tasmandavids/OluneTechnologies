@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { derivePalette } from "@/lib/branding";
 import type { AccountKind } from "@/lib/account/kinds";
 import { OluneLogo } from "@/components/brand/OluneLogo";
+import { OluneHomeLink } from "@/components/brand/OluneHomeLink";
 import { AuthDivider, OAuthButtons } from "@/components/auth/OAuthButtons";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 
@@ -148,7 +149,9 @@ export function OnboardingWizard({ signedIn, email: initialEmail = "" }: { signe
       <div className="w-full max-w-md">
         <div className="mb-8 flex items-start justify-between gap-4">
           <div className="flex-1" />
-          <OluneLogo variant="stacked" size="md" />
+          <OluneHomeLink>
+            <OluneLogo variant="stacked" size="md" />
+          </OluneHomeLink>
           <div className="flex flex-1 justify-end">
             <LanguageSwitcher compact />
           </div>

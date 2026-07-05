@@ -269,6 +269,7 @@ export function ClassDetailPanel({
             </p>
             <p className="mt-1 text-xs text-muted">
               {cls.teacherName ?? tShared("unassigned")}
+              {cls.room && <span> · {cls.room}</span>}
             </p>
           </div>
           <button

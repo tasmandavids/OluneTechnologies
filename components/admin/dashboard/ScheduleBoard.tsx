@@ -81,6 +81,7 @@ function toClassRow(cls: ScheduleClass): ClassRow {
     name: cls.name,
     discipline: cls.discipline || null,
     level: cls.level || null,
+    room: cls.room,
     dayOfWeek: cls.dayOfWeek ?? 0,
     startTime: cls.startTime,
     endTime: cls.endTime,
@@ -138,8 +139,7 @@ function ClassCard({
             {block.name}
           </span>
           <span className="mt-0.5 block truncate text-[0.62rem]" style={{ color: textColor, opacity: 0.85 }}>
-            {block.level}
-            {durationLabel ? ` · ${durationLabel}` : ""}
+            {[block.level, block.room, durationLabel].filter(Boolean).join(" · ")}
           </span>
           <span className="mt-0.5 block text-[0.62rem] font-bold tabular-nums" style={{ color: textColor }}>
             {block.enrolled}/{block.capacity}
@@ -169,18 +169,28 @@ export function ScheduleBoard({
     Mon: "mon", Tue: "tue", Wed: "wed", Thu: "thu", Fri: "fri", Sat: "sat",
   };
 
-  const timeSlots = useMemo(() => buildTimeSlots(classes), [classes]);
-  const serverFingerprint = useMemo(() => classesFingerprint(classes), [classes]);
-  const [lists, setLists] = useState<Lists>(() => buildLists(classes, timeSlots));
+  const [roomFilter, setRoomFilter] = useState("");
+  const rooms = useMemo(
+    () => [...new Set(classes.map((c) => c.room).filter(Boolean))] as string[],
+    [classes],
+  );
+  const filteredClasses = useMemo(
+    () => (roomFilter ? classes.filter((c) => c.room === roomFilter) : classes),
+    [classes, roomFilter],
+  );
+
+  const timeSlots = useMemo(() => buildTimeSlots(filteredClasses), [filteredClasses]);
+  const serverFingerprint = useMemo(() => classesFingerprint(filteredClasses), [filteredClasses]);
+  const [lists, setLists] = useState<Lists>(() => buildLists(filteredClasses, timeSlots));
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [panel, setPanel] = useState<{ type: "view" | "edit"; cls: ClassRow } | null>(null);
 
   useEffect(() => {
     if (isPending) return;
-    setLists(buildLists(classes, timeSlots));
+    setLists(buildLists(filteredClasses, timeSlots));
     setErrorMsg(null);
-  }, [studioId, serverFingerprint, isPending, classes, timeSlots]);
+  }, [studioId, serverFingerprint, isPending, filteredClasses, timeSlots]);
 
   function parseDropId(id: string): { dayOfWeek: number; startTime: string } | null {
     if (id === "tray") return null;
@@ -249,7 +259,7 @@ export function ScheduleBoard({
     [],
   );
 
-  const placed = classes.filter(isScheduled).length;
+  const placed = filteredClasses.filter(isScheduled).length;
   const unscheduled = lists.tray.length;
 
   return (
@@ -268,6 +278,19 @@ export function ScheduleBoard({
               <p className="text-sm text-muted">{t("subtitle")}</p>
             </div>
             <div className="flex flex-wrap items-center gap-4">
+              {rooms.length > 0 && (
+                <select
+                  value={roomFilter}
+                  onChange={(e) => setRoomFilter(e.target.value)}
+                  className="rounded-lg border border-[--hair] bg-base px-3 py-1.5 text-xs text-ink
+                             focus:outline-none focus:ring-1 focus:ring-[--brand]"
+                >
+                  <option value="">{tShared("allRooms")}</option>
+                  {rooms.map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              )}
               <div className="flex items-center gap-2 text-xs text-muted">
                 <span>{tCapacity("empty")}</span>
                 <span
@@ -338,25 +361,25 @@ export function ScheduleBoard({
             <div
               className="grid min-w-[640px] gap-1.5"
               style={{
-                gridTemplateColumns: `72px repeat(${timeSlots.length}, minmax(88px, 1fr))`,
+                gridTemplateColumns: `72px repeat(${SCHEDULE_DAYS.length}, minmax(88px, 1fr))`,
               }}
             >
               <div />
-              {timeSlots.map((time) => (
+              {SCHEDULE_DAYS.map((day) => (
                 <div
-                  key={time}
-                  className="pb-1 text-center text-xs font-semibold uppercase tracking-wider text-muted"
+                  key={day.dow}
+                  className="pb-1 text-center text-sm font-semibold text-ink"
                 >
-                  {formatTime(time)}
+                  {tDays(dayKey[day.label])}
                 </div>
               ))}
 
-              {SCHEDULE_DAYS.map((day) => (
-                <div key={day.dow} className="contents">
-                  <div className="flex items-center text-sm font-semibold text-ink">
-                    {tDays(dayKey[day.label])}
+              {timeSlots.map((time) => (
+                <div key={time} className="contents">
+                  <div className="flex items-center text-xs font-semibold uppercase tracking-wider text-muted">
+                    {formatTime(time)}
                   </div>
-                  {timeSlots.map((time) => {
+                  {SCHEDULE_DAYS.map((day) => {
                     const id = slotKey(String(day.dow), time);
                     return (
                       <Droppable key={id} droppableId={id}>

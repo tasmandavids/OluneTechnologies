@@ -6,12 +6,15 @@
 
 import { requirePortalSession } from "@/lib/portal/session";
 import ClassesManager from "@/components/admin/classes/ClassesManager";
+import { getXeroSalesAccountOptions } from "@/app/portal/admin/accounting/actions";
+import type { XeroAccountOption } from "@/lib/xero/chart-of-accounts";
 
 export type ClassRow = {
   id: string;
   name: string;
   discipline: string | null;
   level: string | null;
+  room: string | null;
   dayOfWeek: number;
   startTime: string | null;
   endTime: string | null;
@@ -21,6 +24,8 @@ export type ClassRow = {
   teacherId: string | null;
   teacherName: string | null;
   recurringGroupId: string | null;
+  /** Optional — the dashboard schedule board's ClassRow doesn't fetch this. */
+  xeroAccountCode?: string | null;
 };
 
 export type TeacherOption = {
@@ -38,7 +43,7 @@ export default async function ClassesPage() {
     supabase
       .from("class_capacity")
       .select(
-        "id, name, discipline, level, day_of_week, start_time, end_time, capacity, enrolled, teacher_id",
+        "id, name, discipline, level, room, day_of_week, start_time, end_time, capacity, enrolled, teacher_id",
       )
       .eq("studio_id", studioId ?? "")
       .order("day_of_week")
@@ -61,15 +66,24 @@ export default async function ClassesPage() {
   ];
   const classIds = (capacityRes.data ?? []).map((c) => c.id as string);
 
-  // Fetch teacher names and price/group data in parallel — both depend on
-  // capacityRes but are independent of each other.
-  const [teacherNameRows, priceRows] = await Promise.all([
+  // Fetch teacher names, price/group data, and the live Xero chart of
+  // accounts in parallel — all depend on capacityRes but are independent of
+  // each other.
+  const [teacherNameRows, priceRows, xeroAccountsRes] = await Promise.all([
     teacherIds.length
       ? supabase.from("profiles").select("id, full_name").in("id", teacherIds)
       : Promise.resolve({ data: [] as { id: string; full_name: string | null }[] }),
     classIds.length
-      ? supabase.from("classes").select("id, price_cents, recurring_group_id").in("id", classIds)
-      : Promise.resolve({ data: [] as { id: string; price_cents: number | null; recurring_group_id: string | null }[] }),
+      ? supabase.from("classes").select("id, price_cents, recurring_group_id, xero_account_code").in("id", classIds)
+      : Promise.resolve({
+          data: [] as {
+            id: string;
+            price_cents: number | null;
+            recurring_group_id: string | null;
+            xero_account_code: string | null;
+          }[],
+        }),
+    getXeroSalesAccountOptions(),
   ]);
 
   const teacherMap = new Map<string, string>();
@@ -79,16 +93,21 @@ export default async function ClassesPage() {
 
   const priceMap = new Map<string, number>();
   const groupMap = new Map<string, string | null>();
+  const xeroCodeMap = new Map<string, string | null>();
   (priceRows.data ?? []).forEach((r) => {
     priceMap.set(r.id, r.price_cents ?? 0);
     groupMap.set(r.id, (r.recurring_group_id as string | null) ?? null);
+    xeroCodeMap.set(r.id, (r.xero_account_code as string | null) ?? null);
   });
+
+  const xeroAccounts: XeroAccountOption[] = xeroAccountsRes.ok ? xeroAccountsRes.data ?? [] : [];
 
   const classes: ClassRow[] = (capacityRes.data ?? []).map((c) => ({
     id:          c.id as string,
     name:        c.name as string,
     discipline:  c.discipline as string | null,
     level:       c.level as string | null,
+    room:        c.room as string | null,
     dayOfWeek:   c.day_of_week as number,
     startTime:   c.start_time as string | null,
     endTime:     c.end_time as string | null,
@@ -98,6 +117,7 @@ export default async function ClassesPage() {
     teacherId:   c.teacher_id as string | null,
     teacherName: c.teacher_id ? (teacherMap.get(c.teacher_id as string) ?? null) : null,
     recurringGroupId: groupMap.get(c.id as string) ?? null,
+    xeroAccountCode: xeroCodeMap.get(c.id as string) ?? null,
   }));
 
   const teachers: TeacherOption[] = (teachersRes.data ?? []).map((t) => ({
@@ -106,5 +126,7 @@ export default async function ClassesPage() {
     email: t.email,
   }));
 
-  return <ClassesManager classes={classes} teachers={teachers} readOnly={readOnly} />;
+  return (
+    <ClassesManager classes={classes} teachers={teachers} xeroAccounts={xeroAccounts} readOnly={readOnly} />
+  );
 }

@@ -1,0 +1,13 @@
+{
+  "office": {
+    "welcome": "欢迎，{name}",
+    "welcomeFallback": "您好",
+    "weekOf": "{date} · {weekStart} 当周",
+    "upcomingShifts": "您即将到来的班次",
+    "noShiftsThisWeek": "本周没有安排班次。",
+    "workingToday": "今天上班的人员",
+    "noShiftsToday": "今天排班表上没有班次。",
+    "quickLinks": "快捷链接",
+    "staffFallback": "员工"
+  }
+}

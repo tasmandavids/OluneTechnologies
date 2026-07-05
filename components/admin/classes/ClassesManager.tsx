@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { deleteClass, deleteRecurringGroup } from "@/app/portal/admin/classes/actions";
 import type { ClassRow, TeacherOption } from "@/app/portal/admin/classes/page";
+import type { XeroAccountOption } from "@/lib/xero/chart-of-accounts";
 import { ClassDetailPanel } from "@/components/admin/classes/ClassDetailPanel";
 import { ClassEditPanel } from "@/components/admin/classes/ClassEditPanel";
 import { formatMoney } from "@/lib/currency";
@@ -132,9 +133,7 @@ function ClassRowItem({
           )}
         </p>
         <p className="text-xs text-muted mt-0.5">
-          {cls.discipline && <span>{cls.discipline}</span>}
-          {cls.discipline && cls.level && <span> · </span>}
-          {cls.level && <span>{cls.level}</span>}
+          {[cls.discipline, cls.level, cls.room].filter(Boolean).join(" · ")}
         </p>
       </td>
 
@@ -195,13 +194,16 @@ function ClassRowItem({
 export default function ClassesManager({
   classes,
   teachers,
+  xeroAccounts,
   readOnly = false,
 }: {
   classes: ClassRow[];
   teachers: TeacherOption[];
+  xeroAccounts: XeroAccountOption[];
   readOnly?: boolean;
 }) {
   const t = useTranslations("admin.classes");
+  const tShared = useTranslations("admin.shared");
 
   type Panel =
     | { type: "create" }
@@ -212,13 +214,17 @@ export default function ClassesManager({
 
   const [panel, setPanel] = useState<Panel>(null);
   const [search, setSearch] = useState("");
+  const [roomFilter, setRoomFilter] = useState("");
+
+  const rooms = [...new Set(classes.map((c) => c.room).filter(Boolean))] as string[];
 
   const filtered = classes.filter(
     (c) =>
-      !search ||
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      (c.discipline ?? "").toLowerCase().includes(search.toLowerCase()) ||
-      (c.level ?? "").toLowerCase().includes(search.toLowerCase()),
+      (!search ||
+        c.name.toLowerCase().includes(search.toLowerCase()) ||
+        (c.discipline ?? "").toLowerCase().includes(search.toLowerCase()) ||
+        (c.level ?? "").toLowerCase().includes(search.toLowerCase())) &&
+      (!roomFilter || c.room === roomFilter),
   );
 
   const tableHeaders = [
@@ -254,7 +260,7 @@ export default function ClassesManager({
         )}
       </div>
 
-      <div>
+      <div className="flex flex-wrap gap-3">
         <input
           type="search"
           value={search}
@@ -263,6 +269,19 @@ export default function ClassesManager({
           className="w-full max-w-sm rounded-xl border border-[--hair] bg-surface px-4 py-2.5 text-sm
                      text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
         />
+        {rooms.length > 0 && (
+          <select
+            value={roomFilter}
+            onChange={(e) => setRoomFilter(e.target.value)}
+            className="rounded-xl border border-[--hair] bg-surface px-4 py-2.5 text-sm
+                       text-ink focus:outline-none focus:ring-1 focus:ring-[--brand]"
+          >
+            <option value="">{tShared("allRooms")}</option>
+            {rooms.map((r) => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </select>
+        )}
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
@@ -320,6 +339,7 @@ export default function ClassesManager({
             mode={panel.type}
             editing={panel.type === "edit" ? panel.cls : null}
             teachers={teachers}
+            xeroAccounts={xeroAccounts}
             onClose={() => setPanel(null)}
           />
         )}

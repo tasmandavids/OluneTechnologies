@@ -17,6 +17,7 @@ import {
 import type {
   BillingSubscriptionRow,
   InvoiceRow,
+  InvoiceTemplate,
   ParentOption,
   RevenueSeries,
   SourceBreakdown,
@@ -24,12 +25,24 @@ import type {
 } from "@/app/portal/admin/billing/page";
 import {
   createInvoice,
+  sendAllDraftInvoices,
   sendBulkPaymentReminders,
+  sendInvoiceNow,
   sendPaymentReminder,
   voidInvoice,
 } from "@/app/portal/admin/billing/actions";
 import { refundSale } from "@/app/portal/admin/billing/refund-actions";
 import { SubscriptionCancelActions } from "@/components/admin/subscriptions/SubscriptionCancelActions";
+import { InvoiceDetailModal } from "@/components/admin/billing/InvoiceDetailModal";
+import { InvoiceTemplatesModal } from "@/components/admin/billing/InvoiceTemplatesModal";
+import {
+  LineItemRows,
+  emptyLineItem,
+  fromInvoiceLineItems,
+  lineItemsTotalCents,
+  toLineItemPayload,
+  type EditableLineItem,
+} from "@/components/admin/billing/InvoiceLineItemsEditor";
 import { openInXeroUrl } from "@/lib/xero/links";
 import { formatMoney } from "@/lib/currency";
 import { formatMonthKey, formatShortDate } from "@/lib/xero/format";
@@ -127,12 +140,16 @@ function defaultDueDate() {
 
 function CreateInvoiceModal({
   parents,
+  templates,
   onClose,
   onCreated,
+  onManageTemplates,
 }: {
   parents: ParentOption[];
+  templates: InvoiceTemplate[];
   onClose: () => void;
   onCreated: () => void;
+  onManageTemplates: () => void;
 }) {
   const t = useTranslations("admin.billing");
   const tShared = useTranslations("admin.shared");
@@ -143,27 +160,56 @@ function CreateInvoiceModal({
   const [dueDate, setDueDate] = useState(defaultDueDate);
   const [description, setDescription] = useState("");
   const [sendNow, setSendNow] = useState(true);
+  const [templateId, setTemplateId] = useState("");
+  const [itemized, setItemized] = useState(false);
+  const [items, setItems] = useState<EditableLineItem[]>([emptyLineItem()]);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   const selectedParent = parents.find((p) => p.id === payerId);
   const students = selectedParent?.students ?? [];
 
+  const applyTemplate = (id: string) => {
+    setTemplateId(id);
+    const template = templates.find((tpl) => tpl.id === id);
+    if (!template) return;
+    setDescription(template.description ?? template.name);
+    const due = new Date();
+    due.setDate(due.getDate() + template.defaultDueDays);
+    setDueDate(due.toISOString().slice(0, 10));
+    setItemized(true);
+    setItems(fromInvoiceLineItems(template.lineItems));
+  };
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    const dollars = Number.parseFloat(amount);
     if (!payerId) return setError(t("createModal.selectParentError"));
-    if (!Number.isFinite(dollars) || dollars <= 0) return setError(t("createModal.validAmountError"));
+
+    let amountDollars: number;
+    let lineItemsPayload: { description: string; quantity: number; unitDollars: number }[] | undefined;
+
+    if (itemized) {
+      const parsed = toLineItemPayload(items);
+      if (!parsed.ok) return setError(t("createModal.invalidLineItemsError"));
+      lineItemsPayload = parsed.lineItems;
+      amountDollars = lineItemsTotalCents(items) / 100;
+    } else {
+      amountDollars = Number.parseFloat(amount);
+      if (!Number.isFinite(amountDollars) || amountDollars <= 0) {
+        return setError(t("createModal.validAmountError"));
+      }
+    }
 
     startTransition(async () => {
       const res = await createInvoice({
         payerId,
         studentId: studentId || undefined,
-        amountDollars: dollars,
+        amountDollars,
         dueDate,
         description: description.trim() || undefined,
         sendNow,
+        lineItems: lineItemsPayload,
       });
       if (!res.ok) setError(res.error);
       else {
@@ -179,10 +225,39 @@ function CreateInvoiceModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-md rounded-2xl border border-[--hair] bg-surface p-6 shadow-xl">
-        <h2 className="text-lg font-bold text-ink">{t("createModal.title")}</h2>
-        <p className="mt-1 text-sm text-muted">{t("createModal.description")}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-bold text-ink">{t("createModal.title")}</h2>
+            <p className="mt-1 text-sm text-muted">{t("createModal.description")}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onManageTemplates}
+            className="shrink-0 text-xs font-semibold text-ink underline hover:opacity-80"
+          >
+            {t("templates.manage")}
+          </button>
+        </div>
 
         <form onSubmit={submit} className="mt-5 space-y-4">
+          {templates.length > 0 && (
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted">
+              {t("templates.useTemplate")}
+              <select
+                value={templateId}
+                onChange={(e) => applyTemplate(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+              >
+                <option value="">{t("templates.noTemplate")}</option>
+                {templates.map((tpl) => (
+                  <option key={tpl.id} value={tpl.id}>
+                    {tpl.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+
           <label className="block text-xs font-semibold uppercase tracking-wider text-muted">
             {t("createModal.parent")}
             <select
@@ -222,20 +297,22 @@ function CreateInvoiceModal({
             </label>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted">
-              {t("createModal.amount")}
-              <input
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder={t("createModal.amountPlaceholder")}
-                className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
-                required
-              />
-            </label>
+          <div className={itemized ? "grid grid-cols-1 gap-3" : "grid grid-cols-2 gap-3"}>
+            {!itemized && (
+              <label className="block text-xs font-semibold uppercase tracking-wider text-muted">
+                {t("createModal.amount")}
+                <input
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder={t("createModal.amountPlaceholder")}
+                  className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  required
+                />
+              </label>
+            )}
             <label className="block text-xs font-semibold uppercase tracking-wider text-muted">
               {t("createModal.dueDate")}
               <input
@@ -258,6 +335,37 @@ function CreateInvoiceModal({
               className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
             />
           </label>
+
+          <div>
+            <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted">
+              <input
+                type="checkbox"
+                checked={itemized}
+                onChange={(e) => {
+                  setItemized(e.target.checked);
+                  if (e.target.checked && items.length === 0) setItems([emptyLineItem()]);
+                }}
+                className="rounded border-[--hair]"
+              />
+              {t("templates.itemize")}
+            </label>
+            {itemized && (
+              <div className="mt-2">
+                <LineItemRows
+                  items={items}
+                  onChange={setItems}
+                  labels={{
+                    description: t("detailModal.itemDescription"),
+                    quantity: t("detailModal.qty"),
+                    unitPrice: t("detailModal.unitPrice"),
+                    addLine: t("detailModal.addLine"),
+                    remove: tCommon("delete"),
+                    total: tCommon("total"),
+                  }}
+                />
+              </div>
+            )}
+          </div>
 
           <label className="flex items-center gap-2 text-sm text-ink">
             <input
@@ -293,6 +401,49 @@ function CreateInvoiceModal({
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+function SendInvoiceButton({
+  invoice,
+  onSent,
+}: {
+  invoice: InvoiceRow;
+  onSent: (id: string) => void;
+}) {
+  const t = useTranslations("admin.billing");
+  const tShared = useTranslations("admin.shared");
+  const [pending, startTransition] = useTransition();
+  const [err, setErr] = useState<string | null>(null);
+  const [xeroWarn, setXeroWarn] = useState<string | null>(null);
+
+  if (invoice.status !== "draft") return null;
+
+  return (
+    <div className="flex flex-col items-start gap-0.5">
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() => {
+          setErr(null);
+          setXeroWarn(null);
+          startTransition(async () => {
+            const res = await sendInvoiceNow(invoice.id);
+            if (res.ok) {
+              onSent(invoice.id);
+              if (res.xeroError) setXeroWarn(t("sendXeroSyncError", { error: res.xeroError }));
+            } else {
+              setErr(res.error);
+            }
+          });
+        }}
+        className="rounded-lg border border-[--hair] bg-ink px-2.5 py-1 text-[0.7rem] font-semibold text-paper hover:opacity-90 disabled:opacity-50"
+      >
+        {pending ? tShared("sending") : t("send")}
+      </button>
+      {err && <span className="text-[0.65rem] text-[#dc2626]">{err}</span>}
+      {xeroWarn && <span className="text-[0.65rem] text-amber-700">{xeroWarn}</span>}
     </div>
   );
 }
@@ -487,6 +638,7 @@ export function BillingDashboard({
   totalOutstandingCents,
   overdueCount,
   subscriptions: initialSubscriptions,
+  templates: initialTemplates,
 }: {
   invoices: InvoiceRow[];
   unpaidInvoices: InvoiceRow[];
@@ -500,6 +652,7 @@ export function BillingDashboard({
   totalOutstandingCents: number;
   overdueCount: number;
   subscriptions: BillingSubscriptionRow[];
+  templates: InvoiceTemplate[];
 }) {
   const t = useTranslations("admin.billing");
   const tSubs = useTranslations("admin.subscriptions");
@@ -508,18 +661,41 @@ export function BillingDashboard({
   const router = useRouter();
   const [showCreate, setShowCreate] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [viewingInvoice, setViewingInvoice] = useState<InvoiceRow | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [invoices, setInvoices] = useState<InvoiceRow[]>(initialInvoices);
   const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
+  const [templates, setTemplates] = useState<InvoiceTemplate[]>(initialTemplates);
   const [bulkPending, startBulk] = useTransition();
   const [bulkError, setBulkError] = useState<string | null>(null);
+  const [draftBulkPending, startDraftBulk] = useTransition();
+  const [draftBulkError, setDraftBulkError] = useState<string | null>(null);
+  const [draftBulkResult, setDraftBulkResult] = useState<{ sent: number; failed: number } | null>(null);
 
   const markRefunded = (id: string) =>
     setInvoices((prev) => prev.map((i) => (i.id === id ? { ...i, status: "refunded" } : i)));
 
   const markVoided = (id: string) =>
     setInvoices((prev) => prev.map((i) => (i.id === id ? { ...i, status: "void" } : i)));
+
+  const markSent = (id: string) => {
+    setInvoices((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, status: "sent", issuedAt: new Date().toISOString() } : i)),
+    );
+    router.refresh();
+  };
+
+  const applyInvoiceUpdate = (id: string, patch: Partial<InvoiceRow>) => {
+    setInvoices((prev) => prev.map((i) => (i.id === id ? { ...i, ...patch } : i)));
+    router.refresh();
+  };
+
+  const addTemplate = (template: InvoiceTemplate) => setTemplates((prev) => [...prev, template]);
+  const replaceTemplate = (template: InvoiceTemplate) =>
+    setTemplates((prev) => prev.map((t) => (t.id === template.id ? template : t)));
+  const removeTemplate = (id: string) => setTemplates((prev) => prev.filter((t) => t.id !== id));
 
   const markSubscriptionCanceled = (id: string, immediate: boolean) => {
     setSubscriptions((prev) =>
@@ -558,6 +734,21 @@ export function BillingDashboard({
       const res = await sendBulkPaymentReminders(overdueIds);
       if (!res.ok) setBulkError(res.error);
       else refresh();
+    });
+  };
+
+  const draftIds = useMemo(() => invoices.filter((i) => i.status === "draft").map((i) => i.id), [invoices]);
+
+  const sendAllDrafts = () => {
+    setDraftBulkError(null);
+    setDraftBulkResult(null);
+    startDraftBulk(async () => {
+      const res = await sendAllDraftInvoices();
+      if (!res.ok) setDraftBulkError(res.error);
+      else {
+        setDraftBulkResult({ sent: res.sent, failed: res.failed.length });
+        refresh();
+      }
     });
   };
 
@@ -606,8 +797,28 @@ export function BillingDashboard({
       {showCreate && (
         <CreateInvoiceModal
           parents={parents}
+          templates={templates}
           onClose={() => setShowCreate(false)}
           onCreated={refresh}
+          onManageTemplates={() => setShowTemplates(true)}
+        />
+      )}
+
+      {showTemplates && (
+        <InvoiceTemplatesModal
+          templates={templates}
+          onClose={() => setShowTemplates(false)}
+          onCreated={addTemplate}
+          onUpdated={replaceTemplate}
+          onDeleted={removeTemplate}
+        />
+      )}
+
+      {viewingInvoice && (
+        <InvoiceDetailModal
+          invoice={viewingInvoice}
+          onClose={() => setViewingInvoice(null)}
+          onUpdated={(patch) => applyInvoiceUpdate(viewingInvoice.id, patch)}
         />
       )}
 
@@ -944,6 +1155,18 @@ export function BillingDashboard({
               {t("allInvoices.title")}
               <span className="ml-2 font-normal text-muted">({filtered.length})</span>
             </h2>
+            {draftIds.length > 0 && (
+              <button
+                type="button"
+                onClick={sendAllDrafts}
+                disabled={draftBulkPending}
+                className="rounded-xl border border-[--hair] bg-base px-3 py-1.5 text-xs font-semibold text-ink hover:bg-surface disabled:opacity-50"
+              >
+                {draftBulkPending
+                  ? tShared("sending")
+                  : t("allInvoices.sendAllDrafts", { count: draftIds.length })}
+              </button>
+            )}
             <input
               type="text"
               placeholder={t("allInvoices.searchPlaceholder")}
@@ -964,6 +1187,20 @@ export function BillingDashboard({
               <option value="refunded">{tStatus("refunded")}</option>
             </select>
           </div>
+
+          {draftBulkError && (
+            <p className="border-b border-[--hair] px-6 py-2 text-sm text-red-600">{draftBulkError}</p>
+          )}
+          {draftBulkResult && (
+            <p className="border-b border-[--hair] px-6 py-2 text-sm text-muted">
+              {draftBulkResult.failed > 0
+                ? t("allInvoices.draftsSentWithFailures", {
+                    sent: draftBulkResult.sent,
+                    failed: draftBulkResult.failed,
+                  })
+                : t("allInvoices.draftsSent", { sent: draftBulkResult.sent })}
+            </p>
+          )}
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-sm">
@@ -992,8 +1229,14 @@ export function BillingDashboard({
                       key={inv.id}
                       className="border-b border-[--hair] last:border-0 hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)]"
                     >
-                      <td className="px-4 py-3 font-mono text-xs text-ink">
-                        {formatInvoiceNumber(inv.invoiceNumber)}
+                      <td className="px-4 py-3 font-mono text-xs">
+                        <button
+                          type="button"
+                          onClick={() => setViewingInvoice(inv)}
+                          className="text-ink underline decoration-dotted hover:opacity-70"
+                        >
+                          {formatInvoiceNumber(inv.invoiceNumber)}
+                        </button>
                       </td>
                       <td className="px-4 py-3 text-ink">
                         {inv.studentName ?? <span className="text-muted">{tShared("dash")}</span>}
@@ -1011,6 +1254,14 @@ export function BillingDashboard({
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-col items-start gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setViewingInvoice(inv)}
+                            className="rounded-lg border border-[--hair] bg-base px-2.5 py-1 text-[0.7rem] font-semibold text-ink hover:bg-surface"
+                          >
+                            {t("view")}
+                          </button>
+                          <SendInvoiceButton invoice={inv} onSent={markSent} />
                           {["sent", "overdue"].includes(inv.status) && (
                             <RemindButton invoiceId={inv.id} onDone={refresh} />
                           )}

@@ -38,7 +38,10 @@
       "tableStatus": "Status",
       "tableJoined": "Joined",
       "tableActions": "Actions",
-      "noMatch": "No studios match this filter."
+      "noMatch": "No studios match this filter.",
+      "delete": "Delete",
+      "deleted": "Deleted",
+      "confirmDelete": "Type \"{name}\" to permanently delete this studio and all its data. This cannot be undone."
     },
     "owners": {
       "title": "Business owners",
@@ -123,7 +126,10 @@
       "draft": "Draft announcement",
       "publishedAt": "published {date}",
       "draftStatus": "draft",
-      "publishNow": "Publish now"
+      "publishNow": "Publish now",
+      "stop": "Stop",
+      "delete": "Delete",
+      "confirmDelete": "Delete this announcement? This cannot be undone."
     },
     "settings": {
       "title": "Platform settings",

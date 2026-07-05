@@ -3,8 +3,10 @@ import {
   getNavLinks,
   getPublishedHome,
   getPublishedPage,
+  getSitemapPages,
   type NavLink,
   type PublicPage,
+  type SitemapPage,
 } from "./queries";
 
 const SITE_REVALIDATE_SECONDS = 300;
@@ -32,5 +34,11 @@ export const getPublishedHomeCached = (studioId: string): Promise<PublicPage | n
 export const getPublishedPageCached = (studioId: string, slug: string): Promise<PublicPage | null> =>
   unstable_cache(() => getPublishedPage(studioId, slug), ["published-page", studioId, slug], {
     tags: [siteCacheTag(studioId), pageCacheTag(studioId, slug)],
+    revalidate: SITE_REVALIDATE_SECONDS,
+  })();
+
+export const getSitemapPagesCached = (studioId: string): Promise<SitemapPage[]> =>
+  unstable_cache(() => getSitemapPages(studioId), ["sitemap-pages", studioId], {
+    tags: [siteCacheTag(studioId)],
     revalidate: SITE_REVALIDATE_SECONDS,
   })();

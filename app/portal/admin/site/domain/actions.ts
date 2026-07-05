@@ -8,6 +8,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { promises as dns } from "dns";
 import { createClient } from "@/lib/supabase/server";
+import { reconcileCustomDomainRedirects } from "@/lib/supabase/auth-redirects";
 import {
   buildDnsRecords,
   domainTargets,
@@ -46,7 +47,9 @@ const SaveSchema = z.object({
   kind: z.enum(["subdomain", "apex", "www"]),
 });
 
-export async function saveCustomDomain(input: unknown): Promise<DomainActionResult<{ domain: string }>> {
+export async function saveCustomDomain(
+  input: unknown,
+): Promise<DomainActionResult<{ domain: string; warning?: string }>> {
   const parsed = SaveSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -70,6 +73,14 @@ export async function saveCustomDomain(input: unknown): Promise<DomainActionResu
 
   if (taken) return { ok: false, error: "That domain is already connected to another studio." };
 
+  // Capture the previous domain so we can drop its stale allow-list entry on a rename.
+  const { data: prev } = await supabase
+    .from("studios")
+    .select("custom_domain")
+    .eq("id", auth.studioId)
+    .maybeSingle();
+  const previousDomain = (prev?.custom_domain as string | null) ?? null;
+
   const { error } = await supabase
     .from("studios")
     .update({ custom_domain: domain })
@@ -77,10 +88,24 @@ export async function saveCustomDomain(input: unknown): Promise<DomainActionResu
 
   if (error) return { ok: false, error: error.message };
 
+  // Register the domain in Supabase's OAuth redirect allow-list so Google
+  // sign-in from this host returns here instead of the Olune apex. Non-fatal:
+  // the domain is saved regardless, but warn the admin if it couldn't be done.
+  const redirect = await reconcileCustomDomainRedirects({
+    add: domain,
+    remove: previousDomain && previousDomain !== domain ? previousDomain : null,
+  });
+  const warning = redirect.ok
+    ? undefined
+    : "Domain saved, but automatic sign-in setup didn't complete. Google login on this domain may not work yet — contact support.";
+  if (!redirect.ok) {
+    console.error(`[domain] allow-list registration failed for ${domain}: ${redirect.error}`);
+  }
+
   revalidatePath("/", "layout");
   revalidatePath("/portal/admin/site/domain");
   revalidatePath("/portal/admin/settings");
-  return { ok: true, data: { domain } };
+  return { ok: true, data: { domain, warning } };
 }
 
 export async function removeCustomDomain(): Promise<DomainActionResult> {
@@ -88,12 +113,30 @@ export async function removeCustomDomain(): Promise<DomainActionResult> {
   if ("error" in auth) return { ok: false, error: auth.error };
 
   const supabase = await createClient();
+
+  const { data: prev } = await supabase
+    .from("studios")
+    .select("custom_domain")
+    .eq("id", auth.studioId)
+    .maybeSingle();
+  const previousDomain = (prev?.custom_domain as string | null) ?? null;
+
   const { error } = await supabase
     .from("studios")
     .update({ custom_domain: null })
     .eq("id", auth.studioId);
 
   if (error) return { ok: false, error: error.message };
+
+  // Drop the domain's allow-list entry. Non-fatal — a stale entry is harmless.
+  if (previousDomain) {
+    const redirect = await reconcileCustomDomainRedirects({ remove: previousDomain });
+    if (!redirect.ok) {
+      console.error(
+        `[domain] allow-list cleanup failed for ${previousDomain}: ${redirect.error}`,
+      );
+    }
+  }
 
   revalidatePath("/", "layout");
   revalidatePath("/portal/admin/site/domain");

@@ -1,0 +1,208 @@
+{
+  "setup": {
+    "header": "正在设置 {studioName}",
+    "schemaPending": {
+      "title": "数据库迁移待处理",
+      "body": "运行 {command} 以启用保存设置进度。",
+      "command": "supabase db push"
+    },
+    "progressAria": "设置进度",
+    "steps": {
+      "path": "开始",
+      "profile": "您的工作室",
+      "students": "舞者",
+      "classes": "课程",
+      "tour": "导览"
+    },
+    "actions": {
+      "back": "返回",
+      "skip": "暂时跳过",
+      "working": "处理中…",
+      "continue": "继续",
+      "saveLater": "保存进度，稍后完成 →"
+    },
+    "path": {
+      "title": "您打算如何开始？",
+      "subtitle": "全新工作室，或从其他系统迁移——我们会为您量身定制后续步骤。",
+      "scratch": {
+        "title": "从零开始",
+        "body": "您刚刚起步，或只有一小批名单需要手动录入。"
+      },
+      "import": {
+        "title": "我已有现成的工作室",
+        "body": "从 StudioPro、Class Manager 或任意电子表格批量导入。"
+      },
+      "sourcePrompt": "您的数据目前在哪里？"
+    },
+    "profile": {
+      "title": "介绍一下您的工作室",
+      "subtitle": "这有助于我们为您个性化网站、课程建议和本地设置。",
+      "city": "城市／城镇",
+      "cityPlaceholder": "例如：奥克兰",
+      "region": "地区",
+      "regionPlaceholder": "选择地区…",
+      "country": "国家",
+      "about": "您的工作室有何特别之处？",
+      "aboutPlaceholder": "以社区为中心的学前芭蕾、比赛队、成人公开课…",
+      "stylesLabel": "您提供的舞蹈风格",
+      "stylesRequired": "请至少选择一种风格以继续。"
+    },
+    "students": {
+      "title": "添加您的舞者",
+      "subtitle": "粘贴、上传 CSV 或逐行输入——家长／监护人列会自动关联。",
+      "tipTitle": "{source} 提示",
+      "uploadLabel": "上传 CSV 或 TSV 文件",
+      "pasteLabel": "或从电子表格粘贴",
+      "pastePlaceholder": "Name\tEmail\tPhone\tParent Name\tParent Email\nEmma Johnson\temma@example.com\t021 234 567\tJane Johnson\tjane@example.com",
+      "detected": "{count, plural, other {检测到 # 名舞者}}",
+      "manualLabel": "或手动添加",
+      "namePlaceholder": "学员姓名 *",
+      "emailPlaceholder": "学员邮箱",
+      "phonePlaceholder": "电话",
+      "parentNamePlaceholder": "家长／监护人姓名",
+      "parentEmailPlaceholder": "家长邮箱",
+      "addAnother": "+ 添加另一位学员",
+      "linkParents": "提供家长信息时，创建家长账户并关联家庭",
+      "import": "导入 {count, plural, other {# 名舞者}}"
+    },
+    "classes": {
+      "title": "搭建您的课程表",
+      "subtitle": "上传 CSV、粘贴课程列表，或根据您的风格从建议开始。",
+      "suggest": "✨ 根据我的风格推荐课程",
+      "suggestionsReady": "{count} 门入门课程已就绪",
+      "tableClass": "课程",
+      "tableStyle": "风格",
+      "tableDay": "星期",
+      "tableTime": "时间",
+      "uploadLabel": "上传课程列表（CSV / TSV）",
+      "pasteLabel": "或从电子表格粘贴",
+      "pastePlaceholder": "Class\tStyle\tDay\tStart\tEnd\tCapacity\tPrice\nJunior Ballet\tBallet\tMon\t16:00\t17:00\t15\t18",
+      "detected": "{count, plural, other {检测到 # 门课程}}",
+      "create": "创建 {count, plural, other {# 门课程}}"
+    },
+    "tour": {
+      "title": "{studioName} 已就绪",
+      "subtitle": "以下是您在 Olune 中可以做的事——随时从您的仪表盘探索。",
+      "enterDashboard": "进入您的仪表盘 →"
+    },
+    "importSummary": {
+      "added": "已添加 {count, plural, other {# 名舞者}}",
+      "parentsLinked": "{count, plural, other {# 个家长关联}}",
+      "skipped": "已跳过 {count} 个"
+    },
+    "resume": {
+      "title": "完成您工作室的设置",
+      "body": "您在 {step} 处暂停了——从离开的地方继续。",
+      "openWizard": "打开向导",
+      "opening": "打开中…",
+      "resume": "继续设置",
+      "defaultStep": "开始"
+    },
+    "csvUpload": {
+      "loaded": "已加载 {fileName}",
+      "readError": "无法读取文件"
+    },
+    "danceStyles": {
+      "ballet": "芭蕾",
+      "jazz": "爵士舞",
+      "hipHop": "街舞",
+      "contemporary": "现代舞",
+      "tap": "踢踏舞",
+      "lyrical": "抒情舞",
+      "acro": "技巧舞",
+      "pointe": "足尖舞",
+      "musicalTheatre": "音乐剧",
+      "ballroom": "国标舞",
+      "latin": "拉丁舞",
+      "aerial": "空中舞",
+      "preschool": "学前 / 幼儿班",
+      "adultOpen": "成人公开课",
+      "competitionTeam": "比赛队"
+    },
+    "importSources": {
+      "studiopro": {
+        "name": "StudioPro",
+        "hint": "从「报表 → 学员 → 导出 CSV」导出您的学员列表。",
+        "sampleHeaders": "First Name · Last Name · Email · Phone · Parent Name · Parent Email"
+      },
+      "classmanager": {
+        "name": "Class Manager",
+        "hint": "从「设置 → 数据导出」下载您的名单。",
+        "sampleHeaders": "Student · Email · Mobile · Guardian · Guardian Email · Class"
+      },
+      "jackrabbit": {
+        "name": "Jackrabbit Dance",
+        "hint": "使用「家庭 → 导出」，或直接从您的课程名单表格复制。",
+        "sampleHeaders": "Student Name · Student Email · Family Email · Phone · Classes"
+      },
+      "dancestudio-pro": {
+        "name": "DanceStudio-Pro",
+        "hint": "从「学员」标签导出，或从您的电子表格粘贴。",
+        "sampleHeaders": "Name · Email · Phone · Parent · Parent Email"
+      },
+      "spreadsheet": {
+        "name": "电子表格",
+        "hint": "从 Excel 或 Google 表格复制行——我们会自动识别列。",
+        "sampleHeaders": "Name · Email · Phone"
+      },
+      "other": {
+        "name": "其他系统",
+        "hint": "粘贴任意导出内容——我们会尝试匹配姓名、邮箱和电话列。",
+        "sampleHeaders": "Name · Email · Phone"
+      }
+    },
+    "tourFeatures": {
+      "dashboard": {
+        "title": "仪表盘",
+        "body": "一目了然地查看报名、收入和今日日程。"
+      },
+      "classes": {
+        "title": "课程",
+        "body": "搭建课程表、设置容量并管理候补名单。"
+      },
+      "students": {
+        "title": "学员与家庭",
+        "body": "名单、报名、进度记录和家长账户。"
+      },
+      "billing": {
+        "title": "账单",
+        "body": "账单、Stripe 付款，以及以新西兰元计的学期费用。"
+      },
+      "website": {
+        "title": "网站",
+        "body": "您的公开网站——课程、报名和您的品牌。"
+      },
+      "leads": {
+        "title": "潜在客户与消息",
+        "body": "试课咨询以及与家庭的双向沟通。"
+      }
+    },
+    "regions": {
+      "northland": "Northland",
+      "auckland": "Auckland",
+      "waikato": "Waikato",
+      "bayOfPlenty": "Bay of Plenty",
+      "gisborne": "Gisborne",
+      "hawkesBay": "Hawke's Bay",
+      "taranaki": "Taranaki",
+      "manawatuWhanganui": "Manawatū-Whanganui",
+      "wellington": "Wellington",
+      "tasman": "Tasman",
+      "nelson": "Nelson",
+      "marlborough": "Marlborough",
+      "westCoast": "West Coast",
+      "canterbury": "Canterbury",
+      "otago": "Otago",
+      "southland": "Southland"
+    },
+    "days": {
+      "sun": "周日",
+      "mon": "周一",
+      "tue": "周二",
+      "wed": "周三",
+      "thu": "周四",
+      "fri": "周五",
+      "sat": "周六"
+    }
+  }
+}

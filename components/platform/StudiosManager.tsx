@@ -4,25 +4,39 @@ import { useState, useTransition } from "react";
 import { motion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import type { PlatformStudioSummary } from "@/lib/platform/types";
-import { updateStudioStatus } from "@/app/platform/studios/actions";
+import { updateStudioStatus, deleteStudio } from "@/app/platform/studios/actions";
 
 const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
 
 export function StudiosManager({ studios }: { studios: PlatformStudioSummary[] }) {
   const t = useTranslations("platform.studios");
   const locale = useLocale();
+  const [items, setItems] = useState(studios);
   const [filter, setFilter] = useState<string>("all");
   const [pending, startTransition] = useTransition();
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
 
   const filterKeys = ["all", "trial", "active", "suspended"] as const;
-  const filtered = filter === "all" ? studios : studios.filter((s) => s.status === filter);
+  const filtered = filter === "all" ? items : items.filter((s) => s.status === filter);
 
   function setStatus(studioId: string, status: string) {
     startTransition(async () => {
       const res = await updateStudioStatus({ studioId, status });
       setStatusMsg(res.ok ? t("updated") : res.error);
       setTimeout(() => setStatusMsg(null), 2000);
+    });
+  }
+
+  function remove(studio: PlatformStudioSummary) {
+    const typed = window.prompt(t("confirmDelete", { name: studio.name }));
+    if (typed !== studio.name) return;
+    startTransition(async () => {
+      const res = await deleteStudio({ studioId: studio.id });
+      if (res.ok) {
+        setItems((prev) => prev.filter((s) => s.id !== studio.id));
+      }
+      setStatusMsg(res.ok ? t("deleted") : res.error);
+      setTimeout(() => setStatusMsg(null), 2500);
     });
   }
 
@@ -84,16 +98,25 @@ export function StudiosManager({ studios }: { studios: PlatformStudioSummary[] }
                   {new Date(s.createdAt).toLocaleDateString(locale)}
                 </td>
                 <td className="p-4">
-                  <select
-                    disabled={pending}
-                    value={s.status}
-                    onChange={(e) => setStatus(s.id, e.target.value)}
-                    className="rounded-lg border border-[--hair] bg-base px-2 py-1 text-xs"
-                  >
-                    <option value="trial">{t("filters.trial")}</option>
-                    <option value="active">{t("filters.active")}</option>
-                    <option value="suspended">{t("filters.suspended")}</option>
-                  </select>
+                  <div className="flex items-center gap-2">
+                    <select
+                      disabled={pending}
+                      value={s.status}
+                      onChange={(e) => setStatus(s.id, e.target.value)}
+                      className="rounded-lg border border-[--hair] bg-base px-2 py-1 text-xs"
+                    >
+                      <option value="trial">{t("filters.trial")}</option>
+                      <option value="active">{t("filters.active")}</option>
+                      <option value="suspended">{t("filters.suspended")}</option>
+                    </select>
+                    <button
+                      onClick={() => remove(s)}
+                      disabled={pending}
+                      className="rounded-full border border-[--hair] px-3 py-1 text-xs font-bold uppercase text-red-600 hover:border-red-500"
+                    >
+                      {t("delete")}
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

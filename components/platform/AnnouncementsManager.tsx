@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { PlatformAnnouncement, AnnouncementSeverity, AnnouncementTarget } from "@/lib/platform/types";
-import { createAnnouncement, publishAnnouncement } from "@/app/platform/announcements/actions";
+import { createAnnouncement, publishAnnouncement, stopAnnouncement, deleteAnnouncement } from "@/app/platform/announcements/actions";
 
 export function AnnouncementsManager({
   announcements,
@@ -40,6 +40,27 @@ export function AnnouncementsManager({
             a.id === id ? { ...a, publishedAt: new Date().toISOString() } : a,
           ),
         );
+      }
+    });
+  }
+
+  function stop(id: string) {
+    startTransition(async () => {
+      const res = await stopAnnouncement(id);
+      if (res.ok) {
+        setItems((prev) =>
+          prev.map((a) => (a.id === id ? { ...a, publishedAt: null } : a)),
+        );
+      }
+    });
+  }
+
+  function remove(id: string) {
+    if (!window.confirm(t("confirmDelete"))) return;
+    startTransition(async () => {
+      const res = await deleteAnnouncement(id);
+      if (res.ok) {
+        setItems((prev) => prev.filter((a) => a.id !== id));
       }
     });
   }
@@ -114,15 +135,33 @@ export function AnnouncementsManager({
                     : ` · ${t("draftStatus")}`}
                 </p>
               </div>
-              {!a.publishedAt && (
+              <div className="flex shrink-0 flex-wrap gap-2">
+                {!a.publishedAt && (
+                  <button
+                    onClick={() => publish(a.id)}
+                    disabled={pending}
+                    className="rounded-full border border-[--hair] px-4 py-1.5 text-xs font-bold uppercase hover:border-brand"
+                  >
+                    {t("publishNow")}
+                  </button>
+                )}
+                {a.publishedAt && (
+                  <button
+                    onClick={() => stop(a.id)}
+                    disabled={pending}
+                    className="rounded-full border border-[--hair] px-4 py-1.5 text-xs font-bold uppercase text-amber-600 hover:border-amber-500"
+                  >
+                    {t("stop")}
+                  </button>
+                )}
                 <button
-                  onClick={() => publish(a.id)}
+                  onClick={() => remove(a.id)}
                   disabled={pending}
-                  className="rounded-full border border-[--hair] px-4 py-1.5 text-xs font-bold uppercase hover:border-brand"
+                  className="rounded-full border border-[--hair] px-4 py-1.5 text-xs font-bold uppercase text-red-600 hover:border-red-500"
                 >
-                  {t("publishNow")}
+                  {t("delete")}
                 </button>
-              )}
+              </div>
             </div>
           </li>
         ))}
