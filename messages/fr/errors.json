@@ -68,7 +68,12 @@
       "chargeAmountInvalid": "Montant de prélèvement invalide.",
       "studentNotLinkedToParent": "L'élève n'est pas lié à ce parent.",
       "couldNotSaveSubscription": "Impossible d'enregistrer l'abonnement.",
-      "subscriptionNotFound": "Abonnement introuvable."
+      "subscriptionNotFound": "Abonnement introuvable.",
+      "invoiceLocked": "Cette facture ne peut plus être modifiée.",
+      "invoiceNotDraft": "Le montant et les lignes ne peuvent être modifiés que pour les factures en brouillon.",
+      "invalidLineItems": "Lignes invalides.",
+      "invalidTemplateDetails": "Détails du modèle invalides.",
+      "templateNotFound": "Modèle introuvable."
     }
   }
 }

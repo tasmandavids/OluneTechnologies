@@ -68,7 +68,12 @@
       "chargeAmountInvalid": "Charge amount is invalid.",
       "studentNotLinkedToParent": "Student is not linked to this parent.",
       "couldNotSaveSubscription": "Could not save subscription.",
-      "subscriptionNotFound": "Subscription not found."
+      "subscriptionNotFound": "Subscription not found.",
+      "invoiceLocked": "This invoice can no longer be edited.",
+      "invoiceNotDraft": "Amount and line items can only be changed on draft invoices.",
+      "invalidLineItems": "Invalid line items.",
+      "invalidTemplateDetails": "Invalid template details.",
+      "templateNotFound": "Template not found."
     }
   }
 }

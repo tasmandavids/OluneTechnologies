@@ -68,7 +68,12 @@
       "chargeAmountInvalid": "Importo addebito non valido.",
       "studentNotLinkedToParent": "L'allievo non è collegato a questo genitore.",
       "couldNotSaveSubscription": "Impossibile salvare l'abbonamento.",
-      "subscriptionNotFound": "Abbonamento non trovato."
+      "subscriptionNotFound": "Abbonamento non trovato.",
+      "invoiceLocked": "Questa fattura non può più essere modificata.",
+      "invoiceNotDraft": "Importo e voci possono essere modificati solo per le fatture in bozza.",
+      "invalidLineItems": "Voci non valide.",
+      "invalidTemplateDetails": "Dettagli del modello non validi.",
+      "templateNotFound": "Modello non trovato."
     }
   }
 }

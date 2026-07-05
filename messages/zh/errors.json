@@ -68,7 +68,12 @@
       "chargeAmountInvalid": "扣款金额无效。",
       "studentNotLinkedToParent": "学员未关联到此家长。",
       "couldNotSaveSubscription": "无法保存订阅。",
-      "subscriptionNotFound": "找不到订阅。"
+      "subscriptionNotFound": "找不到订阅。",
+      "invoiceLocked": "此账单无法再编辑。",
+      "invoiceNotDraft": "只有草稿状态的账单才能修改金额和明细项目。",
+      "invalidLineItems": "明细项目无效。",
+      "invalidTemplateDetails": "模板信息无效。",
+      "templateNotFound": "未找到模板。"
     }
   }
 }

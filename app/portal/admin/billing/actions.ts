@@ -31,6 +31,14 @@ async function getAdminStudio() {
   return { error: null, supabase, studioId: profile.studio_id as string };
 }
 
+const InvoiceLineItemInputSchema = z.object({
+  description: z.string().trim().min(1).max(200),
+  quantity: z.number().int().positive().max(999),
+  unitDollars: z.number().nonnegative().max(100_000),
+});
+
+export type InvoiceLineItemInput = z.infer<typeof InvoiceLineItemInputSchema>;
+
 const CreateInvoiceSchema = z.object({
   payerId: z.string().uuid(),
   studentId: z.string().uuid().optional(),
@@ -38,9 +46,25 @@ const CreateInvoiceSchema = z.object({
   dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   description: z.string().max(200).optional(),
   sendNow: z.boolean().default(true),
+  lineItems: z.array(InvoiceLineItemInputSchema).max(50).optional(),
 });
 
 export type CreateInvoiceInput = z.infer<typeof CreateInvoiceSchema>;
+
+function lineItemRows(invoiceId: string, lineItems: InvoiceLineItemInput[]) {
+  return lineItems.map((li, idx) => {
+    const unitCents = Math.round(li.unitDollars * 100);
+    return {
+      invoice_id: invoiceId,
+      item_type: "custom",
+      description: li.description,
+      quantity: li.quantity,
+      unit_cents: unitCents,
+      line_total_cents: unitCents * li.quantity,
+      sort_order: idx,
+    };
+  });
+}
 
 async function ensureStripeCustomer(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -104,7 +128,7 @@ export async function createInvoice(
   const { error, supabase, studioId } = await getAdminStudio();
   if (error || !studioId) return { ok: false, error: error ?? t("unknown") };
 
-  const { payerId, studentId, amountDollars, dueDate, description, sendNow } = parsed.data;
+  const { payerId, studentId, amountDollars, dueDate, description, sendNow, lineItems } = parsed.data;
   const amountCents = Math.round(amountDollars * 100);
 
   const { data: payer } = await supabase
@@ -128,6 +152,7 @@ export async function createInvoice(
 
   const status = sendNow ? "sent" : "draft";
   const now = new Date().toISOString();
+  const trimmedDescription = description?.trim() || null;
 
   const { data: invoice, error: invErr } = await supabase
     .from("invoices")
@@ -138,6 +163,7 @@ export async function createInvoice(
       amount_cents: amountCents,
       gst_cents: gstComponentCents(amountCents),
       status,
+      description: trimmedDescription,
       due_date: dueDate,
       issued_at: sendNow ? now : null,
     })
@@ -146,7 +172,11 @@ export async function createInvoice(
 
   if (invErr || !invoice) return { ok: false, error: invErr?.message ?? t("couldNotCreateInvoice") };
 
-  const label = description?.trim() || "Studio invoice";
+  if (lineItems && lineItems.length > 0) {
+    await supabase.from("invoice_line_items").insert(lineItemRows(invoice.id as string, lineItems));
+  }
+
+  const label = trimmedDescription || "Studio invoice";
   if (sendNow) {
     try {
       await attachPaymentIntent(supabase, invoice, payerId, studioId, label);
@@ -311,4 +341,210 @@ export async function voidInvoice(
 
   revalidatePath("/portal/admin/billing");
   return { ok: true, xeroError };
+}
+
+const LOCKED_INVOICE_STATUSES = ["paid", "refunded", "void"] as const;
+
+const UpdateInvoiceSchema = z.object({
+  invoiceId: z.string().uuid(),
+  dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  description: z.string().max(200).optional(),
+  amountDollars: z.number().positive().max(100_000).optional(),
+  lineItems: z.array(InvoiceLineItemInputSchema).max(50).optional(),
+});
+
+export type UpdateInvoiceInput = z.infer<typeof UpdateInvoiceSchema>;
+
+/**
+ * Due date / description are cosmetic on our side and safe to edit any time
+ * before an invoice is paid. Amount / line items are only editable while the
+ * invoice is still a draft — once sent, a Stripe PaymentIntent and (if synced)
+ * a Xero invoice already reflect the original total, and rewriting the amount
+ * here would desync them.
+ */
+export async function updateInvoice(
+  input: UpdateInvoiceInput,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const t = await getTranslations("errors.actions");
+  const parsed = UpdateInvoiceSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: t("invalidInvoiceDetails") };
+
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? t("unknown") };
+
+  const { invoiceId, dueDate, description, amountDollars, lineItems } = parsed.data;
+
+  const { data: invoice } = await supabase
+    .from("invoices")
+    .select("id, status")
+    .eq("id", invoiceId)
+    .eq("studio_id", studioId)
+    .single();
+
+  if (!invoice) return { ok: false, error: t("invoiceNotFound") };
+
+  const status = invoice.status as string;
+  if (LOCKED_INVOICE_STATUSES.includes(status as (typeof LOCKED_INVOICE_STATUSES)[number])) {
+    return { ok: false, error: t("invoiceLocked") };
+  }
+
+  const changingAmount = amountDollars !== undefined || lineItems !== undefined;
+  if (changingAmount && status !== "draft") {
+    return { ok: false, error: t("invoiceNotDraft") };
+  }
+
+  if (lineItems !== undefined && lineItems.length === 0) {
+    return { ok: false, error: t("invalidLineItems") };
+  }
+
+  const updates: Record<string, unknown> = {};
+  if (dueDate !== undefined) updates.due_date = dueDate;
+  if (description !== undefined) updates.description = description.trim() || null;
+
+  if (lineItems !== undefined) {
+    const amountCents = lineItems.reduce(
+      (sum, li) => sum + Math.round(li.unitDollars * 100) * li.quantity,
+      0,
+    );
+    updates.amount_cents = amountCents;
+    updates.gst_cents = gstComponentCents(amountCents);
+  } else if (amountDollars !== undefined) {
+    const amountCents = Math.round(amountDollars * 100);
+    updates.amount_cents = amountCents;
+    updates.gst_cents = gstComponentCents(amountCents);
+  }
+
+  if (Object.keys(updates).length > 0) {
+    const { error: updErr } = await supabase.from("invoices").update(updates).eq("id", invoiceId);
+    if (updErr) return { ok: false, error: updErr.message };
+  }
+
+  if (changingAmount) {
+    await supabase.from("invoice_line_items").delete().eq("invoice_id", invoiceId);
+    if (lineItems !== undefined) {
+      await supabase.from("invoice_line_items").insert(lineItemRows(invoiceId, lineItems));
+    }
+  }
+
+  revalidatePath("/portal/admin/billing");
+  return { ok: true };
+}
+
+const InvoiceTemplateSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  description: z.string().max(200).optional(),
+  defaultDueDays: z.number().int().min(0).max(365),
+  lineItems: z.array(InvoiceLineItemInputSchema).min(1).max(50),
+});
+
+export type InvoiceTemplateInput = z.infer<typeof InvoiceTemplateSchema>;
+
+export async function createInvoiceTemplate(
+  input: InvoiceTemplateInput,
+): Promise<{ ok: true; templateId: string } | { ok: false; error: string }> {
+  const t = await getTranslations("errors.actions");
+  const parsed = InvoiceTemplateSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: t("invalidTemplateDetails") };
+
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? t("unknown") };
+
+  const { name, description, defaultDueDays, lineItems } = parsed.data;
+
+  const { data: template, error: insErr } = await supabase
+    .from("invoice_templates")
+    .insert({
+      studio_id: studioId,
+      name,
+      description: description?.trim() || null,
+      default_due_days: defaultDueDays,
+    })
+    .select("id")
+    .single();
+
+  if (insErr || !template) return { ok: false, error: insErr?.message ?? t("unknown") };
+
+  const templateId = template.id as string;
+  const { error: lineErr } = await supabase.from("invoice_template_line_items").insert(
+    lineItems.map((li, idx) => ({
+      template_id: templateId,
+      description: li.description,
+      quantity: li.quantity,
+      unit_cents: Math.round(li.unitDollars * 100),
+      sort_order: idx,
+    })),
+  );
+  if (lineErr) return { ok: false, error: lineErr.message };
+
+  revalidatePath("/portal/admin/billing");
+  return { ok: true, templateId };
+}
+
+export async function updateInvoiceTemplate(
+  templateId: string,
+  input: InvoiceTemplateInput,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const t = await getTranslations("errors.actions");
+  const parsed = InvoiceTemplateSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: t("invalidTemplateDetails") };
+
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? t("unknown") };
+
+  const { data: template } = await supabase
+    .from("invoice_templates")
+    .select("id")
+    .eq("id", templateId)
+    .eq("studio_id", studioId)
+    .single();
+  if (!template) return { ok: false, error: t("templateNotFound") };
+
+  const { name, description, defaultDueDays, lineItems } = parsed.data;
+
+  const { error: updErr } = await supabase
+    .from("invoice_templates")
+    .update({
+      name,
+      description: description?.trim() || null,
+      default_due_days: defaultDueDays,
+    })
+    .eq("id", templateId);
+  if (updErr) return { ok: false, error: updErr.message };
+
+  await supabase.from("invoice_template_line_items").delete().eq("template_id", templateId);
+  const { error: lineErr } = await supabase.from("invoice_template_line_items").insert(
+    lineItems.map((li, idx) => ({
+      template_id: templateId,
+      description: li.description,
+      quantity: li.quantity,
+      unit_cents: Math.round(li.unitDollars * 100),
+      sort_order: idx,
+    })),
+  );
+  if (lineErr) return { ok: false, error: lineErr.message };
+
+  revalidatePath("/portal/admin/billing");
+  return { ok: true };
+}
+
+export async function deleteInvoiceTemplate(
+  templateId: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const t = await getTranslations("errors.actions");
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? t("unknown") };
+
+  const { data: template } = await supabase
+    .from("invoice_templates")
+    .select("id")
+    .eq("id", templateId)
+    .eq("studio_id", studioId)
+    .single();
+  if (!template) return { ok: false, error: t("templateNotFound") };
+
+  const { error: delErr } = await supabase.from("invoice_templates").delete().eq("id", templateId);
+  if (delErr) return { ok: false, error: delErr.message };
+
+  revalidatePath("/portal/admin/billing");
+  return { ok: true };
 }

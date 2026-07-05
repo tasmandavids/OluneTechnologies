@@ -68,7 +68,12 @@
       "chargeAmountInvalid": "Некорректная сумма списания.",
       "studentNotLinkedToParent": "Ученик не привязан к этому родителю.",
       "couldNotSaveSubscription": "Не удалось сохранить подписку.",
-      "subscriptionNotFound": "Подписка не найдена."
+      "subscriptionNotFound": "Подписка не найдена.",
+      "invoiceLocked": "Этот счёт больше нельзя редактировать.",
+      "invoiceNotDraft": "Сумму и позиции можно менять только у счетов-черновиков.",
+      "invalidLineItems": "Некорректные позиции.",
+      "invalidTemplateDetails": "Некорректные данные шаблона.",
+      "templateNotFound": "Шаблон не найден."
     }
   }
 }
