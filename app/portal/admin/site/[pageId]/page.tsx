@@ -2,7 +2,6 @@
 //  /portal/admin/site/[pageId] — Block editor for a single website page.
 // ============================================================================
 
-import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getBrandingCached } from "@/lib/branding";
@@ -12,14 +11,7 @@ import { mergePageLinks, toPageLink, toStudioPageNavSource } from "@/lib/site/pa
 import { publicPageUrl } from "@/lib/site/domain-setup";
 import { getTranslations } from "@/lib/i18n/server";
 import { loadEditorRenderContext } from "@/lib/site/render-context";
-
-const PageEditor = dynamic(() => import("@/components/admin/site/PageEditor"), {
-  loading: () => (
-    <div className="flex min-h-[40vh] items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand border-t-transparent" />
-    </div>
-  ),
-});
+import PageEditor from "@/components/admin/site/PageEditor";
 
 export default async function SitePageEditor({
   params,

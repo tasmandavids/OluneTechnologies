@@ -3,24 +3,13 @@
 //  Fetches live stats + weekly schedule (capacity + timetable) for this studio.
 // ============================================================================
 
-import nextDynamic from "next/dynamic";
 import { getTranslations } from "@/lib/i18n/server";
 import { getPortalSession } from "@/lib/portal/session";
 import { type StatData, type ScheduleClass } from "@/components/admin/dashboard/types";
 import type { TeacherOption } from "@/app/portal/admin/classes/page";
+import { AdminDashboard } from "@/components/admin/dashboard/AdminDashboard";
 
 export const dynamic = "force-dynamic";
-
-const AdminDashboard = nextDynamic(
-  () => import("@/components/admin/dashboard/AdminDashboard").then((m) => m.AdminDashboard),
-  {
-    loading: () => (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand border-t-transparent" />
-      </div>
-    ),
-  },
-);
 
 export default async function AdminDashboardPage() {
   const session = await getPortalSession();

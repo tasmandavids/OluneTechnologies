@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -16,14 +15,7 @@ import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { ThemeSwitcher } from "@/components/portal/ThemeSwitcher";
 import { PortalThemeSync } from "@/components/portal/PortalThemeSync";
 import type { ThemeBase } from "@/lib/types";
-
-const NotificationBell = dynamic(
-  () =>
-    import("@/components/admin/notifications/NotificationBell").then((m) => ({
-      default: m.NotificationBell,
-    })),
-  { ssr: false },
-);
+import { NotificationBell } from "@/components/admin/notifications/NotificationBell";
 
 function StudioAvatar({
   studioName,

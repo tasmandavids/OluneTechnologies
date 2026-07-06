@@ -2,23 +2,12 @@
 //  /portal/admin/site/studio/[pageId] — the Site Builder v2 (Studio) editor.
 // ============================================================================
 
-import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createEmptyDocument, normalizeDocument } from "@/lib/builder/document";
 import type { BuilderDocument } from "@/lib/builder/schema";
 import { saveBuilderDocument } from "../actions";
-
-const BuilderStudio = dynamic(
-  () => import("@/components/builder/BuilderStudio").then((m) => m.BuilderStudio),
-  {
-    loading: () => (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
-      </div>
-    ),
-  },
-);
+import { BuilderStudio } from "@/components/builder/BuilderStudio";
 
 export default async function StudioEditorPage({ params }: { params: Promise<{ pageId: string }> }) {
   const { pageId } = await params;

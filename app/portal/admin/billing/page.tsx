@@ -2,20 +2,9 @@
 //  /portal/admin/billing — AR hub: create invoices, chase payments, revenue.
 // ============================================================================
 
-import dynamic from "next/dynamic";
 import { requirePortalSession } from "@/lib/portal/session";
 import { getTranslations } from "@/lib/i18n/server";
-
-const BillingDashboard = dynamic(
-  () => import("@/components/admin/billing/BillingDashboard").then((m) => m.BillingDashboard),
-  {
-    loading: () => (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand border-t-transparent" />
-      </div>
-    ),
-  },
-);
+import { BillingDashboard } from "@/components/admin/billing/BillingDashboard";
 
 export type InvoiceLineItem = {
   id: string;

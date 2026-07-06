@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import { requirePortalSession } from "@/lib/portal/session";
 import { isMetaConfigured, isTiktokConfigured } from "@/lib/advertising/config";
 import type {
@@ -7,17 +6,7 @@ import type {
   SeoPageSnapshot,
   SocialConnection,
 } from "@/lib/advertising/types";
-
-const AdvertisingHub = dynamic(
-  () => import("@/components/admin/advertising/AdvertisingHub").then((m) => m.AdvertisingHub),
-  {
-    loading: () => (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand border-t-transparent" />
-      </div>
-    ),
-  },
-);
+import { AdvertisingHub } from "@/components/admin/advertising/AdvertisingHub";
 
 export default async function AdvertisingPage({
   searchParams,
