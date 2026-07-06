@@ -20,6 +20,7 @@ import {
   updateStudent,
   bulkUpdateStudents,
   bulkDeleteStudents,
+  createDraftInvoiceFromEnrollments,
 } from "@/app/portal/admin/students/actions";
 import type { StudentRow, ClassOption } from "@/app/portal/admin/students/page";
 import { useShortDayNames, useFormatTimeShort } from "@/lib/i18n/client";
@@ -352,6 +353,21 @@ function StudentPanel({
     });
   };
 
+  const createDraftInvoice = () => {
+    setError(null); setSuccess(null);
+    startTransition(async () => {
+      const result = await createDraftInvoiceFromEnrollments(student.id);
+      if (!result.ok) { setError(result.error); return; }
+      if (result.xeroError) {
+        setError(t("draftInvoiceXeroError", { error: result.xeroError }));
+      } else {
+        setSuccess(t("draftInvoiceCreated"));
+        setTimeout(() => setSuccess(null), 2500);
+      }
+      router.refresh();
+    });
+  };
+
   const removeStudent = () => {
     if (!window.confirm(t("deleteConfirm", { name: student.name ?? tShared("unknown") }))) return;
     setError(null); setSuccess(null);
@@ -494,6 +510,16 @@ function StudentPanel({
                   </li>
                 ))}
               </ul>
+            )}
+            {student.enrollments.length > 0 && (
+              <button
+                type="button"
+                onClick={createDraftInvoice}
+                disabled={pending}
+                className="mt-3 w-full rounded-lg border border-[--hair] py-2 text-sm font-semibold text-ink transition-colors hover:border-[--brand] disabled:opacity-50"
+              >
+                {t("createDraftInvoice")}
+              </button>
             )}
           </section>
 

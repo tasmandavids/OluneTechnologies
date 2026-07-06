@@ -10,6 +10,10 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStudioOpsStudio } from "@/lib/portal/access";
+import { gstComponentCents } from "@/lib/currency";
+import { batchEnrollmentBillableCents } from "@/lib/enrollment-billing";
+import { siblingDiscountedCents } from "@/lib/discounts";
+import { xeroSyncOutstandingInvoice } from "@/lib/xero/webhook-sync";
 
 async function getAdminStudio() {
   const ctx = await getStudioOpsStudio();
@@ -401,4 +405,154 @@ export async function bulkDeleteStudents(input: unknown): Promise<BulkDeleteResu
   revalidatePath("/portal/admin/students");
   revalidatePath("/portal/admin/classes");
   return { ok: true, deleted, failures };
+}
+
+// ─── CREATE DRAFT INVOICE FROM CURRENT ENROLLMENTS ────────────────────────────
+// Redrafts a fresh invoice for a student's currently-active enrollments, using
+// the same per-class pricing rules as the parent-facing enroll flow: linked
+// recurring-series siblings bill once (batchEnrollmentBillableCents), and the
+// studio's sibling discount applies when billing a guardian who has other
+// actively-enrolled children. Always lands as a draft for admin review before
+// sending — this exists for "we fixed the student's enrollments, now redraft
+// the invoice" rather than the normal per-enrollment billing moment.
+
+export async function createDraftInvoiceFromEnrollments(
+  studentId: string,
+): Promise<
+  | { ok: true; invoiceId: string; xeroError?: string }
+  | { ok: false; error: string }
+> {
+  if (!z.string().uuid().safeParse(studentId).success) {
+    return { ok: false, error: "Invalid student." };
+  }
+
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
+
+  const { data: student } = await supabase
+    .from("profiles")
+    .select("id, full_name")
+    .eq("id", studentId)
+    .eq("studio_id", studioId)
+    .eq("role", "student")
+    .maybeSingle();
+  if (!student) return { ok: false, error: "Student not found." };
+
+  const { data: enrollmentRows } = await supabase
+    .from("enrollments")
+    .select("class_id, classes(id, name, price_cents, recurring_group_id, xero_account_code, xero_item_code)")
+    .eq("student_id", studentId)
+    .eq("studio_id", studioId)
+    .eq("status", "active");
+
+  type ClassInfo = {
+    id: string;
+    name: string;
+    price_cents: number | null;
+    recurring_group_id: string | null;
+    xero_account_code: string | null;
+    xero_item_code: string | null;
+  };
+
+  const classes = (enrollmentRows ?? [])
+    .map((r) => (Array.isArray(r.classes) ? r.classes[0] : r.classes) as ClassInfo | null)
+    .filter((c): c is ClassInfo => c !== null);
+
+  if (classes.length === 0) {
+    return { ok: false, error: "This student has no active enrollments to invoice." };
+  }
+
+  const { data: guardianships } = await supabase
+    .from("guardianships")
+    .select("guardian_id, is_primary")
+    .eq("student_id", studentId)
+    .eq("studio_id", studioId);
+
+  const primaryGuardianId = (guardianships ?? []).find((g) => g.is_primary)?.guardian_id as
+    | string
+    | undefined;
+
+  let payerId: string;
+  let applySiblingDiscount: boolean;
+  if (primaryGuardianId) {
+    payerId = primaryGuardianId;
+    applySiblingDiscount = true;
+  } else if ((guardianships ?? []).length > 0) {
+    return {
+      ok: false,
+      error: "This student has guardians but none is set as the primary payer.",
+    };
+  } else {
+    payerId = studentId;
+    applySiblingDiscount = false;
+  }
+
+  const baseCentsByClassId = await batchEnrollmentBillableCents(
+    supabase,
+    studentId,
+    classes.map((c) => ({ classId: c.id, priceCents: c.price_cents ?? 0 })),
+  );
+
+  const charges: { classId: string; className: string; chargeCents: number }[] = [];
+  for (const cls of classes) {
+    const baseCents = baseCentsByClassId.get(cls.id) ?? 0;
+    if (baseCents <= 0) continue;
+    const chargeCents = applySiblingDiscount
+      ? await siblingDiscountedCents(supabase, studioId, payerId, studentId, baseCents)
+      : baseCents;
+    if (chargeCents > 0) charges.push({ classId: cls.id, className: cls.name, chargeCents });
+  }
+
+  if (charges.length === 0) {
+    return { ok: false, error: "Nothing billable — every enrolled class is fully covered already." };
+  }
+
+  const dueDate = new Date();
+  dueDate.setDate(dueDate.getDate() + 7);
+  const totalCents = charges.reduce((sum, c) => sum + c.chargeCents, 0);
+
+  const { data: invoice, error: invErr } = await supabase
+    .from("invoices")
+    .insert({
+      studio_id: studioId,
+      payer_id: payerId,
+      student_id: studentId,
+      amount_cents: totalCents,
+      gst_cents: gstComponentCents(totalCents),
+      status: "draft",
+      due_date: dueDate.toISOString().slice(0, 10),
+      issued_at: null,
+    })
+    .select("id")
+    .single();
+
+  if (invErr || !invoice) return { ok: false, error: invErr?.message ?? "Could not create invoice." };
+
+  const invoiceId = invoice.id as string;
+  const accountCodeByClassId = new Map(classes.map((c) => [c.id, c.xero_account_code]));
+  const itemCodeByClassId = new Map(classes.map((c) => [c.id, c.xero_item_code]));
+
+  const { error: lineItemsErr } = await supabase.from("invoice_line_items").insert(
+    charges.map((c, idx) => ({
+      invoice_id: invoiceId,
+      item_type: "class",
+      reference_id: c.classId,
+      description: c.className,
+      quantity: 1,
+      unit_cents: c.chargeCents,
+      line_total_cents: c.chargeCents,
+      sort_order: idx,
+      account_code: accountCodeByClassId.get(c.classId) ?? null,
+      item_code: itemCodeByClassId.get(c.classId) ?? null,
+    })),
+  );
+  if (lineItemsErr) return { ok: false, error: lineItemsErr.message };
+
+  const xero = await xeroSyncOutstandingInvoice(supabase, invoiceId, {
+    lineDescription: charges.length === 1 ? `Enrollment — ${charges[0].className}` : "Enrollment",
+  });
+
+  revalidatePath("/portal/admin/students");
+  revalidatePath("/portal/admin/billing");
+  return { ok: true, invoiceId, xeroError: xero.ok ? undefined : xero.error };
 }
