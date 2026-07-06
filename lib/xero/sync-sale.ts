@@ -128,8 +128,25 @@ async function resolveContact(
     return { contactID: profile.xero_contact_id };
   }
 
+  const name = profile.full_name ?? profile.email ?? "Olune customer";
+
+  // A contact with this exact name can already exist in Xero — created
+  // directly by the studio's bookkeeper, or from an earlier sync whose link
+  // back to this profile never got saved. Xero enforces unique contact names,
+  // so creating blind 400s in that case; look it up and reuse it first.
+  const existing = await loaded.client.accountingApi.getContacts(
+    loaded.tenantId,
+    undefined,
+    `Name=="${name.replace(/"/g, '\\"')}"`,
+  );
+  const existingContact = existing.body.contacts?.[0];
+  if (existingContact?.contactID) {
+    await supabase.from("profiles").update({ xero_contact_id: existingContact.contactID }).eq("id", profileId);
+    return { contactID: existingContact.contactID };
+  }
+
   const contactPayload: Contact = {
-    name: profile.full_name ?? profile.email ?? "Olune customer",
+    name,
     emailAddress: profile.email ?? undefined,
   };
 
