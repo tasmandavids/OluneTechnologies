@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import type { ParentInvoice, ParentOrder, ParentPayment } from "@/lib/parents/types";
 import { formatMoney } from "@/lib/currency";
 import { formatInvoiceNumber } from "@/lib/invoices/format-invoice-number";
+import CreateDraftInvoiceButton from "./CreateDraftInvoiceButton";
 
 const STATUS_KEYS = ["paid", "sent", "overdue", "draft", "void", "refunded"] as const;
 
@@ -42,10 +43,16 @@ function fmtDate(iso: string | null) {
 }
 
 export default function ParentBillingTab({
+  parentId,
+  parentName,
+  children,
   invoices,
   payments,
   orders,
 }: {
+  parentId: string;
+  parentName: string;
+  children: { id: string; name: string | null }[];
   invoices: ParentInvoice[];
   payments: ParentPayment[];
   orders: ParentOrder[];
@@ -61,6 +68,10 @@ export default function ParentBillingTab({
 
   return (
     <div className="space-y-8">
+      <div className="flex justify-end">
+        <CreateDraftInvoiceButton parentId={parentId} parentName={parentName} children={children} />
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="rounded-2xl border border-[--hair] bg-surface p-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("outstanding")}</p>

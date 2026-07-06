@@ -408,6 +408,11 @@
         "invoices": "Factures",
         "invoicesTitle": "Factures",
         "noInvoices": "Pas encore de factures.",
+        "createDraftInvoiceButton": "Créer une facture brouillon",
+        "draftInvoiceModal": {
+          "title": "Facture brouillon pour {name}",
+          "description": "Créez un nouveau brouillon après avoir apporté des modifications — vérifiez-le avant de l'envoyer."
+        },
         "table": {
           "number": "N° facture",
           "issued": "Émis",

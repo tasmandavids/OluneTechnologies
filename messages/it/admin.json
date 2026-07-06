@@ -408,6 +408,11 @@
         "invoices": "Fatture",
         "invoicesTitle": "Fatture",
         "noInvoices": "Ancora nessuna fattura.",
+        "createDraftInvoiceButton": "Crea fattura in bozza",
+        "draftInvoiceModal": {
+          "title": "Fattura in bozza per {name}",
+          "description": "Crea una nuova bozza dopo aver apportato modifiche — controllala prima di inviarla."
+        },
         "table": {
           "number": "N. fattura",
           "issued": "Rilasciato",
