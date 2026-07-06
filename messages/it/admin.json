@@ -235,6 +235,10 @@
         "xeroAccountCodeNone": "Nessun codice assegnato",
         "xeroAccountCodeConnectHint": "Collega Xero nelle impostazioni contabili per assegnare un codice contabile.",
         "xeroAccountCodeNotFound": "(non trovato in Xero)",
+        "xeroItemCode": "Codice articolo Xero",
+        "xeroItemCodeNone": "Nessun articolo assegnato",
+        "xeroItemCodeConnectHint": "Collega Xero nelle impostazioni contabili per assegnare un codice articolo.",
+        "xeroItemCodeNotFound": "(non trovato in Xero)",
         "pickDayError": "Scegli almeno un giorno.",
         "createClass": "Crea classe",
         "saveChanges": "Salva modifiche"

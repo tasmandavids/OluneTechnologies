@@ -6,7 +6,6 @@ import { createClient } from "@/lib/supabase/server";
 import { ParentBillingHub } from "@/components/portal/parent/ParentBillingHub";
 import type { AutoPayItem } from "@/components/portal/parent/AutoPaySetup";
 import { getAccountBillingSummary } from "@/app/portal/parent/billing/actions";
-import { normalizeClassName } from "@/lib/enrollment-billing";
 
 export default async function ParentBillingPage() {
   const supabase = await createClient();
@@ -50,7 +49,7 @@ export default async function ParentBillingPage() {
             enrollments (
               id,
               status,
-              classes ( id, name, price_cents )
+              classes ( id, name, price_cents, recurring_group_id )
             )
           )
         `)
@@ -110,18 +109,22 @@ export default async function ParentBillingPage() {
     ]),
   );
 
-  // A programme (e.g. "Intermediate") can run on multiple days as separate
-  // class rows, but the family pays once per programme — mirrors the "pay
-  // once per programme name" rule in lib/enrollment-billing.ts. Without this
-  // dedup, each day would show its own "set up auto-pay" card and a parent
-  // could accidentally create two live subscriptions for one programme.
+  // A linked recurring series (e.g. a Mon/Wed/Fri programme created together,
+  // sharing one recurring_group_id) can run on multiple days as separate
+  // class rows, but the family pays once per group — mirrors the billing
+  // rule in lib/enrollment-billing.ts. Without this dedup, each day would
+  // show its own "set up auto-pay" card and a parent could accidentally
+  // create two live subscriptions for one programme. Classes are never
+  // merged just for sharing a name — only an explicit recurring_group_id
+  // groups them, so unrelated classes that happen to share a label (e.g. two
+  // separately-created "Intermediate" classes) each keep their own card.
   const autoPayByProgramme = new Map<string, AutoPayItem>();
   for (const g of guardianshipsRes.data ?? []) {
     const profile = g.profiles as unknown as {
       full_name: string | null;
       enrollments: {
         status: string;
-        classes: { id: string; name: string; price_cents: number } | null;
+        classes: { id: string; name: string; price_cents: number; recurring_group_id: string | null } | null;
       }[];
     } | null;
 
@@ -145,7 +148,9 @@ export default async function ParentBillingPage() {
         cancelAtPeriodEnd: active ? (sub!.cancel_at_period_end ?? false) : false,
       };
 
-      const key = `${g.student_id}:${normalizeClassName(cls.name)}`;
+      const key = cls.recurring_group_id
+        ? `${g.student_id}:group:${cls.recurring_group_id}`
+        : `${g.student_id}:class:${cls.id}`;
       const existing = autoPayByProgramme.get(key);
       // Prefer the day that already has a live subscription as the
       // representative card; otherwise keep the first day seen.

@@ -6,8 +6,8 @@
 
 import { requirePortalSession } from "@/lib/portal/session";
 import ClassesManager from "@/components/admin/classes/ClassesManager";
-import { getXeroSalesAccountOptions } from "@/app/portal/admin/accounting/actions";
-import type { XeroAccountOption } from "@/lib/xero/chart-of-accounts";
+import { getXeroSalesAccountOptions, getXeroItemOptions } from "@/app/portal/admin/accounting/actions";
+import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-accounts";
 
 export type ClassRow = {
   id: string;
@@ -24,8 +24,9 @@ export type ClassRow = {
   teacherId: string | null;
   teacherName: string | null;
   recurringGroupId: string | null;
-  /** Optional — the dashboard schedule board's ClassRow doesn't fetch this. */
+  /** Optional — the dashboard schedule board's ClassRow doesn't fetch these. */
   xeroAccountCode?: string | null;
+  xeroItemCode?: string | null;
 };
 
 export type TeacherOption = {
@@ -67,23 +68,25 @@ export default async function ClassesPage() {
   const classIds = (capacityRes.data ?? []).map((c) => c.id as string);
 
   // Fetch teacher names, price/group data, and the live Xero chart of
-  // accounts in parallel — all depend on capacityRes but are independent of
-  // each other.
-  const [teacherNameRows, priceRows, xeroAccountsRes] = await Promise.all([
+  // accounts + item catalog in parallel — all depend on capacityRes but are
+  // independent of each other.
+  const [teacherNameRows, priceRows, xeroAccountsRes, xeroItemsRes] = await Promise.all([
     teacherIds.length
       ? supabase.from("profiles").select("id, full_name").in("id", teacherIds)
       : Promise.resolve({ data: [] as { id: string; full_name: string | null }[] }),
     classIds.length
-      ? supabase.from("classes").select("id, price_cents, recurring_group_id, xero_account_code").in("id", classIds)
+      ? supabase.from("classes").select("id, price_cents, recurring_group_id, xero_account_code, xero_item_code").in("id", classIds)
       : Promise.resolve({
           data: [] as {
             id: string;
             price_cents: number | null;
             recurring_group_id: string | null;
             xero_account_code: string | null;
+            xero_item_code: string | null;
           }[],
         }),
     getXeroSalesAccountOptions(),
+    getXeroItemOptions(),
   ]);
 
   const teacherMap = new Map<string, string>();
@@ -94,13 +97,16 @@ export default async function ClassesPage() {
   const priceMap = new Map<string, number>();
   const groupMap = new Map<string, string | null>();
   const xeroCodeMap = new Map<string, string | null>();
+  const xeroItemMap = new Map<string, string | null>();
   (priceRows.data ?? []).forEach((r) => {
     priceMap.set(r.id, r.price_cents ?? 0);
     groupMap.set(r.id, (r.recurring_group_id as string | null) ?? null);
     xeroCodeMap.set(r.id, (r.xero_account_code as string | null) ?? null);
+    xeroItemMap.set(r.id, (r.xero_item_code as string | null) ?? null);
   });
 
   const xeroAccounts: XeroAccountOption[] = xeroAccountsRes.ok ? xeroAccountsRes.data ?? [] : [];
+  const xeroItems: XeroItemOption[] = xeroItemsRes.ok ? xeroItemsRes.data ?? [] : [];
 
   const classes: ClassRow[] = (capacityRes.data ?? []).map((c) => ({
     id:          c.id as string,
@@ -118,6 +124,7 @@ export default async function ClassesPage() {
     teacherName: c.teacher_id ? (teacherMap.get(c.teacher_id as string) ?? null) : null,
     recurringGroupId: groupMap.get(c.id as string) ?? null,
     xeroAccountCode: xeroCodeMap.get(c.id as string) ?? null,
+    xeroItemCode: xeroItemMap.get(c.id as string) ?? null,
   }));
 
   const teachers: TeacherOption[] = (teachersRes.data ?? []).map((t) => ({
@@ -127,6 +134,12 @@ export default async function ClassesPage() {
   }));
 
   return (
-    <ClassesManager classes={classes} teachers={teachers} xeroAccounts={xeroAccounts} readOnly={readOnly} />
+    <ClassesManager
+      classes={classes}
+      teachers={teachers}
+      xeroAccounts={xeroAccounts}
+      xeroItems={xeroItems}
+      readOnly={readOnly}
+    />
   );
 }

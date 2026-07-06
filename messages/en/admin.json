@@ -237,6 +237,10 @@
         "xeroAccountCodeNone": "No code assigned",
         "xeroAccountCodeConnectHint": "Connect Xero in Accounting settings to assign a ledger code.",
         "xeroAccountCodeNotFound": "(not found in Xero)",
+        "xeroItemCode": "Xero item code",
+        "xeroItemCodeNone": "No item assigned",
+        "xeroItemCodeConnectHint": "Connect Xero in Accounting settings to assign an item code.",
+        "xeroItemCodeNotFound": "(not found in Xero)",
         "pickDayError": "Pick at least one day.",
         "createClass": "Create class",
         "saveChanges": "Save changes"

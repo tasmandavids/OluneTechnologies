@@ -235,6 +235,10 @@
         "xeroAccountCodeNone": "Aucun code attribué",
         "xeroAccountCodeConnectHint": "Connectez Xero dans les paramètres comptables pour attribuer un code comptable.",
         "xeroAccountCodeNotFound": "(introuvable dans Xero)",
+        "xeroItemCode": "Code d'article Xero",
+        "xeroItemCodeNone": "Aucun article attribué",
+        "xeroItemCodeConnectHint": "Connectez Xero dans les paramètres comptables pour attribuer un code d'article.",
+        "xeroItemCodeNotFound": "(introuvable dans Xero)",
         "pickDayError": "Choisissez au moins un jour.",
         "createClass": "Créer une classe",
         "saveChanges": "Enregistrer les modifications"

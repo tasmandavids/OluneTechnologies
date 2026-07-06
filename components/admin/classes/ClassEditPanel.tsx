@@ -9,7 +9,7 @@ import {
   createRecurringClasses,
 } from "@/app/portal/admin/classes/actions";
 import type { ClassRow, TeacherOption } from "@/app/portal/admin/classes/page";
-import type { XeroAccountOption } from "@/lib/xero/chart-of-accounts";
+import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-accounts";
 
 const DISCIPLINE_KEYS = [
   "ballet", "jazz", "hipHop", "contemporary", "tap", "lyrical",
@@ -48,6 +48,7 @@ type FormState = {
   priceCents: number;
   teacherId: string;
   xeroAccountCode: string;
+  xeroItemCode: string;
 };
 
 const EMPTY_FORM: FormState = {
@@ -63,6 +64,7 @@ const EMPTY_FORM: FormState = {
   priceCents: 0,
   teacherId: "",
   xeroAccountCode: "",
+  xeroItemCode: "",
 };
 
 function formFromClass(c: ClassRow): FormState {
@@ -79,6 +81,7 @@ function formFromClass(c: ClassRow): FormState {
     priceCents: c.priceCents,
     teacherId: c.teacherId ?? "",
     xeroAccountCode: c.xeroAccountCode ?? "",
+    xeroItemCode: c.xeroItemCode ?? "",
   };
 }
 
@@ -138,12 +141,14 @@ export function ClassEditPanel({
   editing,
   teachers,
   xeroAccounts = [],
+  xeroItems = [],
   onClose,
 }: {
   mode: "create" | "edit";
   editing: ClassRow | null;
   teachers: TeacherOption[];
   xeroAccounts?: XeroAccountOption[];
+  xeroItems?: XeroItemOption[];
   onClose: () => void;
 }) {
   const t = useTranslations("admin.classes.form");
@@ -179,6 +184,7 @@ export function ClassEditPanel({
       priceCents: form.priceCents,
       teacherId: form.teacherId || undefined,
       xeroAccountCode: form.xeroAccountCode || undefined,
+      xeroItemCode: form.xeroItemCode || undefined,
     };
 
     if (mode === "create" && form.days.length === 0) {
@@ -378,6 +384,30 @@ export function ClassEditPanel({
                 {form.xeroAccountCode && !xeroAccounts.some((a) => a.code === form.xeroAccountCode) && (
                   <option value={form.xeroAccountCode}>
                     {form.xeroAccountCode} {t("xeroAccountCodeNotFound")}
+                  </option>
+                )}
+              </Select>
+            )}
+          </div>
+
+          <div>
+            <Label>{t("xeroItemCode")}</Label>
+            {xeroItems.length === 0 ? (
+              <>
+                <Select value={form.xeroItemCode} onChange={() => {}}>
+                  <option value="">{t("xeroItemCodeNone")}</option>
+                </Select>
+                <p className="mt-1.5 text-[0.68rem] text-muted">{t("xeroItemCodeConnectHint")}</p>
+              </>
+            ) : (
+              <Select value={form.xeroItemCode} onChange={(v) => set("xeroItemCode", v)}>
+                <option value="">{t("xeroItemCodeNone")}</option>
+                {xeroItems.map((item) => (
+                  <option key={item.code} value={item.code}>{item.code} — {item.name}</option>
+                ))}
+                {form.xeroItemCode && !xeroItems.some((i) => i.code === form.xeroItemCode) && (
+                  <option value={form.xeroItemCode}>
+                    {form.xeroItemCode} {t("xeroItemCodeNotFound")}
                   </option>
                 )}
               </Select>

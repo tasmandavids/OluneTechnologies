@@ -5,7 +5,7 @@ import { getAdminXeroContext } from "@/lib/xero/admin-context";
 import { revokeXeroConnection, xeroRedirectUri } from "@/lib/xero/client";
 import { resolveAppOriginFromHeaders } from "@/lib/xero/app-origin";
 import { xeroSettingsSchema } from "@/lib/xero/schemas";
-import { listXeroSalesAccounts, type XeroAccountOption } from "@/lib/xero/chart-of-accounts";
+import { listXeroSalesAccounts, listXeroSalesItems, type XeroAccountOption, type XeroItemOption } from "@/lib/xero/chart-of-accounts";
 
 export async function disconnectXero(): Promise<{ ok: true } | { ok: false; error: string }> {
   const ctx = await getAdminXeroContext();
@@ -41,6 +41,21 @@ export async function getXeroSalesAccountOptions(): Promise<
     return { ok: true, data: accounts };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Could not load Xero accounts" };
+  }
+}
+
+export async function getXeroItemOptions(): Promise<
+  { ok: true; data: XeroItemOption[] | null } | { ok: false; error: string }
+> {
+  const ctx = await getAdminXeroContext();
+  if (ctx.error) return { ok: false, error: ctx.error };
+
+  try {
+    const origin = await resolveAppOriginFromHeaders();
+    const items = await listXeroSalesItems(ctx.supabase, ctx.studioId, xeroRedirectUri(origin));
+    return { ok: true, data: items };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Could not load Xero items" };
   }
 }
 

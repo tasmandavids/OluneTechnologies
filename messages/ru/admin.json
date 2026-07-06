@@ -235,6 +235,10 @@
         "xeroAccountCodeNone": "Код не назначен",
         "xeroAccountCodeConnectHint": "Подключите Xero в настройках бухгалтерии, чтобы назначить код счёта.",
         "xeroAccountCodeNotFound": "(не найден в Xero)",
+        "xeroItemCode": "Код товара Xero",
+        "xeroItemCodeNone": "Товар не назначен",
+        "xeroItemCodeConnectHint": "Подключите Xero в настройках бухгалтерии, чтобы назначить код товара.",
+        "xeroItemCodeNotFound": "(не найден в Xero)",
         "pickDayError": "Выберите хотя бы один день.",
         "createClass": "Создать класс",
         "saveChanges": "Сохранить изменения"

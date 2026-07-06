@@ -45,6 +45,7 @@ const ClassSchema = z.object({
   priceCents: z.coerce.number().int().min(0),
   teacherId:  z.string().uuid().optional().or(z.literal("")),
   xeroAccountCode: z.string().max(20).optional().or(z.literal("")),
+  xeroItemCode: z.string().max(30).optional().or(z.literal("")),
 });
 
 export type ClassFormData = z.infer<typeof ClassSchema>;
@@ -197,6 +198,7 @@ export async function createClass(input: unknown): Promise<ActionResult> {
     price_cents: d.priceCents,
     teacher_id:  d.teacherId || null,
     xero_account_code: d.xeroAccountCode || null,
+    xero_item_code: d.xeroItemCode || null,
   });
 
   if (dbError) return { ok: false, error: dbError.message };
@@ -238,6 +240,7 @@ export async function updateClass(
       price_cents: d.priceCents,
       teacher_id:  d.teacherId || null,
       xero_account_code: d.xeroAccountCode || null,
+      xero_item_code: d.xeroItemCode || null,
     })
     .eq("id", classId)
     .eq("studio_id", studioId);
@@ -285,6 +288,7 @@ export async function createRecurringClasses(input: unknown): Promise<ActionResu
     price_cents:        d.priceCents,
     teacher_id:         d.teacherId || null,
     xero_account_code:  d.xeroAccountCode || null,
+    xero_item_code:     d.xeroItemCode || null,
   }));
 
   const { error: dbError } = await supabase.from("classes").insert(rows);

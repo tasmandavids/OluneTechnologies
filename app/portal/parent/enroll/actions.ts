@@ -30,6 +30,10 @@ export type AvailableClass = {
   capacity: number;
   enrolled: number;
   priceCents: number;
+  /** Non-null only when this class is an explicit linked recurring series
+   *  (e.g. a Mon/Wed/Fri programme created together) — the studio bills once
+   *  per group, not per day. Never matched by class name. */
+  recurringGroupId: string | null;
 };
 
 export type Waiver = {
@@ -112,14 +116,15 @@ export async function getAvailableClasses(): Promise<ActionResult<AvailableClass
 
   if (dbErr) return { ok: false, error: dbErr.message };
 
-  // Also fetch prices from classes table
+  // Also fetch prices + recurring-group linkage from classes table
   const ids = (data ?? []).map((r) => r.id as string);
   const { data: priceData } = await supabase
     .from("classes")
-    .select("id, price_cents")
+    .select("id, price_cents, recurring_group_id")
     .in("id", ids);
 
   const priceMap = new Map((priceData ?? []).map((r) => [r.id, r.price_cents as number]));
+  const groupMap = new Map((priceData ?? []).map((r) => [r.id, r.recurring_group_id as string | null]));
 
   const classes: AvailableClass[] = (data ?? []).map((r) => ({
     id: r.id as string,
@@ -131,6 +136,7 @@ export async function getAvailableClasses(): Promise<ActionResult<AvailableClass
     capacity: Number(r.capacity ?? 0),
     enrolled: Number(r.enrolled ?? 0),
     priceCents: priceMap.get(r.id as string) ?? 0,
+    recurringGroupId: groupMap.get(r.id as string) ?? null,
   }));
 
   return { ok: true, data: classes };
@@ -262,14 +268,11 @@ async function enrollmentChargeCents(
   studioId: string,
   userId: string,
   studentId: string,
-  className: string,
   priceCents: number,
   mode: "parent" | "self" | null,
-  classId?: string,
+  classId: string,
 ) {
-  const baseCents = await enrollmentBillableCents(supabase, studentId, className, priceCents, {
-    excludeClassId: classId,
-  });
+  const baseCents = await enrollmentBillableCents(supabase, studentId, classId, priceCents);
   if (baseCents <= 0) return 0;
 
   return mode === "self"
@@ -279,15 +282,14 @@ async function enrollmentChargeCents(
 
 export async function getEnrollmentBillingQuote(
   studentId: string,
-  className: string,
   priceCents: number,
-  classId?: string,
+  classId: string,
 ): Promise<ActionResult<{ billableCents: number; includedInProgramme: boolean }>> {
   const t = await getTranslations("errors.actions");
   const ctx = await getEnrollmentContext();
   const { error, supabase, userId, studioId, mode } = ctx;
   if (error || !userId || !studioId) return { ok: false, error: error ?? t("unknown") };
-  if (!uuidField.safeParse(studentId).success) {
+  if (!uuidField.safeParse(studentId).success || !uuidField.safeParse(classId).success) {
     return { ok: false, error: t("invalidStudentOrClass") };
   }
 
@@ -299,7 +301,6 @@ export async function getEnrollmentBillingQuote(
     studioId,
     userId,
     studentId,
-    className,
     priceCents,
     mode,
     classId,
@@ -372,10 +373,13 @@ async function insertEnrollmentInvoice(
 
   const { data: classRows } = await supabase
     .from("classes")
-    .select("id, xero_account_code")
+    .select("id, xero_account_code, xero_item_code")
     .in("id", charges.map((c) => c.classId));
   const accountCodeByClassId = new Map(
     (classRows ?? []).map((c) => [c.id as string, c.xero_account_code as string | null]),
+  );
+  const itemCodeByClassId = new Map(
+    (classRows ?? []).map((c) => [c.id as string, c.xero_item_code as string | null]),
   );
 
   await supabase.from("invoice_line_items").insert(
@@ -389,6 +393,7 @@ async function insertEnrollmentInvoice(
       line_total_cents: c.chargeCents,
       sort_order: idx,
       account_code: accountCodeByClassId.get(c.classId) ?? null,
+      item_code: itemCodeByClassId.get(c.classId) ?? null,
     })),
   );
 
@@ -432,7 +437,6 @@ export async function createEnrollmentPayLaterInvoice(
       studioId,
       userId,
       studentId,
-      cls.className,
       cls.priceCents,
       mode,
       cls.classId,
@@ -488,7 +492,6 @@ export async function createEnrollmentIntent(
     studioId,
     userId,
     studentId,
-    className,
     priceCents,
     mode,
     classId,

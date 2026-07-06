@@ -49,6 +49,7 @@ type SelectedClass = {
   priceCents: number;
   billableCents: number;
   includedInProgramme: boolean;
+  recurringGroupId: string | null;
 };
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
@@ -68,10 +69,6 @@ function StepIndicator({ step, total }: { step: number; total: number }) {
       ))}
     </div>
   );
-}
-
-function normProgramme(name: string) {
-  return name.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 function ClassCard({
@@ -277,35 +274,40 @@ function Step1SelectClass({
   const selectedChild = familyChildren.find((c) => c.studentId === childId);
   const selectedClasses = classes.filter((c) => selectedIds.has(c.id));
 
-  // Compute which selected classes are "included" (same programme name, not the first).
-  const paidProgrammesInSelection = new Set<string>();
+  // Compute which selected classes are "included" (linked recurring-series
+  // sibling of one already counted, not the first). Only an explicit shared
+  // recurringGroupId counts — never matched by class name.
+  const paidGroupsInSelection = new Set<string>();
   const includedInBatchIds = new Set<string>();
   for (const c of selectedClasses) {
-    const norm = normProgramme(c.name);
-    if (paidProgrammesInSelection.has(norm)) {
+    if (!c.recurringGroupId) continue;
+    if (paidGroupsInSelection.has(c.recurringGroupId)) {
       includedInBatchIds.add(c.id);
     } else {
-      paidProgrammesInSelection.add(norm);
+      paidGroupsInSelection.add(c.recurringGroupId);
     }
   }
   const totalCents = selectedClasses
     .filter((c) => !includedInBatchIds.has(c.id))
     .reduce((sum, c) => sum + c.priceCents, 0);
 
-  // Suggested classes: other sessions of a programme the dancer is already
-  // enrolled in (or has just selected) — same normalized name, so they'd be
-  // billed as "Included" per lib/enrollment-billing.ts.
+  // Suggested classes: other days of a linked recurring series the dancer is
+  // already enrolled in (or has just selected) — same recurringGroupId, so
+  // they'd be billed as "Included" per lib/enrollment-billing.ts.
   const activeClassIds = new Set((selectedChild?.classes ?? []).map((c) => c.id));
-  const relevantProgrammeNames = new Set([
-    ...(selectedChild?.classes ?? []).map((c) => normProgramme(c.name)),
-    ...selectedClasses.map((c) => normProgramme(c.name)),
-  ]);
+  const relevantGroupIds = new Set(
+    [
+      ...(selectedChild?.classes ?? []).map((c) => c.recurringGroupId),
+      ...selectedClasses.map((c) => c.recurringGroupId),
+    ].filter((id): id is string => !!id),
+  );
   const suggestions = classes.filter(
     (c) =>
       !selectedIds.has(c.id) &&
       !activeClassIds.has(c.id) &&
       c.capacity - c.enrolled > 0 &&
-      relevantProgrammeNames.has(normProgramme(c.name)),
+      !!c.recurringGroupId &&
+      relevantGroupIds.has(c.recurringGroupId),
   );
 
   return (
@@ -995,6 +997,7 @@ export function EnrollModal({
                         priceCents: cls.priceCents,
                         billableCents: cls.priceCents,
                         includedInProgramme: false,
+                        recurringGroupId: cls.recurringGroupId,
                       })),
                     });
                     setStep(1);
@@ -1006,27 +1009,26 @@ export function EnrollModal({
                   childName={enrollData.childName ?? null}
                   childId={enrollData.childId!}
                   onNext={async () => {
-                    // Process quotes sequentially so that within this batch,
-                    // the second day of the same programme (same class name)
-                    // is correctly treated as included — mirroring the DB logic
-                    // in enrollment-billing.ts which charges once per programme name.
-                    const paidProgrammes = new Set<string>();
+                    // Process quotes sequentially so that within this batch, the
+                    // second day of a linked recurring series (same
+                    // recurringGroupId) is correctly treated as included —
+                    // mirroring the DB logic in enrollment-billing.ts, which
+                    // never matches by class name.
+                    const paidGroups = new Set<string>();
                     const updatedClasses: SelectedClass[] = [];
                     for (const cls of enrollData.classes ?? []) {
-                      const normName = cls.className.trim().toLowerCase().replace(/\s+/g, " ");
-                      if (paidProgrammes.has(normName)) {
+                      if (cls.recurringGroupId && paidGroups.has(cls.recurringGroupId)) {
                         updatedClasses.push({ ...cls, billableCents: 0, includedInProgramme: true });
                         continue;
                       }
                       const quote = await getEnrollmentBillingQuote(
                         enrollData.childId!,
-                        cls.className,
                         cls.priceCents,
                         cls.classId,
                       );
                       const billable = quote.ok ? quote.data.billableCents : cls.priceCents;
                       const included = quote.ok ? quote.data.includedInProgramme : false;
-                      if (billable > 0) paidProgrammes.add(normName);
+                      if (billable > 0 && cls.recurringGroupId) paidGroups.add(cls.recurringGroupId);
                       updatedClasses.push({ ...cls, billableCents: billable, includedInProgramme: included });
                     }
                     setEnrollData((prev) => ({ ...prev, classes: updatedClasses }));

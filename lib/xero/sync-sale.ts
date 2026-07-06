@@ -123,6 +123,10 @@ async function createOutstandingInvoice(
     date: issueDate,
     dueDate,
     reference,
+    // Mirror Olune's own invoice number onto Xero's invoiceNumber field too —
+    // otherwise Xero auto-assigns its own separate sequence and the two
+    // systems show different numbers for the same invoice.
+    invoiceNumber: reference,
     lineAmountTypes: LineAmountTypes.Inclusive,
     // Draft, not Authorised: keeps it out of Xero reporting/emailable-to-contact
     // until a bookkeeper reviews it, so nobody in Xero can send the customer a
@@ -192,6 +196,9 @@ async function createPaidInvoice(
     date: today,
     dueDate: today,
     reference,
+    // See createOutstandingInvoice — keep Xero's own invoiceNumber aligned
+    // with Olune's reference instead of letting Xero auto-assign its own.
+    invoiceNumber: reference,
     lineAmountTypes: LineAmountTypes.Inclusive,
     status: Invoice.StatusEnum.AUTHORISED,
     currencyCode: CurrencyCode.NZD,
@@ -228,7 +235,7 @@ async function loadInvoiceRecord(
     .select(`
       id, studio_id, payer_id, amount_cents, due_date, issued_at, xero_invoice_id, invoice_number, description,
       student:profiles!student_id ( full_name ),
-      invoice_line_items ( description, quantity, unit_cents, sort_order, account_code )
+      invoice_line_items ( description, quantity, unit_cents, sort_order, account_code, item_code )
     `)
     .eq("id", invoiceId)
     .single();
@@ -247,6 +254,7 @@ async function loadInvoiceRecord(
       unit_cents: number;
       sort_order: number;
       account_code: string | null;
+      item_code: string | null;
     }[]
   )
     .slice()
@@ -258,6 +266,9 @@ async function loadInvoiceRecord(
   // accountCode unset here (rather than hardcoding the studio default) so
   // callers' `li.accountCode ?? cfg.sales_account_code ?? DEFAULT...` fallback
   // chain can actually take effect for a line item with its own code.
+  // itemCode (a Xero Products & Services item, distinct from the ledger
+  // account) is only ever set when present — Xero rejects an itemCode that
+  // doesn't exist in its catalog, so never send a placeholder.
   const lineItems: LineItem[] =
     rawLineItems.length > 0
       ? rawLineItems.map((li) => ({
@@ -265,6 +276,7 @@ async function loadInvoiceRecord(
           quantity: li.quantity,
           unitAmount: dollarsFromCents(li.unit_cents),
           accountCode: li.account_code ?? undefined,
+          itemCode: li.item_code ?? undefined,
           taxType: "OUTPUT2",
         }))
       : [
@@ -606,6 +618,7 @@ export async function updateOutstandingInvoiceInXero(
           date: issueDate,
           dueDate,
           reference: record.reference,
+          invoiceNumber: record.reference,
           lineAmountTypes: LineAmountTypes.Inclusive,
         },
       ],

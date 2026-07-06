@@ -21,6 +21,7 @@ export type EnrolledClass = {
   capacity: number;
   teacherName: string | null;
   priceCents: number;
+  recurringGroupId: string | null;
 };
 
 export default async function StudentPortal() {
@@ -41,7 +42,7 @@ export default async function StudentPortal() {
       id,
       classes (
         id, name, discipline, level,
-        day_of_week, start_time, end_time, capacity, price_cents,
+        day_of_week, start_time, end_time, capacity, price_cents, recurring_group_id,
         profiles!teacher_id ( full_name )
       )
     `)
@@ -53,7 +54,7 @@ export default async function StudentPortal() {
       const c = r.classes as unknown as {
         id: string; name: string; discipline: string | null; level: string | null;
         day_of_week: number; start_time: string | null; end_time: string | null;
-        capacity: number; price_cents: number;
+        capacity: number; price_cents: number; recurring_group_id: string | null;
         profiles: { full_name: string | null } | null;
       } | null;
       if (!c) return null;
@@ -69,6 +70,7 @@ export default async function StudentPortal() {
         capacity: c.capacity,
         teacherName: c.profiles?.full_name ?? null,
         priceCents: c.price_cents ?? 0,
+        recurringGroupId: c.recurring_group_id ?? null,
       };
     })
     .filter((c): c is EnrolledClass => c !== null)
@@ -101,6 +103,7 @@ export default async function StudentPortal() {
       dayOfWeek: c.dayOfWeek,
       startTime: c.startTime,
       priceCents: c.priceCents ?? 0,
+      recurringGroupId: c.recurringGroupId,
     })),
   };
 

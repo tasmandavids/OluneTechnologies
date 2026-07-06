@@ -33,6 +33,7 @@ export type Child = {
     dayOfWeek: number;
     startTime: string | null;
     priceCents: number;
+    recurringGroupId: string | null;
   }[];
 };
 
@@ -81,7 +82,7 @@ export default async function ParentPortal() {
             id,
             status,
             classes (
-              id, name, discipline, level, day_of_week, start_time, price_cents
+              id, name, discipline, level, day_of_week, start_time, price_cents, recurring_group_id
             )
           )
         )
@@ -151,7 +152,7 @@ export default async function ParentPortal() {
         classes: {
           id: string; name: string; discipline: string | null;
           level: string | null; day_of_week: number; start_time: string | null;
-          price_cents: number;
+          price_cents: number; recurring_group_id: string | null;
         } | null;
       }[];
     } | null;
@@ -166,6 +167,7 @@ export default async function ParentPortal() {
         dayOfWeek: e.classes!.day_of_week,
         startTime: e.classes!.start_time,
         priceCents: e.classes!.price_cents ?? 0,
+        recurringGroupId: e.classes!.recurring_group_id ?? null,
       }));
 
     return {
