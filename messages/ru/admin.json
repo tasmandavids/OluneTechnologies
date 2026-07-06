@@ -241,7 +241,15 @@
         "xeroItemCodeNotFound": "(не найден в Xero)",
         "pickDayError": "Выберите хотя бы один день.",
         "createClass": "Создать класс",
-        "saveChanges": "Сохранить изменения"
+        "saveChanges": "Сохранить изменения",
+        "seriesLabel": "Серия",
+        "seriesHint": "Свяжите этот класс с другим, чтобы управлять ими как одной серией — без необходимости пересоздавать его.",
+        "seriesNoneOption": "Не входит в серию",
+        "seriesExistingGroup": "Существующие серии",
+        "seriesStandaloneGroup": "Отдельные классы",
+        "seriesOptionGroupLabel": "{name} · {count} занятий",
+        "seriesLinkButton": "Связать с серией",
+        "seriesLinking": "Связывание…"
       },
       "delete": {
         "title": "Удалить \"{name}\"?",

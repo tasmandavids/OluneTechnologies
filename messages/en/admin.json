@@ -243,7 +243,15 @@
         "xeroItemCodeNotFound": "(not found in Xero)",
         "pickDayError": "Pick at least one day.",
         "createClass": "Create class",
-        "saveChanges": "Save changes"
+        "saveChanges": "Save changes",
+        "seriesLabel": "Series",
+        "seriesHint": "Attach this class to another so they're managed together as one series — no need to recreate it.",
+        "seriesNoneOption": "Not part of a series",
+        "seriesExistingGroup": "Existing series",
+        "seriesStandaloneGroup": "Standalone classes",
+        "seriesOptionGroupLabel": "{name} · {count} classes",
+        "seriesLinkButton": "Link to series",
+        "seriesLinking": "Linking…"
       },
       "delete": {
         "title": "Delete \"{name}\"?",

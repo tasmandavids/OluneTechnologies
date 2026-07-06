@@ -341,6 +341,7 @@ export default function ClassesManager({
             mode={panel.type}
             editing={panel.type === "edit" ? panel.cls : null}
             teachers={teachers}
+            allClasses={classes}
             xeroAccounts={xeroAccounts}
             xeroItems={xeroItems}
             onClose={() => setPanel(null)}

@@ -243,7 +243,15 @@
         "xeroItemCodeNotFound": "（在 Xero 中未找到）",
         "pickDayError": "请至少选择一天。",
         "createClass": "创建课程",
-        "saveChanges": "保存更改"
+        "saveChanges": "保存更改",
+        "seriesLabel": "系列",
+        "seriesHint": "将此课程与另一课程关联，以便作为一个系列统一管理，无需重新创建。",
+        "seriesNoneOption": "不属于任何系列",
+        "seriesExistingGroup": "现有系列",
+        "seriesStandaloneGroup": "独立课程",
+        "seriesOptionGroupLabel": "{name} · {count} 门课程",
+        "seriesLinkButton": "关联到系列",
+        "seriesLinking": "关联中…"
       },
       "delete": {
         "title": "删除「{name}」？",

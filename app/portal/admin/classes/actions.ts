@@ -298,6 +298,67 @@ export async function createRecurringClasses(input: unknown): Promise<ActionResu
   return { ok: true };
 }
 
+// ─── LINK TO SERIES ─────────────────────────────────────────────────────────
+//  Attaches an existing class to another class's recurring_group_id (or
+//  starts a new group between two standalone classes), so a client can build
+//  a series out of classes that already exist instead of recreating them.
+
+export type SeriesSelection =
+  | { type: "none" }
+  | { type: "group"; groupId: string }
+  | { type: "class"; classId: string };
+
+export async function linkClassToSeries(
+  classId: string,
+  selection: SeriesSelection,
+): Promise<ActionResult> {
+  if (!classId) return { ok: false, error: "Missing class ID" };
+
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
+
+  let groupId: string | null;
+
+  if (selection.type === "none") {
+    groupId = null;
+  } else if (selection.type === "group") {
+    groupId = selection.groupId;
+  } else {
+    const { data: target } = await supabase
+      .from("classes")
+      .select("id, recurring_group_id")
+      .eq("id", selection.classId)
+      .eq("studio_id", studioId)
+      .single();
+
+    if (!target) return { ok: false, error: "Class not found." };
+
+    if (target.recurring_group_id) {
+      groupId = target.recurring_group_id as string;
+    } else {
+      groupId = crypto.randomUUID();
+      const { error: linkErr } = await supabase
+        .from("classes")
+        .update({ recurring_group_id: groupId })
+        .eq("id", target.id)
+        .eq("studio_id", studioId);
+      if (linkErr) return { ok: false, error: linkErr.message };
+    }
+  }
+
+  const { error: dbError } = await supabase
+    .from("classes")
+    .update({ recurring_group_id: groupId })
+    .eq("id", classId)
+    .eq("studio_id", studioId);
+
+  if (dbError) return { ok: false, error: dbError.message };
+
+  revalidatePath("/portal/admin/classes");
+  revalidatePath("/portal/admin");
+  return { ok: true };
+}
+
 // ─── DELETE WHOLE RECURRING GROUP ─────────────────────────────────────────────
 
 export async function deleteRecurringGroup(groupId: string): Promise<ActionResult> {

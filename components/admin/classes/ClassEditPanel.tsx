@@ -7,6 +7,8 @@ import {
   createClass,
   updateClass,
   createRecurringClasses,
+  linkClassToSeries,
+  type SeriesSelection,
 } from "@/app/portal/admin/classes/actions";
 import type { ClassRow, TeacherOption } from "@/app/portal/admin/classes/page";
 import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-accounts";
@@ -34,6 +36,12 @@ const DISCIPLINE_VALUES: Record<(typeof DISCIPLINE_KEYS)[number], string> = {
 
 const DAY_KEYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
 const DAY_SHORT_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
+
+function decodeSeriesChoice(value: string): SeriesSelection {
+  if (value.startsWith("group:")) return { type: "group", groupId: value.slice(6) };
+  if (value.startsWith("class:")) return { type: "class", classId: value.slice(6) };
+  return { type: "none" };
+}
 
 type FormState = {
   name: string;
@@ -140,6 +148,7 @@ export function ClassEditPanel({
   mode,
   editing,
   teachers,
+  allClasses = [],
   xeroAccounts = [],
   xeroItems = [],
   onClose,
@@ -147,6 +156,7 @@ export function ClassEditPanel({
   mode: "create" | "edit";
   editing: ClassRow | null;
   teachers: TeacherOption[];
+  allClasses?: ClassRow[];
   xeroAccounts?: XeroAccountOption[];
   xeroItems?: XeroItemOption[];
   onClose: () => void;
@@ -159,6 +169,48 @@ export function ClassEditPanel({
   );
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  // Group the studio's other classes so an existing class can be attached to
+  // an existing series (or paired with a standalone class to start one)
+  // instead of being recreated via the multi-day picker.
+  const otherClasses = editing ? allClasses.filter((c) => c.id !== editing.id) : allClasses;
+  const seriesGroupMap = new Map<string, ClassRow[]>();
+  const standaloneClasses: ClassRow[] = [];
+  otherClasses.forEach((c) => {
+    if (c.recurringGroupId) {
+      const members = seriesGroupMap.get(c.recurringGroupId) ?? [];
+      members.push(c);
+      seriesGroupMap.set(c.recurringGroupId, members);
+    } else {
+      standaloneClasses.push(c);
+    }
+  });
+  const seriesGroups = Array.from(seriesGroupMap.entries()).map(([groupId, members]) => ({
+    groupId,
+    label: t("seriesOptionGroupLabel", { name: members[0].name, count: members.length }),
+  }));
+
+  const [seriesChoice, setSeriesChoice] = useState<string>(() =>
+    editing?.recurringGroupId && seriesGroupMap.has(editing.recurringGroupId)
+      ? `group:${editing.recurringGroupId}`
+      : "none",
+  );
+  const [seriesPending, startSeriesTransition] = useTransition();
+  const [seriesError, setSeriesError] = useState<string | null>(null);
+
+  const linkSeries = () => {
+    if (!editing) return;
+    setSeriesError(null);
+    const selection = decodeSeriesChoice(seriesChoice);
+    startSeriesTransition(async () => {
+      const result = await linkClassToSeries(editing.id, selection);
+      if (!result.ok) {
+        setSeriesError(result.error);
+        return;
+      }
+      onClose();
+    });
+  };
 
   const set = <K extends keyof FormState>(key: K, val: FormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: val }));
@@ -365,6 +417,49 @@ export function ClassEditPanel({
               ))}
             </Select>
           </div>
+
+          {mode === "edit" && editing && (
+            <div className="rounded-xl border border-[--hair] bg-base/50 p-4">
+              <Label>{t("seriesLabel")}</Label>
+              <p className="mb-2 text-[0.68rem] text-muted">{t("seriesHint")}</p>
+              <Select value={seriesChoice} onChange={setSeriesChoice}>
+                <option value="none">{t("seriesNoneOption")}</option>
+                {seriesGroups.length > 0 && (
+                  <optgroup label={t("seriesExistingGroup")}>
+                    {seriesGroups.map((g) => (
+                      <option key={g.groupId} value={`group:${g.groupId}`}>
+                        {g.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                {standaloneClasses.length > 0 && (
+                  <optgroup label={t("seriesStandaloneGroup")}>
+                    {standaloneClasses.map((c) => (
+                      <option key={c.id} value={`class:${c.id}`}>
+                        {c.name} — {tCommon(`days.${DAY_SHORT_KEYS[c.dayOfWeek]}`)}
+                        {c.startTime ? ` ${c.startTime.slice(0, 5)}` : ""}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+              </Select>
+              {seriesError && (
+                <p className="mt-2 rounded-lg border border-red-400/30 bg-red-400/10 px-3 py-2 text-xs text-red-400">
+                  {seriesError}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={linkSeries}
+                disabled={seriesPending}
+                className="mt-3 w-full rounded-lg border border-[--hair] py-2 text-xs font-bold text-ink
+                           transition-colors hover:bg-[--hair] disabled:opacity-50"
+              >
+                {seriesPending ? t("seriesLinking") : t("seriesLinkButton")}
+              </button>
+            </div>
+          )}
 
           <div>
             <Label>{t("xeroAccountCode")}</Label>
