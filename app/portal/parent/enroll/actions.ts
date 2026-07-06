@@ -10,7 +10,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCY, gstComponentCents } from "@/lib/currency";
 import { siblingDiscountedCents } from "@/lib/discounts";
-import { enrollmentBillableCents } from "@/lib/enrollment-billing";
+import { enrollmentBillableCents, batchEnrollmentBillableCents } from "@/lib/enrollment-billing";
 import { xeroSyncOutstandingInvoice } from "@/lib/xero/webhook-sync";
 import { getTranslations } from "@/lib/i18n/server";
 
@@ -433,18 +433,22 @@ export async function createEnrollmentPayLaterInvoice(
   const accessErr = await assertStudentAccess(ctx, studentId, t);
   if (accessErr) return { ok: false, error: accessErr };
 
+  // Batch-aware: all of `classes` are enrolled (as active rows) before this
+  // billing step runs, so a per-class check would find every linked-series
+  // sibling already active and zero all of them out. See
+  // batchEnrollmentBillableCents for why this can't reuse enrollmentChargeCents.
+  const baseCentsByClassId = await batchEnrollmentBillableCents(
+    supabase,
+    studentId,
+    classes.map((c) => ({ classId: c.classId, priceCents: c.priceCents })),
+  );
+
   const charges: { classId: string; className: string; chargeCents: number }[] = [];
   for (const cls of classes) {
-    if (cls.priceCents <= 0) continue;
-    const chargeCents = await enrollmentChargeCents(
-      supabase,
-      studioId,
-      userId,
-      studentId,
-      cls.priceCents,
-      mode,
-      cls.classId,
-    );
+    const baseCents = baseCentsByClassId.get(cls.classId) ?? 0;
+    if (baseCents <= 0) continue;
+    const chargeCents =
+      mode === "self" ? baseCents : await siblingDiscountedCents(supabase, studioId, userId, studentId, baseCents);
     if (chargeCents > 0) charges.push({ classId: cls.classId, className: cls.className, chargeCents });
   }
 

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   studentHasActiveEnrollmentInProgrammeGroup,
   enrollmentBillableCents,
+  batchEnrollmentBillableCents,
 } from "@/lib/enrollment-billing";
 import { makeSupabaseMock } from "./helpers/supabaseMock";
 
@@ -47,7 +48,7 @@ describe("studentHasActiveEnrollmentInProgrammeGroup", () => {
       ]),
     });
     const r = await studentHasActiveEnrollmentInProgrammeGroup(supabase, "s1", "group-1", {
-      excludeClassId: "c-mon",
+      excludeClassIds: ["c-mon"],
     });
     expect(r).toBe(false);
   });
@@ -90,5 +91,80 @@ describe("enrollmentBillableCents", () => {
       ]),
     });
     expect(await enrollmentBillableCents(supabase, "s1", "c-wed", 12000)).toBe(0);
+  });
+});
+
+describe("batchEnrollmentBillableCents", () => {
+  const classesList = (rows: { id: string; recurring_group_id: string | null }[]) => ({
+    list: { data: rows },
+  });
+
+  it("bills only the first class of a linked series enrolled together in one batch, not zero and not both", async () => {
+    // Regression test: EnrollModal's enrollAll() inserts every selected
+    // class's `enrollments` row as active *before* billing runs, so by the
+    // time charges are computed both series days are already active. A
+    // naive per-class check (excluding only itself) finds the other day
+    // active and zeroes both out. Batch billing must exclude all classes in
+    // this batch from that check and bill exactly one representative.
+    const supabase = makeSupabaseMock({
+      classes: classesList([
+        { id: "c-mon", recurring_group_id: "group-1" },
+        { id: "c-wed", recurring_group_id: "group-1" },
+      ]),
+      // Both enrollments already active — inserted by enrollAll() before billing.
+      enrollments: enrollments([
+        { id: "e1", classes: { id: "c-mon", recurring_group_id: "group-1" } },
+        { id: "e2", classes: { id: "c-wed", recurring_group_id: "group-1" } },
+      ]),
+    });
+
+    const result = await batchEnrollmentBillableCents(supabase, "s1", [
+      { classId: "c-mon", priceCents: 44500 },
+      { classId: "c-wed", priceCents: 44500 },
+    ]);
+
+    expect(result.get("c-mon")).toBe(44500);
+    expect(result.get("c-wed")).toBe(0);
+  });
+
+  it("bills a standalone class in the same batch independently of the series", async () => {
+    const supabase = makeSupabaseMock({
+      classes: classesList([
+        { id: "c-mon", recurring_group_id: "group-1" },
+        { id: "c-wed", recurring_group_id: "group-1" },
+        { id: "c-adult", recurring_group_id: null },
+      ]),
+      enrollments: enrollments([
+        { id: "e1", classes: { id: "c-mon", recurring_group_id: "group-1" } },
+        { id: "e2", classes: { id: "c-wed", recurring_group_id: "group-1" } },
+        { id: "e3", classes: { id: "c-adult", recurring_group_id: null } },
+      ]),
+    });
+
+    const result = await batchEnrollmentBillableCents(supabase, "s1", [
+      { classId: "c-mon", priceCents: 44500 },
+      { classId: "c-wed", priceCents: 44500 },
+      { classId: "c-adult", priceCents: 22000 },
+    ]);
+
+    expect(result.get("c-mon")).toBe(44500);
+    expect(result.get("c-wed")).toBe(0);
+    expect(result.get("c-adult")).toBe(22000);
+  });
+
+  it("bills 0 for every class in a series already fully covered by a prior, external enrollment", async () => {
+    const supabase = makeSupabaseMock({
+      classes: classesList([{ id: "c-wed", recurring_group_id: "group-1" }]),
+      // c-mon is active from a prior, separate session — not part of this batch.
+      enrollments: enrollments([
+        { id: "e1", classes: { id: "c-mon", recurring_group_id: "group-1" } },
+      ]),
+    });
+
+    const result = await batchEnrollmentBillableCents(supabase, "s1", [
+      { classId: "c-wed", priceCents: 44500 },
+    ]);
+
+    expect(result.get("c-wed")).toBe(0);
   });
 });
