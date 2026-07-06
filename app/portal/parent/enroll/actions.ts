@@ -382,7 +382,7 @@ async function insertEnrollmentInvoice(
     (classRows ?? []).map((c) => [c.id as string, c.xero_item_code as string | null]),
   );
 
-  await supabase.from("invoice_line_items").insert(
+  const { error: lineItemsErr } = await supabase.from("invoice_line_items").insert(
     charges.map((c, idx) => ({
       invoice_id: invoiceId,
       item_type: "class",
@@ -396,6 +396,10 @@ async function insertEnrollmentInvoice(
       item_code: itemCodeByClassId.get(c.classId) ?? null,
     })),
   );
+
+  if (lineItemsErr) {
+    return { ok: false as const, error: lineItemsErr.message };
+  }
 
   await xeroSyncOutstandingInvoice(supabase, invoiceId, {
     lineDescription:
