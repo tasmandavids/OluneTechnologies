@@ -416,14 +416,7 @@ export default function ParentDetailHub({
       )}
 
       {tab === "billing" && (
-        <ParentBillingTab
-          parentId={parent.id}
-          parentName={parent.name ?? tCommon("parent")}
-          students={parent.children}
-          invoices={invoices}
-          payments={payments}
-          orders={orders}
-        />
+        <ParentBillingTab invoices={invoices} payments={payments} orders={orders} />
       )}
 
       {tab === "messages" && (

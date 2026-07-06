@@ -444,11 +444,6 @@
         "invoices": "Invoices",
         "invoicesTitle": "Invoices",
         "noInvoices": "No invoices yet.",
-        "createDraftInvoiceButton": "Create draft invoice",
-        "draftInvoiceModal": {
-          "title": "Draft invoice for {name}",
-          "description": "Create a fresh draft after making changes — review it before sending."
-        },
         "table": {
           "number": "Invoice #",
           "issued": "Issued",

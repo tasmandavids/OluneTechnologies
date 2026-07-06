@@ -444,11 +444,6 @@
         "invoices": "账单",
         "invoicesTitle": "账单",
         "noInvoices": "暂无账单。",
-        "createDraftInvoiceButton": "创建草稿发票",
-        "draftInvoiceModal": {
-          "title": "为 {name} 创建草稿发票",
-          "description": "在修改之后创建一份新的草稿发票——发送前请先检查。"
-        },
         "table": {
           "number": "账单号",
           "issued": "开具",

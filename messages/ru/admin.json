@@ -408,11 +408,6 @@
         "invoices": "Счета-фактуры",
         "invoicesTitle": "Счета-фактуры",
         "noInvoices": "Счетов-фактур пока нет.",
-        "createDraftInvoiceButton": "Создать черновик счета",
-        "draftInvoiceModal": {
-          "title": "Черновик счета для {name}",
-          "description": "Создайте новый черновик после внесения изменений — проверьте его перед отправкой."
-        },
         "table": {
           "number": "№ счёта",
           "issued": "Изданный",
