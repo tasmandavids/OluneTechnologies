@@ -45,14 +45,14 @@ function fmtDate(iso: string | null) {
 export default function ParentBillingTab({
   parentId,
   parentName,
-  children,
+  students,
   invoices,
   payments,
   orders,
 }: {
   parentId: string;
   parentName: string;
-  children: { id: string; name: string | null }[];
+  students: { id: string; name: string | null }[];
   invoices: ParentInvoice[];
   payments: ParentPayment[];
   orders: ParentOrder[];
@@ -69,7 +69,7 @@ export default function ParentBillingTab({
   return (
     <div className="space-y-8">
       <div className="flex justify-end">
-        <CreateDraftInvoiceButton parentId={parentId} parentName={parentName} children={children} />
+        <CreateDraftInvoiceButton parentId={parentId} parentName={parentName} students={students} />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">

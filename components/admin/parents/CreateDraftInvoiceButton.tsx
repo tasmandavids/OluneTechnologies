@@ -21,11 +21,11 @@ function defaultDueDate() {
 export default function CreateDraftInvoiceButton({
   parentId,
   parentName,
-  children,
+  students,
 }: {
   parentId: string;
   parentName: string;
-  children: { id: string; name: string | null }[];
+  students: { id: string; name: string | null }[];
 }) {
   const t = useTranslations("admin.parents.billing");
   const tBilling = useTranslations("admin.billing");
@@ -115,7 +115,7 @@ export default function CreateDraftInvoiceButton({
             <p className="mt-1 text-sm text-muted">{t("draftInvoiceModal.description")}</p>
 
             <form onSubmit={submit} className="mt-5 space-y-4">
-              {children.length > 0 && (
+              {students.length > 0 && (
                 <label className="block text-xs font-semibold uppercase tracking-wider text-muted">
                   {tBilling("createModal.student")}{" "}
                   <span className="font-normal normal-case">{tShared("optional")}</span>
@@ -125,7 +125,7 @@ export default function CreateDraftInvoiceButton({
                     className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
                   >
                     <option value="">{tShared("notLinkedStudent")}</option>
-                    {children.map((c) => (
+                    {students.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.name ?? tCommon("student")}
                       </option>

@@ -419,7 +419,7 @@ export default function ParentDetailHub({
         <ParentBillingTab
           parentId={parent.id}
           parentName={parent.name ?? tCommon("parent")}
-          children={parent.children}
+          students={parent.children}
           invoices={invoices}
           payments={payments}
           orders={orders}
