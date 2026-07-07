@@ -123,7 +123,7 @@
       "summaryClass": "Занятие",
       "summaryDancer": "Танцор",
       "summaryTotalDue": "Стоимость занятия",
-      "paymentChoiceHint": "Оплата не обязательна для записи. Выберите оплатить позже, чтобы подтвердить без оплаты, или оплатить сейчас онлайн.",
+      "paymentChoiceHint": "Оплата не требуется для записи — выберите «Оплатить позже», и мы отправим счёт, который можно оплатить в любое время.",
       "payNow": "Оплатить сейчас",
       "payLater": "Оплатить позже",
       "payLaterInstead": "Оплатить позже",
@@ -147,7 +147,9 @@
       "classSelected": "{count} class selected",
       "classesSelected": "{count} classes selected",
       "multipleClasses": "{count} classes",
-      "done": "Готово"
+      "done": "Готово",
+      "payMonthlyWithAmount": "Помесячно · {amount}/мес",
+      "morePaymentOptions": "Другие способы оплаты"
     },
     "email": {
       "title": "Почта студии",
@@ -182,6 +184,28 @@
         "fri": "Пт",
         "sat": "Сб",
         "sun": "Вс"
+      }
+    },
+    "inbox": {
+      "tabs": {
+        "chat": "Чат",
+        "email": "Почта"
+      }
+    },
+    "scheduleViews": {
+      "family": "Моя семья",
+      "studio": "Вся студия"
+    },
+    "billing": {
+      "summaryBand": {
+        "title": "Планы оплаты и автоплатёж",
+        "autopay": "Автоплатёж",
+        "autopayOn": "Включён",
+        "autopayOff": "Выключен",
+        "planLabel": "План оплаты — оплачено {paid} из {total}",
+        "paid": "Оплачено {amount}",
+        "total": "Всего {amount}",
+        "nextInstalment": "Следующий платёж {amount} — {date}"
       }
     }
   }

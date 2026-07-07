@@ -231,11 +231,11 @@
         "priceCents": "Цена (центов NZD)",
         "pricePlaceholder": "например 2000 = 20 долларов",
         "teacher": "Учитель",
-        "xeroAccountCode": "Код счёта Xero",
+        "xeroAccountCode": "Счёт Xero",
         "xeroAccountCodeNone": "Код не назначен",
         "xeroAccountCodeConnectHint": "Подключите Xero в настройках бухгалтерии, чтобы назначить код счёта.",
         "xeroAccountCodeNotFound": "(не найден в Xero)",
-        "xeroItemCode": "Код товара Xero",
+        "xeroItemCode": "Позиция Xero",
         "xeroItemCodeNone": "Товар не назначен",
         "xeroItemCodeConnectHint": "Подключите Xero в настройках бухгалтерии, чтобы назначить код товара.",
         "xeroItemCodeNotFound": "(не найден в Xero)",
@@ -249,7 +249,8 @@
         "seriesStandaloneGroup": "Отдельные классы",
         "seriesOptionGroupLabel": "{name} · {count} занятий",
         "seriesLinkButton": "Связать с серией",
-        "seriesLinking": "Связывание…"
+        "seriesLinking": "Связывание…",
+        "xeroSection": "Бухгалтерия (Xero)"
       },
       "delete": {
         "title": "Удалить \"{name}\"?",
@@ -574,7 +575,12 @@
         "xeroSyncError": "Сохранено, но синхронизация с Xero не удалась: {error}"
       },
       "send": "Отправить",
-      "sendXeroSyncError": "Счёт отправлен, но синхронизация с Xero не удалась: {error}"
+      "sendXeroSyncError": "Счёт отправлен, но синхронизация с Xero не удалась: {error}",
+      "tabs": {
+        "invoices": "Счета",
+        "subscriptions": "Подписки",
+        "paymentPlans": "Планы оплаты"
+      }
     },
     "accounting": {
       "title": "Бухгалтерский учет",
@@ -1053,7 +1059,10 @@
       "studioId": "Идентификатор студии",
       "customDomainSection": "Пользовательский домен",
       "customDomainDescription": "Подключите свой собственный домен (например, www.mystudio.co.nz) с помощью нашего пошагового руководства — никакого жаргона DNS не требуется.",
-      "openDomainWizard": "Открыть мастер настройки домена →"
+      "openDomainWizard": "Открыть мастер настройки домена →",
+      "brandingTitle": "Брендинг",
+      "brandingDescription": "Логотип, цвета и внешний вид вашей студии на портале и сайте.",
+      "openBranding": "Открыть брендинг"
     },
     "branding": {
       "title": "Появление",
@@ -1194,6 +1203,12 @@
           "contract": "Контракт и оплата",
           "shifts": "Смены"
         }
+      }
+    },
+    "inbox": {
+      "tabs": {
+        "messages": "Сообщения",
+        "email": "Почта"
       }
     }
   }

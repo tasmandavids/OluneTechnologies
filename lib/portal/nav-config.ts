@@ -12,6 +12,8 @@ export type NavSection = {
   items: NavItem[];
 };
 
+// 1.6.1 IA: one job-to-be-done = one door. 13 top-level items across 4 titled
+// sections (was 20 / 7). Old routes redirect to their new homes.
 export const ADMIN_NAV: NavSection[] = [
   {
     items: [
@@ -22,10 +24,19 @@ export const ADMIN_NAV: NavSection[] = [
   },
   {
     titleKey: "nav.sections.teamManagement",
-    items: [{ href: "/portal/admin/staff", labelKey: "nav.admin.staff" }],
+    items: [
+      {
+        href: "/portal/admin/staff",
+        labelKey: "nav.admin.staff",
+        children: [
+          { href: "/portal/admin/substitutes", labelKey: "nav.admin.substitutes" },
+          { href: "/portal/admin/availability", labelKey: "nav.admin.availability" },
+        ],
+      },
+    ],
   },
   {
-    titleKey: "nav.sections.clientManagement",
+    titleKey: "nav.sections.families",
     items: [
       { href: "/portal/admin/parents", labelKey: "nav.admin.parents" },
       { href: "/portal/admin/students", labelKey: "nav.admin.students" },
@@ -37,31 +48,25 @@ export const ADMIN_NAV: NavSection[] = [
     items: [
       { href: "/portal/admin/billing", labelKey: "nav.admin.billing" },
       { href: "/portal/admin/accounting", labelKey: "nav.admin.accounting" },
-      { href: "/portal/admin/subscriptions", labelKey: "nav.admin.subscriptions" },
-      { href: "/portal/admin/payment-plans", labelKey: "nav.admin.paymentPlans" },
     ],
   },
   {
     titleKey: "nav.sections.digital",
     items: [
-      { href: "/portal/admin/site", labelKey: "nav.admin.website" },
-      { href: "/portal/admin/advertising", labelKey: "nav.admin.advertising" },
+      {
+        href: "/portal/admin/site",
+        labelKey: "nav.admin.website",
+        children: [
+          { href: "/portal/admin/advertising", labelKey: "nav.admin.advertising" },
+        ],
+      },
       { href: "/portal/admin/shop", labelKey: "nav.admin.shop" },
     ],
   },
   {
-    titleKey: "nav.sections.communications",
     items: [
-      { href: "/portal/admin/email", labelKey: "nav.admin.email" },
-      { href: "/portal/admin/messages", labelKey: "nav.admin.messages" },
+      { href: "/portal/admin/messages", labelKey: "nav.admin.inbox" },
       { href: "/portal/admin/support", labelKey: "nav.admin.support" },
-    ],
-  },
-  {
-    titleKey: "nav.sections.staffing",
-    items: [
-      { href: "/portal/admin/substitutes", labelKey: "nav.admin.substitutes" },
-      { href: "/portal/admin/availability", labelKey: "nav.admin.availability" },
     ],
   },
   {
@@ -103,22 +108,17 @@ export const PORTAL_NAV: Record<Exclude<Role, "admin">, NavItem[]> = {
     { href: "/settings/notifications", labelKey: "nav.teacher.notifications" },
   ],
   office: [{ href: "/portal/office", labelKey: "nav.office.dashboard", exact: true }],
+  // 1.6.1 IA: 7 items, no submenus. Schedule folds in the studio timetable
+  // (?view=studio), Billing folds in the old Family Wallet, Messages folds in
+  // chat + studio email (?tab=email). Old routes redirect.
   parent: [
     { href: "/portal/parent", labelKey: "nav.parent.familyHub", exact: true },
     { href: "/portal/parent/schedule", labelKey: "nav.parent.schedule" },
-    { href: "/portal/parent/studio-schedule", labelKey: "nav.parent.fullStudioSchedule" },
     { href: "/portal/parent/absences", labelKey: "nav.parent.absences" },
     { href: "/portal/parent/recital", labelKey: "nav.parent.recital" },
     { href: "/portal/parent/forms", labelKey: "nav.parent.forms" },
-    {
-      href: "/portal/parent/wallet",
-      labelKey: "nav.parent.wallet",
-      children: [
-        { href: "/portal/parent/billing", labelKey: "nav.parent.billing" },
-      ],
-    },
-    { href: "/portal/parent/chat", labelKey: "nav.parent.studioChat" },
-    { href: "/portal/parent/messages", labelKey: "nav.parent.studioEmail" },
+    { href: "/portal/parent/billing", labelKey: "nav.parent.billing" },
+    { href: "/portal/parent/chat", labelKey: "nav.parent.messages" },
   ],
   student: [
     { href: "/portal/student", labelKey: "nav.student.timetable", exact: true },

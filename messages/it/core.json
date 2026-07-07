@@ -86,7 +86,7 @@
       "finance": "Finanza",
       "digital": "Digitale",
       "communications": "Comunicazioni",
-      "staffing": "Personale"
+      "families": "Famiglie"
     },
     "admin": {
       "dashboard": "Dashboard",
@@ -98,28 +98,26 @@
       "leads": "Lead",
       "billing": "Fatturazione",
       "accounting": "Contabilità",
-      "subscriptions": "Abbonamenti",
       "website": "Sito web",
       "advertising": "Pubblicità",
       "shop": "Negozio",
-      "email": "Email",
       "messages": "Messaggi",
       "support": "Supporto Olune",
       "settings": "Impostazioni",
       "substitutes": "Sostituzioni",
-      "paymentPlans": "Piani di pagamento",
-      "availability": "Disponibilità insegnanti"
+      "availability": "Disponibilità insegnanti",
+      "inbox": "Posta in arrivo"
     },
     "teacher": {
       "schedule": "Orario e presenze",
-      "affiliations": "Studi affiliati",
+      "affiliations": "I miei studi",
       "clients": "Clienti privati",
       "invoices": "Fatture",
       "messages": "Messaggi",
       "availability": "Disponibilità",
-      "substitutes": "Bacheca sostituzioni",
+      "substitutes": "Richieste di supplenza",
       "expenses": "Spese",
-      "vault": "Archivio conformità",
+      "vault": "Documenti",
       "notifications": "Notifiche",
       "profile": "Profilo pubblico"
     },
@@ -129,15 +127,12 @@
     "parent": {
       "familyHub": "Hub famiglia",
       "schedule": "Orario",
-      "fullStudioSchedule": "Orario completo dello studio",
-      "billing": "Fatturazione e pagamenti",
-      "studioChat": "Chat studio",
-      "studioEmail": "Email dello studio",
+      "billing": "Fatturazione",
       "absences": "Assenze",
       "recital": "Costumi e Saggio",
       "notifications": "Notifiche",
       "forms": "Moduli e Permessi",
-      "wallet": "Conto famiglia"
+      "messages": "Messaggi"
     },
     "student": {
       "timetable": "Il mio orario"

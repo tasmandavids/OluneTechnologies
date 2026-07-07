@@ -233,11 +233,11 @@
         "priceCents": "Price (cents NZD)",
         "pricePlaceholder": "e.g. 2000 = $20",
         "teacher": "Teacher",
-        "xeroAccountCode": "Xero ledger code",
+        "xeroAccountCode": "Xero account",
         "xeroAccountCodeNone": "No code assigned",
         "xeroAccountCodeConnectHint": "Connect Xero in Accounting settings to assign a ledger code.",
         "xeroAccountCodeNotFound": "(not found in Xero)",
-        "xeroItemCode": "Xero item code",
+        "xeroItemCode": "Xero item",
         "xeroItemCodeNone": "No item assigned",
         "xeroItemCodeConnectHint": "Connect Xero in Accounting settings to assign an item code.",
         "xeroItemCodeNotFound": "(not found in Xero)",
@@ -251,7 +251,8 @@
         "seriesStandaloneGroup": "Standalone classes",
         "seriesOptionGroupLabel": "{name} · {count} classes",
         "seriesLinkButton": "Link to series",
-        "seriesLinking": "Linking…"
+        "seriesLinking": "Linking…",
+        "xeroSection": "Accounting (Xero)"
       },
       "delete": {
         "title": "Delete \"{name}\"?",
@@ -610,7 +611,12 @@
         "xeroSyncError": "Saved, but Xero sync failed: {error}"
       },
       "send": "Send",
-      "sendXeroSyncError": "Invoice sent, but Xero sync failed: {error}"
+      "sendXeroSyncError": "Invoice sent, but Xero sync failed: {error}",
+      "tabs": {
+        "invoices": "Invoices",
+        "subscriptions": "Subscriptions",
+        "paymentPlans": "Payment plans"
+      }
     },
     "accounting": {
       "title": "Accounting",
@@ -1130,7 +1136,10 @@
         "buttonTextLogin": "Member login",
         "buttonTextJoin": "Join our studio",
         "iframeNote": "Note: the portal can’t be placed inside an iframe (for sign-in security). Use a link or button that opens it in a new tab."
-      }
+      },
+      "brandingTitle": "Branding",
+      "brandingDescription": "Logo, colours, and how your studio looks across the portal and website.",
+      "openBranding": "Open branding"
     },
     "branding": {
       "title": "Appearance",
@@ -1271,6 +1280,12 @@
           "contract": "Contract & pay",
           "shifts": "Shifts"
         }
+      }
+    },
+    "inbox": {
+      "tabs": {
+        "messages": "Messages",
+        "email": "Email"
       }
     }
   }

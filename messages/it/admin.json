@@ -231,11 +231,11 @@
         "priceCents": "Prezzo (centesimi NZD)",
         "pricePlaceholder": "ad es. 2000 = $ 20",
         "teacher": "Insegnante",
-        "xeroAccountCode": "Codice contabile Xero",
+        "xeroAccountCode": "Conto Xero",
         "xeroAccountCodeNone": "Nessun codice assegnato",
         "xeroAccountCodeConnectHint": "Collega Xero nelle impostazioni contabili per assegnare un codice contabile.",
         "xeroAccountCodeNotFound": "(non trovato in Xero)",
-        "xeroItemCode": "Codice articolo Xero",
+        "xeroItemCode": "Articolo Xero",
         "xeroItemCodeNone": "Nessun articolo assegnato",
         "xeroItemCodeConnectHint": "Collega Xero nelle impostazioni contabili per assegnare un codice articolo.",
         "xeroItemCodeNotFound": "(non trovato in Xero)",
@@ -249,7 +249,8 @@
         "seriesStandaloneGroup": "Classi singole",
         "seriesOptionGroupLabel": "{name} · {count} classi",
         "seriesLinkButton": "Collega alla serie",
-        "seriesLinking": "Collegamento…"
+        "seriesLinking": "Collegamento…",
+        "xeroSection": "Contabilità (Xero)"
       },
       "delete": {
         "title": "Eliminare \"{name}\"?",
@@ -574,7 +575,12 @@
         "xeroSyncError": "Salvato, ma la sincronizzazione con Xero non è riuscita: {error}"
       },
       "send": "Invia",
-      "sendXeroSyncError": "Fattura inviata, ma la sincronizzazione con Xero non è riuscita: {error}"
+      "sendXeroSyncError": "Fattura inviata, ma la sincronizzazione con Xero non è riuscita: {error}",
+      "tabs": {
+        "invoices": "Fatture",
+        "subscriptions": "Abbonamenti",
+        "paymentPlans": "Piani di pagamento"
+      }
     },
     "accounting": {
       "title": "Contabilità",
@@ -1053,7 +1059,10 @@
       "studioId": "Identificativo dello studio",
       "customDomainSection": "Dominio personalizzato",
       "customDomainDescription": "Collega il tuo dominio (ad esempio www.mystudio.co.nz) con la nostra guida passo passo: non è richiesto il gergo DNS.",
-      "openDomainWizard": "Apri la procedura guidata di configurazione del dominio →"
+      "openDomainWizard": "Apri la procedura guidata di configurazione del dominio →",
+      "brandingTitle": "Immagine del brand",
+      "brandingDescription": "Logo, colori e aspetto del tuo studio nel portale e nel sito web.",
+      "openBranding": "Apri il branding"
     },
     "branding": {
       "title": "Aspetto",
@@ -1194,6 +1203,12 @@
           "contract": "Contratto e pagamento",
           "shifts": "Turni"
         }
+      }
+    },
+    "inbox": {
+      "tabs": {
+        "messages": "Messaggi",
+        "email": "Email"
       }
     }
   }

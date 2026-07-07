@@ -160,8 +160,8 @@
       "summaryClass": "课程",
       "summaryDancer": "舞者",
       "summaryTotalDue": "课程费用",
-      "paymentChoiceHint": "现在报名无需付款。可稍后付款以确认而不立即支付、立即支付整个学期，或将账户余额分 3 个月支付。",
-      "payNow": "全额支付学期费用",
+      "paymentChoiceHint": "报名无需立即付款——选择“稍后支付”，我们会发送发票，您可以随时付款。",
+      "payNow": "立即支付",
       "payLater": "稍后付款",
       "payMonthly": "按月支付（分 3 期）",
       "termPayTitle": "每月学期付款",
@@ -191,7 +191,9 @@
       "classSelected": "已选择 {count} 门课程",
       "classesSelected": "已选择 {count} 门课程",
       "multipleClasses": "{count} 门课程",
-      "done": "完成"
+      "done": "完成",
+      "payMonthlyWithAmount": "按月支付 · 每月 {amount}",
+      "morePaymentOptions": "更多付款方式"
     },
     "email": {
       "title": "工作室邮件",
@@ -313,6 +315,16 @@
         "draft": "草稿",
         "void": "已作废",
         "refunded": "已退款"
+      },
+      "summaryBand": {
+        "title": "付款计划与自动扣款",
+        "autopay": "自动扣款",
+        "autopayOn": "已开启",
+        "autopayOff": "已关闭",
+        "planLabel": "付款计划 — 已付 {paid}/{total} 期",
+        "paid": "已付 {amount}",
+        "total": "共 {amount}",
+        "nextInstalment": "下一期 {amount}，{date} 到期"
       }
     },
     "studioSchedule": {
@@ -364,6 +376,16 @@
         "note": "备注",
         "other": "其他"
       }
+    },
+    "inbox": {
+      "tabs": {
+        "chat": "聊天",
+        "email": "邮件"
+      }
+    },
+    "scheduleViews": {
+      "family": "我的家庭",
+      "studio": "整个工作室"
     }
   }
 }

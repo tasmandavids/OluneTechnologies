@@ -86,7 +86,7 @@
       "finance": "财务",
       "digital": "数字化",
       "communications": "沟通",
-      "staffing": "人员配置"
+      "families": "家庭"
     },
     "admin": {
       "dashboard": "仪表盘",
@@ -98,28 +98,26 @@
       "leads": "潜在客户",
       "billing": "账单",
       "accounting": "会计",
-      "subscriptions": "订阅",
       "website": "网站",
       "advertising": "广告",
       "shop": "商店",
-      "email": "邮件",
       "messages": "消息",
       "support": "Olune 支持",
       "settings": "设置",
       "substitutes": "代课",
-      "paymentPlans": "付款计划",
-      "availability": "教师可用时间"
+      "availability": "教师可用时间",
+      "inbox": "收件箱"
     },
     "teacher": {
       "schedule": "课程表与点名",
       "clients": "私教客户",
       "invoices": "账单",
       "messages": "消息",
-      "affiliations": "工作室关联",
+      "affiliations": "我的工作室",
       "availability": "可用时间",
-      "substitutes": "代课看板",
+      "substitutes": "代课请求",
       "expenses": "支出",
-      "vault": "合规保险库",
+      "vault": "文件",
       "notifications": "通知设置",
       "profile": "公开资料"
     },
@@ -129,15 +127,12 @@
     "parent": {
       "familyHub": "家庭中心",
       "schedule": "日程",
-      "fullStudioSchedule": "完整工作室日程",
-      "billing": "账单与付款",
-      "studioChat": "工作室聊天",
-      "studioEmail": "工作室邮件",
+      "billing": "账单",
       "absences": "请假",
       "recital": "服装与汇演",
       "notifications": "通知",
       "forms": "表格与授权",
-      "wallet": "家庭钱包"
+      "messages": "消息"
     },
     "student": {
       "timetable": "我的课程表",

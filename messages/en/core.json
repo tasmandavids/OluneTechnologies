@@ -86,7 +86,7 @@
       "finance": "Finance",
       "digital": "Digital",
       "communications": "Communications",
-      "staffing": "Staffing"
+      "families": "Families"
     },
     "admin": {
       "dashboard": "Dashboard",
@@ -98,28 +98,26 @@
       "leads": "Leads",
       "billing": "Billing",
       "accounting": "Accounting",
-      "subscriptions": "Subscriptions",
       "website": "Website",
       "advertising": "Advertising",
       "shop": "Shop",
-      "email": "Email",
       "messages": "Messages",
       "support": "Olune Support",
       "settings": "Settings",
       "substitutes": "Substitutes",
-      "paymentPlans": "Payment plans",
-      "availability": "Teacher availability"
+      "availability": "Teacher availability",
+      "inbox": "Inbox"
     },
     "teacher": {
       "schedule": "Schedule & Roll",
       "clients": "Private clients",
       "invoices": "Invoices",
       "messages": "Messages",
-      "affiliations": "Studio affiliations",
+      "affiliations": "My studios",
       "availability": "Availability",
-      "substitutes": "Sub board",
+      "substitutes": "Cover requests",
       "expenses": "Expenses",
-      "vault": "Compliance vault",
+      "vault": "Documents",
       "notifications": "Notification settings",
       "profile": "Public profile"
     },
@@ -129,15 +127,12 @@
     "parent": {
       "familyHub": "Family Hub",
       "schedule": "Schedule",
-      "fullStudioSchedule": "Full studio schedule",
-      "billing": "Billing & payments",
-      "studioChat": "Studio chat",
-      "studioEmail": "Studio email",
+      "billing": "Billing",
       "absences": "Absences",
       "recital": "Costumes & Recital",
       "notifications": "Notifications",
       "forms": "Forms & Permissions",
-      "wallet": "Family Wallet"
+      "messages": "Messages"
     },
     "student": {
       "timetable": "My Timetable",
