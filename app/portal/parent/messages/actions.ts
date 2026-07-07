@@ -16,6 +16,6 @@ export async function markParentEmailThreadRead(threadId: string): Promise<{ ok:
     .eq("id", threadId)
     .eq("parent_id", user.id);
 
-  revalidatePath("/portal/parent/messages");
+  revalidatePath("/portal/parent/chat");
   return { ok: true };
 }

@@ -1,62 +1,91 @@
 // ============================================================================
-//  /portal/admin/messages — Internal messaging hub (server component shell)
+//  /portal/admin/messages — the admin Inbox: one door for studio comms.
+//  Tabs: Messages (internal/parent chat) | Email (connected studio inbox).
+//  Backends stay separate — this is a UI-level merge only (1.6.1 IA).
 // ============================================================================
 
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { MessagesPanel } from "@/components/admin/messages/MessagesPanel";
+import { getTranslations } from "@/lib/i18n/server";
 import { isStudioOpsRole } from "@/lib/portal/access";
-import { isMessageTopic } from "@/lib/portal/message-topics";
-import { normalizeMessageContact } from "@/lib/portal/staff-messages";
 import { requirePortalSession } from "@/lib/portal/session";
+import { MessagesTab } from "./messages-tab";
+import { EmailTab } from "./email-tab";
 
 export const dynamic = "force-dynamic";
 
-export default async function MessagesPage({
+function safeDecodeURIComponent(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+export default async function InboxPage({
   searchParams,
 }: {
-  searchParams: Promise<{ with?: string; topic?: string }>;
+  searchParams: Promise<{
+    tab?: string;
+    with?: string;
+    topic?: string;
+    error?: string;
+    connected?: string;
+  }>;
 }) {
-  const { with: withParam, topic: topicParam } = await searchParams;
-  const { supabase, userId, studioId, role } = await requirePortalSession();
+  const params = await searchParams;
+  const { role } = await requirePortalSession();
 
   if (!isStudioOpsRole(role)) {
     redirect(role === "office" ? "/portal/office" : "/portal/admin");
   }
 
-  const [{ data: contacts }, { data: recentMessages }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("id, full_name, role")
-      .eq("studio_id", studioId)
-      .neq("id", userId)
-      .order("full_name"),
-    supabase
-      .from("messages")
-      .select("id, from_user_id, to_user_id, body, channel, topic, sent_at, read_at")
-      .eq("studio_id", studioId)
-      .or(`from_user_id.eq.${userId},to_user_id.eq.${userId}`)
-      .order("sent_at", { ascending: false })
-      .limit(100),
-  ]);
-
-  const normalizedContacts = (contacts ?? []).map((c) =>
-    normalizeMessageContact({
-      id: c.id as string,
-      full_name: c.full_name as string | null,
-      role: c.role as string,
-    }),
-  );
-
-  const initialTopic =
-    topicParam && isMessageTopic(topicParam) ? topicParam : null;
+  // The email inbox is admin-only (office staff keep messages only).
+  const canEmail = role === "admin";
+  const tab = canEmail && params.tab === "email" ? "email" : "messages";
+  const t = await getTranslations("admin.inbox");
 
   return (
-    <MessagesPanel
-      currentUserId={userId}
-      contacts={normalizedContacts}
-      recentMessages={recentMessages ?? []}
-      initialContactId={withParam ?? null}
-      initialTopic={initialTopic}
-    />
+    <div className="flex h-full min-h-0 flex-col">
+      {canEmail && (
+        <div className="flex shrink-0 items-center gap-1 border-b border-[--hair] bg-surface px-4 py-2">
+          {(
+            [
+              { id: "messages", href: "/portal/admin/messages", label: t("tabs.messages") },
+              {
+                id: "email",
+                href: "/portal/admin/messages?tab=email",
+                label: t("tabs.email"),
+              },
+            ] as const
+          ).map(({ id, href, label }) => (
+            <Link
+              key={id}
+              href={href}
+              scroll={false}
+              className={`rounded-lg px-4 py-1.5 text-xs font-semibold transition ${
+                tab === id ? "bg-ink text-paper" : "text-muted hover:bg-base hover:text-ink"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+      )}
+
+      <div className="min-h-0 flex-1">
+        {tab === "email" ? (
+          <EmailTab
+            bannerError={params.error ? safeDecodeURIComponent(params.error) : null}
+            bannerConnected={params.connected ?? null}
+          />
+        ) : (
+          <MessagesTab
+            withParam={params.with ?? null}
+            topicParam={params.topic ?? null}
+          />
+        )}
+      </div>
+    </div>
   );
 }

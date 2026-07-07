@@ -122,7 +122,7 @@ export function ParentEmailInbox({
   };
 
   return (
-    <div className="flex h-[calc(100dvh-3.25rem)] min-h-[32rem] flex-col md:h-[calc(100dvh-3rem)]">
+    <div className="flex h-full min-h-[32rem] flex-col">
       <div className="border-b border-[--hair] px-6 py-5">
         <h1 className="text-2xl font-black text-ink">{t("title")}</h1>
         <p className="mt-1 text-sm text-muted">{t("subtitle", { studioName })}</p>

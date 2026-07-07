@@ -315,7 +315,7 @@ function MessagesPanelContent({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-base">
+    <div className="flex h-full overflow-hidden bg-base">
       <aside className="flex w-80 shrink-0 flex-col border-r border-[--hair] bg-surface">
         <div className="border-b border-[--hair] px-5 py-4">
           <h1 className="text-lg font-black text-ink">{t("title")}</h1>

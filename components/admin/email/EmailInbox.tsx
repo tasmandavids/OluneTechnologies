@@ -285,7 +285,7 @@ export function EmailInbox({
       const result = await runEmailSync();
       if (cancelled) return;
       if (!result.ok) setSyncError(result.error || t("syncFailed"));
-      window.history.replaceState(null, "", "/portal/admin/email");
+      window.history.replaceState(null, "", "/portal/admin/messages?tab=email");
       window.location.reload();
     })();
 
