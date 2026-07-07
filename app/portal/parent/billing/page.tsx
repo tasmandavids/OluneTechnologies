@@ -13,7 +13,7 @@ export default async function ParentBillingPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [invoicesRes, paymentsRes, ordersRes, guardianshipsRes, subscriptionsRes] =
+  const [invoicesRes, paymentsRes, ordersRes, guardianshipsRes, subscriptionsRes, plansRes] =
     await Promise.all([
       supabase
         .from("invoices")
@@ -59,6 +59,17 @@ export default async function ParentBillingPage() {
         .from("subscriptions")
         .select("class_id, student_id, status, stripe_subscription_id, cancel_at_period_end")
         .eq("payer_id", user!.id),
+
+      // Wallet summary band (1.6.1: Family Wallet merged into Billing) —
+      // active instalment plans shown as progress at the top of the page.
+      supabase
+        .from("term_payment_plans")
+        .select(
+          "id, total_cents, amount_paid_cents, next_due_date, installment_amounts, installments_paid, installment_count",
+        )
+        .eq("payer_id", user!.id)
+        .eq("status", "active")
+        .limit(20),
     ]);
 
   const invoices = (invoicesRes.data ?? []).map((inv) => {
@@ -165,6 +176,24 @@ export default async function ParentBillingPage() {
   const accountSummaryRes = await getAccountBillingSummary();
   const accountSummary = accountSummaryRes.ok ? accountSummaryRes.data : null;
 
+  const paymentPlans = (plansRes.data ?? []).map((p) => {
+    const amounts = (p.installment_amounts as number[]) ?? [];
+    const paid = (p.installments_paid as number) ?? 0;
+    return {
+      id: p.id as string,
+      totalCents: p.total_cents as number,
+      paidCents: (p.amount_paid_cents as number) ?? 0,
+      installmentsPaid: paid,
+      installmentCount: p.installment_count as number,
+      nextDueCents: amounts[paid] ?? null,
+      nextDueDate: (p.next_due_date as string | null) ?? null,
+    };
+  });
+
+  const autopayActive = ((subscriptionsRes.data ?? []) as { status: string }[]).some((s) =>
+    ["active", "trialing"].includes(s.status),
+  );
+
   return (
     <ParentBillingHub
       invoices={invoices}
@@ -173,6 +202,8 @@ export default async function ParentBillingPage() {
       autoPayItems={autoPayItems}
       stripeConfigured={stripeConfigured}
       accountSummary={accountSummary}
+      paymentPlans={paymentPlans}
+      autopayActive={autopayActive}
     />
   );
 }

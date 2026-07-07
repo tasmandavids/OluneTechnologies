@@ -40,6 +40,16 @@ export type BillingOrder = {
   createdAt: string;
 };
 
+export type BillingPlanSummary = {
+  id: string;
+  totalCents: number;
+  paidCents: number;
+  installmentsPaid: number;
+  installmentCount: number;
+  nextDueCents: number | null;
+  nextDueDate: string | null;
+};
+
 const STATUS_KEYS = ["paid", "sent", "overdue", "draft", "void", "refunded"] as const;
 
 const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
@@ -84,6 +94,8 @@ export function ParentBillingHub({
   autoPayItems,
   stripeConfigured,
   accountSummary,
+  paymentPlans = [],
+  autopayActive = false,
 }: {
   invoices: BillingInvoice[];
   payments: BillingPayment[];
@@ -91,6 +103,8 @@ export function ParentBillingHub({
   autoPayItems: AutoPayItem[];
   stripeConfigured: boolean;
   accountSummary: AccountBillingSummary | null;
+  paymentPlans?: BillingPlanSummary[];
+  autopayActive?: boolean;
 }) {
   const t = useTranslations("parent.billing");
   const locale = useLocale();
@@ -178,6 +192,60 @@ export function ParentBillingHub({
           <p className="mt-1 text-xl font-black text-ink">{invoices.length}</p>
         </div>
       </div>
+
+      {/* Wallet summary band — plan progress, subscriptions, saved payment
+          method access. Merged here from the old Family Wallet page (1.6.1). */}
+      {(paymentPlans.length > 0 || autopayActive) && (
+        <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-sm font-bold text-ink">{t("summaryBand.title")}</h2>
+            <span className="inline-flex items-center gap-2 text-xs font-semibold text-ink">
+              <span
+                className={`h-2 w-2 rounded-full ${autopayActive ? "bg-[#22c55e]" : "bg-[--muted]"}`}
+              />
+              {t("summaryBand.autopay")}:{" "}
+              {autopayActive ? t("summaryBand.autopayOn") : t("summaryBand.autopayOff")}
+            </span>
+          </div>
+
+          {paymentPlans.length > 0 && (
+            <div className="mt-4 space-y-4">
+              {paymentPlans.map((plan) => (
+                <div key={plan.id}>
+                  <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
+                    <p className="text-sm font-semibold text-ink">
+                      {t("summaryBand.planLabel", {
+                        paid: plan.installmentsPaid,
+                        total: plan.installmentCount,
+                      })}
+                    </p>
+                    {plan.nextDueDate && plan.nextDueCents != null && (
+                      <p className="text-xs text-muted">
+                        {t("summaryBand.nextInstalment", {
+                          amount: formatMoney(plan.nextDueCents),
+                          date: fmtDate(plan.nextDueDate, locale),
+                        })}
+                      </p>
+                    )}
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--brand)_15%,transparent)]">
+                    <div
+                      className="h-full rounded-full bg-brand transition-all"
+                      style={{
+                        width: `${Math.min(100, plan.totalCents > 0 ? (plan.paidCents / plan.totalCents) * 100 : 0)}%`,
+                      }}
+                    />
+                  </div>
+                  <div className="mt-1 flex justify-between text-[0.65rem] text-muted">
+                    <span>{t("summaryBand.paid", { amount: formatMoney(plan.paidCents) })}</span>
+                    <span>{t("summaryBand.total", { amount: formatMoney(plan.totalCents) })}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       <p className="text-sm text-muted">
         {t("contactStudioBilling")}{" "}

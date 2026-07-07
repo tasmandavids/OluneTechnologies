@@ -1,10 +1,16 @@
 // ============================================================================
-//  /portal/parent/schedule — Weekly calendar for linked children's classes
-//  and staff-added schedule entries.
+//  /portal/parent/schedule — one Schedule door with two views:
+//  "My family" (linked children's classes + staff-added entries) and
+//  "Whole studio" (full weekly timetable). View state lives in ?view= so the
+//  old /portal/parent/studio-schedule deep links keep working.
 // ============================================================================
 
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "@/lib/i18n/server";
 import ParentScheduleCalendar from "@/components/portal/parent/ParentScheduleCalendar";
+import ParentStudioScheduleGrid from "@/components/portal/parent/ParentStudioScheduleGrid";
+import type { StudioScheduleClass } from "@/lib/portal/parent-studio-schedule";
 import type {
   EnrolledClassSlot,
   ScheduleChild,
@@ -13,15 +19,10 @@ import type {
 import { getWeekRange } from "@/lib/staff/week";
 import { mergeScheduleItems } from "@/lib/students/schedule-utils";
 
-export default async function ParentSchedulePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ week?: string }>;
-}) {
-  const params = await searchParams;
+async function FamilyScheduleView({ weekParam }: { weekParam: string | undefined }) {
   const weekStart =
-    params.week && /^\d{4}-\d{2}-\d{2}$/.test(params.week)
-      ? params.week
+    weekParam && /^\d{4}-\d{2}-\d{2}$/.test(weekParam)
+      ? weekParam
       : getWeekRange().weekStart;
   const { weekDates, weekEnd } = getWeekRange(new Date(`${weekStart}T12:00:00`));
 
@@ -132,5 +133,96 @@ export default async function ParentSchedulePage({
 
   return (
     <ParentScheduleCalendar linkedChildren={children} items={items} weekStart={weekStart} />
+  );
+}
+
+async function StudioScheduleView() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("studio_id")
+    .eq("id", user!.id)
+    .single();
+
+  const { data: rows } = await supabase
+    .from("classes")
+    .select(`
+      id, name, discipline, level, stream, room,
+      day_of_week, start_time, end_time, price_cents,
+      profiles!teacher_id ( full_name )
+    `)
+    .eq("studio_id", profile?.studio_id ?? "")
+    .not("day_of_week", "is", null)
+    .not("start_time", "is", null)
+    .order("day_of_week")
+    .order("start_time");
+
+  const classes: StudioScheduleClass[] = (rows ?? []).map((row) => {
+    const teacher = row.profiles as unknown as { full_name: string | null } | null;
+    return {
+      id: row.id as string,
+      name: row.name as string,
+      discipline: row.discipline as string | null,
+      level: row.level as string | null,
+      stream: row.stream as string | null,
+      room: row.room as string | null,
+      dayOfWeek: row.day_of_week as number,
+      startTime: (row.start_time as string | null)?.slice(0, 5) ?? null,
+      endTime: (row.end_time as string | null)?.slice(0, 5) ?? null,
+      priceCents: (row.price_cents as number | null) ?? 0,
+      teacherName: teacher?.full_name ?? null,
+    };
+  });
+
+  return <ParentStudioScheduleGrid classes={classes} />;
+}
+
+export default async function ParentSchedulePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ week?: string; view?: string }>;
+}) {
+  const params = await searchParams;
+  const view = params.view === "studio" ? "studio" : "family";
+  const t = await getTranslations("parent.scheduleViews");
+
+  return (
+    <div>
+      <div className="px-6 pt-6">
+        <div className="flex w-fit gap-1 rounded-xl border border-[--hair] bg-surface p-1">
+          {(
+            [
+              { id: "family", href: "/portal/parent/schedule", label: t("family") },
+              {
+                id: "studio",
+                href: "/portal/parent/schedule?view=studio",
+                label: t("studio"),
+              },
+            ] as const
+          ).map(({ id, href, label }) => (
+            <Link
+              key={id}
+              href={href}
+              scroll={false}
+              className={`rounded-lg px-4 py-1.5 text-xs font-semibold transition ${
+                view === id ? "bg-ink text-paper" : "text-muted hover:text-ink"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {view === "studio" ? (
+        <StudioScheduleView />
+      ) : (
+        <FamilyScheduleView weekParam={params.week} />
+      )}
+    </div>
   );
 }
