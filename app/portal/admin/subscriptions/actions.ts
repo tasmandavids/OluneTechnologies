@@ -239,6 +239,7 @@ export async function createAdminSubscription(
   }
 
   revalidatePath("/portal/admin/subscriptions");
+  revalidatePath("/portal/admin/billing");
   revalidatePath("/portal/parent");
   return { ok: true, subscriptionId, monthlyCents, chargeCents };
 }

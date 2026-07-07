@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { ParentInvoice, ParentOrder, ParentPayment } from "@/lib/parents/types";
 import { formatMoney } from "@/lib/currency";
@@ -96,8 +97,15 @@ export default function ParentBillingTab({
               <tbody>
                 {invoices.map((inv) => (
                   <tr key={inv.id} className="border-b border-[--hair] last:border-0">
-                    <td className="px-4 py-3 font-mono text-xs text-ink">
-                      {formatInvoiceNumber(inv.invoiceNumber)}
+                    <td className="px-4 py-3 font-mono text-xs">
+                      {/* Contextual read-only view — actions (send/remind/refund) live in
+                          the Billing hub, so link out instead of duplicating them here. */}
+                      <Link
+                        href={`/portal/admin/billing?invoice=${inv.id}`}
+                        className="text-ink underline decoration-dotted hover:opacity-70"
+                      >
+                        {formatInvoiceNumber(inv.invoiceNumber)}
+                      </Link>
                     </td>
                     <td className="px-4 py-3 text-ink">{fmtDate(inv.issuedAt)}</td>
                     <td className="px-4 py-3 text-muted">{inv.studentName ?? tShared("dash")}</td>
