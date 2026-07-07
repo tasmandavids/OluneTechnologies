@@ -187,6 +187,19 @@ export default function AdminSettings({
             )}
           </div>
         </div>
+
+        {/* Branding lives on its own page but has no nav item — this card is
+            its only door (1.6.1). */}
+        <div className="border-t border-[--hair] pt-5">
+          <p className="text-sm font-medium text-ink">{t("brandingTitle")}</p>
+          <p className="mt-0.5 text-sm text-muted">{t("brandingDescription")}</p>
+          <Link
+            href="/portal/admin/branding"
+            className="mt-3 inline-flex rounded-full border border-brand/40 px-4 py-2 text-sm font-medium text-brand transition hover:bg-brand/10"
+          >
+            {t("openBranding")}
+          </Link>
+        </div>
       </section>
 
       <section className="space-y-6 rounded-2xl border border-[--hair] bg-surface p-6">
