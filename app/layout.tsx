@@ -71,7 +71,7 @@ export default async function RootLayout({
           <>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-            <link rel="stylesheet" href={fonts.stylesheetUrl} />
+            <link rel="stylesheet" href={fonts.stylesheetUrl} fetchPriority="high" />
           </>
         ) : null}
       </head>

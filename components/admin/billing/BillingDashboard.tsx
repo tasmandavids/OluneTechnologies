@@ -856,7 +856,7 @@ export function BillingDashboard({
                   {unpaidInvoices.map((inv) => (
                     <tr
                       key={inv.id}
-                      className={`border-b border-[--hair] last:border-0 ${
+                      className={`border-b border-[--hair] last:border-0 transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)] ${
                         inv.status === "overdue" ? "bg-red-50/40" : ""
                       }`}
                     >
@@ -1005,7 +1005,7 @@ export function BillingDashboard({
                   filtered.map((inv) => (
                     <tr
                       key={inv.id}
-                      className="border-b border-[--hair] last:border-0 hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)]"
+                      className="border-b border-[--hair] last:border-0 transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)]"
                     >
                       <td className="px-4 py-3 font-mono text-xs">
                         <button
