@@ -1,6 +1,7 @@
 "use client";
 
 import { confirmDialog } from "@/lib/feedback";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -996,8 +997,8 @@ export function BillingDashboard({
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-10 text-center text-sm text-muted">
-                      {t("allInvoices.empty")}
+                    <td colSpan={8}>
+                      <EmptyState title={t("allInvoices.empty")} />
                     </td>
                   </tr>
                 ) : (

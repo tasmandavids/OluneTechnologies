@@ -14,6 +14,12 @@
       "retry": "Réessayer",
       "signInAgain": "Se reconnecter"
     },
+    "portal": {
+      "title": "Cette page a rencontré un problème",
+      "body": "Vos données sont en sécurité — le reste du portail fonctionne toujours. Réessayez ou revenez à votre tableau de bord.",
+      "retry": "Réessayer",
+      "goToPortal": "Retour au tableau de bord"
+    },
     "notFound": {
       "eyebrow": "404",
       "title": "Page introuvable",

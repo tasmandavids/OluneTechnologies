@@ -1,5 +1,6 @@
 "use client";
 import { confirmDialog, toast } from "@/lib/feedback";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useTranslations } from "next-intl";
 
 // ============================================================================
@@ -826,10 +827,20 @@ export default function StudentsManager({
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-12 text-center">
-          <p className="text-sm text-muted">
-            {search ? t("emptySearch") : t("empty")}
-          </p>
+        <div className="rounded-2xl border border-[--hair] bg-surface">
+          <EmptyState
+            title={search ? t("emptySearch") : t("empty")}
+            action={
+              !search ? (
+                <button
+                  onClick={() => setShowAdd(true)}
+                  className="rounded-xl bg-brand px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                >
+                  {t("addStudent")}
+                </button>
+              ) : null
+            }
+          />
         </div>
       ) : (
         <>
