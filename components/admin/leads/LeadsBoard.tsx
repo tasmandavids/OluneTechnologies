@@ -1,4 +1,5 @@
 "use client";
+import { useEscToClose } from "@/lib/useEscToClose";
 import { panelSlide } from "@/lib/motion";
 import { useTranslations } from "next-intl";
 
@@ -154,6 +155,7 @@ function NewLeadSlideOver({
   onClose: () => void;
   onCreated: (lead: Lead) => void;
 }) {
+  useEscToClose(onClose);
   const t = useTranslations("admin.leads");
   const tShared = useTranslations("admin.shared");
   const [form, setForm] = useState<LeadFormData>({

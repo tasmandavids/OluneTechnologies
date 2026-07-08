@@ -1,5 +1,6 @@
 "use client";
 
+import { useEscToClose } from "@/lib/useEscToClose";
 import { panelSlide } from "@/lib/motion";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -34,6 +35,7 @@ export function ParentShop({ products }: Props) {
   const t = useTranslations("parent.shop");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  useEscToClose(() => setCartOpen(false), cartOpen);
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("all");
   const [checkingOut, setCheckingOut] = useState(false);

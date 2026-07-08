@@ -1,4 +1,5 @@
 "use client";
+import { useEscToClose } from "@/lib/useEscToClose";
 import { panelSlide } from "@/lib/motion";
 import { confirmDialog, toast } from "@/lib/feedback";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -45,6 +46,7 @@ function AddStudentPanel({ onClose }: { onClose: () => void }) {
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");
   const [form, setForm] = useState({ fullName: "", email: "", phone: "" });
+  useEscToClose(onClose);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -151,6 +153,7 @@ function BulkEditPanel({
   onSaved: () => void;
 }) {
   const t = useTranslations("admin.students.bulkEdit");
+  useEscToClose(onClose);
   const tAdd = useTranslations("admin.students.addPanel");
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");
@@ -286,6 +289,7 @@ function StudentPanel({
 }) {
   const t = useTranslations("admin.students.panel");
   const tAdd = useTranslations("admin.students.addPanel");
+  useEscToClose(onClose);
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");
   const dayShort = useShortDayNames();

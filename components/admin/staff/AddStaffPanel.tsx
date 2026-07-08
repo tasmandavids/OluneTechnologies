@@ -1,5 +1,6 @@
 "use client";
 
+import { useEscToClose } from "@/lib/useEscToClose";
 import { panelSlide } from "@/lib/motion";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -54,6 +55,7 @@ export default function AddStaffPanel({
   onClose: () => void;
 }) {
   const t = useTranslations("admin.staff.add");
+  useEscToClose(onClose);
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");
   const router = useRouter();

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEscToClose } from "@/lib/useEscToClose";
 import { panelSlide } from "@/lib/motion";
 import { confirmDialog } from "@/lib/feedback";
 import { useState, useTransition } from "react";
@@ -117,6 +118,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
   const [search,     setSearch]     = useState("");
   const [catFilter,  setCatFilter]  = useState("all");
   const [slideOpen,  setSlideOpen]  = useState(false);
+  useEscToClose(closeSlide, slideOpen);
   const [editTarget, setEditTarget] = useState<Product | null>(null);
   const [form,       setForm]       = useState<ProductFormData>(BLANK);
   const [saving,     setSaving]     = useState(false);

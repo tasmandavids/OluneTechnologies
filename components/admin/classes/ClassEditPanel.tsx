@@ -1,5 +1,6 @@
 "use client";
 
+import { useEscToClose } from "@/lib/useEscToClose";
 import { panelSlide } from "@/lib/motion";
 import { useState, useTransition } from "react";
 import { motion } from "framer-motion";
@@ -163,6 +164,7 @@ export function ClassEditPanel({
   onClose: () => void;
 }) {
   const t = useTranslations("admin.classes.form");
+  useEscToClose(onClose);
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");
   const [form, setForm] = useState<FormState>(

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEscToClose } from "@/lib/useEscToClose";
 import { panelSlide } from "@/lib/motion";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -103,6 +104,7 @@ export default function AddFamilyPanel({
   students: StudentOption[];
   onClose: () => void;
 }) {
+  useEscToClose(onClose);
   const t = useTranslations("admin.parents.addFamily");
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");

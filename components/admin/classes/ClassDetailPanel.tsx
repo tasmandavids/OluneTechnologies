@@ -1,5 +1,6 @@
 "use client";
 
+import { useEscToClose } from "@/lib/useEscToClose";
 import { panelSlide } from "@/lib/motion";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import Link from "next/link";
@@ -119,6 +120,7 @@ export function ClassDetailPanel({
   onClose: () => void;
   onEdit?: () => void;
 }) {
+  useEscToClose(onClose);
   const t = useTranslations("admin.classes.panel");
   const tStudent = useTranslations("admin.students.panel");
   const tShared = useTranslations("admin.shared");
