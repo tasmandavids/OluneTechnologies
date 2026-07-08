@@ -1,6 +1,7 @@
 # Release 1.6.2 — "The Product Answers Back" (Feedback & Perceived Performance)
 
-**Status:** Draft for review
+**Status:** Implemented on `ttest` (2026-07-08) — pending review on the preview deploy.
+**Implementation notes:** All six work items landed as one commit each (`4e5492e`…`b8ac653`). Deviations from the spec, chosen deliberately: button pending states were already covered codebase-wide by the existing `disabled` + progress-label convention, so no new Button primitive was added; EmptyState CTAs went to Classes and Students (ParentHub and EmailInbox already had CTAs, the Leads kanban columns are their own affordance); tab content doesn't animate today so `tabSwitch` is available but unused; tenant fonts stay on runtime Google Fonts (per-tenant branding rules out `next/font`) with `fetchPriority="high"` added.
 **Scope discipline:** UI/feedback-level ONLY. No database schema changes, no migration files, no business-logic changes, no new nav items. Every action keeps its exact current semantics — only how the app *responds* to the action changes. If a work item seems to require a schema or data-flow change, stop and flag it.
 **Origin:** Premium-feel audit, 2026-07-08. Core finding: 1.6.1 fixed the map; the remaining gap to "premium" is the feedback layer. The codebase has 20 native `window.confirm()` calls, 1 `alert()`, zero toast infrastructure (~70 components hand-roll `setMessage`/`setError`/`setSuccess`), a single generic `loading.tsx` for the whole portal, and only a root-level `error.tsx`.
 
