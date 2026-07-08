@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useFeedbackStore } from "@/lib/feedback";
+import { DUR, EASE_OUT } from "@/lib/motion";
 
 /** Global branded confirm dialog — mounted once by FeedbackHost, driven by confirmDialog(). */
 export function ConfirmDialog() {
@@ -50,7 +51,7 @@ export function ConfirmDialog() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: DUR.fast }}
           className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4"
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) resolveConfirm(false);
@@ -64,7 +65,7 @@ export function ConfirmDialog() {
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.97 }}
             animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.97 }}
-            transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
+            transition={{ duration: DUR.base, ease: EASE_OUT }}
             className="w-full max-w-sm rounded-2xl border border-[--hair] bg-surface p-6 shadow-[0_24px_60px_-20px_rgba(10,10,10,0.45)]"
           >
             <h2 id="confirm-dialog-title" className="text-base font-semibold text-ink">

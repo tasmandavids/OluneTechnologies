@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useFeedbackStore, type Toast, type ToastVariant } from "@/lib/feedback";
+import { DUR, EASE_OUT } from "@/lib/motion";
 
 const AUTO_DISMISS_MS: Record<ToastVariant, number> = {
   success: 4000,
@@ -77,7 +78,7 @@ function ToastCard({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
       initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.97 }}
       animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
       exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.97 }}
-      transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
+      transition={{ duration: DUR.base, ease: EASE_OUT }}
       role={toast.variant === "error" ? "alert" : "status"}
       onMouseEnter={pause}
       onMouseLeave={resume}

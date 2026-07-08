@@ -1,5 +1,6 @@
 "use client";
 
+import { panelSlide } from "@/lib/motion";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -155,10 +156,7 @@ export default function AddFamilyPanel({
       />
       <motion.aside
         className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-[--hair] bg-surface shadow-2xl"
-        initial={{ x: "100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
-        transition={{ type: "spring", stiffness: 380, damping: 38 }}
+        {...panelSlide}
       >
         <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">
           <h2 className="font-black text-ink">{t("title")}</h2>

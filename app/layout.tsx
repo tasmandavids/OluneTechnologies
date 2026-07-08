@@ -13,6 +13,7 @@ import { fontsForBranding } from "@/lib/fonts";
 import { getBrandingCached, brandingToCssVars, DEFAULT_BRANDING } from "@/lib/branding";
 import { OluneMoonDefs } from "@/components/brand/OluneMoonDefs";
 import { FeedbackHost } from "@/components/ui/FeedbackHost";
+import { MotionProvider } from "@/components/ui/MotionProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import type { CSSProperties } from "react";
@@ -77,8 +78,10 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <OluneMoonDefs />
-          {children}
-          <FeedbackHost />
+          <MotionProvider>
+            {children}
+            <FeedbackHost />
+          </MotionProvider>
           <SpeedInsights />
           <Analytics />
         </NextIntlClientProvider>

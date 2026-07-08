@@ -1,5 +1,6 @@
 "use client";
 
+import { panelSlide } from "@/lib/motion";
 import { confirmDialog } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -396,8 +397,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
               onClick={closeSlide}
             />
             <motion.div
-              initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-              transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.35 }}
+              {...panelSlide}
               className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-surface shadow-2xl"
             >
               <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">
