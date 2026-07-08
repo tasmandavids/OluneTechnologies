@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import { sendMessage as adminSend, withdrawInquiry } from "@/app/portal/admin/network/inquiries/[id]/actions";
 import { sendMessage as teacherSend, respondToInquiry } from "@/app/portal/teacher/network/[id]/actions";
@@ -56,8 +57,8 @@ export function InquiryThread({
     });
   }
 
-  function handleWithdraw() {
-    if (!confirm("Withdraw this inquiry?")) return;
+  async function handleWithdraw() {
+    if (!(await confirmDialog({ title: "Withdraw this inquiry?", destructive: true }))) return;
     start(async () => {
       const res = await withdrawInquiry(inquiryId);
       if (res && "error" in res) setError(res.error ?? null);

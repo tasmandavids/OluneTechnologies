@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { toast } from "@/lib/feedback";
 import { deleteClass, deleteRecurringGroup } from "@/app/portal/admin/classes/actions";
 import type { ClassRow, TeacherOption } from "@/app/portal/admin/classes/page";
 import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-accounts";
@@ -35,6 +36,7 @@ function DeleteConfirm({
           ? await deleteRecurringGroup(cls.recurringGroupId as string)
           : await deleteClass(cls.id);
       if (!result.ok) { setError(result.error); return; }
+      toast.success(tShared("deleted"));
       onClose();
     });
   };

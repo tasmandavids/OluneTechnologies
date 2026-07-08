@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/feedback";
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -73,9 +74,9 @@ export function AccountingDashboard({
     });
   };
 
-  const onDisconnect = () => {
+  const onDisconnect = async () => {
     setActionError(null);
-    if (!window.confirm(t("disconnectConfirm"))) return;
+    if (!(await confirmDialog({ title: t("disconnectConfirm"), destructive: true }))) return;
     startTransition(async () => {
       const res = await disconnectXero();
       if (!res.ok) setActionError(res.error);

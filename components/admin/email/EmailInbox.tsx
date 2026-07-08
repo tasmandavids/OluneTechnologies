@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog, toast } from "@/lib/feedback";
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -394,14 +395,14 @@ export function EmailInbox({
       setDraft("");
       await loadThread(selectedThreadId);
     } catch (err) {
-      alert(err instanceof Error ? err.message : t("sendFailed"));
+      toast.error(err instanceof Error ? err.message : t("sendFailed"));
     } finally {
       setSending(false);
     }
   };
 
-  const disconnect = (accountId: string) => {
-    if (!confirm(t("disconnectConfirm"))) return;
+  const disconnect = async (accountId: string) => {
+    if (!(await confirmDialog({ title: t("disconnectConfirm"), destructive: true }))) return;
     startTransition(async () => {
       await disconnectEmailAccount(accountId);
       window.location.reload();

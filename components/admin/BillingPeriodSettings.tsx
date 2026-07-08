@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import {
@@ -124,8 +125,8 @@ export default function BillingPeriodSettings({
     });
   };
 
-  const onDelete = (id: string) => {
-    if (!window.confirm(t("billingPeriod.deleteConfirm"))) return;
+  const onDelete = async (id: string) => {
+    if (!(await confirmDialog({ title: t("billingPeriod.deleteConfirm"), destructive: true }))) return;
     setDeletingId(id);
     startDeleteTransition(async () => {
       const res = await deleteStudioTerm({ id });

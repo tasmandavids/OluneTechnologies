@@ -1,4 +1,5 @@
 "use client";
+import { confirmDialog, toast } from "@/lib/feedback";
 import { useTranslations } from "next-intl";
 
 // ============================================================================
@@ -368,12 +369,13 @@ function StudentPanel({
     });
   };
 
-  const removeStudent = () => {
-    if (!window.confirm(t("deleteConfirm", { name: student.name ?? tShared("unknown") }))) return;
+  const removeStudent = async () => {
+    if (!(await confirmDialog({ title: t("deleteConfirm", { name: student.name ?? tShared("unknown") }), destructive: true }))) return;
     setError(null); setSuccess(null);
     startTransition(async () => {
       const result = await deleteStudent(student.id);
       if (!result.ok) { setError(result.error); return; }
+      toast.success(tShared("deleted"));
       onClose();
       router.refresh();
     });
@@ -719,9 +721,9 @@ export default function StudentsManager({
     setBulkSuccess(null);
   };
 
-  const bulkDelete = () => {
+  const bulkDelete = async () => {
     if (selectedIds.length === 0) return;
-    if (!window.confirm(t("deleteSelectedConfirm", { count: selectedIds.length }))) return;
+    if (!(await confirmDialog({ title: t("deleteSelectedConfirm", { count: selectedIds.length }), destructive: true }))) return;
     setBulkError(null);
     setBulkSuccess(null);
     startBulk(async () => {

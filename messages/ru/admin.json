@@ -3,6 +3,7 @@
     "shared": {
       "saving": "Сохранение…",
       "adding": "Добавление…",
+      "deleted": "Удалено.",
       "deleting": "Удаление…",
       "creating": "Создание…",
       "sending": "Отправка…",

@@ -5,6 +5,7 @@
 //  Canvas-first: drag elements to reorder, right-click to add, click to edit.
 // ============================================================================
 
+import { confirmDialog } from "@/lib/feedback";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -279,8 +280,15 @@ export default function PageEditor({
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
   }, [dirty]);
 
-  const confirmLeave = (e: React.MouseEvent) => {
-    if (dirty && !window.confirm(t("confirmLeave"))) e.preventDefault();
+  const confirmLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!dirty) return;
+    // preventDefault must be synchronous, so block the navigation, ask, then
+    // resume it ourselves if the user confirms.
+    const href = e.currentTarget.getAttribute("href");
+    e.preventDefault();
+    void confirmDialog({ title: t("confirmLeave"), destructive: true }).then((confirmed) => {
+      if (confirmed && href) router.push(href);
+    });
   };
 
   const addBlockAt = (type: BlockType, index: number, at?: { x: number; y: number }) => {

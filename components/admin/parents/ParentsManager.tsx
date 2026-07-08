@@ -1,4 +1,5 @@
 "use client";
+import { confirmDialog } from "@/lib/feedback";
 import { useTranslations } from "next-intl";
 
 import { useState, useTransition } from "react";
@@ -86,8 +87,8 @@ export default function ParentsManager({
   const [inviting, startInvite] = useTransition();
   const [inviteResult, setInviteResult] = useState<string | null>(null);
 
-  function handleBulkInvite() {
-    if (!window.confirm("Send invite emails to all parents and students who have never logged in?")) return;
+  async function handleBulkInvite() {
+    if (!(await confirmDialog({ title: "Send invite emails to all parents and students who have never logged in?" }))) return;
     setInviteResult(null);
     startInvite(async () => {
       const res = await bulkInviteMembers();

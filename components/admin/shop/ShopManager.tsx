@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -77,9 +78,9 @@ function OrderRefundButton({ order, onDone }: { order: Order; onDone: (id: strin
     return <span className="text-[0.7rem] text-muted">{tShared("noCardPayment")}</span>;
   }
 
-  const onClick = () => {
+  const onClick = async () => {
     setErr(null);
-    if (!confirm(t("refundConfirm", { amount: formatPrice(order.total_cents) }))) {
+    if (!(await confirmDialog({ title: t("refundConfirm", { amount: formatPrice(order.total_cents) }), destructive: true }))) {
       return;
     }
     startTransition(async () => {
@@ -190,7 +191,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
   }
 
   async function handleDelete(p: Product) {
-    if (!confirm(t("deleteConfirm", { name: p.name }))) return;
+    if (!(await confirmDialog({ title: t("deleteConfirm", { name: p.name }), destructive: true }))) return;
     const res = await deleteProduct(p.id);
     if (res.ok) setProducts((prev) => prev.filter((x) => x.id !== p.id));
   }

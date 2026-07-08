@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog, toast } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -177,8 +178,8 @@ export default function StaffDetailHub({
   const toggleActive = () =>
     run(() => setStaffActive(staff.id, !employmentForm.active));
 
-  const removeStaff = () => {
-    if (!window.confirm(t("deleteConfirm", { name: staff.name ?? tShared("unknown") }))) return;
+  const removeStaff = async () => {
+    if (!(await confirmDialog({ title: t("deleteConfirm", { name: staff.name ?? tShared("unknown") }), destructive: true }))) return;
     setError(null);
     setSuccess(null);
     startTransition(async () => {
@@ -187,6 +188,7 @@ export default function StaffDetailHub({
         setError(result.error ?? tShared("somethingWentWrong"));
         return;
       }
+      toast.success(tShared("deleted"));
       router.push("/portal/admin/staff");
     });
   };

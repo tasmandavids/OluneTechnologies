@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/feedback";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -451,7 +452,7 @@ function RefundButton({ invoice, onDone }: { invoice: InvoiceRow; onDone: (id: s
     return <span className="text-[0.7rem] text-muted">{tShared("noCardPayment")}</span>;
   }
 
-  function doRefund() {
+  async function doRefund() {
     const dollars = parseFloat(amountStr);
     if (Number.isNaN(dollars) || dollars <= 0) {
       setErr("Enter a valid amount.");
@@ -466,7 +467,7 @@ function RefundButton({ invoice, onDone }: { invoice: InvoiceRow; onDone: (id: s
     const label = isPartial
       ? `Issue partial refund of ${NZD2.format(dollars)} to ${invoice.payerName ?? "this payer"}?`
       : `Fully refund ${NZD2.format(dollars)} to ${invoice.payerName ?? "this payer"}?`;
-    if (!window.confirm(label)) return;
+    if (!(await confirmDialog({ title: label, destructive: true }))) return;
     setErr(null);
     startTransition(async () => {
       const res = await refundSale("invoice", invoice.id, isPartial ? cents : undefined);
@@ -543,16 +544,17 @@ function VoidButton({ invoice, onDone }: { invoice: InvoiceRow; onDone: (id: str
     <div className="flex flex-col items-start gap-0.5">
       <button
         type="button"
-        onClick={() => {
+        onClick={async () => {
           setErr(null);
           setXeroWarn(null);
           if (
-            !window.confirm(
-              t("voidConfirm", {
+            !(await confirmDialog({
+              title: t("voidConfirm", {
                 amount: NZD2.format(invoice.amountCents / 100),
                 payer: invoice.payerName ?? tShared("unknown"),
               }),
-            )
+              destructive: true,
+            }))
           ) {
             return;
           }

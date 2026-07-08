@@ -3,6 +3,7 @@
     "shared": {
       "saving": "保存中…",
       "adding": "添加中…",
+      "deleted": "已删除。",
       "deleting": "删除中…",
       "creating": "创建中…",
       "sending": "发送中…",

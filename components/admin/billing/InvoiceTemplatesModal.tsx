@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import type { InvoiceTemplate } from "@/app/portal/admin/billing/page";
@@ -71,8 +72,8 @@ export function InvoiceTemplatesModal({
     setEditingId(template.id);
   };
 
-  const remove = (id: string) => {
-    if (!window.confirm(t("deleteConfirm"))) return;
+  const remove = async (id: string) => {
+    if (!(await confirmDialog({ title: t("deleteConfirm"), destructive: true }))) return;
     setDeletingId(id);
     startTransition(async () => {
       const res = await deleteInvoiceTemplate(id);

@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { deleteCampaign, publishCampaign } from "@/app/portal/admin/advertising/actions";
@@ -43,8 +44,8 @@ export function CampaignsPanel({
     });
   }
 
-  function handleDelete(id: string) {
-    if (!window.confirm(t("campaigns.deleteConfirm"))) return;
+  async function handleDelete(id: string) {
+    if (!(await confirmDialog({ title: t("campaigns.deleteConfirm"), destructive: true }))) return;
     startTransition(async () => {
       await deleteCampaign(id);
       onRefresh();

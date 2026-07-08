@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { adminCancelSubscription } from "@/app/portal/admin/subscriptions/actions";
@@ -36,13 +37,13 @@ export function SubscriptionCancelActions({
     return <span className="text-xs text-muted">{tShared("dash")}</span>;
   }
 
-  const runCancel = (immediate: boolean) => {
+  const runCancel = async (immediate: boolean) => {
     if (!stripeId) return;
     const label = subscription.planLabel ?? subscription.payerName ?? t("defaultPlan");
     const confirmMessage = immediate
       ? t("cancelNowConfirm", { plan: label })
       : t("cancelAtPeriodEndConfirm", { plan: label });
-    if (!window.confirm(confirmMessage)) return;
+    if (!(await confirmDialog({ title: confirmMessage, destructive: true }))) return;
 
     setErr(null);
     startTransition(async () => {
