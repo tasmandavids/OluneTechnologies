@@ -172,6 +172,7 @@
     "orContinueWithEmail": "or continue with email",
     "googleForgotPassword": "Password Google dimenticata?",
     "googleForgotPasswordLink": "Reimposta su Google",
+    "emailLoginGoogleHint": "Ti sei registrato con Google? Usa il pulsante qui sopra — questo account potrebbe non avere una password.",
     "forgotPassword": "Password dimenticata?",
     "sendResetLink": "Invia link",
     "sendingResetLink": "Invio…",

@@ -172,6 +172,7 @@
     "orContinueWithEmail": "or continue with email",
     "googleForgotPassword": "Забыли пароль Google?",
     "googleForgotPasswordLink": "Сбросить в Google",
+    "emailLoginGoogleHint": "Регистрировались через Google? Используйте кнопку выше — у этого аккаунта может не быть пароля.",
     "forgotPassword": "Забыли пароль?",
     "sendResetLink": "Отправить ссылку",
     "sendingResetLink": "Отправка…",

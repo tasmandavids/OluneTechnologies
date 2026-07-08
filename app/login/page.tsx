@@ -89,9 +89,12 @@ function LoginForm() {
 
         <form onSubmit={signIn}>
           {error && (
-            <p className="mb-4 rounded-lg border border-[--hair] bg-base/50 px-3 py-2 text-sm text-red-400">
-              {error}
-            </p>
+            <div className="mb-4 space-y-2">
+              <p className="rounded-lg border border-[--hair] bg-base/50 px-3 py-2 text-sm text-red-400">
+                {error}
+              </p>
+              <p className="text-center text-sm text-muted">{t("emailLoginGoogleHint")}</p>
+            </div>
           )}
           <div className="space-y-3">
             <input

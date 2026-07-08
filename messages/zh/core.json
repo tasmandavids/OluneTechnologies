@@ -177,6 +177,7 @@
     "orContinueWithEmail": "或使用邮箱继续",
     "googleForgotPassword": "忘记 Google 密码？",
     "googleForgotPasswordLink": "在 Google 重置",
+    "emailLoginGoogleHint": "使用 Google 注册的？请改用上方按钮——该账户可能没有设置密码。",
     "forgotPassword": "忘记密码？",
     "sendResetLink": "发送重置链接",
     "sendingResetLink": "发送中…",
