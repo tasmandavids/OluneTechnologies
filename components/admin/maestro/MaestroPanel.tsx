@@ -10,15 +10,32 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 
 const SUGGESTIONS = [
-  "How are we doing financially this month?",
-  "What's our net profit year to date?",
-  "Show me our most recent invoices.",
+  "How are we doing overall this month?",
+  "What bills are coming up?",
+  "What's our budget looking like for the next 3 months?",
+  "How's our lead pipeline?",
 ];
 
 /** Friendly label for a tool call while it runs. */
 function toolLabel(type: string): string {
-  if (type === "tool-getFinancialSnapshot") return "Checking the studio's finances…";
-  return "Working…";
+  switch (type) {
+    case "tool-getFinancialSnapshot":
+      return "Checking the studio's finances…";
+    case "tool-getUpcomingBills":
+      return "Checking upcoming bills…";
+    case "tool-getBudgetForecast":
+      return "Projecting the budget…";
+    case "tool-getStudioSnapshot":
+      return "Pulling a studio overview…";
+    case "tool-findParent":
+      return "Searching for that family…";
+    case "tool-getParentDetail":
+      return "Looking up their account…";
+    case "tool-getLeadsPipeline":
+      return "Checking the leads pipeline…";
+    default:
+      return "Working…";
+  }
 }
 
 export function MaestroPanel({

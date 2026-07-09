@@ -38,7 +38,9 @@ export async function POST(req: Request) {
     }),
     messages: await convertToModelMessages(messages),
     tools: buildMaestroTools({ session, origin }),
-    stopWhen: stepCountIs(6),
+    // Multi-hop questions (findParent -> getParentDetail, or several financial
+    // tools combined) need more than a single tool round trip.
+    stopWhen: stepCountIs(8),
   });
 
   return result.toUIMessageStreamResponse();
