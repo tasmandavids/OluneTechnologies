@@ -21,7 +21,13 @@ function toolLabel(type: string): string {
   return "Working…";
 }
 
-export function MaestroPanel({ studioName }: { studioName: string }) {
+export function MaestroPanel({
+  studioName,
+  onClose,
+}: {
+  studioName: string;
+  onClose?: () => void;
+}) {
   const [input, setInput] = useState("");
   const { messages, sendMessage, status, error } = useChat({
     transport: new DefaultChatTransport({ api: "/api/maestro" }),
@@ -37,13 +43,37 @@ export function MaestroPanel({ studioName }: { studioName: string }) {
   }
 
   return (
-    <div className="flex h-[calc(100vh-12rem)] flex-col rounded-2xl border border-[--hair] bg-surface">
+    <div className="flex h-full flex-col rounded-2xl border border-[--hair] bg-surface">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-[--hair] px-4 py-3">
+        <div>
+          <p className="text-sm font-bold text-ink">Maestro</p>
+          <p className="text-xs text-muted">{studioName}</p>
+        </div>
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close Maestro"
+            className="flex h-7 w-7 items-center justify-center rounded-full text-muted transition hover:bg-black/[0.05] hover:text-ink"
+          >
+            <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
+              <path
+                d="M5 5l10 10M15 5L5 15"
+                stroke="currentColor"
+                strokeWidth={1.75}
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        )}
+      </div>
+
       {/* Conversation */}
       <div className="flex-1 space-y-4 overflow-y-auto p-5">
         {messages.length === 0 && (
-          <div className="mx-auto max-w-md pt-10 text-center">
-            <p className="text-2xl font-black text-ink">Maestro</p>
-            <p className="mt-1 text-sm text-muted">
+          <div className="mx-auto max-w-md pt-6 text-center">
+            <p className="text-sm text-muted">
               Your AI right hand for {studioName}. Ask about finances, invoices, and how the
               studio is doing.
             </p>
