@@ -90,6 +90,7 @@
     },
     "admin": {
       "dashboard": "仪表盘",
+      "maestro": "Maestro",
       "classes": "课程",
       "events": "活动",
       "staff": "员工",

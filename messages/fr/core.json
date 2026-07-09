@@ -90,6 +90,7 @@
     },
     "admin": {
       "dashboard": "Tableau de bord",
+      "maestro": "Maestro",
       "classes": "Cours",
       "events": "Événements",
       "staff": "Personnel",
