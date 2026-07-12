@@ -13,6 +13,16 @@ export function xeroClientSecret(): string {
   return secret;
 }
 
+/**
+ * Webhook signing key from the Xero developer portal (App → Webhooks →
+ * "Signing key"). Used to verify the HMAC on every inbound webhook POST.
+ */
+export function xeroWebhookKey(): string {
+  const key = process.env.XERO_WEBHOOK_KEY;
+  if (!key) throw new Error("XERO_WEBHOOK_KEY is not configured");
+  return key;
+}
+
 /** Canonical OAuth callback — never use tenant subdomains (e.g. slug.localhost). */
 export function xeroRedirectUri(_origin?: string): string {
   if (process.env.NODE_ENV === "development" && _origin) {
