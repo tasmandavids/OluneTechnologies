@@ -30,7 +30,6 @@
     "setup:oauth": "node --env-file=.env.local scripts/setup-oauth.mjs"
   },
   "dependencies": {
-    "@ai-sdk/react": "^4.0.19",
     "@hello-pangea/dnd": "^18.0.1",
     "@react-three/fiber": "^9.1.0",
     "@stripe/react-stripe-js": "^6.6.0",
@@ -40,7 +39,6 @@
     "@types/qrcode": "^1.5.6",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
-    "ai": "^7.0.18",
     "framer-motion": "^11.11.0",
     "imapflow": "^1.4.2",
     "immer": "^11.1.8",

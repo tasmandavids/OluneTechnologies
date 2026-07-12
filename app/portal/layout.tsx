@@ -8,7 +8,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PortalShell } from "@/components/portal/PortalShell";
-import { MaestroBubble } from "@/components/admin/maestro/MaestroBubble";
 import { PlatformAnnouncementsBanner } from "@/components/admin/PlatformAnnouncementsBanner";
 import { SetupResumeBanner } from "@/components/setup/SetupResumeBanner";
 import { getBrandingCached } from "@/lib/branding";
@@ -113,7 +112,6 @@ export default async function PortalLayout({
         <PlatformAnnouncementsBanner announcements={announcements} />
       )}
       {children}
-      {isAdmin && <MaestroBubble studioName={displayName} />}
     </PortalShell>
   );
 }
