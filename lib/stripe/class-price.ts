@@ -25,6 +25,27 @@ export async function getOrCreateClassStripePrice(
   let priceId = (cls.stripe_price_id as string | null) ?? null;
   const cachedCents = cls.stripe_price_cents as number | null;
 
+  // A cached product can be archived later — via class cleanup or a manual
+  // change in the Stripe dashboard. Archiving a product leaves its prices
+  // active:true, but Stripe still refuses NEW subscriptions on an inactive
+  // product ("The product … is marked as inactive"). Reactivate before reuse so
+  // enrolment doesn't 400; if it was hard-deleted, mint a fresh product+price.
+  if (productId) {
+    try {
+      const product = await stripe.products.retrieve(productId);
+      if (!product.active) {
+        await stripe.products.update(productId, { active: true });
+      }
+    } catch (e) {
+      if ((e as { code?: string })?.code === "resource_missing") {
+        productId = null;
+        priceId = null;
+      } else {
+        throw e;
+      }
+    }
+  }
+
   if (!productId) {
     const product = await stripe.products.create({
       name: `Tuition — ${className}`,

@@ -5,10 +5,11 @@
 //  and view Stripe-hosted receipts. Returns { url } for redirect.
 // ============================================================================
 
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe";
-import { canonicalAppUrl } from "@/lib/app-url";
+import { originForHost } from "@/lib/seo";
 
 export async function POST() {
   try {
@@ -43,9 +44,13 @@ export async function POST() {
         .eq("id", user.id);
     }
 
+    // Return the parent to the same host they started on (their studio
+    // subdomain / custom domain), not the canonical www apex — auth cookies are
+    // host-scoped, so bouncing to www would land them logged out.
+    const host = (await headers()).get("host");
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${canonicalAppUrl()}/portal/parent/billing`,
+      return_url: `${originForHost(host)}/portal/parent/billing`,
     });
 
     return NextResponse.json({ url: session.url });
