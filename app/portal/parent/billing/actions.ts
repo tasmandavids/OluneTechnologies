@@ -180,7 +180,11 @@ export async function createTermInstallmentIntent(
       studio_id: plan.studio_id,
       supabase_user_id: user.id,
     },
-    automatic_payment_methods: { enabled: true },
+    // Installments are the studio's OWN pay-over-time plan. Deliberately restrict
+    // to instant card capture: BNPL methods (Afterpay/Clearpay) front the full
+    // order value and settle asynchronously, which double-splits the balance and
+    // lets an unsettled `processing` intent look "paid". One installment = one card charge.
+    payment_method_types: ["card"],
   });
 
   if (!intent.client_secret) {

@@ -111,6 +111,15 @@ export function TermPaymentPlansManager({
   function handleRecord(plan: TermPlan) {
     const nextAmount = plan.installmentAmounts[plan.installmentsPaid];
     if (!nextAmount) return;
+    // This records a payment WITHOUT taking money — it advances the schedule and
+    // can complete the plan (marking its invoices paid). Guard against a stray
+    // click marking a family as paid when they haven't actually paid.
+    const ok = window.confirm(
+      `Record a ${formatMoney(nextAmount)} installment for ${plan.payerName ?? "this family"} as paid?\n\n` +
+        `This does NOT charge them — only use it when the money has already been received outside the app ` +
+        `(bank transfer, cash, etc.).`,
+    );
+    if (!ok) { setRecordingId(null); return; }
     startTransition(async () => {
       await recordInstallmentPayment(plan.id, nextAmount);
       setRecordingId(null);

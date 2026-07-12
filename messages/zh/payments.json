@@ -2,6 +2,7 @@
   "payments": {
     "paymentNotCompleted": "付款未能完成。",
     "paymentIncomplete": "付款未完成。请尝试其他方式。",
+    "paymentProcessing": "您的付款仍在处理中。款项到账后我们会自动更新您的账户，无需重复付款。",
     "processing": "处理中…",
     "payNow": "立即付款",
     "payAmount": "支付 {amount}",

@@ -2,6 +2,7 @@
   "payments": {
     "paymentNotCompleted": "Payment could not be completed.",
     "paymentIncomplete": "Payment was not completed. Please try another method.",
+    "paymentProcessing": "Your payment is still processing. We'll update your account automatically once it clears — no need to pay again.",
     "processing": "Processing…",
     "payNow": "Pay now",
     "payAmount": "Pay {amount}",

@@ -191,7 +191,12 @@ export async function recordTermInstallmentPaid(
 
   const installmentsPaid = row.installments_paid + 1;
   const amountPaidCents = row.amount_paid_cents + amountCents;
-  const completed = installmentsPaid >= row.installment_count;
+  // Complete only when BOTH the schedule is exhausted AND the full balance has
+  // actually been collected. Gating on the counter alone would flip a plan to
+  // "completed" (and mark its invoices paid) while money is still owed — e.g. if
+  // an installment settles for less than its slice.
+  const completed =
+    installmentsPaid >= row.installment_count && amountPaidCents >= row.total_cents;
 
   const { data: updated, error: updErr } = await supabase
     .from("term_payment_plans")
