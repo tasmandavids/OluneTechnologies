@@ -31,6 +31,7 @@ export const ADMIN_NAV: NavSection[] = [
         children: [
           { href: "/portal/admin/substitutes", labelKey: "nav.admin.substitutes" },
           { href: "/portal/admin/availability", labelKey: "nav.admin.availability" },
+          { href: "/portal/admin/private-lessons", labelKey: "nav.admin.privateLessons" },
         ],
       },
     ],
@@ -102,6 +103,7 @@ export const PORTAL_NAV: Record<Exclude<Role, "admin">, NavItem[]> = {
     { href: "/portal/teacher/expenses", labelKey: "nav.teacher.expenses" },
     { href: "/portal/teacher/vault", labelKey: "nav.teacher.vault" },
     { href: "/portal/teacher/availability", labelKey: "nav.teacher.availability" },
+    { href: "/portal/teacher/private-lessons", labelKey: "nav.teacher.privateLessons" },
     { href: "/portal/teacher/substitutes", labelKey: "nav.teacher.substitutes" },
     { href: "/portal/teacher/messages", labelKey: "nav.teacher.messages" },
     { href: "/portal/teacher/affiliations", labelKey: "nav.teacher.affiliations" },
@@ -114,6 +116,7 @@ export const PORTAL_NAV: Record<Exclude<Role, "admin">, NavItem[]> = {
   parent: [
     { href: "/portal/parent", labelKey: "nav.parent.familyHub", exact: true },
     { href: "/portal/parent/schedule", labelKey: "nav.parent.schedule" },
+    { href: "/portal/parent/private-lessons", labelKey: "nav.parent.privateLessons" },
     { href: "/portal/parent/absences", labelKey: "nav.parent.absences" },
     { href: "/portal/parent/recital", labelKey: "nav.parent.recital" },
     { href: "/portal/parent/forms", labelKey: "nav.parent.forms" },

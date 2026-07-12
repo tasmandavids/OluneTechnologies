@@ -385,7 +385,8 @@
     },
     "scheduleViews": {
       "family": "My family",
-      "studio": "Whole studio"
+      "studio": "Whole studio",
+      "bookPrivateLesson": "Book a private lesson"
     }
   }
 }

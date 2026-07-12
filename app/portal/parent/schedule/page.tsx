@@ -192,7 +192,7 @@ export default async function ParentSchedulePage({
 
   return (
     <div>
-      <div className="px-6 pt-6">
+      <div className="px-6 pt-6 flex flex-wrap items-center justify-between gap-3">
         <div className="flex w-fit gap-1 rounded-xl border border-[--hair] bg-surface p-1">
           {(
             [
@@ -216,6 +216,13 @@ export default async function ParentSchedulePage({
             </Link>
           ))}
         </div>
+
+        <Link
+          href="/portal/parent/private-lessons"
+          className="rounded-lg bg-ink px-4 py-1.5 text-xs font-semibold text-paper transition hover:opacity-90"
+        >
+          {t("bookPrivateLesson")}
+        </Link>
       </div>
 
       {view === "studio" ? (

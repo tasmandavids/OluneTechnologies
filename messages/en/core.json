@@ -106,6 +106,7 @@
       "settings": "Settings",
       "substitutes": "Substitutes",
       "availability": "Teacher availability",
+      "privateLessons": "Private lessons",
       "inbox": "Inbox"
     },
     "teacher": {
@@ -115,6 +116,7 @@
       "messages": "Messages",
       "affiliations": "My studios",
       "availability": "Availability",
+      "privateLessons": "Private lessons",
       "substitutes": "Cover requests",
       "expenses": "Expenses",
       "vault": "Documents",
@@ -127,6 +129,7 @@
     "parent": {
       "familyHub": "Family Hub",
       "schedule": "Schedule",
+      "privateLessons": "Private lessons",
       "billing": "Billing",
       "absences": "Absences",
       "recital": "Costumes & Recital",
