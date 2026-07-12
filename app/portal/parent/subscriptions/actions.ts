@@ -12,6 +12,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCY } from "@/lib/currency";
 import { siblingDiscountInfo } from "@/lib/discounts";
+import { monthlyFromTermFeeCents } from "@/lib/term-payments";
 import { getOrCreateClassStripePrice } from "@/lib/stripe/class-price";
 import type Stripe from "stripe";
 
@@ -150,10 +151,15 @@ export async function createEnrollmentSubscription(
     await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", userId);
   }
 
+  // Class fees are quoted as a full-term total; auto-pay spreads it over the
+  // same 3 monthly installments as the manual plan, so the recurring charge is
+  // the per-installment amount — not the whole term fee.
+  const monthlyCents = monthlyFromTermFeeCents(priceCents);
+
   // Sibling / family discount (Phase 3.3) — applied to recurring auto-pay too.
   // Reusable per-class Prices are immutable, so the family discount is applied
   // via a Stripe coupon rather than by changing the Price.
-  const discount = await siblingDiscountInfo(supabase, studioId, userId, studentId, priceCents);
+  const discount = await siblingDiscountInfo(supabase, studioId, userId, studentId, monthlyCents);
 
   // Create the recurring subscription against a REUSABLE Stripe Price for this
   // class (one Product + Price per class, cached on the classes row) instead of
@@ -164,7 +170,7 @@ export async function createEnrollmentSubscription(
       classId,
       studioId,
       className,
-      priceCents,
+      monthlyCents,
     );
 
     const couponId = discount.applies

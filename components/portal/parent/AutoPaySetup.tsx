@@ -9,6 +9,7 @@ import {
 } from "@/app/portal/parent/subscriptions/actions";
 import CheckoutForm from "@/components/payments/CheckoutForm";
 import { PaymentModalBody, PaymentModalShell } from "@/components/payments/PaymentModalShell";
+import { monthlyFromTermFeeCents } from "@/lib/term-payments";
 
 export type AutoPayItem = {
   studentId: string;
@@ -92,7 +93,7 @@ export default function AutoPaySetup({ items }: { items: AutoPayItem[] }) {
                   <p className="font-semibold text-ink">{item.className}</p>
                   <p className="text-xs text-muted">
                     {item.studentName ?? t("studentFallback")} ·{" "}
-                    {t("pricePerMonth", { price: money(item.priceCents) })}
+                    {t("pricePerMonth", { price: money(monthlyFromTermFeeCents(item.priceCents)) })}
                   </p>
                 </div>
                 {isActive && !isCancelling && (
