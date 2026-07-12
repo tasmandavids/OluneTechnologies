@@ -104,11 +104,21 @@ function xeroStatusOf(inv: Invoice): XeroInvoiceStatus | null {
   }
 }
 
-/** ISO date (yyyy-mm-dd) from Xero's various date encodings, else null. */
-function isoDate(value: string | undefined | null): string | null {
+/**
+ * ISO date (yyyy-mm-dd) from Xero's various date encodings, else null.
+ *
+ * xero-node's Invoice type declares date/dueDate/fullyPaidOnDate as `string`,
+ * but its deserializer actually converts the raw "/Date(1752278400000+0000)/"
+ * wire format into a real JS `Date` object before we ever see it — so at
+ * runtime these fields are Date instances, not strings. Handle both rather
+ * than trusting the (misleading) declared type.
+ */
+export function isoDate(value: string | Date | undefined | null): string | null {
   if (!value) return null;
-  // Xero returns either "2026-07-12T00:00:00" or "/Date(1752278400000+0000)/".
-  const msMatch = /\/Date\((\d+)/.exec(value);
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value.toISOString().slice(0, 10);
+  }
+  const msMatch = /\/Date\((-?\d+)/.exec(value);
   if (msMatch) return new Date(Number(msMatch[1])).toISOString().slice(0, 10);
   const d = value.slice(0, 10);
   return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : null;

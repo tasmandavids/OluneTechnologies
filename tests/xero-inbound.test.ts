@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { planInvoiceReconcile } from "@/lib/xero/inbound-sync";
+import { isoDate, planInvoiceReconcile } from "@/lib/xero/inbound-sync";
 import { verifyXeroSignature } from "@/lib/xero/webhook-verify";
 
 describe("planInvoiceReconcile", () => {
@@ -55,6 +55,36 @@ describe("planInvoiceReconcile", () => {
   it("ignores a submitted/draft echo once the invoice has been sent", () => {
     expect(planInvoiceReconcile("sent", "SUBMITTED").nextStatus).toBeNull();
     expect(planInvoiceReconcile("overdue", "DRAFT").syncAmount).toBe(false);
+  });
+});
+
+describe("isoDate", () => {
+  // xero-node's Invoice type declares date/dueDate/fullyPaidOnDate as
+  // `string`, but its own deserializer actually hands us a real `Date`
+  // instance for these fields at runtime (see models.js deserializeDateFormats).
+  // Trusting the declared type here is exactly what broke reconcile in
+  // production: `Date.prototype.slice` doesn't exist, so every invoice threw
+  // before any Supabase write ran.
+  it("formats a Date instance (the real runtime shape from xero-node)", () => {
+    expect(isoDate(new Date("2026-07-12T00:00:00.000Z"))).toBe("2026-07-12");
+  });
+
+  it("returns null for an invalid Date instance instead of throwing", () => {
+    expect(isoDate(new Date("not-a-real-date"))).toBeNull();
+  });
+
+  it("still handles a plain ISO date string", () => {
+    expect(isoDate("2026-07-12T00:00:00")).toBe("2026-07-12");
+  });
+
+  it("still handles the raw /Date(ms)/ wire format as a string fallback", () => {
+    expect(isoDate("/Date(1752278400000+0000)/")).toBe("2026-07-12");
+  });
+
+  it("returns null for null/undefined/empty input", () => {
+    expect(isoDate(null)).toBeNull();
+    expect(isoDate(undefined)).toBeNull();
+    expect(isoDate("")).toBeNull();
   });
 });
 
