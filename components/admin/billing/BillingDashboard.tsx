@@ -26,6 +26,7 @@ import type {
 } from "@/app/portal/admin/billing/page";
 import {
   createInvoice,
+  refreshXeroSync,
   sendAllDraftInvoices,
   sendBulkPaymentReminders,
   sendInvoiceNow,
@@ -582,6 +583,45 @@ function VoidButton({ invoice, onDone }: { invoice: InvoiceRow; onDone: (id: str
   );
 }
 
+function RefreshXeroButton({ onDone }: { onDone: () => void }) {
+  const t = useTranslations("admin.billing");
+  const tShared = useTranslations("admin.shared");
+  const [pending, startTransition] = useTransition();
+  const [result, setResult] = useState<{ checked: number; updated: number } | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  return (
+    <div className="flex flex-col items-end gap-0.5">
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() => {
+          setErr(null);
+          setResult(null);
+          startTransition(async () => {
+            const res = await refreshXeroSync();
+            if (res.ok) {
+              setResult({ checked: res.checked, updated: res.updated });
+              onDone();
+            } else {
+              setErr(res.error);
+            }
+          });
+        }}
+        className="rounded-xl border border-[--hair] bg-base px-3 py-1.5 text-xs font-semibold text-ink hover:bg-surface disabled:opacity-50"
+      >
+        {pending ? tShared("refreshing") : t("refreshXero")}
+      </button>
+      {err && <span className="text-[0.65rem] text-[#dc2626]">{err}</span>}
+      {result && (
+        <span className="text-[0.65rem] text-muted">
+          {t("refreshXeroResult", { checked: result.checked, updated: result.updated })}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function BillingDashboard({
   invoices: initialInvoices,
   unpaidInvoices,
@@ -771,13 +811,16 @@ export function BillingDashboard({
             <h1 className="text-2xl font-black tracking-tight text-ink">{t("title")}</h1>
             <p className="mt-1 text-sm text-muted">{t("subtitle")}</p>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowCreate(true)}
-            className="rounded-xl bg-ink px-4 py-2.5 text-sm font-bold text-paper shadow-sm hover:opacity-90"
-          >
-            {t("createInvoice")}
-          </button>
+          <div className="flex items-start gap-2">
+            <RefreshXeroButton onDone={refresh} />
+            <button
+              type="button"
+              onClick={() => setShowCreate(true)}
+              className="rounded-xl bg-ink px-4 py-2.5 text-sm font-bold text-paper shadow-sm hover:opacity-90"
+            >
+              {t("createInvoice")}
+            </button>
+          </div>
         </motion.header>
 
         <motion.div

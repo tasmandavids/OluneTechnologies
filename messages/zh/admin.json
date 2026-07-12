@@ -481,6 +481,8 @@
       "title": "账单",
       "subtitle": "创建账单、跟踪谁欠款并催缴付款——收入明细见「会计」。",
       "createInvoice": "+ 创建账单",
+      "refreshXero": "从 Xero 刷新",
+      "refreshXeroResult": "已检查 {checked} 张账单 — 已更新 {updated} 张。",
       "stats": {
         "outstanding": "待付",
         "outstandingSub": "{unpaid} 未付 · {overdue} 逾期",

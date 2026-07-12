@@ -134,6 +134,108 @@ async function cancelStripeIntent(intentId: string | null): Promise<void> {
 }
 
 /**
+ * Core reconcile for one invoice once we already know which studio it belongs
+ * to. Shared by the webhook path (tenant → studio lookup) and the manual
+ * "Refresh from Xero" button (studio already known from the signed-in admin).
+ * Returns whether the Olune invoice's status/amount/due date actually changed,
+ * so callers can report a meaningful count back to the user.
+ */
+async function reconcileInvoiceForStudio(
+  supabase: SupabaseClient,
+  studioId: string,
+  xeroInvoiceId: string,
+): Promise<boolean> {
+  const { data: invoiceRow } = await supabase
+    .from("invoices")
+    .select("id, status, stripe_payment_intent_id, paid_at, issued_at")
+    .eq("studio_id", studioId)
+    .eq("xero_invoice_id", xeroInvoiceId)
+    .maybeSingle();
+
+  // Only invoices Olune already knows about are reconciled. Xero-native
+  // invoices with no Olune counterpart are intentionally ignored.
+  if (!invoiceRow) return false;
+
+  const loaded = await loadStudioXeroClient(supabase, studioId, xeroRedirectUriForJobs());
+  if (!loaded) return false;
+
+  const res = await loaded.client.accountingApi.getInvoice(loaded.tenantId, xeroInvoiceId);
+  const xeroInvoice = res.body.invoices?.[0];
+  if (!xeroInvoice) return false;
+
+  const xeroStatus = xeroStatusOf(xeroInvoice);
+  if (!xeroStatus) return false;
+
+  const plan = planInvoiceReconcile(invoiceRow.status as OluneInvoiceStatus, xeroStatus);
+
+  const updates: Record<string, unknown> = {};
+
+  if (plan.nextStatus && plan.nextStatus !== invoiceRow.status) {
+    updates.status = plan.nextStatus;
+    if (plan.nextStatus === "sent" && !invoiceRow.issued_at) {
+      updates.issued_at = isoDate(xeroInvoice.date) ?? new Date().toISOString();
+    }
+    if (plan.nextStatus === "paid" && !invoiceRow.paid_at) {
+      updates.paid_at = isoDate(xeroInvoice.fullyPaidOnDate) ?? new Date().toISOString();
+    }
+  }
+
+  if (plan.syncDueDate) {
+    const due = isoDate(xeroInvoice.dueDate);
+    if (due) updates.due_date = due;
+  }
+
+  if (plan.syncAmount) {
+    const total = xeroInvoice.total ?? 0;
+    const amountCents = centsFromDollars(total);
+    if (amountCents > 0) {
+      updates.amount_cents = amountCents;
+      updates.gst_cents = gstComponentCents(amountCents);
+    }
+  }
+
+  if (Object.keys(updates).length > 0) {
+    await supabase.from("invoices").update(updates).eq("id", invoiceRow.id);
+  }
+
+  // Rebuild line items to match Xero's, but only when we actually re-synced
+  // the amount (i.e. the invoice is still an editable draft on our side).
+  if (plan.syncAmount) {
+    const lines = (xeroInvoice.lineItems ?? []).filter((li) => (li.lineAmount ?? 0) !== 0);
+    if (lines.length > 0) {
+      await supabase.from("invoice_line_items").delete().eq("invoice_id", invoiceRow.id);
+      await supabase.from("invoice_line_items").insert(
+        lines.map((li, idx) => {
+          const unitCents = centsFromDollars(li.unitAmount ?? 0);
+          const qty = li.quantity ?? 1;
+          return {
+            invoice_id: invoiceRow.id,
+            item_type: "custom",
+            description: li.description ?? "Xero line item",
+            quantity: qty,
+            unit_cents: unitCents,
+            line_total_cents:
+              li.lineAmount != null ? centsFromDollars(li.lineAmount) : unitCents * qty,
+            sort_order: idx,
+          };
+        }),
+      );
+    }
+  }
+
+  if (plan.cancelStripe) {
+    await cancelStripeIntent(invoiceRow.stripe_payment_intent_id as string | null);
+  }
+
+  await supabase
+    .from("xero_connections")
+    .update({ last_sync_at: new Date().toISOString(), sync_error: null })
+    .eq("studio_id", studioId);
+
+  return Object.keys(updates).length > 0;
+}
+
+/**
  * Reconcile a single Xero invoice back onto its Olune counterpart. Best-effort:
  * swallows and logs errors so one bad event never fails the whole webhook (Xero
  * would otherwise retry-storm the endpoint).
@@ -155,94 +257,53 @@ export async function reconcileXeroInvoice(
     const studioId = connection?.studio_id as string | undefined;
     if (!studioId) return; // webhook for an org we're not connected to
 
-    const { data: invoiceRow } = await supabase
-      .from("invoices")
-      .select("id, status, stripe_payment_intent_id, paid_at, issued_at")
-      .eq("studio_id", studioId)
-      .eq("xero_invoice_id", xeroInvoiceId)
-      .maybeSingle();
-
-    // Only invoices Olune already knows about are reconciled. Xero-native
-    // invoices with no Olune counterpart are intentionally ignored.
-    if (!invoiceRow) return;
-
-    const loaded = await loadStudioXeroClient(supabase, studioId, xeroRedirectUriForJobs());
-    if (!loaded) return;
-
-    const res = await loaded.client.accountingApi.getInvoice(loaded.tenantId, xeroInvoiceId);
-    const xeroInvoice = res.body.invoices?.[0];
-    if (!xeroInvoice) return;
-
-    const xeroStatus = xeroStatusOf(xeroInvoice);
-    if (!xeroStatus) return;
-
-    const plan = planInvoiceReconcile(invoiceRow.status as OluneInvoiceStatus, xeroStatus);
-
-    const updates: Record<string, unknown> = {};
-
-    if (plan.nextStatus && plan.nextStatus !== invoiceRow.status) {
-      updates.status = plan.nextStatus;
-      if (plan.nextStatus === "sent" && !invoiceRow.issued_at) {
-        updates.issued_at = isoDate(xeroInvoice.date) ?? new Date().toISOString();
-      }
-      if (plan.nextStatus === "paid" && !invoiceRow.paid_at) {
-        updates.paid_at =
-          isoDate(xeroInvoice.fullyPaidOnDate) ?? new Date().toISOString();
-      }
-    }
-
-    if (plan.syncDueDate) {
-      const due = isoDate(xeroInvoice.dueDate);
-      if (due) updates.due_date = due;
-    }
-
-    if (plan.syncAmount) {
-      const total = xeroInvoice.total ?? 0;
-      const amountCents = centsFromDollars(total);
-      if (amountCents > 0) {
-        updates.amount_cents = amountCents;
-        updates.gst_cents = gstComponentCents(amountCents);
-      }
-    }
-
-    if (Object.keys(updates).length > 0) {
-      await supabase.from("invoices").update(updates).eq("id", invoiceRow.id);
-    }
-
-    // Rebuild line items to match Xero's, but only when we actually re-synced
-    // the amount (i.e. the invoice is still an editable draft on our side).
-    if (plan.syncAmount) {
-      const lines = (xeroInvoice.lineItems ?? []).filter((li) => (li.lineAmount ?? 0) !== 0);
-      if (lines.length > 0) {
-        await supabase.from("invoice_line_items").delete().eq("invoice_id", invoiceRow.id);
-        await supabase.from("invoice_line_items").insert(
-          lines.map((li, idx) => {
-            const unitCents = centsFromDollars(li.unitAmount ?? 0);
-            const qty = li.quantity ?? 1;
-            return {
-              invoice_id: invoiceRow.id,
-              item_type: "custom",
-              description: li.description ?? "Xero line item",
-              quantity: qty,
-              unit_cents: unitCents,
-              line_total_cents:
-                li.lineAmount != null ? centsFromDollars(li.lineAmount) : unitCents * qty,
-              sort_order: idx,
-            };
-          }),
-        );
-      }
-    }
-
-    if (plan.cancelStripe) {
-      await cancelStripeIntent(invoiceRow.stripe_payment_intent_id as string | null);
-    }
-
-    await supabase
-      .from("xero_connections")
-      .update({ last_sync_at: new Date().toISOString(), sync_error: null })
-      .eq("studio_id", studioId);
+    await reconcileInvoiceForStudio(supabase, studioId, xeroInvoiceId);
   } catch (err) {
     console.warn(`[xero-inbound] reconcile ${xeroInvoiceId} failed:`, err);
   }
+}
+
+/**
+ * Manual "Refresh from Xero" entry point — walks every not-yet-final invoice
+ * that's already linked to Xero and re-pulls its current state, the same way
+ * the webhook does per-event. This is a deliberate catch-up path: webhooks can
+ * be missed (endpoint briefly down, misconfigured signing key, etc.), so admins
+ * need a way to force a sync without waiting on Xero to redeliver.
+ */
+export async function refreshStudioXeroSync(
+  fallbackSupabase: SupabaseClient,
+  studioId: string,
+): Promise<{ ok: true; checked: number; updated: number } | { ok: false; error: string }> {
+  const supabase = syncSupabase(fallbackSupabase);
+
+  const { data: connection } = await supabase
+    .from("xero_connections")
+    .select("studio_id")
+    .eq("studio_id", studioId)
+    .maybeSingle();
+  if (!connection) return { ok: false, error: "Xero is not connected for this studio" };
+
+  const { data: rows, error } = await supabase
+    .from("invoices")
+    .select("xero_invoice_id")
+    .eq("studio_id", studioId)
+    .in("status", ["draft", "sent", "overdue"])
+    .not("xero_invoice_id", "is", null);
+  if (error) return { ok: false, error: error.message };
+
+  const xeroInvoiceIds = [...new Set((rows ?? []).map((r) => r.xero_invoice_id as string))];
+
+  let updated = 0;
+  // Sequential, not parallel — respects Xero's per-minute API rate limit. This
+  // button is an occasional manual catch-up, not a hot path.
+  for (const xeroInvoiceId of xeroInvoiceIds) {
+    try {
+      const changed = await reconcileInvoiceForStudio(supabase, studioId, xeroInvoiceId);
+      if (changed) updated += 1;
+    } catch (err) {
+      console.warn(`[xero-inbound] refresh ${xeroInvoiceId} failed:`, err);
+    }
+  }
+
+  return { ok: true, checked: xeroInvoiceIds.length, updated };
 }

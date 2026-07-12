@@ -445,6 +445,8 @@
       "title": "Fatturazione",
       "subtitle": "Crea fatture, tieni traccia di chi ti deve e insegui i pagamenti: i dettagli sulle entrate si trovano nella Contabilità.",
       "createInvoice": "+ Crea fattura",
+      "refreshXero": "Aggiorna da Xero",
+      "refreshXeroResult": "Controllate {checked} fattura/e — {updated} aggiornata/e.",
       "stats": {
         "outstanding": "Eccezionale",
         "outstandingSub": "{unpaid} non pagato · {overdue} scaduto",

@@ -481,6 +481,8 @@
       "title": "Billing",
       "subtitle": "Create invoices, track who owes you, and chase payments — revenue detail lives in Accounting.",
       "createInvoice": "+ Create invoice",
+      "refreshXero": "Refresh from Xero",
+      "refreshXeroResult": "Checked {checked} invoice(s) — {updated} updated.",
       "stats": {
         "outstanding": "Outstanding",
         "outstandingSub": "{unpaid} unpaid · {overdue} overdue",

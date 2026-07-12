@@ -445,6 +445,8 @@
       "title": "Facturation",
       "subtitle": "Créez des factures, suivez qui vous doit et recherchez les paiements : les détails des revenus se trouvent dans la comptabilité.",
       "createInvoice": "+ Créer une facture",
+      "refreshXero": "Actualiser depuis Xero",
+      "refreshXeroResult": "{checked} facture(s) vérifiée(s) — {updated} mise(s) à jour.",
       "stats": {
         "outstanding": "Remarquable",
         "outstandingSub": "{unpaid} impayé · {overdue} en retard",

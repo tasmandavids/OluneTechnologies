@@ -11,6 +11,7 @@ import {
   xeroUpdateOutstandingInvoice,
   xeroVoidInvoice,
 } from "@/lib/xero/webhook-sync";
+import { refreshStudioXeroSync } from "@/lib/xero/inbound-sync";
 import { removeInvoiceFromActivePlan } from "@/lib/term-payment-plan-service";
 import { getTranslations } from "@/lib/i18n/server";
 
@@ -336,6 +337,25 @@ export async function sendAllDraftInvoices(): Promise<
   }
 
   return { ok: true, sent, failed };
+}
+
+/**
+ * Manual catch-up for the inbound Xero webhook — pulls current state for every
+ * not-yet-final invoice already linked to Xero (draft/sent/overdue), in case a
+ * webhook delivery was missed. See lib/xero/inbound-sync.ts.
+ */
+export async function refreshXeroSync(): Promise<
+  { ok: true; checked: number; updated: number } | { ok: false; error: string }
+> {
+  const t = await getTranslations("errors.actions");
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? t("unknown") };
+
+  const result = await refreshStudioXeroSync(supabase, studioId);
+  if (!result.ok) return result;
+
+  revalidatePath("/portal/admin/billing");
+  return result;
 }
 
 export async function sendPaymentReminder(
