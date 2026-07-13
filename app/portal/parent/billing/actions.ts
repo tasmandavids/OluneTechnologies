@@ -7,6 +7,8 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCY } from "@/lib/currency";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import { resolveTransferData } from "@/lib/stripe/connect";
 import { TERM_INSTALLMENT_COUNT } from "@/lib/term-payments";
 import {
   addInvoicesToActivePlan,
@@ -82,31 +84,6 @@ export async function getAccountBillingSummary(): Promise<ActionResult<AccountBi
   };
 }
 
-async function ensureStripeCustomer(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  userId: string,
-  email: string | undefined,
-) {
-  const { stripe } = await import("@/lib/stripe");
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stripe_customer_id, full_name")
-    .eq("id", userId)
-    .single();
-
-  let customerId = profile?.stripe_customer_id as string | null;
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      email,
-      name: (profile?.full_name as string | null) ?? undefined,
-      metadata: { supabase_user_id: userId },
-    });
-    customerId = customer.id;
-    await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", userId);
-  }
-  return customerId;
-}
-
 /**
  * Build (or reuse) a term plan for all open invoices, then create a PI for the
  * next installment.
@@ -166,7 +143,7 @@ export async function createTermInstallmentIntent(
   }
 
   const installmentNumber = plan.installments_paid + 1;
-  const customerId = await ensureStripeCustomer(supabase, user.id, user.email);
+  const customerId = await getOrCreateStripeCustomer(supabase, user.id, plan.studio_id);
 
   const { stripe } = await import("@/lib/stripe");
   const intent = await stripe.paymentIntents.create({
@@ -185,6 +162,7 @@ export async function createTermInstallmentIntent(
     // order value and settle asynchronously, which double-splits the balance and
     // lets an unsettled `processing` intent look "paid". One installment = one card charge.
     payment_method_types: ["card"],
+    transfer_data: await resolveTransferData(supabase, plan.studio_id),
   });
 
   if (!intent.client_secret) {

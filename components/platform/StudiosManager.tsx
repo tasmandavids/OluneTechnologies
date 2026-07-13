@@ -83,6 +83,24 @@ export function StudiosManager({ studios }: { studios: PlatformStudioSummary[] }
                     {s.slug}.{ROOT}
                     {s.customDomain && ` · ${s.customDomain}`}
                   </p>
+                  <div className="mt-1 flex gap-1.5">
+                    <span
+                      className={`rounded-full px-1.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide ${
+                        s.stripeConnected
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-base text-muted"
+                      }`}
+                    >
+                      Stripe {s.stripeConnected ? "connected" : "not connected"}
+                    </span>
+                    <span
+                      className={`rounded-full px-1.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide ${
+                        s.xeroConnected ? "bg-emerald-100 text-emerald-700" : "bg-base text-muted"
+                      }`}
+                    >
+                      Xero {s.xeroConnected ? "connected" : "not connected"}
+                    </span>
+                  </div>
                 </td>
                 <td className="p-4">
                   <p className="text-ink">{s.ownerName ?? "—"}</p>

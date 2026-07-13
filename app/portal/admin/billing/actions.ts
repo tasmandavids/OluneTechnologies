@@ -5,6 +5,8 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCY, gstComponentCents } from "@/lib/currency";
 import { stripe } from "@/lib/stripe";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import { resolveTransferData } from "@/lib/stripe/connect";
 import {
   xeroAuthoriseOutstandingInvoice,
   xeroSyncOutstandingInvoice,
@@ -94,30 +96,6 @@ function invoiceSentNotification(
   };
 }
 
-async function ensureStripeCustomer(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  payerId: string,
-  studioId: string,
-) {
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stripe_customer_id, full_name, email")
-    .eq("id", payerId)
-    .single();
-
-  let customerId = profile?.stripe_customer_id as string | null;
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      email: profile?.email ?? undefined,
-      name: (profile?.full_name as string | null) ?? undefined,
-      metadata: { supabase_user_id: payerId, studio_id: studioId },
-    });
-    customerId = customer.id;
-    await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", payerId);
-  }
-  return customerId;
-}
-
 async function attachPaymentIntent(
   supabase: Awaited<ReturnType<typeof createClient>>,
   invoice: { id: string; amount_cents: number },
@@ -125,7 +103,7 @@ async function attachPaymentIntent(
   studioId: string,
   description: string,
 ) {
-  const customerId = await ensureStripeCustomer(supabase, payerId, studioId);
+  const customerId = await getOrCreateStripeCustomer(supabase, payerId, studioId);
   const intent = await stripe.paymentIntents.create({
     amount: invoice.amount_cents,
     currency: CURRENCY,
@@ -137,6 +115,7 @@ async function attachPaymentIntent(
       supabase_user_id: payerId,
     },
     automatic_payment_methods: { enabled: true },
+    transfer_data: await resolveTransferData(supabase, studioId),
   });
   await supabase
     .from("invoices")

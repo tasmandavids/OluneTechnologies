@@ -12,7 +12,7 @@ export default async function PlatformStudiosPage() {
 
   const studioIds = (studios ?? []).map((s) => s.id);
 
-  const [adminsRes, studentsRes] = await Promise.all([
+  const [adminsRes, studentsRes, stripeRes, xeroRes] = await Promise.all([
     admin
       .from("profiles")
       .select("studio_id, full_name, email")
@@ -22,6 +22,14 @@ export default async function PlatformStudiosPage() {
       .from("profiles")
       .select("studio_id")
       .eq("role", "student")
+      .in("studio_id", studioIds.length ? studioIds : ["00000000-0000-0000-0000-000000000000"]),
+    admin
+      .from("stripe_connect_accounts")
+      .select("studio_id, charges_enabled")
+      .in("studio_id", studioIds.length ? studioIds : ["00000000-0000-0000-0000-000000000000"]),
+    admin
+      .from("xero_connections")
+      .select("studio_id")
       .in("studio_id", studioIds.length ? studioIds : ["00000000-0000-0000-0000-000000000000"]),
   ]);
 
@@ -39,6 +47,13 @@ export default async function PlatformStudiosPage() {
     }
   }
 
+  const stripeByStudio = new Map<string, boolean>();
+  for (const row of stripeRes.data ?? []) {
+    if (row.studio_id) stripeByStudio.set(row.studio_id, row.charges_enabled === true);
+  }
+
+  const xeroConnectedStudios = new Set((xeroRes.data ?? []).map((row) => row.studio_id));
+
   const summaries: PlatformStudioSummary[] = (studios ?? []).map((s) => {
     const owner = adminByStudio.get(s.id);
     return {
@@ -52,6 +67,8 @@ export default async function PlatformStudiosPage() {
       ownerEmail: owner?.email ?? null,
       studentCount: studentCounts.get(s.id) ?? 0,
       adminCount: 1,
+      stripeConnected: stripeByStudio.get(s.id) ?? false,
+      xeroConnected: xeroConnectedStudios.has(s.id),
     };
   });
 

@@ -12,6 +12,8 @@ import { CURRENCY, gstComponentCents } from "@/lib/currency";
 import { siblingDiscountedCents } from "@/lib/discounts";
 import { enrollmentBillableCents, batchEnrollmentBillableCents } from "@/lib/enrollment-billing";
 import { xeroSyncOutstandingInvoice } from "@/lib/xero/webhook-sync";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import { resolveTransferData } from "@/lib/stripe/connect";
 import { getTranslations } from "@/lib/i18n/server";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -524,23 +526,8 @@ export async function createEnrollmentIntent(
   if (!invoiceRes.ok) return { ok: false, error: invoiceRes.error };
 
   // Resolve / create the Stripe customer.
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stripe_customer_id, full_name")
-    .eq("id", userId)
-    .single();
-
   const { stripe } = await import("@/lib/stripe");
-
-  let customerId = profile?.stripe_customer_id as string | null;
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      name: profile?.full_name || undefined,
-      metadata: { supabase_user_id: userId, studio_id: studioId },
-    });
-    customerId = customer.id;
-    await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", userId);
-  }
+  const customerId = await getOrCreateStripeCustomer(supabase, userId, studioId);
 
   const intent = await stripe.paymentIntents.create({
     amount: chargeCents,
@@ -554,6 +541,7 @@ export async function createEnrollmentIntent(
       student_id: studentId,
       class_id: classId,
     },
+    transfer_data: await resolveTransferData(supabase, studioId),
   });
 
   await supabase

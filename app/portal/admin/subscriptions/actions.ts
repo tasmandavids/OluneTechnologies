@@ -5,6 +5,8 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCY } from "@/lib/currency";
 import { stripe } from "@/lib/stripe";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import { resolveTransferData } from "@/lib/stripe/connect";
 import {
   chargeAmountCents,
   intervalLabel,
@@ -45,30 +47,6 @@ function periodEndFromSubscription(sub: Stripe.Subscription): string | null {
     (sub.items?.data?.[0] as { current_period_end?: number } | undefined)?.current_period_end ??
     null;
   return epoch ? new Date(epoch * 1000).toISOString() : null;
-}
-
-async function ensureStripeCustomer(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  payerId: string,
-  studioId: string,
-) {
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stripe_customer_id, full_name, email")
-    .eq("id", payerId)
-    .single();
-
-  let customerId = profile?.stripe_customer_id as string | null;
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      email: profile?.email ?? undefined,
-      name: (profile?.full_name as string | null) ?? undefined,
-      metadata: { supabase_user_id: payerId, studio_id: studioId },
-    });
-    customerId = customer.id;
-    await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", payerId);
-  }
-  return customerId;
 }
 
 const LineSchema = z.object({
@@ -136,7 +114,7 @@ export async function createAdminSubscription(
 
   let customerId: string;
   try {
-    customerId = await ensureStripeCustomer(supabase, payerId, studioId);
+    customerId = await getOrCreateStripeCustomer(supabase, payerId, studioId);
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Stripe customer error" };
   }
@@ -170,6 +148,7 @@ export async function createAdminSubscription(
         admin_created: "true",
         monthly_amount_cents: String(monthlyCents),
       },
+      transfer_data: await resolveTransferData(supabase, studioId),
     });
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Stripe subscription error" };

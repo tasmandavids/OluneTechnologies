@@ -8,6 +8,8 @@ import { createClient } from "@/lib/supabase/server";
 import { CURRENCY } from "@/lib/currency";
 import { familyDiscountInfo } from "@/lib/discounts";
 import { isUuid } from "@/lib/validation/uuid";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import { resolveTransferData } from "@/lib/stripe/connect";
 
 interface OrderItem { productId: string; qty: number }
 
@@ -26,7 +28,7 @@ export async function POST(req: NextRequest) {
   // Resolve user's studio_id
   const { data: profile } = await supabase
     .from("profiles")
-    .select("studio_id, stripe_customer_id")
+    .select("studio_id")
     .eq("id", user.id)
     .single();
 
@@ -93,20 +95,14 @@ export async function POST(req: NextRequest) {
   // Paid order — create Stripe intent
   const stripe = (await import("@/lib/stripe")).stripe;
 
-  let customerId = profile.stripe_customer_id as string | null;
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      metadata: { supabase_user_id: user.id, studio_id: profile.studio_id },
-    });
-    customerId = customer.id;
-    await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", user.id);
-  }
+  const customerId = await getOrCreateStripeCustomer(supabase, user.id, profile.studio_id as string);
 
   const intent = await stripe.paymentIntents.create({
     amount:   totalCents,
     currency: CURRENCY,
     customer: customerId,
     metadata: { order_id: order.id, user_id: user.id },
+    transfer_data: await resolveTransferData(supabase, profile.studio_id as string),
   });
 
   // Store payment intent reference on order

@@ -10,6 +10,8 @@ import QRCode from "qrcode";
 import { CURRENCY } from "@/lib/currency";
 import { familyDiscountInfo } from "@/lib/discounts";
 import { isUuid } from "@/lib/validation/uuid";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import { resolveTransferData } from "@/lib/stripe/connect";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -99,30 +101,7 @@ export async function POST(req: NextRequest) {
 
   // Paid event — create Stripe PaymentIntent
   const stripe = (await import("@/lib/stripe")).stripe;
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stripe_customer_id")
-    .eq("id", user.id)
-    .single();
-
-  let customerId = profile?.stripe_customer_id as string | null;
-  if (!customerId) {
-    const { data: userProfile } = await supabase
-      .from("profiles")
-      .select("full_name")
-      .eq("id", user.id)
-      .single();
-
-    const customer = await stripe.customers.create({
-      metadata: { supabase_user_id: user.id, studio_id: event.studio_id },
-      name: userProfile?.full_name || undefined,
-    });
-    customerId = customer.id;
-    await supabase
-      .from("profiles")
-      .update({ stripe_customer_id: customerId })
-      .eq("id", user.id);
-  }
+  const customerId = await getOrCreateStripeCustomer(supabase, user.id, event.studio_id as string);
 
   const intent = await stripe.paymentIntents.create({
     amount:   totalCents,
@@ -133,6 +112,7 @@ export async function POST(req: NextRequest) {
       user_id:  user.id,
       quantity: String(quantity),
     },
+    transfer_data: await resolveTransferData(supabase, event.studio_id as string),
   });
 
   // Reserve ticket row (pending payment)
