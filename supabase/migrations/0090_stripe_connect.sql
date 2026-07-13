@@ -55,15 +55,15 @@ alter table public.profile_stripe_customers enable row level security;
 drop policy if exists "stripe_connect_accounts_admin" on public.stripe_connect_accounts;
 create policy "stripe_connect_accounts_admin" on public.stripe_connect_accounts
   for all using (
-    studio_id = public.current_studio()
-    and public.current_user_role() = 'admin'
+    studio_id = private.current_studio()
+    and private.current_user_role() = 'admin'
   );
 
 drop policy if exists "profile_stripe_customers_admin" on public.profile_stripe_customers;
 create policy "profile_stripe_customers_admin" on public.profile_stripe_customers
   for all using (
-    studio_id = public.current_studio()
-    and public.current_user_role() = 'admin'
+    studio_id = private.current_studio()
+    and private.current_user_role() = 'admin'
   );
 
 drop policy if exists "profile_stripe_customers_self_read" on public.profile_stripe_customers;
