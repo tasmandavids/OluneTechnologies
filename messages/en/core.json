@@ -107,7 +107,8 @@
       "substitutes": "Substitutes",
       "availability": "Teacher availability",
       "privateLessons": "Private lessons",
-      "inbox": "Inbox"
+      "inbox": "Inbox",
+      "badges": "Badges"
     },
     "teacher": {
       "schedule": "Schedule & Roll",
@@ -154,7 +155,8 @@
       "settings": "Settings",
       "auditLog": "Audit log",
       "consoleTitle": "Olune Platform",
-      "consoleSubtitle": "Operator console"
+      "consoleSubtitle": "Operator console",
+      "badges": "Badge catalogue"
     },
     "shared": {
       "notifications": "Notification settings"

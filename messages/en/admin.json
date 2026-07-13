@@ -1290,6 +1290,23 @@
         "messages": "Messages",
         "email": "Email"
       }
+    },
+    "badges": {
+      "title": "Badge catalogue",
+      "subtitle": "{visible} of {total} badges visible to your studio",
+      "addCustom": "Add custom badge",
+      "cancel": "Cancel",
+      "customTag": "Custom",
+      "delete": "Delete",
+      "show": "Show",
+      "hide": "Hide",
+      "iconLabel": "Emoji",
+      "nameLabel": "Badge name",
+      "descLabel": "Description (optional)",
+      "xpLabel": "XP",
+      "forStudent": "For students",
+      "forParent": "For parents",
+      "create": "Create badge"
     }
   }
 }

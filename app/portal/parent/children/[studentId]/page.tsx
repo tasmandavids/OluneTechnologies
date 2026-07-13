@@ -7,6 +7,7 @@ import { getTranslations } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
 import StudentProgressPanel from "@/components/portal/shared/StudentProgressPanel";
 import { fetchStudentProgressBundle } from "@/lib/portal/student-progress-data";
+import { fetchStudentBadgeBundle } from "@/lib/portal/badges-data";
 
 export default async function ParentChildProgressPage({
   params,
@@ -35,9 +36,19 @@ export default async function ParentChildProgressPage({
   const bundle = await fetchStudentProgressBundle(supabase, studentId);
   if (!bundle) notFound();
 
+  const { data: childProfile } = await supabase
+    .from("profiles")
+    .select("studio_id")
+    .eq("id", studentId)
+    .single();
+  const badges = childProfile?.studio_id
+    ? await fetchStudentBadgeBundle(supabase, childProfile.studio_id, studentId)
+    : null;
+
   return (
     <StudentProgressPanel
       bundle={bundle}
+      badges={badges}
       backHref="/portal/parent"
       labels={{
         back: tParent("back"),

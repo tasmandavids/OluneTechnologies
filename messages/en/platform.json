@@ -152,6 +152,15 @@
       "action": "Action",
       "target": "Target",
       "noEntries": "No audit entries yet."
+    },
+    "badges": {
+      "title": "Badge catalogue",
+      "subtitle": "{active} of {total} global badges active",
+      "iconLabel": "Emoji",
+      "xpLabel": "XP value",
+      "active": "Active",
+      "inactive": "Hidden",
+      "save": "Save"
     }
   }
 }

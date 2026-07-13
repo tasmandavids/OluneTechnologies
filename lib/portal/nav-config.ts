@@ -41,6 +41,7 @@ export const ADMIN_NAV: NavSection[] = [
     items: [
       { href: "/portal/admin/parents", labelKey: "nav.admin.parents" },
       { href: "/portal/admin/students", labelKey: "nav.admin.students" },
+      { href: "/portal/admin/badges", labelKey: "nav.admin.badges" },
       { href: "/portal/admin/leads", labelKey: "nav.admin.leads" },
     ],
   },
@@ -152,6 +153,7 @@ export const PLATFORM_NAV: NavItem[] = [
   { href: "/platform/messages", labelKey: "nav.platform.supportInbox" },
   { href: "/platform/tasks", labelKey: "nav.platform.opsTasks" },
   { href: "/platform/features", labelKey: "nav.platform.featureFlags" },
+  { href: "/platform/badges", labelKey: "nav.platform.badges" },
   { href: "/platform/announcements", labelKey: "nav.platform.announcements" },
   { href: "/platform/settings", labelKey: "nav.platform.settings" },
   { href: "/platform/audit", labelKey: "nav.platform.auditLog" },
