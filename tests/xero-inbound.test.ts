@@ -78,7 +78,7 @@ describe("isoDate", () => {
   });
 
   it("still handles the raw /Date(ms)/ wire format as a string fallback", () => {
-    expect(isoDate("/Date(1752278400000+0000)/")).toBe("2026-07-12");
+    expect(isoDate("/Date(1783814400000+0000)/")).toBe("2026-07-12");
   });
 
   it("returns null for null/undefined/empty input", () => {
