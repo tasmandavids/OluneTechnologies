@@ -21,6 +21,41 @@
         "subtitle": "Download a PDF certificate for each award.",
         "downloadPdf": "Download PDF",
         "downloadAria": "Download PDF certificate for {title}"
+      },
+      "badges": {
+        "title": "Badges · {earned}/{total}",
+        "subtitle": "Achievements earned on the journey",
+        "empty": "No badges yet — they'll appear here as milestones are reached.",
+        "secret": "Secret badge",
+        "earnedOn": "Earned {date}",
+        "levelLabel": "Level {level}",
+        "xpTotal": "{xp} XP",
+        "toNext": "{xp} XP to {level}",
+        "maxLevel": "Top level reached — Étoile!",
+        "familyTitle": "Family badges · {earned}/{total}",
+        "familySubtitle": "Your family's achievements at the academy",
+        "categories": {
+          "founder": "Founder & Legacy",
+          "beginner": "Beginner Journey",
+          "commitment": "Commitment & Discipline",
+          "technique": "Technique",
+          "level": "Level Progression",
+          "performance": "Performance",
+          "character": "Character & Values",
+          "mentor": "Teacher & Mentor Pathway",
+          "community": "Community",
+          "secret": "Secret & Fun",
+          "family": "Family"
+        },
+        "award": {
+          "title": "Award a badge",
+          "subtitle": "Recognise a milestone. The dancer and their family are notified.",
+          "search": "Search badges…",
+          "note": "Note (optional)",
+          "awardCta": "Award",
+          "revoke": "Remove",
+          "noResults": "No badges match your search."
+        }
       }
     }
   }

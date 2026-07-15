@@ -5,12 +5,15 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCY, gstComponentCents } from "@/lib/currency";
 import { stripe } from "@/lib/stripe";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import { resolveTransferData } from "@/lib/stripe/connect";
 import {
   xeroAuthoriseOutstandingInvoice,
   xeroSyncOutstandingInvoice,
   xeroUpdateOutstandingInvoice,
   xeroVoidInvoice,
 } from "@/lib/xero/webhook-sync";
+import { refreshStudioXeroSync } from "@/lib/xero/inbound-sync";
 import { removeInvoiceFromActivePlan } from "@/lib/term-payment-plan-service";
 import { getTranslations } from "@/lib/i18n/server";
 
@@ -93,30 +96,6 @@ function invoiceSentNotification(
   };
 }
 
-async function ensureStripeCustomer(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  payerId: string,
-  studioId: string,
-) {
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stripe_customer_id, full_name, email")
-    .eq("id", payerId)
-    .single();
-
-  let customerId = profile?.stripe_customer_id as string | null;
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      email: profile?.email ?? undefined,
-      name: (profile?.full_name as string | null) ?? undefined,
-      metadata: { supabase_user_id: payerId, studio_id: studioId },
-    });
-    customerId = customer.id;
-    await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", payerId);
-  }
-  return customerId;
-}
-
 async function attachPaymentIntent(
   supabase: Awaited<ReturnType<typeof createClient>>,
   invoice: { id: string; amount_cents: number },
@@ -124,7 +103,7 @@ async function attachPaymentIntent(
   studioId: string,
   description: string,
 ) {
-  const customerId = await ensureStripeCustomer(supabase, payerId, studioId);
+  const customerId = await getOrCreateStripeCustomer(supabase, payerId, studioId);
   const intent = await stripe.paymentIntents.create({
     amount: invoice.amount_cents,
     currency: CURRENCY,
@@ -136,6 +115,7 @@ async function attachPaymentIntent(
       supabase_user_id: payerId,
     },
     automatic_payment_methods: { enabled: true },
+    transfer_data: await resolveTransferData(supabase, studioId),
   });
   await supabase
     .from("invoices")
@@ -336,6 +316,25 @@ export async function sendAllDraftInvoices(): Promise<
   }
 
   return { ok: true, sent, failed };
+}
+
+/**
+ * Manual catch-up for the inbound Xero webhook — pulls current state for every
+ * not-yet-final invoice already linked to Xero (draft/sent/overdue), in case a
+ * webhook delivery was missed. See lib/xero/inbound-sync.ts.
+ */
+export async function refreshXeroSync(): Promise<
+  { ok: true; checked: number; updated: number } | { ok: false; error: string }
+> {
+  const t = await getTranslations("errors.actions");
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? t("unknown") };
+
+  const result = await refreshStudioXeroSync(supabase, studioId);
+  if (!result.ok) return result;
+
+  revalidatePath("/portal/admin/billing");
+  return result;
 }
 
 export async function sendPaymentReminder(

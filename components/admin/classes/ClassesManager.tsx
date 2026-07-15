@@ -3,10 +3,12 @@
 import { useState, useTransition } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { toast } from "@/lib/feedback";
 import { deleteClass, deleteRecurringGroup } from "@/app/portal/admin/classes/actions";
 import type { ClassRow, TeacherOption } from "@/app/portal/admin/classes/page";
 import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-accounts";
 import { ClassDetailPanel } from "@/components/admin/classes/ClassDetailPanel";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ClassEditPanel } from "@/components/admin/classes/ClassEditPanel";
 import { formatMoney } from "@/lib/currency";
 import { useFormatTimeShort } from "@/lib/i18n/client";
@@ -35,6 +37,7 @@ function DeleteConfirm({
           ? await deleteRecurringGroup(cls.recurringGroupId as string)
           : await deleteClass(cls.id);
       if (!result.ok) { setError(result.error); return; }
+      toast.success(tShared("deleted"));
       onClose();
     });
   };
@@ -288,11 +291,20 @@ export default function ClassesManager({
 
       <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
         {filtered.length === 0 ? (
-          <div className="px-6 py-12 text-center">
-            <p className="text-sm text-muted">
-              {search ? t("emptySearch") : t("empty")}
-            </p>
-          </div>
+          <EmptyState
+            title={search ? t("emptySearch") : t("empty")}
+            action={
+              !search && !readOnly ? (
+                <button
+                  onClick={() => setPanel({ type: "create" })}
+                  className="rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                  style={{ background: "var(--brand)" }}
+                >
+                  {t("newClass")}
+                </button>
+              ) : null
+            }
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] text-left">

@@ -38,6 +38,7 @@ function InnerForm({
   const elements = useElements();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -62,16 +63,41 @@ function InnerForm({
       return;
     }
 
-    if (
-      paymentIntent &&
-      (paymentIntent.status === "succeeded" || paymentIntent.status === "processing")
-    ) {
+    // Only a *settled* payment is a success. `processing` means the funds have
+    // not cleared yet (async methods, delayed capture) — we must NOT report it
+    // as paid. Our webhook flips the record once `payment_intent.succeeded`
+    // arrives, so we show a truthful "still processing" state and leave the
+    // record untouched here.
+    if (paymentIntent?.status === "succeeded") {
       onSuccess();
+      return;
+    }
+
+    if (paymentIntent?.status === "processing") {
+      setProcessing(true);
+      setBusy(false);
       return;
     }
 
     setError(t("paymentIncomplete"));
     setBusy(false);
+  }
+
+  if (processing) {
+    return (
+      <div className="flex flex-col gap-4">
+        <p className="rounded-xl bg-amber-500/10 px-3 py-3 text-sm text-amber-600">
+          {t("paymentProcessing")}
+        </p>
+        <button
+          type="button"
+          onClick={onCancel ?? onSuccess}
+          className="w-full rounded-xl border border-[--hair] bg-surface py-3 text-sm font-semibold text-muted transition-colors hover:text-ink"
+        >
+          {cancelLabel ?? tCommon("close")}
+        </button>
+      </div>
+    );
   }
 
   return (

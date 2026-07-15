@@ -12,6 +12,8 @@ import { resolveStudio } from "@/lib/tenant";
 import { fontsForBranding } from "@/lib/fonts";
 import { getBrandingCached, brandingToCssVars, DEFAULT_BRANDING } from "@/lib/branding";
 import { OluneMoonDefs } from "@/components/brand/OluneMoonDefs";
+import { FeedbackHost } from "@/components/ui/FeedbackHost";
+import { MotionProvider } from "@/components/ui/MotionProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import type { CSSProperties } from "react";
@@ -69,14 +71,17 @@ export default async function RootLayout({
           <>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-            <link rel="stylesheet" href={fonts.stylesheetUrl} />
+            <link rel="stylesheet" href={fonts.stylesheetUrl} fetchPriority="high" />
           </>
         ) : null}
       </head>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <OluneMoonDefs />
-          {children}
+          <MotionProvider>
+            {children}
+            <FeedbackHost />
+          </MotionProvider>
           <SpeedInsights />
           <Analytics />
         </NextIntlClientProvider>

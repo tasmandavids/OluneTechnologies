@@ -86,7 +86,7 @@
       "finance": "Finance",
       "digital": "Digital",
       "communications": "Communications",
-      "staffing": "Staffing"
+      "families": "Families"
     },
     "admin": {
       "dashboard": "Dashboard",
@@ -98,28 +98,29 @@
       "leads": "Leads",
       "billing": "Billing",
       "accounting": "Accounting",
-      "subscriptions": "Subscriptions",
       "website": "Website",
       "advertising": "Advertising",
       "shop": "Shop",
-      "email": "Email",
       "messages": "Messages",
       "support": "Olune Support",
       "settings": "Settings",
       "substitutes": "Substitutes",
-      "paymentPlans": "Payment plans",
-      "availability": "Teacher availability"
+      "availability": "Teacher availability",
+      "privateLessons": "Private lessons",
+      "inbox": "Inbox",
+      "badges": "Badges"
     },
     "teacher": {
       "schedule": "Schedule & Roll",
       "clients": "Private clients",
       "invoices": "Invoices",
       "messages": "Messages",
-      "affiliations": "Studio affiliations",
+      "affiliations": "My studios",
       "availability": "Availability",
-      "substitutes": "Sub board",
+      "privateLessons": "Private lessons",
+      "substitutes": "Cover requests",
       "expenses": "Expenses",
-      "vault": "Compliance vault",
+      "vault": "Documents",
       "notifications": "Notification settings",
       "profile": "Public profile"
     },
@@ -129,15 +130,13 @@
     "parent": {
       "familyHub": "Family Hub",
       "schedule": "Schedule",
-      "fullStudioSchedule": "Full studio schedule",
-      "billing": "Billing & payments",
-      "studioChat": "Studio chat",
-      "studioEmail": "Studio email",
+      "privateLessons": "Private lessons",
+      "billing": "Billing",
       "absences": "Absences",
       "recital": "Costumes & Recital",
       "notifications": "Notifications",
       "forms": "Forms & Permissions",
-      "wallet": "Family Wallet"
+      "messages": "Messages"
     },
     "student": {
       "timetable": "My Timetable",
@@ -156,7 +155,8 @@
       "settings": "Settings",
       "auditLog": "Audit log",
       "consoleTitle": "Olune Platform",
-      "consoleSubtitle": "Operator console"
+      "consoleSubtitle": "Operator console",
+      "badges": "Badge catalogue"
     },
     "shared": {
       "notifications": "Notification settings"
@@ -182,6 +182,7 @@
     "orContinueWithEmail": "or continue with email",
     "googleForgotPassword": "Forgot your Google password?",
     "googleForgotPasswordLink": "Reset it at Google",
+    "emailLoginGoogleHint": "Signed up with Google? Use the button above instead — this account may not have a password.",
     "forgotPassword": "Forgot password?",
     "sendResetLink": "Send reset link",
     "sendingResetLink": "Sending…",

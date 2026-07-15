@@ -105,7 +105,7 @@ export function renderNotificationSms(n: DeliverableNotification): string {
   return msg.length > 320 ? `${msg.slice(0, 317)}...` : msg;
 }
 
-function escapeHtml(s: string): string {
+export function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

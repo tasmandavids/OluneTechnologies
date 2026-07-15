@@ -123,7 +123,7 @@
       "summaryClass": "Cours",
       "summaryDancer": "Danseur",
       "summaryTotalDue": "Tarif du cours",
-      "paymentChoiceHint": "Le paiement n'est pas obligatoire pour s'inscrire. Choisissez payer plus tard pour confirmer sans payer, ou payer maintenant en ligne.",
+      "paymentChoiceHint": "Le paiement n'est pas requis pour l'inscription — choisissez « Payer plus tard » et nous vous enverrons une facture à régler à tout moment.",
       "payNow": "Payer maintenant",
       "payLater": "Payer plus tard",
       "payLaterInstead": "Payer plus tard",
@@ -147,7 +147,9 @@
       "classSelected": "{count} class selected",
       "classesSelected": "{count} classes selected",
       "multipleClasses": "{count} classes",
-      "done": "Terminé"
+      "done": "Terminé",
+      "payMonthlyWithAmount": "Payer mensuellement · {amount}/mois",
+      "morePaymentOptions": "Autres options de paiement"
     },
     "email": {
       "title": "E-mail du studio",
@@ -182,6 +184,28 @@
         "fri": "Ven",
         "sat": "Sam",
         "sun": "Dim"
+      }
+    },
+    "inbox": {
+      "tabs": {
+        "chat": "Chat",
+        "email": "E-mail"
+      }
+    },
+    "scheduleViews": {
+      "family": "Ma famille",
+      "studio": "Tout le studio"
+    },
+    "billing": {
+      "summaryBand": {
+        "title": "Plans de paiement et prélèvement automatique",
+        "autopay": "Prélèvement automatique",
+        "autopayOn": "Actif",
+        "autopayOff": "Désactivé",
+        "planLabel": "Plan de paiement — {paid} sur {total} payés",
+        "paid": "{amount} payés",
+        "total": "{amount} au total",
+        "nextInstalment": "Prochaine échéance de {amount} le {date}"
       }
     }
   }

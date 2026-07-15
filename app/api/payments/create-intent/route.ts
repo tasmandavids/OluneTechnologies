@@ -13,6 +13,8 @@ import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe";
 import { CURRENCY } from "@/lib/currency";
 import { isUuid } from "@/lib/validation/uuid";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import { resolveTransferData } from "@/lib/stripe/connect";
 
 export async function POST(req: NextRequest) {
   try {
@@ -56,28 +58,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Ensure Stripe customer exists
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("full_name, stripe_customer_id")
-      .eq("id", user.id)
-      .single();
-
-    let customerId = profile?.stripe_customer_id as string | undefined;
-    if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: user.email,
-        name: (profile?.full_name as string | null) ?? undefined,
-        metadata: { supabase_user_id: user.id },
-      });
-      customerId = customer.id;
-
-      // Store Stripe customer ID on profile
-      await supabase
-        .from("profiles")
-        .update({ stripe_customer_id: customerId })
-        .eq("id", user.id);
-    }
+    // Ensure Stripe customer exists (per-studio once the studio has its own
+    // connected Stripe account, else the legacy global platform customer).
+    const customerId = await getOrCreateStripeCustomer(supabase, user.id, invoice.studio_id as string);
 
     // Fetch studio for currency / descriptor
     const { data: studio } = await supabase
@@ -86,7 +69,9 @@ export async function POST(req: NextRequest) {
       .eq("id", invoice.studio_id)
       .single();
 
-    // Create PaymentIntent
+    // Create PaymentIntent — settles directly to the studio's own Stripe
+    // account once they've completed Connect onboarding, else falls back to
+    // the platform account exactly as before.
     const intent = await stripe.paymentIntents.create({
       amount: invoice.amount_cents as number,
       currency: CURRENCY,
@@ -98,6 +83,7 @@ export async function POST(req: NextRequest) {
         supabase_user_id: user.id,
       },
       automatic_payment_methods: { enabled: true },
+      transfer_data: await resolveTransferData(supabase, invoice.studio_id as string),
     });
 
     // Persist the intent ID on the invoice

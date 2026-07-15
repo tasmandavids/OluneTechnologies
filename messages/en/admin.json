@@ -3,6 +3,7 @@
     "shared": {
       "saving": "Saving…",
       "adding": "Adding…",
+      "deleted": "Deleted.",
       "deleting": "Deleting…",
       "creating": "Creating…",
       "sending": "Sending…",
@@ -233,11 +234,11 @@
         "priceCents": "Price (cents NZD)",
         "pricePlaceholder": "e.g. 2000 = $20",
         "teacher": "Teacher",
-        "xeroAccountCode": "Xero ledger code",
+        "xeroAccountCode": "Xero account",
         "xeroAccountCodeNone": "No code assigned",
         "xeroAccountCodeConnectHint": "Connect Xero in Accounting settings to assign a ledger code.",
         "xeroAccountCodeNotFound": "(not found in Xero)",
-        "xeroItemCode": "Xero item code",
+        "xeroItemCode": "Xero item",
         "xeroItemCodeNone": "No item assigned",
         "xeroItemCodeConnectHint": "Connect Xero in Accounting settings to assign an item code.",
         "xeroItemCodeNotFound": "(not found in Xero)",
@@ -251,7 +252,8 @@
         "seriesStandaloneGroup": "Standalone classes",
         "seriesOptionGroupLabel": "{name} · {count} classes",
         "seriesLinkButton": "Link to series",
-        "seriesLinking": "Linking…"
+        "seriesLinking": "Linking…",
+        "xeroSection": "Accounting (Xero)"
       },
       "delete": {
         "title": "Delete \"{name}\"?",
@@ -316,6 +318,9 @@
         "enroll": "Enroll",
         "enrolledSuccess": "Enrolled successfully.",
         "droppedSuccess": "Enrollment dropped.",
+        "createDraftInvoice": "Create draft invoice",
+        "draftInvoiceCreated": "Draft invoice created from current enrollments.",
+        "draftInvoiceXeroError": "Draft invoice created, but Xero sync failed: {error}",
         "dangerZone": "Danger zone",
         "deleteDescription": "Permanently removes this student, their enrollments, and progress history. This cannot be undone.",
         "deleteStudent": "Delete student",
@@ -476,6 +481,8 @@
       "title": "Billing",
       "subtitle": "Create invoices, track who owes you, and chase payments — revenue detail lives in Accounting.",
       "createInvoice": "+ Create invoice",
+      "refreshXero": "Refresh from Xero",
+      "refreshXeroResult": "Checked {checked} invoice(s) — {updated} updated.",
       "stats": {
         "outstanding": "Outstanding",
         "outstandingSub": "{unpaid} unpaid · {overdue} overdue",
@@ -607,7 +614,12 @@
         "xeroSyncError": "Saved, but Xero sync failed: {error}"
       },
       "send": "Send",
-      "sendXeroSyncError": "Invoice sent, but Xero sync failed: {error}"
+      "sendXeroSyncError": "Invoice sent, but Xero sync failed: {error}",
+      "tabs": {
+        "invoices": "Invoices",
+        "subscriptions": "Subscriptions",
+        "paymentPlans": "Payment plans"
+      }
     },
     "accounting": {
       "title": "Accounting",
@@ -1127,7 +1139,10 @@
         "buttonTextLogin": "Member login",
         "buttonTextJoin": "Join our studio",
         "iframeNote": "Note: the portal can’t be placed inside an iframe (for sign-in security). Use a link or button that opens it in a new tab."
-      }
+      },
+      "brandingTitle": "Branding",
+      "brandingDescription": "Logo, colours, and how your studio looks across the portal and website.",
+      "openBranding": "Open branding"
     },
     "branding": {
       "title": "Appearance",
@@ -1269,6 +1284,29 @@
           "shifts": "Shifts"
         }
       }
+    },
+    "inbox": {
+      "tabs": {
+        "messages": "Messages",
+        "email": "Email"
+      }
+    },
+    "badges": {
+      "title": "Badge catalogue",
+      "subtitle": "{visible} of {total} badges visible to your studio",
+      "addCustom": "Add custom badge",
+      "cancel": "Cancel",
+      "customTag": "Custom",
+      "delete": "Delete",
+      "show": "Show",
+      "hide": "Hide",
+      "iconLabel": "Emoji",
+      "nameLabel": "Badge name",
+      "descLabel": "Description (optional)",
+      "xpLabel": "XP",
+      "forStudent": "For students",
+      "forParent": "For parents",
+      "create": "Create badge"
     }
   }
 }

@@ -24,6 +24,15 @@ export function splitTermInstallments(
   return amounts;
 }
 
+/**
+ * Monthly auto-pay charge for a full-term class fee. Auto-pay spreads the same
+ * term total as the 3-installment plan, so the monthly figure is the first
+ * installment — keeping subscriptions and installments quoting the same amount.
+ */
+export function monthlyFromTermFeeCents(termCents: number): number {
+  return splitTermInstallments(termCents)[0] ?? 0;
+}
+
 /** Next installment amount for a plan, or null when complete. */
 export function nextInstallmentAmountCents(
   installmentAmounts: number[],

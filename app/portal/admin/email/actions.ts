@@ -46,7 +46,7 @@ export async function connectImapAccount(input: unknown): Promise<ActionResult> 
 
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath("/portal/admin/email");
+  revalidatePath("/portal/admin/messages");
   return { ok: true };
 }
 
@@ -62,7 +62,7 @@ export async function disconnectEmailAccount(accountId: string): Promise<ActionR
 
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath("/portal/admin/email");
+  revalidatePath("/portal/admin/messages");
   return { ok: true };
 }
 
@@ -85,7 +85,7 @@ export async function syncEmailAccountAction(accountId?: string): Promise<Action
     if (result.error) errors.push(result.error);
   }
 
-  revalidatePath("/portal/admin/email");
+  revalidatePath("/portal/admin/messages");
   if (errors.length && synced === 0) return { ok: false, error: errors[0] };
   return { ok: true, data: { synced } };
 }
@@ -132,7 +132,7 @@ export async function summarizeThreadAction(threadId: string): Promise<ActionRes
     })
     .eq("id", threadId);
 
-  revalidatePath("/portal/admin/email");
+  revalidatePath("/portal/admin/messages");
   return { ok: true, data: { summary } };
 }
 
@@ -146,6 +146,6 @@ export async function markThreadReadAction(threadId: string): Promise<ActionResu
     .eq("id", threadId)
     .eq("studio_id", ctx.studioId);
 
-  revalidatePath("/portal/admin/email");
+  revalidatePath("/portal/admin/messages");
   return { ok: true };
 }

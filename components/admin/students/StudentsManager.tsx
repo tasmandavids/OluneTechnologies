@@ -1,4 +1,8 @@
 "use client";
+import { useEscToClose } from "@/lib/useEscToClose";
+import { panelSlide } from "@/lib/motion";
+import { confirmDialog, toast } from "@/lib/feedback";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useTranslations } from "next-intl";
 
 // ============================================================================
@@ -20,6 +24,7 @@ import {
   updateStudent,
   bulkUpdateStudents,
   bulkDeleteStudents,
+  createDraftInvoiceFromEnrollments,
 } from "@/app/portal/admin/students/actions";
 import type { StudentRow, ClassOption } from "@/app/portal/admin/students/page";
 import { useShortDayNames, useFormatTimeShort } from "@/lib/i18n/client";
@@ -41,6 +46,7 @@ function AddStudentPanel({ onClose }: { onClose: () => void }) {
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");
   const [form, setForm] = useState({ fullName: "", email: "", phone: "" });
+  useEscToClose(onClose);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -65,8 +71,7 @@ function AddStudentPanel({ onClose }: { onClose: () => void }) {
       />
       <motion.aside
         className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-[--hair] bg-surface shadow-2xl"
-        initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-        transition={{ type: "spring", stiffness: 380, damping: 38 }}
+        {...panelSlide}
       >
         <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">
           <h2 className="font-black text-ink">{t("title")}</h2>
@@ -148,6 +153,7 @@ function BulkEditPanel({
   onSaved: () => void;
 }) {
   const t = useTranslations("admin.students.bulkEdit");
+  useEscToClose(onClose);
   const tAdd = useTranslations("admin.students.addPanel");
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");
@@ -197,8 +203,7 @@ function BulkEditPanel({
       />
       <motion.aside
         className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-[--hair] bg-surface shadow-2xl"
-        initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-        transition={{ type: "spring", stiffness: 380, damping: 38 }}
+        {...panelSlide}
       >
         <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">
           <h2 className="font-black text-ink">{t("title", { count: students.length })}</h2>
@@ -284,6 +289,7 @@ function StudentPanel({
 }) {
   const t = useTranslations("admin.students.panel");
   const tAdd = useTranslations("admin.students.addPanel");
+  useEscToClose(onClose);
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");
   const dayShort = useShortDayNames();
@@ -352,12 +358,28 @@ function StudentPanel({
     });
   };
 
-  const removeStudent = () => {
-    if (!window.confirm(t("deleteConfirm", { name: student.name ?? tShared("unknown") }))) return;
+  const createDraftInvoice = () => {
+    setError(null); setSuccess(null);
+    startTransition(async () => {
+      const result = await createDraftInvoiceFromEnrollments(student.id);
+      if (!result.ok) { setError(result.error); return; }
+      if (result.xeroError) {
+        setError(t("draftInvoiceXeroError", { error: result.xeroError }));
+      } else {
+        setSuccess(t("draftInvoiceCreated"));
+        setTimeout(() => setSuccess(null), 2500);
+      }
+      router.refresh();
+    });
+  };
+
+  const removeStudent = async () => {
+    if (!(await confirmDialog({ title: t("deleteConfirm", { name: student.name ?? tShared("unknown") }), destructive: true }))) return;
     setError(null); setSuccess(null);
     startTransition(async () => {
       const result = await deleteStudent(student.id);
       if (!result.ok) { setError(result.error); return; }
+      toast.success(tShared("deleted"));
       onClose();
       router.refresh();
     });
@@ -372,8 +394,7 @@ function StudentPanel({
       />
       <motion.aside
         className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-[--hair] bg-surface shadow-2xl"
-        initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-        transition={{ type: "spring", stiffness: 380, damping: 38 }}
+        {...panelSlide}
       >
         {/* Header */}
         <div className="flex items-center gap-4 border-b border-[--hair] px-6 py-5">
@@ -494,6 +515,16 @@ function StudentPanel({
                   </li>
                 ))}
               </ul>
+            )}
+            {student.enrollments.length > 0 && (
+              <button
+                type="button"
+                onClick={createDraftInvoice}
+                disabled={pending}
+                className="mt-3 w-full rounded-lg border border-[--hair] py-2 text-sm font-semibold text-ink transition-colors hover:border-[--brand] disabled:opacity-50"
+              >
+                {t("createDraftInvoice")}
+              </button>
             )}
           </section>
 
@@ -693,9 +724,9 @@ export default function StudentsManager({
     setBulkSuccess(null);
   };
 
-  const bulkDelete = () => {
+  const bulkDelete = async () => {
     if (selectedIds.length === 0) return;
-    if (!window.confirm(t("deleteSelectedConfirm", { count: selectedIds.length }))) return;
+    if (!(await confirmDialog({ title: t("deleteSelectedConfirm", { count: selectedIds.length }), destructive: true }))) return;
     setBulkError(null);
     setBulkSuccess(null);
     startBulk(async () => {
@@ -798,10 +829,20 @@ export default function StudentsManager({
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-12 text-center">
-          <p className="text-sm text-muted">
-            {search ? t("emptySearch") : t("empty")}
-          </p>
+        <div className="rounded-2xl border border-[--hair] bg-surface">
+          <EmptyState
+            title={search ? t("emptySearch") : t("empty")}
+            action={
+              !search ? (
+                <button
+                  onClick={() => setShowAdd(true)}
+                  className="rounded-xl bg-brand px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                >
+                  {t("addStudent")}
+                </button>
+              ) : null
+            }
+          />
         </div>
       ) : (
         <>

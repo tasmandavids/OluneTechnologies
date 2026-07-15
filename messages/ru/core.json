@@ -86,7 +86,7 @@
       "finance": "Финансы",
       "digital": "Цифровое",
       "communications": "Коммуникации",
-      "staffing": "Персонал"
+      "families": "Семьи"
     },
     "admin": {
       "dashboard": "Панель",
@@ -98,28 +98,26 @@
       "leads": "Заявки",
       "billing": "Счета",
       "accounting": "Учёт",
-      "subscriptions": "Подписки",
       "website": "Сайт",
       "advertising": "Реклама",
       "shop": "Магазин",
-      "email": "Почта",
       "messages": "Сообщения",
       "support": "Поддержка Olune",
       "settings": "Настройки",
       "substitutes": "Замены",
-      "paymentPlans": "Планы оплаты",
-      "availability": "Расписание учителей"
+      "availability": "Расписание учителей",
+      "inbox": "Входящие"
     },
     "teacher": {
       "schedule": "Расписание и журнал",
-      "affiliations": "Аффилированные студии",
+      "affiliations": "Мои студии",
       "clients": "Частные клиенты",
       "invoices": "Счета",
       "messages": "Сообщения",
       "availability": "Доступность",
-      "substitutes": "Замены",
+      "substitutes": "Запросы на замену",
       "expenses": "Расходы",
-      "vault": "Хранилище документов",
+      "vault": "Документы",
       "notifications": "Уведомления",
       "profile": "Публичный профиль"
     },
@@ -129,15 +127,12 @@
     "parent": {
       "familyHub": "Семейный кабинет",
       "schedule": "Расписание",
-      "fullStudioSchedule": "Полное расписание студии",
-      "billing": "Счета и оплата",
-      "studioChat": "Чат со студией",
-      "studioEmail": "Почта студии",
+      "billing": "Оплата",
       "absences": "Пропуски и отработки",
       "recital": "Костюмы и спектакль",
       "notifications": "Уведомления",
       "forms": "Формы и разрешения",
-      "wallet": "Семейный кошелёк"
+      "messages": "Сообщения"
     },
     "student": {
       "timetable": "Моё расписание"
@@ -177,6 +172,7 @@
     "orContinueWithEmail": "or continue with email",
     "googleForgotPassword": "Забыли пароль Google?",
     "googleForgotPasswordLink": "Сбросить в Google",
+    "emailLoginGoogleHint": "Регистрировались через Google? Используйте кнопку выше — у этого аккаунта может не быть пароля.",
     "forgotPassword": "Забыли пароль?",
     "sendResetLink": "Отправить ссылку",
     "sendingResetLink": "Отправка…",

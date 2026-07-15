@@ -160,8 +160,8 @@
       "summaryClass": "Class",
       "summaryDancer": "Dancer",
       "summaryTotalDue": "Class fee",
-      "paymentChoiceHint": "Payment isn't required to enrol right now. Pay later to confirm without paying, pay the full term now, or split your account balance across 3 monthly payments.",
-      "payNow": "Pay term in full",
+      "paymentChoiceHint": "Payment isn't required to enrol right now — choose Pay later and we'll send an invoice you can pay any time.",
+      "payNow": "Pay now",
       "payLater": "Pay later",
       "payMonthly": "Pay monthly (3 instalments)",
       "termPayTitle": "Monthly term payment",
@@ -191,7 +191,9 @@
       "classSelected": "{count} class selected",
       "classesSelected": "{count} classes selected",
       "multipleClasses": "{count} classes",
-      "done": "Done"
+      "done": "Done",
+      "payMonthlyWithAmount": "Pay monthly · {amount}/month",
+      "morePaymentOptions": "More payment options"
     },
     "email": {
       "title": "Studio email",
@@ -313,6 +315,16 @@
         "draft": "Draft",
         "void": "Void",
         "refunded": "Refunded"
+      },
+      "summaryBand": {
+        "title": "Payment plans & auto-pay",
+        "autopay": "Auto-pay",
+        "autopayOn": "Active",
+        "autopayOff": "Off",
+        "planLabel": "Payment plan — {paid} of {total} paid",
+        "paid": "{amount} paid",
+        "total": "{amount} total",
+        "nextInstalment": "Next instalment {amount} due {date}"
       }
     },
     "studioSchedule": {
@@ -364,6 +376,17 @@
         "note": "Note",
         "other": "Other"
       }
+    },
+    "inbox": {
+      "tabs": {
+        "chat": "Chat",
+        "email": "Email"
+      }
+    },
+    "scheduleViews": {
+      "family": "My family",
+      "studio": "Whole studio",
+      "bookPrivateLesson": "Book a private lesson"
     }
   }
 }

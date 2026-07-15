@@ -5,10 +5,12 @@
 //  and view Stripe-hosted receipts. Returns { url } for redirect.
 // ============================================================================
 
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe";
-import { canonicalAppUrl } from "@/lib/app-url";
+import { originForHost } from "@/lib/seo";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 
 export async function POST() {
   try {
@@ -23,29 +25,27 @@ export async function POST() {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name, stripe_customer_id")
+      .select("studio_id")
       .eq("id", user.id)
       .single();
 
-    let customerId = profile?.stripe_customer_id as string | undefined;
-
-    if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: user.email,
-        name: (profile?.full_name as string | null) ?? undefined,
-        metadata: { supabase_user_id: user.id },
-      });
-      customerId = customer.id;
-
-      await supabase
-        .from("profiles")
-        .update({ stripe_customer_id: customerId })
-        .eq("id", user.id);
+    if (!profile?.studio_id) {
+      return NextResponse.json({ error: "No studio found" }, { status: 400 });
     }
 
+    const customerId = await getOrCreateStripeCustomer(
+      supabase,
+      user.id,
+      profile.studio_id as string,
+    );
+
+    // Return the parent to the same host they started on (their studio
+    // subdomain / custom domain), not the canonical www apex — auth cookies are
+    // host-scoped, so bouncing to www would land them logged out.
+    const host = (await headers()).get("host");
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${canonicalAppUrl()}/portal/parent/billing`,
+      return_url: `${originForHost(host)}/portal/parent/billing`,
     });
 
     return NextResponse.json({ url: session.url });

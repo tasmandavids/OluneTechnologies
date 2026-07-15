@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/feedback";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -50,8 +51,8 @@ export function AdvertisingHub({
     router.refresh();
   }
 
-  function handleDisconnect(platform: SocialPlatform) {
-    if (!window.confirm(t("disconnectConfirm", { platform: PLATFORM_META[platform].label }))) return;
+  async function handleDisconnect(platform: SocialPlatform) {
+    if (!(await confirmDialog({ title: t("disconnectConfirm", { platform: PLATFORM_META[platform].label }), destructive: true }))) return;
     setActionError(null);
     startDisconnect(async () => {
       const res = await disconnectSocialPlatform(platform);

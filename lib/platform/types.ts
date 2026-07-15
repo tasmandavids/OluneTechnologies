@@ -25,6 +25,8 @@ export type PlatformStudioSummary = {
   ownerEmail: string | null;
   studentCount: number;
   adminCount: number;
+  stripeConnected: boolean;
+  xeroConnected: boolean;
 };
 
 export type PlatformOwner = {

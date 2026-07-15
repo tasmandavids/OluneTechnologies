@@ -14,6 +14,12 @@
       "retry": "Riprova",
       "signInAgain": "Accedi di nuovo"
     },
+    "portal": {
+      "title": "Questa pagina ha riscontrato un problema",
+      "body": "I tuoi dati sono al sicuro — il resto del portale funziona ancora. Riprova o torna alla tua dashboard.",
+      "retry": "Riprova",
+      "goToPortal": "Torna alla dashboard"
+    },
     "notFound": {
       "eyebrow": "404",
       "title": "Pagina non trovata",

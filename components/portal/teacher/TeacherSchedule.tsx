@@ -154,26 +154,75 @@ function RollCallCard({ cls, todayDate }: { cls: TeacherClass; todayDate: string
 function ScheduleRow({ cls, dayName }: { cls: TeacherClass; dayName: string }) {
   const t = useTranslations("teacher.schedule");
   const fmt = useFormatTimeShort();
+  const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-[--hair] px-4 py-3 bg-surface">
-      <div className="w-12 shrink-0 text-center">
-        <p className="text-[0.62rem] font-semibold uppercase tracking-wider text-muted">
-          {dayName.slice(0, 3)}
-        </p>
-        <p className="text-xs font-bold tabular-nums text-ink">{fmt(cls.startTime)}</p>
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="font-semibold text-sm text-ink truncate">{cls.name}</p>
-          <StudioBadge name={cls.studioName} />
+    <div className="overflow-hidden rounded-xl border border-[--hair] bg-surface">
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        aria-expanded={expanded}
+        className="flex w-full items-center gap-4 px-4 py-3 text-left"
+      >
+        <div className="w-12 shrink-0 text-center">
+          <p className="text-[0.62rem] font-semibold uppercase tracking-wider text-muted">
+            {dayName.slice(0, 3)}
+          </p>
+          <p className="text-xs font-bold tabular-nums text-ink">{fmt(cls.startTime)}</p>
         </div>
-        <p className="text-xs text-muted">
-          {cls.discipline && <>{cls.discipline} · </>}
-          {cls.level && <>{cls.level} · </>}
-          {t("studentCount", { count: cls.students.length })}
-        </p>
-      </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="font-semibold text-sm text-ink truncate">{cls.name}</p>
+            <StudioBadge name={cls.studioName} />
+          </div>
+          <p className="text-xs text-muted">
+            {cls.discipline && <>{cls.discipline} · </>}
+            {cls.level && <>{cls.level} · </>}
+            {t("studentCount", { count: cls.students.length })}
+          </p>
+        </div>
+        <motion.span
+          animate={{ rotate: expanded ? 180 : 0 }}
+          className="shrink-0 text-muted"
+          aria-hidden
+        >
+          ▾
+        </motion.span>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden border-t border-[--hair]"
+          >
+            {cls.students.length === 0 ? (
+              <p className="px-5 py-4 text-center text-sm text-muted">{t("noStudents")}</p>
+            ) : (
+              <ul className="divide-y divide-[--hair]">
+                {cls.students.map((student) => (
+                  <li key={student.studentId} className="flex items-center gap-3 px-5 py-2.5">
+                    <span
+                      className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-[0.65rem] font-black text-white"
+                      style={{ background: "var(--brand-deep)" }}
+                    >
+                      {student.name?.[0]?.toUpperCase() ?? "?"}
+                    </span>
+                    <Link
+                      href={`/portal/teacher/students/${student.studentId}`}
+                      className="flex-1 text-sm font-medium text-ink hover:text-[--brand] hover:underline"
+                    >
+                      {student.name ?? t("unknownStudent")}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

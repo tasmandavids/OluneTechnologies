@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
   // ── 1. Stale pending shop orders ───────────────────────────────────────────
   const { data: orders } = await supabase
     .from("orders")
-    .select("id, stripe_payment_intent_id")
+    .select("id, stripe_payment_intent_id, studio_id")
     .eq("status", "pending")
     .lt("created_at", cutoffIso);
 
@@ -85,18 +85,22 @@ export async function GET(req: NextRequest) {
       .update({ status: "cancelled" })
       .eq("id", o.id)
       .eq("status", "pending"); // guard against a race with the webhook
-    if (!error) summary.orders += 1;
+    if (!error) {
+      summary.orders += 1;
+      console.log(`[sweep-unpaid] cancelled order ${o.id} (studio ${o.studio_id})`);
+    }
   }
 
   // ── 2. Stale reserved event tickets ────────────────────────────────────────
   const { data: tickets } = await supabase
     .from("event_tickets")
-    .select("id, stripe_payment_intent_id")
+    .select("id, stripe_payment_intent_id, events ( studio_id )")
     .eq("status", "reserved")
     .lt("purchased_at", cutoffIso);
 
   for (const t of tickets ?? []) {
     const piId = t.stripe_payment_intent_id as string | null;
+    const eventRef = t.events as unknown as { studio_id: string } | null;
     if (piId) {
       try {
         const pi = await stripe.paymentIntents.retrieve(piId);
@@ -113,7 +117,10 @@ export async function GET(req: NextRequest) {
       .delete()
       .eq("id", t.id)
       .eq("status", "reserved");
-    if (!error) summary.tickets += 1;
+    if (!error) {
+      summary.tickets += 1;
+      console.log(`[sweep-unpaid] released ticket ${t.id} (studio ${eventRef?.studio_id ?? "unknown"})`);
+    }
   }
 
   // ── 3. Stale unpaid enrollment invoices (release the held class spot) ───────
@@ -122,7 +129,7 @@ export async function GET(req: NextRequest) {
   // enrollment that was reserved.
   const { data: invoices } = await supabase
     .from("invoices")
-    .select("id, stripe_payment_intent_id")
+    .select("id, stripe_payment_intent_id, studio_id")
     .eq("status", "sent")
     .not("stripe_payment_intent_id", "is", null)
     .lt("created_at", cutoffIso);
@@ -159,7 +166,10 @@ export async function GET(req: NextRequest) {
       .update({ status: "void" })
       .eq("id", inv.id)
       .eq("status", "sent");
-    if (!error) summary.enrollments += 1;
+    if (!error) {
+      summary.enrollments += 1;
+      console.log(`[sweep-unpaid] voided enrollment invoice ${inv.id} (studio ${inv.studio_id})`);
+    }
   }
 
   return NextResponse.json({

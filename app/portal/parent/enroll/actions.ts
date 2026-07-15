@@ -10,8 +10,10 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCY, gstComponentCents } from "@/lib/currency";
 import { siblingDiscountedCents } from "@/lib/discounts";
-import { enrollmentBillableCents } from "@/lib/enrollment-billing";
+import { enrollmentBillableCents, batchEnrollmentBillableCents } from "@/lib/enrollment-billing";
 import { xeroSyncOutstandingInvoice } from "@/lib/xero/webhook-sync";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import { resolveTransferData } from "@/lib/stripe/connect";
 import { getTranslations } from "@/lib/i18n/server";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -382,7 +384,7 @@ async function insertEnrollmentInvoice(
     (classRows ?? []).map((c) => [c.id as string, c.xero_item_code as string | null]),
   );
 
-  await supabase.from("invoice_line_items").insert(
+  const { error: lineItemsErr } = await supabase.from("invoice_line_items").insert(
     charges.map((c, idx) => ({
       invoice_id: invoiceId,
       item_type: "class",
@@ -396,6 +398,10 @@ async function insertEnrollmentInvoice(
       item_code: itemCodeByClassId.get(c.classId) ?? null,
     })),
   );
+
+  if (lineItemsErr) {
+    return { ok: false as const, error: lineItemsErr.message };
+  }
 
   await xeroSyncOutstandingInvoice(supabase, invoiceId, {
     lineDescription:
@@ -429,18 +435,22 @@ export async function createEnrollmentPayLaterInvoice(
   const accessErr = await assertStudentAccess(ctx, studentId, t);
   if (accessErr) return { ok: false, error: accessErr };
 
+  // Batch-aware: all of `classes` are enrolled (as active rows) before this
+  // billing step runs, so a per-class check would find every linked-series
+  // sibling already active and zero all of them out. See
+  // batchEnrollmentBillableCents for why this can't reuse enrollmentChargeCents.
+  const baseCentsByClassId = await batchEnrollmentBillableCents(
+    supabase,
+    studentId,
+    classes.map((c) => ({ classId: c.classId, priceCents: c.priceCents })),
+  );
+
   const charges: { classId: string; className: string; chargeCents: number }[] = [];
   for (const cls of classes) {
-    if (cls.priceCents <= 0) continue;
-    const chargeCents = await enrollmentChargeCents(
-      supabase,
-      studioId,
-      userId,
-      studentId,
-      cls.priceCents,
-      mode,
-      cls.classId,
-    );
+    const baseCents = baseCentsByClassId.get(cls.classId) ?? 0;
+    if (baseCents <= 0) continue;
+    const chargeCents =
+      mode === "self" ? baseCents : await siblingDiscountedCents(supabase, studioId, userId, studentId, baseCents);
     if (chargeCents > 0) charges.push({ classId: cls.classId, className: cls.className, chargeCents });
   }
 
@@ -516,23 +526,8 @@ export async function createEnrollmentIntent(
   if (!invoiceRes.ok) return { ok: false, error: invoiceRes.error };
 
   // Resolve / create the Stripe customer.
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stripe_customer_id, full_name")
-    .eq("id", userId)
-    .single();
-
   const { stripe } = await import("@/lib/stripe");
-
-  let customerId = profile?.stripe_customer_id as string | null;
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      name: profile?.full_name || undefined,
-      metadata: { supabase_user_id: userId, studio_id: studioId },
-    });
-    customerId = customer.id;
-    await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", userId);
-  }
+  const customerId = await getOrCreateStripeCustomer(supabase, userId, studioId);
 
   const intent = await stripe.paymentIntents.create({
     amount: chargeCents,
@@ -546,6 +541,7 @@ export async function createEnrollmentIntent(
       student_id: studentId,
       class_id: classId,
     },
+    transfer_data: await resolveTransferData(supabase, studioId),
   });
 
   await supabase

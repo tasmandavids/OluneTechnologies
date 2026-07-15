@@ -86,7 +86,7 @@
       "finance": "Finance",
       "digital": "Digital",
       "communications": "Communications",
-      "staffing": "Gestion du personnel"
+      "families": "Familles"
     },
     "admin": {
       "dashboard": "Tableau de bord",
@@ -98,28 +98,26 @@
       "leads": "Prospects",
       "billing": "Facturation",
       "accounting": "Comptabilité",
-      "subscriptions": "Abonnements",
       "website": "Site web",
       "advertising": "Publicité",
       "shop": "Boutique",
-      "email": "E-mail",
       "messages": "Messages",
       "support": "Support Olune",
       "settings": "Paramètres",
       "substitutes": "Remplaçants",
-      "paymentPlans": "Plans de paiement",
-      "availability": "Disponibilités des profs"
+      "availability": "Disponibilités des profs",
+      "inbox": "Boîte de réception"
     },
     "teacher": {
       "schedule": "Planning et présence",
-      "affiliations": "Studios affiliés",
+      "affiliations": "Mes studios",
       "clients": "Clients privés",
       "invoices": "Factures",
       "messages": "Messages",
       "availability": "Disponibilités",
-      "substitutes": "Tableau des remplaçants",
+      "substitutes": "Demandes de remplacement",
       "expenses": "Dépenses",
-      "vault": "Coffre-fort de conformité",
+      "vault": "Documents",
       "notifications": "Notifications",
       "profile": "Profil public"
     },
@@ -129,15 +127,12 @@
     "parent": {
       "familyHub": "Espace famille",
       "schedule": "Planning",
-      "fullStudioSchedule": "Planning complet du studio",
-      "billing": "Facturation et paiements",
-      "studioChat": "Chat studio",
-      "studioEmail": "E-mail du studio",
+      "billing": "Facturation",
       "absences": "Absences & Rattrapages",
       "recital": "Costumes et Spectacle",
       "notifications": "Notifications",
       "forms": "Formulaires",
-      "wallet": "Compte famille"
+      "messages": "Messages"
     },
     "student": {
       "timetable": "Mon emploi du temps"
@@ -177,6 +172,7 @@
     "orContinueWithEmail": "or continue with email",
     "googleForgotPassword": "Mot de passe Google oublié ?",
     "googleForgotPasswordLink": "Réinitialiser sur Google",
+    "emailLoginGoogleHint": "Inscrit via Google ? Utilisez le bouton ci-dessus — ce compte n'a peut-être pas de mot de passe.",
     "forgotPassword": "Mot de passe oublié ?",
     "sendResetLink": "Envoyer le lien",
     "sendingResetLink": "Envoi…",

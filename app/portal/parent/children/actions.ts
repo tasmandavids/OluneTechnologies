@@ -4,6 +4,8 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createStudentAuthUser } from "@/lib/students/login-email";
+import { escapeHtml } from "@/lib/notify/messages";
 
 export type ChildActionResult = { ok: true; studentId: string } | { ok: false; error: string };
 
@@ -27,7 +29,7 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("studio_id, role")
+    .select("studio_id, role, full_name")
     .eq("id", user.id)
     .single();
 
@@ -44,6 +46,7 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
 
   const d = parsed.data;
   let studentId: string;
+  let generatedLoginEmail: string | null = null;
 
   if (d.email) {
     const { data: inviteData, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(d.email, {
@@ -53,14 +56,13 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
     if (inviteErr) return { ok: false, error: inviteErr.message };
     studentId = inviteData.user.id;
   } else {
-    const authEmail = `${crypto.randomUUID()}@students.olune.local`;
-    const { data: authData, error: authErr } = await admin.auth.admin.createUser({
-      email: authEmail,
-      email_confirm: true,
-      user_metadata: { full_name: d.fullName },
-    });
-    if (authErr) return { ok: false, error: authErr.message };
-    studentId = authData.user.id;
+    try {
+      const created = await createStudentAuthUser(admin, d.fullName, { full_name: d.fullName });
+      studentId = created.userId;
+      generatedLoginEmail = created.email;
+    } catch (e) {
+      return { ok: false, error: e instanceof Error ? e.message : "Could not create student login." };
+    }
   }
 
   const { error: profileErr } = await admin.from("profiles").upsert({
@@ -68,7 +70,7 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
     studio_id: profile.studio_id,
     role: "student",
     full_name: d.fullName,
-    email: d.email || null,
+    email: d.email || generatedLoginEmail,
     birthday: d.birthday || null,
     self_managed: false,
   });
@@ -83,6 +85,58 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
   });
   if (linkErr) return { ok: false, error: linkErr.message };
 
+  if (generatedLoginEmail && user.email && !user.email.endsWith(".olune.local")) {
+    await notifyParentOfStudentLogin({
+      admin,
+      parentEmail: user.email,
+      parentName: profile.full_name,
+      studentName: d.fullName,
+      loginEmail: generatedLoginEmail,
+    });
+  }
+
   revalidatePath("/portal/parent");
   return { ok: true, studentId };
+}
+
+async function notifyParentOfStudentLogin(params: {
+  admin: ReturnType<typeof createAdminClient>;
+  parentEmail: string;
+  parentName: string | null;
+  studentName: string;
+  loginEmail: string;
+}): Promise<void> {
+  const { admin, parentEmail, parentName, studentName, loginEmail } = params;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+
+  const { data: linkData } = await admin.auth.admin.generateLink({
+    type: "invite",
+    email: loginEmail,
+    options: { redirectTo: `${appUrl}/auth/callback?next=/welcome` },
+  });
+  const inviteUrl = linkData?.properties?.action_link;
+
+  const { sendEmail } = await import("@/lib/notify/providers");
+  const safeStudentName = escapeHtml(studentName);
+  const safeLoginEmail = escapeHtml(loginEmail);
+  const greeting = parentName ? `Hi ${escapeHtml(parentName)},` : "Hi,";
+  const setPasswordBlock = inviteUrl
+    ? `<p>Click the link below to set a password for ${safeStudentName}:</p>
+<p><a href="${inviteUrl}">Set password for ${safeStudentName}</a></p>
+<p>This link expires in 24 hours.</p>`
+    : "";
+  const setPasswordText = inviteUrl
+    ? `\n\nSet a password for ${studentName} here:\n${inviteUrl}\n\nThis link expires in 24 hours.`
+    : "";
+
+  await sendEmail({
+    to: parentEmail,
+    subject: `Login details for ${studentName}`,
+    html: `<p>${greeting}</p>
+<p>We've created a portal login for ${safeStudentName}.</p>
+<p><strong>Login email:</strong> ${safeLoginEmail}</p>
+${setPasswordBlock}
+<p>Keep these details somewhere safe — ${safeStudentName} will need them to sign in.</p>`,
+    text: `${greeting}\n\nWe've created a portal login for ${studentName}.\n\nLogin email: ${loginEmail}${setPasswordText}\n\nKeep these details somewhere safe — ${studentName} will need them to sign in.`,
+  });
 }

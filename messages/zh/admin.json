@@ -3,6 +3,7 @@
     "shared": {
       "saving": "保存中…",
       "adding": "添加中…",
+      "deleted": "已删除。",
       "deleting": "删除中…",
       "creating": "创建中…",
       "sending": "发送中…",
@@ -233,11 +234,11 @@
         "priceCents": "价格（新西兰元分）",
         "pricePlaceholder": "例如：2000 = $20",
         "teacher": "老师",
-        "xeroAccountCode": "Xero 总账代码",
+        "xeroAccountCode": "Xero 账户",
         "xeroAccountCodeNone": "未分配代码",
         "xeroAccountCodeConnectHint": "请先在会计设置中连接 Xero，然后再分配总账代码。",
         "xeroAccountCodeNotFound": "（在 Xero 中未找到）",
-        "xeroItemCode": "Xero 项目代码",
+        "xeroItemCode": "Xero 项目",
         "xeroItemCodeNone": "未分配项目",
         "xeroItemCodeConnectHint": "请先在会计设置中连接 Xero，然后再分配项目代码。",
         "xeroItemCodeNotFound": "（在 Xero 中未找到）",
@@ -251,7 +252,8 @@
         "seriesStandaloneGroup": "独立课程",
         "seriesOptionGroupLabel": "{name} · {count} 门课程",
         "seriesLinkButton": "关联到系列",
-        "seriesLinking": "关联中…"
+        "seriesLinking": "关联中…",
+        "xeroSection": "会计（Xero）"
       },
       "delete": {
         "title": "删除「{name}」？",
@@ -316,6 +318,9 @@
         "enroll": "报名",
         "enrolledSuccess": "报名成功。",
         "droppedSuccess": "已退课。",
+        "createDraftInvoice": "创建草稿发票",
+        "draftInvoiceCreated": "已根据当前报名情况创建草稿发票。",
+        "draftInvoiceXeroError": "草稿发票已创建，但同步到 Xero 失败：{error}",
         "dangerZone": "危险区",
         "deleteDescription": "永久移除此学员、其报名及进度历史。此操作无法撤销。",
         "deleteStudent": "删除学员",
@@ -476,6 +481,8 @@
       "title": "账单",
       "subtitle": "创建账单、跟踪谁欠款并催缴付款——收入明细见「会计」。",
       "createInvoice": "+ 创建账单",
+      "refreshXero": "从 Xero 刷新",
+      "refreshXeroResult": "已检查 {checked} 张账单 — 已更新 {updated} 张。",
       "stats": {
         "outstanding": "待付",
         "outstandingSub": "{unpaid} 未付 · {overdue} 逾期",
@@ -607,7 +614,12 @@
         "xeroSyncError": "已保存，但同步到 Xero 失败：{error}"
       },
       "send": "发送",
-      "sendXeroSyncError": "账单已发送，但同步到 Xero 失败：{error}"
+      "sendXeroSyncError": "账单已发送，但同步到 Xero 失败：{error}",
+      "tabs": {
+        "invoices": "发票",
+        "subscriptions": "订阅",
+        "paymentPlans": "付款计划"
+      }
     },
     "accounting": {
       "title": "会计",
@@ -1127,7 +1139,10 @@
         "buttonTextLogin": "会员登录",
         "buttonTextJoin": "加入我们的工作室",
         "iframeNote": "注意：出于登录安全考虑，门户无法放置在 iframe 中。请使用在新标签页中打开它的链接或按钮。"
-      }
+      },
+      "brandingTitle": "品牌形象",
+      "brandingDescription": "工作室在门户和网站上的标志、颜色和外观。",
+      "openBranding": "打开品牌设置"
     },
     "branding": {
       "title": "外观",
@@ -1268,6 +1283,12 @@
           "contract": "合同与薪酬",
           "shifts": "班次"
         }
+      }
+    },
+    "inbox": {
+      "tabs": {
+        "messages": "消息",
+        "email": "邮件"
       }
     }
   }

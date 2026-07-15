@@ -3,6 +3,7 @@
     "shared": {
       "saving": "Économie…",
       "adding": "Ajout…",
+      "deleted": "Supprimé.",
       "deleting": "Suppression…",
       "creating": "Création…",
       "sending": "Envoi…",
@@ -231,11 +232,11 @@
         "priceCents": "Prix ​​(centimes NZD)",
         "pricePlaceholder": "par ex. 2000 = 20$",
         "teacher": "Professeur",
-        "xeroAccountCode": "Code comptable Xero",
+        "xeroAccountCode": "Compte Xero",
         "xeroAccountCodeNone": "Aucun code attribué",
         "xeroAccountCodeConnectHint": "Connectez Xero dans les paramètres comptables pour attribuer un code comptable.",
         "xeroAccountCodeNotFound": "(introuvable dans Xero)",
-        "xeroItemCode": "Code d'article Xero",
+        "xeroItemCode": "Article Xero",
         "xeroItemCodeNone": "Aucun article attribué",
         "xeroItemCodeConnectHint": "Connectez Xero dans les paramètres comptables pour attribuer un code d'article.",
         "xeroItemCodeNotFound": "(introuvable dans Xero)",
@@ -249,7 +250,8 @@
         "seriesStandaloneGroup": "Classes autonomes",
         "seriesOptionGroupLabel": "{name} · {count} classes",
         "seriesLinkButton": "Associer à la série",
-        "seriesLinking": "Association…"
+        "seriesLinking": "Association…",
+        "xeroSection": "Comptabilité (Xero)"
       },
       "delete": {
         "title": "Supprimer « {name} » ?",
@@ -314,6 +316,9 @@
         "enroll": "Inscrire",
         "enrolledSuccess": "Inscrit avec succès.",
         "droppedSuccess": "Les inscriptions ont été abandonnées.",
+        "createDraftInvoice": "Créer une facture brouillon",
+        "draftInvoiceCreated": "Facture brouillon créée à partir des inscriptions actuelles.",
+        "draftInvoiceXeroError": "Facture brouillon créée, mais la synchronisation avec Xero a échoué : {error}",
         "dangerZone": "Zone dangereuse",
         "deleteDescription": "Supprime définitivement cet étudiant, ses inscriptions et son historique de progression. Cette action est irréversible.",
         "deleteStudent": "Supprimer l'étudiant",
@@ -440,6 +445,8 @@
       "title": "Facturation",
       "subtitle": "Créez des factures, suivez qui vous doit et recherchez les paiements : les détails des revenus se trouvent dans la comptabilité.",
       "createInvoice": "+ Créer une facture",
+      "refreshXero": "Actualiser depuis Xero",
+      "refreshXeroResult": "{checked} facture(s) vérifiée(s) — {updated} mise(s) à jour.",
       "stats": {
         "outstanding": "Remarquable",
         "outstandingSub": "{unpaid} impayé · {overdue} en retard",
@@ -571,7 +578,12 @@
         "xeroSyncError": "Enregistré, mais la synchronisation Xero a échoué : {error}"
       },
       "send": "Envoyer",
-      "sendXeroSyncError": "Facture envoyée, mais la synchronisation Xero a échoué : {error}"
+      "sendXeroSyncError": "Facture envoyée, mais la synchronisation Xero a échoué : {error}",
+      "tabs": {
+        "invoices": "Factures",
+        "subscriptions": "Abonnements",
+        "paymentPlans": "Plans de paiement"
+      }
     },
     "accounting": {
       "title": "Comptabilité",
@@ -1050,7 +1062,10 @@
       "studioId": "Identifiant du studio",
       "customDomainSection": "Domaine personnalisé",
       "customDomainDescription": "Connectez votre propre domaine (par exemple www.mystudio.co.nz) avec notre guide étape par étape – aucun jargon DNS n'est requis.",
-      "openDomainWizard": "Ouvrir l'assistant de configuration du domaine →"
+      "openDomainWizard": "Ouvrir l'assistant de configuration du domaine →",
+      "brandingTitle": "Image de marque",
+      "brandingDescription": "Logo, couleurs et apparence de votre studio sur le portail et le site web.",
+      "openBranding": "Ouvrir l'image de marque"
     },
     "branding": {
       "title": "Apparence",
@@ -1191,6 +1206,12 @@
           "contract": "Contrat et paiement",
           "shifts": "Changements"
         }
+      }
+    },
+    "inbox": {
+      "tabs": {
+        "messages": "Messages",
+        "email": "E-mail"
       }
     }
   }

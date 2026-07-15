@@ -1,5 +1,7 @@
 "use client";
 
+import { useEscToClose } from "@/lib/useEscToClose";
+import { panelSlide } from "@/lib/motion";
 import { useState, useTransition } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -162,6 +164,7 @@ export function ClassEditPanel({
   onClose: () => void;
 }) {
   const t = useTranslations("admin.classes.form");
+  useEscToClose(onClose);
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");
   const [form, setForm] = useState<FormState>(
@@ -275,10 +278,7 @@ export function ClassEditPanel({
       <motion.aside
         className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col
                    border-l border-[--hair] bg-surface shadow-2xl"
-        initial={{ x: "100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
-        transition={{ type: "spring", stiffness: 380, damping: 38 }}
+        {...panelSlide}
       >
         <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">
           <h2 className="font-black text-ink">
@@ -461,53 +461,47 @@ export function ClassEditPanel({
             </div>
           )}
 
-          <div>
-            <Label>{t("xeroAccountCode")}</Label>
-            {xeroAccounts.length === 0 ? (
-              <>
-                <Select value={form.xeroAccountCode} onChange={() => {}}>
-                  <option value="">{t("xeroAccountCodeNone")}</option>
-                </Select>
-                <p className="mt-1.5 text-[0.68rem] text-muted">{t("xeroAccountCodeConnectHint")}</p>
-              </>
-            ) : (
-              <Select value={form.xeroAccountCode} onChange={(v) => set("xeroAccountCode", v)}>
-                <option value="">{t("xeroAccountCodeNone")}</option>
-                {xeroAccounts.map((acct) => (
-                  <option key={acct.code} value={acct.code}>{acct.code} — {acct.name}</option>
-                ))}
-                {form.xeroAccountCode && !xeroAccounts.some((a) => a.code === form.xeroAccountCode) && (
-                  <option value={form.xeroAccountCode}>
-                    {form.xeroAccountCode} {t("xeroAccountCodeNotFound")}
-                  </option>
-                )}
-              </Select>
-            )}
-          </div>
+          {/* Accounting is a back-office concern — tucked behind a closed
+              disclosure, and only when Xero is actually connected (the option
+              lists are empty otherwise). */}
+          {(xeroAccounts.length > 0 || xeroItems.length > 0) && (
+            <details className="rounded-xl border border-[--hair] bg-base/50">
+              <summary className="cursor-pointer select-none px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-wider text-muted">
+                {t("xeroSection")}
+              </summary>
+              <div className="space-y-4 px-4 pb-4">
+                <div>
+                  <Label>{t("xeroAccountCode")}</Label>
+                  <Select value={form.xeroAccountCode} onChange={(v) => set("xeroAccountCode", v)}>
+                    <option value="">{t("xeroAccountCodeNone")}</option>
+                    {xeroAccounts.map((acct) => (
+                      <option key={acct.code} value={acct.code}>{acct.code} — {acct.name}</option>
+                    ))}
+                    {form.xeroAccountCode && !xeroAccounts.some((a) => a.code === form.xeroAccountCode) && (
+                      <option value={form.xeroAccountCode}>
+                        {form.xeroAccountCode} {t("xeroAccountCodeNotFound")}
+                      </option>
+                    )}
+                  </Select>
+                </div>
 
-          <div>
-            <Label>{t("xeroItemCode")}</Label>
-            {xeroItems.length === 0 ? (
-              <>
-                <Select value={form.xeroItemCode} onChange={() => {}}>
-                  <option value="">{t("xeroItemCodeNone")}</option>
-                </Select>
-                <p className="mt-1.5 text-[0.68rem] text-muted">{t("xeroItemCodeConnectHint")}</p>
-              </>
-            ) : (
-              <Select value={form.xeroItemCode} onChange={(v) => set("xeroItemCode", v)}>
-                <option value="">{t("xeroItemCodeNone")}</option>
-                {xeroItems.map((item) => (
-                  <option key={item.code} value={item.code}>{item.code} — {item.name}</option>
-                ))}
-                {form.xeroItemCode && !xeroItems.some((i) => i.code === form.xeroItemCode) && (
-                  <option value={form.xeroItemCode}>
-                    {form.xeroItemCode} {t("xeroItemCodeNotFound")}
-                  </option>
-                )}
-              </Select>
-            )}
-          </div>
+                <div>
+                  <Label>{t("xeroItemCode")}</Label>
+                  <Select value={form.xeroItemCode} onChange={(v) => set("xeroItemCode", v)}>
+                    <option value="">{t("xeroItemCodeNone")}</option>
+                    {xeroItems.map((item) => (
+                      <option key={item.code} value={item.code}>{item.code} — {item.name}</option>
+                    ))}
+                    {form.xeroItemCode && !xeroItems.some((i) => i.code === form.xeroItemCode) && (
+                      <option value={form.xeroItemCode}>
+                        {form.xeroItemCode} {t("xeroItemCodeNotFound")}
+                      </option>
+                    )}
+                  </Select>
+                </div>
+              </div>
+            </details>
+          )}
 
           {error && (
             <p className="rounded-lg border border-red-400/30 bg-red-400/10 px-3 py-2 text-xs text-red-400">

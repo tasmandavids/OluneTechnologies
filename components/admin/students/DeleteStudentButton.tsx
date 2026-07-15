@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog, toast } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -18,8 +19,8 @@ export default function DeleteStudentButton({
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const handleDelete = () => {
-    if (!window.confirm(t("deleteConfirm", { name: studentName ?? tShared("unknown") }))) return;
+  const handleDelete = async () => {
+    if (!(await confirmDialog({ title: t("deleteConfirm", { name: studentName ?? tShared("unknown") }), destructive: true }))) return;
     setError(null);
     startTransition(async () => {
       const result = await deleteStudent(studentId);
@@ -27,6 +28,7 @@ export default function DeleteStudentButton({
         setError(result.error);
         return;
       }
+      toast.success(tShared("deleted"));
       router.push("/portal/admin/students");
       router.refresh();
     });

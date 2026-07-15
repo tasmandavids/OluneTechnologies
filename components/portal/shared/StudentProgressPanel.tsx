@@ -2,7 +2,10 @@ import Link from "next/link";
 import ProgressTracker from "@/components/admin/students/ProgressTracker";
 import AttendanceHistory from "@/components/portal/shared/AttendanceHistory";
 import CertificateDownloads from "@/components/portal/shared/CertificateDownloads";
+import LevelBar from "@/components/portal/shared/LevelBar";
+import BadgeShowcase from "@/components/portal/shared/BadgeShowcase";
 import type { StudentProgressBundle } from "@/lib/portal/student-progress-data";
+import type { StudentBadgeBundle } from "@/lib/portal/badges-data";
 
 type Labels = {
   back: string;
@@ -13,10 +16,12 @@ type Labels = {
 
 export default function StudentProgressPanel({
   bundle,
+  badges,
   backHref,
   labels,
 }: {
   bundle: StudentProgressBundle;
+  badges?: StudentBadgeBundle | null;
   backHref: string;
   labels: Labels;
 }) {
@@ -60,6 +65,17 @@ export default function StudentProgressPanel({
           </div>
         </div>
       </div>
+
+      {badges && (
+        <>
+          <LevelBar xp={badges.xp} />
+          <BadgeShowcase
+            badges={badges.showcase}
+            earnedCount={badges.earnedCount}
+            totalCount={badges.totalCount}
+          />
+        </>
+      )}
 
       <CertificateDownloads certificates={bundle.certificates} />
       <AttendanceHistory records={bundle.attendance} />

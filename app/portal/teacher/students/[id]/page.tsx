@@ -12,9 +12,11 @@ import ProgressTracker, {
   type ProgressEntry,
 } from "@/components/admin/students/ProgressTracker";
 import StudentSchedulePanel from "@/components/admin/students/StudentSchedulePanel";
+import BadgeAwarder from "@/components/portal/shared/BadgeAwarder";
 import type { ScheduleEntry } from "@/lib/students/schedule-types";
 import { getWeekRange } from "@/lib/staff/week";
 import { getTranslations } from "@/lib/i18n/server";
+import { fetchBadgeCatalogue, fetchProfileBadges } from "@/lib/portal/badges-data";
 
 export default async function TeacherStudentProgressPage({
   params,
@@ -32,7 +34,7 @@ export default async function TeacherStudentProgressPage({
   const [studentRes, progressRes, scheduleRes] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id, full_name, email")
+      .select("id, full_name, email, studio_id")
       .eq("id", id)
       .single(),
 
@@ -87,6 +89,14 @@ export default async function TeacherStudentProgressPage({
 
   const weekStart = getWeekRange().weekStart;
 
+  const studioId = p.studio_id as string | null;
+  const [catalogue, earned] = studioId
+    ? await Promise.all([
+        fetchBadgeCatalogue(supabase, studioId, "student"),
+        fetchProfileBadges(supabase, p.id),
+      ])
+    : [[], []];
+
   return (
     <div className="mx-auto max-w-5xl space-y-8 p-6">
       <div>
@@ -98,6 +108,14 @@ export default async function TeacherStudentProgressPage({
         </h1>
         <p className="text-sm text-muted">{p.email ?? t("progressLog")}</p>
       </div>
+
+      {studioId && catalogue.length > 0 && (
+        <BadgeAwarder
+          recipientId={p.id}
+          catalogue={catalogue}
+          earnedIds={earned.map((e) => e.badgeId)}
+        />
+      )}
 
       <ProgressTracker studentId={p.id} entries={entries} readOnlyDelete />
 

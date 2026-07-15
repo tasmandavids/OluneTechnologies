@@ -1,5 +1,7 @@
 "use client";
 
+import { useEscToClose } from "@/lib/useEscToClose";
+import { panelSlide } from "@/lib/motion";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -53,6 +55,7 @@ export default function AddStaffPanel({
   onClose: () => void;
 }) {
   const t = useTranslations("admin.staff.add");
+  useEscToClose(onClose);
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");
   const router = useRouter();
@@ -110,10 +113,7 @@ export default function AddStaffPanel({
         onClick={onClose}
       >
         <motion.div
-          initial={{ x: "100%" }}
-          animate={{ x: 0 }}
-          exit={{ x: "100%" }}
-          transition={{ type: "spring", damping: 28, stiffness: 320 }}
+          {...panelSlide}
           className="flex h-full w-full max-w-md flex-col border-l border-[--hair] bg-surface shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >

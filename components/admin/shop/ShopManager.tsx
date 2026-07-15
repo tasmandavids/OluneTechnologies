@@ -1,5 +1,8 @@
 "use client";
 
+import { useEscToClose } from "@/lib/useEscToClose";
+import { panelSlide } from "@/lib/motion";
+import { confirmDialog } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -77,9 +80,9 @@ function OrderRefundButton({ order, onDone }: { order: Order; onDone: (id: strin
     return <span className="text-[0.7rem] text-muted">{tShared("noCardPayment")}</span>;
   }
 
-  const onClick = () => {
+  const onClick = async () => {
     setErr(null);
-    if (!confirm(t("refundConfirm", { amount: formatPrice(order.total_cents) }))) {
+    if (!(await confirmDialog({ title: t("refundConfirm", { amount: formatPrice(order.total_cents) }), destructive: true }))) {
       return;
     }
     startTransition(async () => {
@@ -115,6 +118,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
   const [search,     setSearch]     = useState("");
   const [catFilter,  setCatFilter]  = useState("all");
   const [slideOpen,  setSlideOpen]  = useState(false);
+  useEscToClose(closeSlide, slideOpen);
   const [editTarget, setEditTarget] = useState<Product | null>(null);
   const [form,       setForm]       = useState<ProductFormData>(BLANK);
   const [saving,     setSaving]     = useState(false);
@@ -190,7 +194,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
   }
 
   async function handleDelete(p: Product) {
-    if (!confirm(t("deleteConfirm", { name: p.name }))) return;
+    if (!(await confirmDialog({ title: t("deleteConfirm", { name: p.name }), destructive: true }))) return;
     const res = await deleteProduct(p.id);
     if (res.ok) setProducts((prev) => prev.filter((x) => x.id !== p.id));
   }
@@ -395,8 +399,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
               onClick={closeSlide}
             />
             <motion.div
-              initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-              transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.35 }}
+              {...panelSlide}
               className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-surface shadow-2xl"
             >
               <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">

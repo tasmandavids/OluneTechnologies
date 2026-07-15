@@ -22,6 +22,45 @@ function settings(raw: unknown): XeroConnectionSettings {
   return { ...DEFAULT_XERO_SETTINGS, ...(raw as XeroConnectionSettings) };
 }
 
+/**
+ * xero-node's generated API methods (createInvoices, createContacts, ...)
+ * don't reject with an `Error` on a non-2xx response — they reject with a
+ * JSON.stringify'd `{ response: { statusCode, body }, body }`, where `body`
+ * is Xero's raw error payload (`Message`, or `Elements[].ValidationErrors[]`
+ * for per-line validation failures like a bad account code or a duplicate
+ * contact name). `err instanceof Error` is false for that shape, so pull the
+ * real message out instead of falling through to a generic string.
+ */
+function xeroErrorMessage(err: unknown): string {
+  let parsed: unknown = err;
+  if (typeof err === "string") {
+    try {
+      parsed = JSON.parse(err);
+    } catch {
+      return err.slice(0, 300);
+    }
+  }
+
+  if (parsed && typeof parsed === "object") {
+    const outer = parsed as { body?: unknown; response?: { body?: unknown; statusCode?: number } };
+    const body = (outer.body ?? outer.response?.body) as
+      | { Message?: string; Detail?: string; Elements?: { ValidationErrors?: { Message?: string }[] }[] }
+      | undefined;
+
+    const validationMessages = body?.Elements
+      ?.flatMap((el) => el.ValidationErrors ?? [])
+      .map((v) => v.Message)
+      .filter((m): m is string => Boolean(m));
+    if (validationMessages?.length) return validationMessages.join("; ");
+    if (body?.Message) return body.Message;
+    if (body?.Detail) return body.Detail;
+    if (outer.response?.statusCode) return `Xero request failed (HTTP ${outer.response.statusCode})`;
+  }
+
+  if (err instanceof Error) return err.message;
+  return "Xero sync failed";
+}
+
 async function ensureSyncLog(
   supabase: SupabaseClient,
   studioId: string,
@@ -89,8 +128,25 @@ async function resolveContact(
     return { contactID: profile.xero_contact_id };
   }
 
+  const name = profile.full_name ?? profile.email ?? "Olune customer";
+
+  // A contact with this exact name can already exist in Xero — created
+  // directly by the studio's bookkeeper, or from an earlier sync whose link
+  // back to this profile never got saved. Xero enforces unique contact names,
+  // so creating blind 400s in that case; look it up and reuse it first.
+  const existing = await loaded.client.accountingApi.getContacts(
+    loaded.tenantId,
+    undefined,
+    `Name=="${name.replace(/"/g, '\\"')}"`,
+  );
+  const existingContact = existing.body.contacts?.[0];
+  if (existingContact?.contactID) {
+    await supabase.from("profiles").update({ xero_contact_id: existingContact.contactID }).eq("id", profileId);
+    return { contactID: existingContact.contactID };
+  }
+
   const contactPayload: Contact = {
-    name: profile.full_name ?? profile.email ?? "Olune customer",
+    name,
     emailAddress: profile.email ?? undefined,
   };
 
@@ -520,7 +576,7 @@ export async function syncOutstandingInvoiceToXero(
     await markSyncResult(supabase, "invoice", invoiceId, result);
     return result;
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Xero sync failed";
+    const message = xeroErrorMessage(err);
     await markSyncResult(supabase, "invoice", invoiceId, { ok: false, error: message });
 
     const { data: row } = await supabase
@@ -697,7 +753,7 @@ export async function syncSaleToXero(
     await markSyncResult(supabase, sourceType, sourceId, result);
     return result;
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Xero sync failed";
+    const message = xeroErrorMessage(err);
     await markSyncResult(supabase, sourceType, sourceId, { ok: false, error: message });
 
     const { data: row } = await supabase

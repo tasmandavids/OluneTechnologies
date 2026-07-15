@@ -7,7 +7,13 @@
 
 import { createClient } from "@/lib/supabase/server";
 import ParentHub from "@/components/portal/parent/ParentHub";
+import FamilyBadges from "@/components/portal/parent/FamilyBadges";
 import { ParentShop } from "@/components/portal/parent/ParentShop";
+import {
+  fetchBadgeCatalogue,
+  fetchProfileBadges,
+  buildShowcase,
+} from "@/lib/portal/badges-data";
 import EventsTickets, {
   type ParentEvent,
 } from "@/components/portal/parent/EventsTickets";
@@ -223,6 +229,14 @@ export default async function ParentPortal() {
     };
   });
 
+  // Parent's own "family" badges (read-only display).
+  const familyShowcase = studioId
+    ? buildShowcase(
+        await fetchBadgeCatalogue(supabase, studioId, "parent"),
+        await fetchProfileBadges(supabase, user!.id),
+      )
+    : [];
+
   const outstanding = invoices
     .filter((i) => i.status === "sent" || i.status === "overdue")
     .reduce((s, i) => s + i.amountCents, 0);
@@ -250,6 +264,12 @@ export default async function ParentPortal() {
           unreadNotificationCount: unreadNotifRes.count ?? 0,
         }}
       />
+
+      {familyShowcase.length > 0 && (
+        <div className="mx-auto max-w-5xl px-6 pb-4">
+          <FamilyBadges badges={familyShowcase} />
+        </div>
+      )}
 
       {(events.length > 0 || products.length > 0) && (
         <div className="mx-auto max-w-5xl space-y-12 px-6 pb-16">

@@ -85,7 +85,7 @@ export function CommandCentre({
     actions.push({
       type: "invoice",
       label: `${NZD.format(outstandingCents / 100)} outstanding`,
-      href: "/portal/parent/wallet",
+      href: "/portal/parent/billing",
       urgent: true,
     });
   if (pendingFormCount > 0)

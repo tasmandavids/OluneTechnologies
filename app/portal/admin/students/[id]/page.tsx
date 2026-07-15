@@ -13,8 +13,10 @@ import ProgressTracker, {
 } from "@/components/admin/students/ProgressTracker";
 import DeleteStudentButton from "@/components/admin/students/DeleteStudentButton";
 import StudentSchedulePanel from "@/components/admin/students/StudentSchedulePanel";
+import BadgeAwarder from "@/components/portal/shared/BadgeAwarder";
 import type { ScheduleEntry } from "@/lib/students/schedule-types";
 import { getWeekRange } from "@/lib/staff/week";
+import { fetchBadgeCatalogue, fetchProfileBadges } from "@/lib/portal/badges-data";
 
 export type StudentDetail = {
   id: string;
@@ -41,10 +43,14 @@ export default async function StudentDetailPage({
       .from("profiles")
       .select(
         `
-        id, full_name, email, phone,
+        id, full_name, email, phone, studio_id,
         enrollments!student_id (
           status,
           classes ( id, name, day_of_week, start_time )
+        ),
+        guardianships!student_id (
+          is_primary,
+          guardian:profiles!guardian_id ( id, full_name )
         )
       `,
       )
@@ -119,6 +125,27 @@ export default async function StudentDetailPage({
 
   const weekStart = getWeekRange().weekStart;
 
+  // ─── Badges: student catalogue + primary guardian's family catalogue ───
+  const studioId = p.studio_id as string | null;
+  const guardianRows =
+    (p.guardianships as unknown as {
+      is_primary: boolean;
+      guardian: { id: string; full_name: string | null } | null;
+    }[]) ?? [];
+  const primaryGuardian =
+    guardianRows.find((g) => g.is_primary && g.guardian)?.guardian ??
+    guardianRows.find((g) => g.guardian)?.guardian ??
+    null;
+
+  const [studentCatalogue, studentEarned, familyCatalogue, familyEarned] = studioId
+    ? await Promise.all([
+        fetchBadgeCatalogue(supabase, studioId, "student"),
+        fetchProfileBadges(supabase, p.id),
+        primaryGuardian ? fetchBadgeCatalogue(supabase, studioId, "parent") : Promise.resolve([]),
+        primaryGuardian ? fetchProfileBadges(supabase, primaryGuardian.id) : Promise.resolve([]),
+      ])
+    : [[], [], [], []];
+
   void DAY_SHORT;
 
   return (
@@ -157,6 +184,22 @@ export default async function StudentDetailPage({
           </div>
         </div>
       </div>
+
+      {studioId && studentCatalogue.length > 0 && (
+        <BadgeAwarder
+          recipientId={student.id}
+          catalogue={studentCatalogue}
+          earnedIds={studentEarned.map((e) => e.badgeId)}
+        />
+      )}
+
+      {studioId && primaryGuardian && familyCatalogue.length > 0 && (
+        <BadgeAwarder
+          recipientId={primaryGuardian.id}
+          catalogue={familyCatalogue}
+          earnedIds={familyEarned.map((e) => e.badgeId)}
+        />
+      )}
 
       <ProgressTracker studentId={student.id} entries={entries} />
 

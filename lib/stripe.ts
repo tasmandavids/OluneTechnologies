@@ -29,3 +29,7 @@ export const stripe: Stripe = new Proxy({} as Stripe, {
     return typeof value === "function" ? value.bind(getStripeClient()) : value;
   },
 });
+
+export function isStripeConfigured(): boolean {
+  return Boolean(process.env.STRIPE_SECRET_KEY);
+}

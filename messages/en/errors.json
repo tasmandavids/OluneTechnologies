@@ -14,6 +14,12 @@
       "retry": "Try again",
       "signInAgain": "Sign in again"
     },
+    "portal": {
+      "title": "This page hit a snag",
+      "body": "Your data is safe — the rest of the portal is still working. Try again, or head back to your dashboard.",
+      "retry": "Try again",
+      "goToPortal": "Back to dashboard"
+    },
     "notFound": {
       "eyebrow": "404",
       "title": "Page not found",

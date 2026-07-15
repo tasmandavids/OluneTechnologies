@@ -12,7 +12,10 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCY } from "@/lib/currency";
 import { siblingDiscountInfo } from "@/lib/discounts";
+import { monthlyFromTermFeeCents } from "@/lib/term-payments";
 import { getOrCreateClassStripePrice } from "@/lib/stripe/class-price";
+import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import { resolveTransferData } from "@/lib/stripe/connect";
 import type Stripe from "stripe";
 
 const uuidField = z.string().uuid();
@@ -132,28 +135,18 @@ export async function createEnrollmentSubscription(
   }
 
   // Resolve / create the Stripe customer.
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stripe_customer_id, full_name")
-    .eq("id", userId)
-    .single();
-
   const { stripe } = await import("@/lib/stripe");
+  const customerId = await getOrCreateStripeCustomer(supabase, userId, studioId);
 
-  let customerId = profile?.stripe_customer_id as string | null;
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      name: profile?.full_name || undefined,
-      metadata: { supabase_user_id: userId, studio_id: studioId },
-    });
-    customerId = customer.id;
-    await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", userId);
-  }
+  // Class fees are quoted as a full-term total; auto-pay spreads it over the
+  // same 3 monthly installments as the manual plan, so the recurring charge is
+  // the per-installment amount — not the whole term fee.
+  const monthlyCents = monthlyFromTermFeeCents(priceCents);
 
   // Sibling / family discount (Phase 3.3) — applied to recurring auto-pay too.
   // Reusable per-class Prices are immutable, so the family discount is applied
   // via a Stripe coupon rather than by changing the Price.
-  const discount = await siblingDiscountInfo(supabase, studioId, userId, studentId, priceCents);
+  const discount = await siblingDiscountInfo(supabase, studioId, userId, studentId, monthlyCents);
 
   // Create the recurring subscription against a REUSABLE Stripe Price for this
   // class (one Product + Price per class, cached on the classes row) instead of
@@ -164,7 +157,7 @@ export async function createEnrollmentSubscription(
       classId,
       studioId,
       className,
-      priceCents,
+      monthlyCents,
     );
 
     const couponId = discount.applies
@@ -184,6 +177,7 @@ export async function createEnrollmentSubscription(
         student_id: studentId,
         class_id: classId,
       },
+      transfer_data: await resolveTransferData(supabase, studioId),
     });
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Stripe error" };

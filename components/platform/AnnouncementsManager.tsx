@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmDialog } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { PlatformAnnouncement, AnnouncementSeverity, AnnouncementTarget } from "@/lib/platform/types";
@@ -55,8 +56,8 @@ export function AnnouncementsManager({
     });
   }
 
-  function remove(id: string) {
-    if (!window.confirm(t("confirmDelete"))) return;
+  async function remove(id: string) {
+    if (!(await confirmDialog({ title: t("confirmDelete"), destructive: true }))) return;
     startTransition(async () => {
       const res = await deleteAnnouncement(id);
       if (res.ok) {

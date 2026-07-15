@@ -1,5 +1,7 @@
 "use client";
 
+import { confirmDialog } from "@/lib/feedback";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -15,7 +17,6 @@ import {
   YAxis,
 } from "recharts";
 import type {
-  BillingSubscriptionRow,
   InvoiceRow,
   InvoiceTemplate,
   ParentOption,
@@ -25,6 +26,7 @@ import type {
 } from "@/app/portal/admin/billing/page";
 import {
   createInvoice,
+  refreshXeroSync,
   sendAllDraftInvoices,
   sendBulkPaymentReminders,
   sendInvoiceNow,
@@ -32,7 +34,6 @@ import {
   voidInvoice,
 } from "@/app/portal/admin/billing/actions";
 import { refundSale } from "@/app/portal/admin/billing/refund-actions";
-import { SubscriptionCancelActions } from "@/components/admin/subscriptions/SubscriptionCancelActions";
 import { InvoiceDetailModal } from "@/components/admin/billing/InvoiceDetailModal";
 import { InvoiceTemplatesModal } from "@/components/admin/billing/InvoiceTemplatesModal";
 import {
@@ -46,29 +47,10 @@ import {
 import { openInXeroUrl } from "@/lib/xero/links";
 import { formatMoney } from "@/lib/currency";
 import { formatMonthKey, formatShortDate } from "@/lib/xero/format";
-import { intervalLabel, type BillingInterval } from "@/lib/subscriptions/pricing";
-import Link from "next/link";
 import { formatInvoiceNumber } from "@/lib/invoices/format-invoice-number";
 
 const NZD = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD", maximumFractionDigits: 0 });
 const NZD2 = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD" });
-
-const SUBSCRIPTION_STATUS_KEYS = [
-  "active",
-  "trialing",
-  "past_due",
-  "unpaid",
-  "incomplete",
-  "canceled",
-] as const;
-
-function subscriptionBillingLabel(interval: string) {
-  try {
-    return intervalLabel(interval as BillingInterval);
-  } catch {
-    return interval;
-  }
-}
 
 const STATUS_KEYS = ["paid", "sent", "overdue", "draft", "void", "refunded"] as const;
 
@@ -87,31 +69,6 @@ function StatusBadge({ status }: { status: string }) {
   const label = (STATUS_KEYS as readonly string[]).includes(status)
     ? tStatus(status as (typeof STATUS_KEYS)[number])
     : status;
-  return (
-    <span
-      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider"
-      style={{ background: s.bg, color: s.text }}
-    >
-      {label}
-    </span>
-  );
-}
-
-const SUBSCRIPTION_STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  active: { bg: "#dcfce7", text: "#16a34a" },
-  trialing: { bg: "#dbeafe", text: "#2563eb" },
-  past_due: { bg: "#fef3c7", text: "#d97706" },
-  unpaid: { bg: "#fef3c7", text: "#d97706" },
-  incomplete: { bg: "#f1f5f9", text: "#64748b" },
-  canceled: { bg: "#fee2e2", text: "#dc2626" },
-};
-
-function SubscriptionStatusBadge({ status }: { status: string }) {
-  const tSubs = useTranslations("admin.subscriptions");
-  const s = SUBSCRIPTION_STATUS_STYLES[status] ?? { bg: "#f1f5f9", text: "#64748b" };
-  const label = SUBSCRIPTION_STATUS_KEYS.includes(status as (typeof SUBSCRIPTION_STATUS_KEYS)[number])
-    ? tSubs(`status.${status}` as "status.active")
-    : status.replace("_", " ");
   return (
     <span
       className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider"
@@ -497,7 +454,7 @@ function RefundButton({ invoice, onDone }: { invoice: InvoiceRow; onDone: (id: s
     return <span className="text-[0.7rem] text-muted">{tShared("noCardPayment")}</span>;
   }
 
-  function doRefund() {
+  async function doRefund() {
     const dollars = parseFloat(amountStr);
     if (Number.isNaN(dollars) || dollars <= 0) {
       setErr("Enter a valid amount.");
@@ -512,7 +469,7 @@ function RefundButton({ invoice, onDone }: { invoice: InvoiceRow; onDone: (id: s
     const label = isPartial
       ? `Issue partial refund of ${NZD2.format(dollars)} to ${invoice.payerName ?? "this payer"}?`
       : `Fully refund ${NZD2.format(dollars)} to ${invoice.payerName ?? "this payer"}?`;
-    if (!window.confirm(label)) return;
+    if (!(await confirmDialog({ title: label, destructive: true }))) return;
     setErr(null);
     startTransition(async () => {
       const res = await refundSale("invoice", invoice.id, isPartial ? cents : undefined);
@@ -589,16 +546,17 @@ function VoidButton({ invoice, onDone }: { invoice: InvoiceRow; onDone: (id: str
     <div className="flex flex-col items-start gap-0.5">
       <button
         type="button"
-        onClick={() => {
+        onClick={async () => {
           setErr(null);
           setXeroWarn(null);
           if (
-            !window.confirm(
-              t("voidConfirm", {
+            !(await confirmDialog({
+              title: t("voidConfirm", {
                 amount: NZD2.format(invoice.amountCents / 100),
                 payer: invoice.payerName ?? tShared("unknown"),
               }),
-            )
+              destructive: true,
+            }))
           ) {
             return;
           }
@@ -625,6 +583,45 @@ function VoidButton({ invoice, onDone }: { invoice: InvoiceRow; onDone: (id: str
   );
 }
 
+function RefreshXeroButton({ onDone }: { onDone: () => void }) {
+  const t = useTranslations("admin.billing");
+  const tShared = useTranslations("admin.shared");
+  const [pending, startTransition] = useTransition();
+  const [result, setResult] = useState<{ checked: number; updated: number } | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  return (
+    <div className="flex flex-col items-end gap-0.5">
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() => {
+          setErr(null);
+          setResult(null);
+          startTransition(async () => {
+            const res = await refreshXeroSync();
+            if (res.ok) {
+              setResult({ checked: res.checked, updated: res.updated });
+              onDone();
+            } else {
+              setErr(res.error);
+            }
+          });
+        }}
+        className="rounded-xl border border-[--hair] bg-base px-3 py-1.5 text-xs font-semibold text-ink hover:bg-surface disabled:opacity-50"
+      >
+        {pending ? tShared("refreshing") : t("refreshXero")}
+      </button>
+      {err && <span className="text-[0.65rem] text-[#dc2626]">{err}</span>}
+      {result && (
+        <span className="text-[0.65rem] text-muted">
+          {t("refreshXeroResult", { checked: result.checked, updated: result.updated })}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function BillingDashboard({
   invoices: initialInvoices,
   unpaidInvoices,
@@ -637,8 +634,8 @@ export function BillingDashboard({
   totalPaidCents,
   totalOutstandingCents,
   overdueCount,
-  subscriptions: initialSubscriptions,
   templates: initialTemplates,
+  initialInvoiceId = null,
 }: {
   invoices: InvoiceRow[];
   unpaidInvoices: InvoiceRow[];
@@ -651,22 +648,24 @@ export function BillingDashboard({
   totalPaidCents: number;
   totalOutstandingCents: number;
   overdueCount: number;
-  subscriptions: BillingSubscriptionRow[];
   templates: InvoiceTemplate[];
+  initialInvoiceId?: string | null;
 }) {
   const t = useTranslations("admin.billing");
-  const tSubs = useTranslations("admin.subscriptions");
   const tShared = useTranslations("admin.shared");
   const tStatus = useTranslations("admin.shared.status");
   const router = useRouter();
   const [showCreate, setShowCreate] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
-  const [viewingInvoice, setViewingInvoice] = useState<InvoiceRow | null>(null);
+  const [viewingInvoice, setViewingInvoice] = useState<InvoiceRow | null>(() =>
+    initialInvoiceId
+      ? initialInvoices.find((i) => i.id === initialInvoiceId) ?? null
+      : null,
+  );
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [invoices, setInvoices] = useState<InvoiceRow[]>(initialInvoices);
-  const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
   const [templates, setTemplates] = useState<InvoiceTemplate[]>(initialTemplates);
   const [bulkPending, startBulk] = useTransition();
   const [bulkError, setBulkError] = useState<string | null>(null);
@@ -696,30 +695,6 @@ export function BillingDashboard({
   const replaceTemplate = (template: InvoiceTemplate) =>
     setTemplates((prev) => prev.map((t) => (t.id === template.id ? template : t)));
   const removeTemplate = (id: string) => setTemplates((prev) => prev.filter((t) => t.id !== id));
-
-  const markSubscriptionCanceled = (id: string, immediate: boolean) => {
-    setSubscriptions((prev) =>
-      prev.map((s) =>
-        s.id === id
-          ? {
-              ...s,
-              status: immediate ? "canceled" : s.status,
-              cancelAtPeriodEnd: immediate ? false : true,
-            }
-          : s,
-      ),
-    );
-  };
-
-  const cancelableSubscriptions = useMemo(
-    () =>
-      subscriptions.filter(
-        (s) =>
-          s.status !== "canceled" &&
-          (["active", "trialing", "past_due", "unpaid"].includes(s.status) || s.cancelAtPeriodEnd),
-      ),
-    [subscriptions],
-  );
 
   const refresh = () => router.refresh();
 
@@ -836,13 +811,16 @@ export function BillingDashboard({
             <h1 className="text-2xl font-black tracking-tight text-ink">{t("title")}</h1>
             <p className="mt-1 text-sm text-muted">{t("subtitle")}</p>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowCreate(true)}
-            className="rounded-xl bg-ink px-4 py-2.5 text-sm font-bold text-paper shadow-sm hover:opacity-90"
-          >
-            {t("createInvoice")}
-          </button>
+          <div className="flex items-start gap-2">
+            <RefreshXeroButton onDone={refresh} />
+            <button
+              type="button"
+              onClick={() => setShowCreate(true)}
+              className="rounded-xl bg-ink px-4 py-2.5 text-sm font-bold text-paper shadow-sm hover:opacity-90"
+            >
+              {t("createInvoice")}
+            </button>
+          </div>
         </motion.header>
 
         <motion.div
@@ -872,93 +850,6 @@ export function BillingDashboard({
             sub={t("stats.mrrSub", { count: activeSubs })}
           />
         </motion.div>
-
-        <motion.section
-          variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
-          className="rounded-2xl border border-[--hair] bg-surface"
-        >
-          <div className="flex flex-wrap items-center gap-3 border-b border-[--hair] px-6 py-4">
-            <div className="mr-auto">
-              <h2 className="text-sm font-bold text-ink">{t("subscriptions.title")}</h2>
-              <p className="text-xs text-muted">{t("subscriptions.subtitle")}</p>
-            </div>
-            <Link
-              href="/portal/admin/subscriptions"
-              className="text-xs font-semibold text-ink underline hover:opacity-80"
-            >
-              {t("subscriptions.manageAll")}
-            </Link>
-          </div>
-
-          {cancelableSubscriptions.length === 0 ? (
-            <p className="px-6 py-10 text-center text-sm text-muted">{t("subscriptions.empty")}</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] text-sm">
-                <thead>
-                  <tr className="border-b border-[--hair]">
-                    {[
-                      tSubs("table.plan"),
-                      tSubs("table.payer"),
-                      tSubs("table.student"),
-                      tSubs("table.monthly"),
-                      tSubs("table.status"),
-                      tSubs("table.nextCharge"),
-                      "",
-                    ].map((h, idx) => (
-                      <th
-                        key={h || `sub-col-${idx}`}
-                        className="px-4 py-3 text-left text-[0.62rem] font-semibold uppercase tracking-wider text-muted"
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {cancelableSubscriptions.map((sub) => (
-                    <tr
-                      key={sub.id}
-                      className="border-b border-[--hair] last:border-0 hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)]"
-                    >
-                      <td className="px-4 py-3 font-medium text-ink">
-                        {sub.planLabel ?? tSubs("defaultPlan")}
-                      </td>
-                      <td className="px-4 py-3 text-muted">{sub.payerName ?? tShared("dash")}</td>
-                      <td className="px-4 py-3 text-muted">{sub.studentName ?? tShared("dash")}</td>
-                      <td className="px-4 py-3 font-semibold tabular-nums">
-                        {formatMoney(sub.monthlyAmountCents)}
-                        <span className="block text-xs font-normal text-muted">
-                          {subscriptionBillingLabel(sub.billingInterval)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <SubscriptionStatusBadge status={sub.status} />
-                        {sub.cancelAtPeriodEnd && sub.status !== "canceled" && (
-                          <span className="ml-1.5 text-[0.6rem] font-semibold text-amber-600">
-                            {tShared("ending")}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-muted">
-                        {sub.cancelAtPeriodEnd || !sub.currentPeriodEnd
-                          ? tShared("dash")
-                          : formatShortDate(sub.currentPeriodEnd.slice(0, 10))}
-                      </td>
-                      <td className="px-4 py-3">
-                        <SubscriptionCancelActions
-                          subscription={sub}
-                          onCanceled={markSubscriptionCanceled}
-                          align="start"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </motion.section>
 
         <motion.section
           variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
@@ -1008,7 +899,7 @@ export function BillingDashboard({
                   {unpaidInvoices.map((inv) => (
                     <tr
                       key={inv.id}
-                      className={`border-b border-[--hair] last:border-0 ${
+                      className={`border-b border-[--hair] last:border-0 transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)] ${
                         inv.status === "overdue" ? "bg-red-50/40" : ""
                       }`}
                     >
@@ -1075,76 +966,6 @@ export function BillingDashboard({
             </ul>
           </motion.section>
         )}
-
-        <motion.section variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
-          <button
-            type="button"
-            onClick={() => setShowInsights((v) => !v)}
-            className="flex w-full items-center justify-between rounded-2xl border border-[--hair] bg-surface px-6 py-4 text-left"
-          >
-            <div>
-              <h2 className="text-sm font-bold text-ink">{t("insights.title")}</h2>
-              <p className="text-xs text-muted">{t("insights.subtitle")}</p>
-            </div>
-            <span className="text-muted">{showInsights ? "▲" : "▼"}</span>
-          </button>
-
-          {showInsights && (
-            <div className="mt-4 space-y-4">
-              <div className="rounded-2xl border border-[--hair] bg-surface p-6">
-                <div className="mb-4 flex items-baseline justify-between">
-                  <h3 className="text-sm font-bold text-ink">{t("insights.bySource")}</h3>
-                  <span className="text-xs text-muted">
-                    {t("insights.last12Months", { total: NZD.format(sourceTotal / 100) })}
-                  </span>
-                </div>
-                {sourceTotal === 0 ? (
-                  <p className="text-sm text-muted">{t("insights.noRevenue")}</p>
-                ) : (
-                  <ul className="grid gap-2 sm:grid-cols-3">
-                    {[
-                      { label: t("insights.tuitionFees"), cents: sources.tuitionCents },
-                      { label: t("insights.merchandise"), cents: sources.shopCents },
-                      { label: t("insights.events"), cents: sources.eventsCents },
-                    ].map((s) => (
-                      <li key={s.label} className="flex justify-between text-xs">
-                        <span className="text-muted">{s.label}</span>
-                        <span className="font-semibold tabular-nums">{formatMoney(s.cents)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-
-              <div className="rounded-2xl border border-[--hair] bg-surface p-6">
-                <h3 className="mb-5 text-sm font-bold text-ink">{t("insights.monthlyTuition")}</h3>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                    <CartesianGrid vertical={false} stroke="var(--hair)" />
-                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
-                    <YAxis
-                      tickFormatter={(v: number) => `$${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
-                      tick={{ fontSize: 11, fill: "var(--muted)" }}
-                      axisLine={false}
-                      tickLine={false}
-                      width={48}
-                    />
-                    <Tooltip
-                      formatter={(value: unknown) => [NZD2.format(Number(value)), tShared("revenue")]}
-                      contentStyle={{
-                        background: "var(--base)",
-                        border: "1px solid var(--hair)",
-                        borderRadius: 12,
-                        fontSize: 12,
-                      }}
-                    />
-                    <Bar dataKey="revenue" fill="var(--brand)" radius={[4, 4, 0, 0]} maxBarSize={48} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          )}
-        </motion.section>
 
         <motion.div
           variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
@@ -1219,15 +1040,15 @@ export function BillingDashboard({
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-10 text-center text-sm text-muted">
-                      {t("allInvoices.empty")}
+                    <td colSpan={8}>
+                      <EmptyState title={t("allInvoices.empty")} />
                     </td>
                   </tr>
                 ) : (
                   filtered.map((inv) => (
                     <tr
                       key={inv.id}
-                      className="border-b border-[--hair] last:border-0 hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)]"
+                      className="border-b border-[--hair] last:border-0 transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)]"
                     >
                       <td className="px-4 py-3 font-mono text-xs">
                         <button
@@ -1286,6 +1107,76 @@ export function BillingDashboard({
             </table>
           </div>
         </motion.div>
+
+        <motion.section variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
+          <button
+            type="button"
+            onClick={() => setShowInsights((v) => !v)}
+            className="flex w-full items-center justify-between rounded-2xl border border-[--hair] bg-surface px-6 py-4 text-left"
+          >
+            <div>
+              <h2 className="text-sm font-bold text-ink">{t("insights.title")}</h2>
+              <p className="text-xs text-muted">{t("insights.subtitle")}</p>
+            </div>
+            <span className="text-muted">{showInsights ? "▲" : "▼"}</span>
+          </button>
+
+          {showInsights && (
+            <div className="mt-4 space-y-4">
+              <div className="rounded-2xl border border-[--hair] bg-surface p-6">
+                <div className="mb-4 flex items-baseline justify-between">
+                  <h3 className="text-sm font-bold text-ink">{t("insights.bySource")}</h3>
+                  <span className="text-xs text-muted">
+                    {t("insights.last12Months", { total: NZD.format(sourceTotal / 100) })}
+                  </span>
+                </div>
+                {sourceTotal === 0 ? (
+                  <p className="text-sm text-muted">{t("insights.noRevenue")}</p>
+                ) : (
+                  <ul className="grid gap-2 sm:grid-cols-3">
+                    {[
+                      { label: t("insights.tuitionFees"), cents: sources.tuitionCents },
+                      { label: t("insights.merchandise"), cents: sources.shopCents },
+                      { label: t("insights.events"), cents: sources.eventsCents },
+                    ].map((s) => (
+                      <li key={s.label} className="flex justify-between text-xs">
+                        <span className="text-muted">{s.label}</span>
+                        <span className="font-semibold tabular-nums">{formatMoney(s.cents)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="rounded-2xl border border-[--hair] bg-surface p-6">
+                <h3 className="mb-5 text-sm font-bold text-ink">{t("insights.monthlyTuition")}</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                    <CartesianGrid vertical={false} stroke="var(--hair)" />
+                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--muted)" }} axisLine={false} tickLine={false} />
+                    <YAxis
+                      tickFormatter={(v: number) => `$${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
+                      tick={{ fontSize: 11, fill: "var(--muted)" }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={48}
+                    />
+                    <Tooltip
+                      formatter={(value: unknown) => [NZD2.format(Number(value)), tShared("revenue")]}
+                      contentStyle={{
+                        background: "var(--base)",
+                        border: "1px solid var(--hair)",
+                        borderRadius: 12,
+                        fontSize: 12,
+                      }}
+                    />
+                    <Bar dataKey="revenue" fill="var(--brand)" radius={[4, 4, 0, 0]} maxBarSize={48} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+        </motion.section>
       </motion.div>
     </>
   );

@@ -123,7 +123,7 @@
       "summaryClass": "Corso",
       "summaryDancer": "Ballerino",
       "summaryTotalDue": "Quota del corso",
-      "paymentChoiceHint": "Il pagamento non è obbligatorio per iscriversi. Scegli paga dopo per confermare senza pagare, o paga ora online.",
+      "paymentChoiceHint": "Il pagamento non è richiesto per l'iscrizione — scegli «Paga più tardi» e ti invieremo una fattura da pagare in qualsiasi momento.",
       "payNow": "Paga ora",
       "payLater": "Paga dopo",
       "payLaterInstead": "Paga dopo",
@@ -147,7 +147,9 @@
       "classSelected": "{count} class selected",
       "classesSelected": "{count} classes selected",
       "multipleClasses": "{count} classes",
-      "done": "Fatto"
+      "done": "Fatto",
+      "payMonthlyWithAmount": "Paga mensilmente · {amount}/mese",
+      "morePaymentOptions": "Altre opzioni di pagamento"
     },
     "email": {
       "title": "E-mail dello studio",
@@ -182,6 +184,28 @@
         "fri": "Ven",
         "sat": "Sab",
         "sun": "Dom"
+      }
+    },
+    "inbox": {
+      "tabs": {
+        "chat": "Chat",
+        "email": "Email"
+      }
+    },
+    "scheduleViews": {
+      "family": "La mia famiglia",
+      "studio": "Tutto lo studio"
+    },
+    "billing": {
+      "summaryBand": {
+        "title": "Piani di pagamento e addebito automatico",
+        "autopay": "Addebito automatico",
+        "autopayOn": "Attivo",
+        "autopayOff": "Disattivato",
+        "planLabel": "Piano di pagamento — {paid} di {total} rate pagate",
+        "paid": "{amount} pagati",
+        "total": "{amount} in totale",
+        "nextInstalment": "Prossima rata di {amount} entro il {date}"
       }
     }
   }

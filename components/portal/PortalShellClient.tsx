@@ -343,9 +343,20 @@ export function PortalShellClient({
         {collapsed && !hoverPeek && (
           <div
             className="absolute inset-y-0 left-0 z-30 w-3 cursor-pointer border-r border-[--hair] bg-surface/80"
-            aria-label={tShell("showSidebar")}
             onMouseEnter={openPeek}
-          />
+          >
+            {/* Visible re-open affordance — the bare 12px strip alone is easy
+                to miss. Hover still peeks; clicking pins the sidebar open. */}
+            <button
+              type="button"
+              onClick={pinSidebarOpen}
+              aria-label={tShell("showSidebar")}
+              title={tShell("showSidebar")}
+              className="absolute left-0 top-1/2 grid h-10 w-5 -translate-y-1/2 place-items-center rounded-r-lg border border-l-0 border-[--hair] bg-surface text-xs text-muted shadow-sm transition hover:text-ink"
+            >
+              ›
+            </button>
+          </div>
         )}
 
         <aside

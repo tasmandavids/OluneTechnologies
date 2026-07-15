@@ -6,7 +6,7 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, createImplicitClient } from "@/lib/supabase/client";
 import { isTenantHost } from "@/lib/tenant-host";
 import { OluneLogo } from "@/components/brand/OluneLogo";
 import { OluneHomeLink } from "@/components/brand/OluneHomeLink";
@@ -58,8 +58,8 @@ function LoginForm() {
   async function sendResetLink() {
     setResetBusy(true);
     setResetError(null);
-    const { error: resetErr } = await createClient().auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/login`,
+    const { error: resetErr } = await createImplicitClient().auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
     });
     setResetBusy(false);
     if (resetErr) return setResetError(t("resetLinkError"));
@@ -89,9 +89,12 @@ function LoginForm() {
 
         <form onSubmit={signIn}>
           {error && (
-            <p className="mb-4 rounded-lg border border-[--hair] bg-base/50 px-3 py-2 text-sm text-red-400">
-              {error}
-            </p>
+            <div className="mb-4 space-y-2">
+              <p className="rounded-lg border border-[--hair] bg-base/50 px-3 py-2 text-sm text-red-400">
+                {error}
+              </p>
+              <p className="text-center text-sm text-muted">{t("emailLoginGoogleHint")}</p>
+            </div>
           )}
           <div className="space-y-3">
             <input

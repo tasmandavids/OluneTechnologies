@@ -1,5 +1,7 @@
 "use client";
 
+import { useEscToClose } from "@/lib/useEscToClose";
+import { panelSlide } from "@/lib/motion";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -33,6 +35,7 @@ export function ParentShop({ products }: Props) {
   const t = useTranslations("parent.shop");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  useEscToClose(() => setCartOpen(false), cartOpen);
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("all");
   const [checkingOut, setCheckingOut] = useState(false);
@@ -246,10 +249,7 @@ export function ParentShop({ products }: Props) {
               onClick={() => setCartOpen(false)}
             />
             <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.3 }}
+              {...panelSlide}
               className="fixed right-0 top-0 z-50 flex h-full w-full max-w-sm flex-col bg-surface shadow-2xl"
             >
               <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">

@@ -74,6 +74,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Keyboard focus is always visible and on-brand. :where() keeps specificity
+   at zero so component-level focus styles still win. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--brand) 75%, transparent);
+  outline-offset: 2px;
+}
+
 @keyframes floatMoon {
   0%,
   100% {
