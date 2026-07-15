@@ -1,0 +1,62 @@
+{
+  "portal": {
+    "progress": {
+      "currentLevel": "Livello attuale",
+      "attendance": {
+        "title": "Presenze · {count, plural, one {# registrazione} other {# registrazioni}}",
+        "attendanceRate": "{rate}% di presenza nelle lezioni recenti",
+        "empty": "Nessuna presenza registrata finora.",
+        "date": "Data",
+        "class": "Corso",
+        "statusColumn": "Stato",
+        "status": {
+          "present": "Presente",
+          "late": "In ritardo",
+          "absent": "Assente",
+          "excused": "Giustificato"
+        }
+      },
+      "certificates": {
+        "title": "Certificati · {count}",
+        "subtitle": "Scarica un certificato PDF per ogni riconoscimento.",
+        "downloadPdf": "Scarica il PDF",
+        "downloadAria": "Scarica il certificato PDF per {title}"
+      },
+      "badges": {
+        "title": "Distintivi · {earned}/{total}",
+        "subtitle": "Traguardi raggiunti nel percorso",
+        "empty": "Nessun distintivo ancora — appariranno qui man mano che si raggiungono i traguardi.",
+        "secret": "Distintivo segreto",
+        "earnedOn": "Ottenuto il {date}",
+        "levelLabel": "Livello {level}",
+        "xpTotal": "{xp} XP",
+        "toNext": "{xp} XP a {level}",
+        "maxLevel": "Livello massimo raggiunto — Étoile!",
+        "familyTitle": "Distintivi di famiglia · {earned}/{total}",
+        "familySubtitle": "I traguardi della tua famiglia in accademia",
+        "categories": {
+          "founder": "Fondatore e Eredità",
+          "beginner": "Percorso principiante",
+          "commitment": "Impegno e disciplina",
+          "technique": "Tecnica",
+          "level": "Progressione di livello",
+          "performance": "Performance",
+          "character": "Carattere e valori",
+          "mentor": "Percorso insegnante e mentore",
+          "community": "Comunità",
+          "secret": "Segreto e divertimento",
+          "family": "Famiglia"
+        },
+        "award": {
+          "title": "Assegna un distintivo",
+          "subtitle": "Riconosci un traguardo. Il ballerino e la sua famiglia vengono avvisati.",
+          "search": "Cerca distintivi…",
+          "note": "Nota (facoltativa)",
+          "awardCta": "Assegna",
+          "revoke": "Rimuovi",
+          "noResults": "Nessun distintivo corrisponde alla ricerca."
+        }
+      }
+    }
+  }
+}

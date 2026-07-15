@@ -1,0 +1,62 @@
+{
+  "portal": {
+    "progress": {
+      "currentLevel": "Niveau actuel",
+      "attendance": {
+        "title": "Présence · {count, plural, one {# séance} other {# séances}}",
+        "attendanceRate": "{rate}% de présence sur les derniers cours",
+        "empty": "Aucune présence enregistrée pour le moment.",
+        "date": "Date",
+        "class": "Cours",
+        "statusColumn": "Statut",
+        "status": {
+          "present": "Présent",
+          "late": "En retard",
+          "absent": "Absent",
+          "excused": "Excusé"
+        }
+      },
+      "certificates": {
+        "title": "Certificats · {count}",
+        "subtitle": "Téléchargez un certificat PDF pour chaque récompense.",
+        "downloadPdf": "Télécharger le PDF",
+        "downloadAria": "Télécharger le certificat PDF pour {title}"
+      },
+      "badges": {
+        "title": "Badges · {earned}/{total}",
+        "subtitle": "Réussites obtenues au fil du parcours",
+        "empty": "Aucun badge pour l'instant — ils apparaîtront ici au fil des étapes franchies.",
+        "secret": "Badge secret",
+        "earnedOn": "Obtenu le {date}",
+        "levelLabel": "Niveau {level}",
+        "xpTotal": "{xp} XP",
+        "toNext": "{xp} XP avant {level}",
+        "maxLevel": "Niveau maximum atteint — Étoile !",
+        "familyTitle": "Badges de la famille · {earned}/{total}",
+        "familySubtitle": "Les réussites de votre famille à l'académie",
+        "categories": {
+          "founder": "Fondateur et héritage",
+          "beginner": "Parcours débutant",
+          "commitment": "Engagement et discipline",
+          "technique": "Technique",
+          "level": "Progression de niveau",
+          "performance": "Performance",
+          "character": "Caractère et valeurs",
+          "mentor": "Parcours enseignant et mentor",
+          "community": "Communauté",
+          "secret": "Secret et amusement",
+          "family": "Famille"
+        },
+        "award": {
+          "title": "Attribuer un badge",
+          "subtitle": "Reconnaître une étape importante. Le danseur et sa famille sont notifiés.",
+          "search": "Rechercher des badges…",
+          "note": "Note (facultatif)",
+          "awardCta": "Attribuer",
+          "revoke": "Retirer",
+          "noResults": "Aucun badge ne correspond à votre recherche."
+        }
+      }
+    }
+  }
+}

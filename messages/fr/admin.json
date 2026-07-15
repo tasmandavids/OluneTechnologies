@@ -175,6 +175,31 @@
         "classesToday": "Cours aujourd'hui",
         "classesTodayHint": "dans vos studios"
       },
+      "attention": {
+        "title": "Nécessite votre attention",
+        "allClear": "Tout est à jour",
+        "allClearHint": "Aucune facture en retard ni nouvelle demande pour le moment.",
+        "overdueTitle": "{count, plural, one {# facture en retard} other {# factures en retard}}",
+        "overdueSubtitle": "{amount} pour {families, plural, one {# famille} other {# familles}} · la plus ancienne depuis {days, plural, =0 {aujourd'hui} one {# jour} other {# jours}}",
+        "overdueAction": "Relancer",
+        "leadsTitle": "{count, plural, one {# nouvelle demande} other {# nouvelles demandes}}",
+        "leadsSubtitle": "La plus ancienne depuis {days, plural, =0 {aujourd'hui} one {# jour} other {# jours}}",
+        "leadsAction": "Voir"
+      },
+      "quickActions": {
+        "title": "Actions rapides",
+        "addClass": "Ajouter un cours",
+        "newInvoice": "Nouvelle facture",
+        "message": "Message",
+        "addLead": "Ajouter un prospect"
+      },
+      "staffToday": {
+        "title": "Équipe aujourd'hui",
+        "empty": "Aucun professeur prévu aujourd'hui.",
+        "classCount": "{count, plural, one {# cours} other {# cours}}",
+        "live": "En cours",
+        "nextAt": "prochain à {time}"
+      },
       "capacity": {
         "title": "Capacité de classe",
         "subtitle": "Cette semaine, par plage horaire du studio.",

@@ -1,0 +1,20 @@
+{
+  "join": {
+    "title": "加入舞蹈室",
+    "subtitle": "创建您的账户以报名课程并进行管理。",
+    "pathParentTitle": "我要为孩子报名",
+    "pathParentDescription": "家长或监护人账户——添加舞者、报名课程并支付费用。",
+    "pathAdultTitle": "我要为自己报名（18岁及以上）",
+    "pathAdultDescription": "成人学员账户——为自己报名、签署免责声明并直接付款。",
+    "changePath": "← 选择其他选项",
+    "yourBirthday": "您的出生日期",
+    "optionalChild": "现在添加您的舞者（可选）",
+    "childNamePlaceholder": "孩子的全名",
+    "fullNamePlaceholder": "您的全名",
+    "createAccount": "创建账户并继续",
+    "creatingAccount": "正在创建账户…",
+    "alreadyHaveAccount": "已有账户？",
+    "completeRegistration": "完成注册",
+    "joining": "正在加入…"
+  }
+}

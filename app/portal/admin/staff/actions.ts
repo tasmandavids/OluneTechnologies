@@ -14,6 +14,7 @@ import {
   STAFF_PORTAL_ROLES,
   WORK_LOCATIONS,
 } from "@/lib/staff/types";
+import { studioLocalYmd } from "@/lib/date/studio-date";
 
 export type ActionResult = { ok: true; id?: string } | { ok: false; error: string };
 
@@ -271,7 +272,7 @@ export async function setStaffActive(id: string, active: boolean): Promise<Actio
   const admin = createAdminClient();
   const { error: memberErr } = await admin
     .from("staff_members")
-    .update({ active, end_date: active ? null : new Date().toISOString().slice(0, 10) })
+    .update({ active, end_date: active ? null : studioLocalYmd() })
     .eq("profile_id", id)
     .eq("studio_id", studioId);
   if (memberErr) return { ok: false, error: memberErr.message };

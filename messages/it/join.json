@@ -1,0 +1,20 @@
+{
+  "join": {
+    "title": "Iscriviti allo studio",
+    "subtitle": "Crea il tuo account per iscriverti e gestire i corsi.",
+    "pathParentTitle": "Sto iscrivendo mio figlio/a",
+    "pathParentDescription": "Account genitore o tutore — aggiungi ballerini, iscrivili e paga le quote.",
+    "pathAdultTitle": "Mi iscrivo da solo/a (18+)",
+    "pathAdultDescription": "Account allievo adulto — iscriviti, firma le liberatorie e paga direttamente.",
+    "changePath": "← Scegli un'altra opzione",
+    "yourBirthday": "La tua data di nascita",
+    "optionalChild": "Aggiungi ora il tuo/la tua ballerino/a (facoltativo)",
+    "childNamePlaceholder": "Nome completo del bambino/della bambina",
+    "fullNamePlaceholder": "Il tuo nome completo",
+    "createAccount": "Crea account e continua",
+    "creatingAccount": "Creazione account…",
+    "alreadyHaveAccount": "Hai già un account?",
+    "completeRegistration": "Completa la registrazione",
+    "joining": "Iscrizione in corso…"
+  }
+}

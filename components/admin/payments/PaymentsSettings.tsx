@@ -88,6 +88,10 @@ export function PaymentsSettings({
         <p className={`mt-1 text-sm font-semibold ${statusTone}`}>{statusLabel}</p>
 
         <div className="mt-4 flex flex-wrap gap-2">
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- not
+              an app page; this is an API route that redirects to Stripe's
+              hosted OAuth onboarding, so next/link's prefetching brings no
+              benefit and a plain hard navigation is correct here. */}
           <a
             href="/api/stripe/connect"
             className="rounded-xl bg-[--brand] px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"

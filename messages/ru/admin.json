@@ -175,6 +175,31 @@
         "classesToday": "Занятия сегодня",
         "classesTodayHint": "в ваших студиях"
       },
+      "attention": {
+        "title": "Требует внимания",
+        "allClear": "Всё под контролем",
+        "allClearHint": "Сейчас нет просроченных счетов или новых заявок.",
+        "overdueTitle": "{count, plural, one {# просроченный счёт} few {# просроченных счёта} many {# просроченных счетов} other {# просроченных счетов}}",
+        "overdueSubtitle": "{amount} от {families, plural, one {# семьи} few {# семей} many {# семей} other {# семей}} · старейший — {days, plural, =0 {сегодня} one {# день} few {# дня} many {# дней} other {# дней}} назад",
+        "overdueAction": "Напомнить",
+        "leadsTitle": "{count, plural, one {# новая заявка} few {# новые заявки} many {# новых заявок} other {# новых заявок}}",
+        "leadsSubtitle": "Старейшая — {days, plural, =0 {сегодня} one {# день} few {# дня} many {# дней} other {# дней}} назад",
+        "leadsAction": "Просмотреть"
+      },
+      "quickActions": {
+        "title": "Быстрые действия",
+        "addClass": "Добавить занятие",
+        "newInvoice": "Новый счёт",
+        "message": "Сообщение",
+        "addLead": "Добавить заявку"
+      },
+      "staffToday": {
+        "title": "Персонал сегодня",
+        "empty": "Сегодня нет запланированных преподавателей.",
+        "classCount": "{count, plural, one {# занятие} few {# занятия} many {# занятий} other {# занятий}}",
+        "live": "Идёт занятие",
+        "nextAt": "следующее в {time}"
+      },
       "capacity": {
         "title": "Класс мощности",
         "subtitle": "На этой неделе, по времени студии.",

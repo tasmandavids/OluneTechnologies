@@ -59,6 +59,16 @@ export interface ScheduleClass {
 /** @deprecated Use ScheduleClass */
 export type ClassBlock = ScheduleClass;
 
+/** "Needs your attention" panel data — real counts from invoices + leads. */
+export interface AttentionData {
+  overdueCount: number;
+  overdueAmountCents: number;
+  overdueFamilies: number;
+  overdueOldestDays: number;
+  leadsCount: number;
+  leadsOldestDays: number;
+}
+
 export function normalizeTime(t: string | null | undefined): string | null {
   if (!t) return null;
   return t.slice(0, 5);

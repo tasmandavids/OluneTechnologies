@@ -10,7 +10,10 @@ import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { StatCard } from "./StatCard";
 import { ScheduleBoard } from "./ScheduleBoard";
-import type { Stat, StatData, ScheduleClass, StatId } from "./types";
+import { AttentionQueue } from "./AttentionQueue";
+import { QuickActions } from "./QuickActions";
+import { StaffToday } from "./StaffToday";
+import type { Stat, StatData, ScheduleClass, StatId, AttentionData } from "./types";
 import type { TeacherOption } from "@/app/portal/admin/classes/page";
 
 const STAT_LABEL_KEYS: Record<StatId, string> = {
@@ -39,12 +42,16 @@ export function AdminDashboard({
   stats: statsData,
   scheduleClasses,
   teachers,
+  todayDow,
+  attention,
 }: {
   studioId: string;
   studioName: string;
   stats: StatData[];
   scheduleClasses: ScheduleClass[];
   teachers: TeacherOption[];
+  todayDow: number;
+  attention: AttentionData;
 }) {
   const tGreeting = useTranslations("common.greeting");
   const tStats = useTranslations("admin.dashboard.stats");
@@ -78,6 +85,15 @@ export function AdminDashboard({
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((s, i) => <StatCard key={s.id} stat={s} index={i} />)}
       </div>
+
+      <motion.div
+        variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
+        className="grid gap-4 lg:grid-cols-3"
+      >
+        <AttentionQueue attention={attention} />
+        <QuickActions />
+        <StaffToday scheduleClasses={scheduleClasses} teachers={teachers} todayDow={todayDow} />
+      </motion.div>
 
       <motion.div variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}>
         <ScheduleBoard

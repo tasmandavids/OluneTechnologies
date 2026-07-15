@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { SubstituteBoardTeacher } from "@/components/portal/teacher/SubstituteBoardTeacher";
+import { studioLocalYmd } from "@/lib/date/studio-date";
 
 export type SubRequest = {
   id: string;
@@ -26,7 +27,7 @@ export default async function TeacherSubstitutesPage() {
       studios!inner ( name ),
       filler:profiles!filled_by ( full_name )
     `)
-    .gte("date", new Date().toISOString().slice(0, 10))
+    .gte("date", studioLocalYmd())
     .order("date")
     .order("start_time")
     .limit(60);

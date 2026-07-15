@@ -5,6 +5,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import TeacherSchedule from "@/components/portal/teacher/TeacherSchedule";
+import { studioLocalYmd } from "@/lib/date/studio-date";
 
 export type TeacherClass = {
   id: string;
@@ -31,8 +32,8 @@ export default async function TeacherPortal() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const today = new Date().toISOString().slice(0, 10);
-  const todayDow = new Date().getDay();
+  const today = studioLocalYmd();
+  const todayDow = new Date(`${today}T12:00:00Z`).getUTCDay();
 
   const [profileRes, classesRes, invoicesRes, clientsRes] = await Promise.all([
     supabase.from("profiles").select("full_name, account_kind").eq("id", user!.id).single(),

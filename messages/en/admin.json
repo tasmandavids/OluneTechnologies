@@ -176,6 +176,31 @@
         "classesToday": "Classes today",
         "classesTodayHint": "across your studios"
       },
+      "attention": {
+        "title": "Needs your attention",
+        "allClear": "You're all caught up",
+        "allClearHint": "No overdue invoices or new enquiries right now.",
+        "overdueTitle": "{count, plural, one {# invoice overdue} other {# invoices overdue}}",
+        "overdueSubtitle": "{amount} across {families, plural, one {# family} other {# families}} · oldest {days, plural, =0 {today} one {# day} other {# days}}",
+        "overdueAction": "Chase",
+        "leadsTitle": "{count, plural, one {# new enquiry} other {# new enquiries}}",
+        "leadsSubtitle": "Oldest from {days, plural, =0 {today} one {# day ago} other {# days ago}}",
+        "leadsAction": "Review"
+      },
+      "quickActions": {
+        "title": "Quick actions",
+        "addClass": "Add class",
+        "newInvoice": "New invoice",
+        "message": "Message",
+        "addLead": "Add lead"
+      },
+      "staffToday": {
+        "title": "Staff today",
+        "empty": "No teachers scheduled today.",
+        "classCount": "{count, plural, one {# class} other {# classes}}",
+        "live": "In session",
+        "nextAt": "next at {time}"
+      },
       "capacity": {
         "title": "Class capacity",
         "subtitle": "This week, by studio time slot.",

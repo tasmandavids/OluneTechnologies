@@ -176,6 +176,31 @@
         "classesToday": "今日课程",
         "classesTodayHint": "覆盖您的各工作室"
       },
+      "attention": {
+        "title": "需要关注",
+        "allClear": "一切正常",
+        "allClearHint": "目前没有逾期发票或新咨询。",
+        "overdueTitle": "{count} 张发票逾期",
+        "overdueSubtitle": "{amount}，涉及 {families} 个家庭 · 最早逾期 {days} 天",
+        "overdueAction": "催缴",
+        "leadsTitle": "{count} 条新咨询",
+        "leadsSubtitle": "最早于 {days} 天前",
+        "leadsAction": "查看"
+      },
+      "quickActions": {
+        "title": "快捷操作",
+        "addClass": "添加课程",
+        "newInvoice": "新建发票",
+        "message": "消息",
+        "addLead": "添加线索"
+      },
+      "staffToday": {
+        "title": "今日员工",
+        "empty": "今天没有安排教师。",
+        "classCount": "{count} 节课",
+        "live": "上课中",
+        "nextAt": "下一节 {time}"
+      },
       "capacity": {
         "title": "课程容量",
         "subtitle": "本周，按工作室时段。",

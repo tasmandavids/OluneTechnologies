@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { studioLocalYmd } from "@/lib/date/studio-date";
 
 const CreateSchema = z.object({
   teacherId: z.string().uuid(),
@@ -29,7 +30,7 @@ export async function createBookingRequest(input: z.infer<typeof CreateSchema>) 
 
   const d = parsed.data;
   if (d.endTime <= d.startTime) return { error: "End time must be after the start time." };
-  if (d.lessonDate < new Date().toISOString().slice(0, 10)) {
+  if (d.lessonDate < studioLocalYmd()) {
     return { error: "Pick a date in the future." };
   }
 

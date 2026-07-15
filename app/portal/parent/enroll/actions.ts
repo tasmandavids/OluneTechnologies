@@ -13,6 +13,7 @@ import { siblingDiscountedCents } from "@/lib/discounts";
 import { enrollmentBillableCents, batchEnrollmentBillableCents } from "@/lib/enrollment-billing";
 import { xeroSyncOutstandingInvoice } from "@/lib/xero/webhook-sync";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import { studioLocalYmdOffset } from "@/lib/date/studio-date";
 import { resolveTransferData } from "@/lib/stripe/connect";
 import { getTranslations } from "@/lib/i18n/server";
 
@@ -346,8 +347,7 @@ async function insertEnrollmentInvoice(
   sendNow: boolean,
   t: Awaited<ReturnType<typeof getTranslations>>,
 ) {
-  const dueDate = new Date();
-  dueDate.setDate(dueDate.getDate() + 7);
+  const dueDate = studioLocalYmdOffset(7);
 
   const totalCents = charges.reduce((sum, c) => sum + c.chargeCents, 0);
   const now = new Date().toISOString();
@@ -361,7 +361,7 @@ async function insertEnrollmentInvoice(
       amount_cents: totalCents,
       gst_cents: gstComponentCents(totalCents),
       status: sendNow ? "sent" : "draft",
-      due_date: dueDate.toISOString().slice(0, 10),
+      due_date: dueDate,
       issued_at: sendNow ? now : null,
     })
     .select("id")

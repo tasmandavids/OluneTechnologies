@@ -1,16 +1,16 @@
 // ============================================================================
-//  lib/builder/sanitize.ts — conservative HTML sanitizer for `embed` nodes.
+//  lib/builder/sanitize.ts — HTML sanitizer for `embed` nodes.
 //
 //  Once a builder document is published, an `embed` node's raw HTML is served to
 //  ANONYMOUS visitors. Even though the author is an authenticated admin, that is
 //  a stored-XSS surface (a compromised admin, or an admin pasting hostile
-//  third-party "embed" code). This strips the script-injection vectors while
+//  third-party "embed" code). This parses the markup with `sanitize-html` (a
+//  real allow-list DOM-aware sanitizer, not a regex pass) so malformed/nested
+//  tags, encoded attributes, and handler-name tricks can't slip through, while
 //  preserving benign markup and allowlisted embed iframes (YouTube, Vimeo, Maps…).
-//
-//  This is a defense-in-depth string pass, not a full DOM sanitizer — there is no
-//  DOM server-side and we avoid pulling in a dependency. Hardening to DOMPurify
-//  (or rendering embeds inside a sandboxed <iframe srcdoc>) is a follow-up.
 // ============================================================================
+
+import sanitizeHtmlLib from "sanitize-html";
 
 /** Hosts whose <iframe src> is allowed to survive sanitization. */
 const ALLOWED_IFRAME_HOSTS = [
@@ -29,7 +29,8 @@ const ALLOWED_IFRAME_HOSTS = [
   "docs.google.com",
 ];
 
-function hostAllowed(src: string): boolean {
+function hostAllowed(src: string | undefined): boolean {
+  if (!src) return false;
   try {
     const host = new URL(src, "https://placeholder.invalid").hostname.replace(/^www\./, "");
     return ALLOWED_IFRAME_HOSTS.some((h) => host === h || host.endsWith(`.${h}`));
@@ -38,27 +39,30 @@ function hostAllowed(src: string): boolean {
   }
 }
 
+// `style` is deliberately excluded: sanitize-html doesn't filter the CSS it
+// contains (confirmed — `<style>body{background:url(javascript:...)}</style>`
+// passes through untouched), so allowing the tag would reopen a CSS-injection
+// hole. h1/h2/span are already in the library defaults; listed here only for
+// documentation.
+const ALLOWED_TAGS = [...sanitizeHtmlLib.defaults.allowedTags, "iframe", "img", "h1", "h2", "span"];
+
 export function sanitizeEmbedHtml(html: string | undefined | null): string {
   if (!html) return "";
-  let out = html;
 
-  // Drop tags that can execute or exfiltrate outright.
-  out = out.replace(/<\/?(script|object|embed|link|meta|base|form|applet)\b[^>]*>/gi, "");
-
-  // Strip inline event handlers (onclick, onerror, onload, …).
-  out = out.replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "");
-
-  // Neutralize javascript:/vbscript:/data:text-html URLs in href/src.
-  out = out.replace(
-    /\b(href|src)\s*=\s*(["'])\s*(javascript|vbscript|data)\s*:[^"']*\2/gi,
-    "$1=$2#$2",
-  );
-
-  // Remove any <iframe> whose src host isn't allowlisted (keeps known embeds).
-  out = out.replace(/<iframe\b[^>]*>/gi, (tag) => {
-    const m = /\bsrc\s*=\s*("|')(.*?)\1/i.exec(tag);
-    return m && hostAllowed(m[2]) ? tag : "<!-- embed: blocked iframe -->";
+  return sanitizeHtmlLib(html, {
+    allowedTags: ALLOWED_TAGS,
+    allowedAttributes: {
+      "*": ["class", "id", "style", "title", "aria-*", "data-*"],
+      a: ["href", "name", "target", "rel"],
+      img: ["src", "alt", "width", "height", "loading"],
+      iframe: ["src", "width", "height", "frameborder", "allow", "allowfullscreen", "loading", "title"],
+    },
+    // Only http(s) survive in any URL attribute — kills javascript:, vbscript:,
+    // data:text/html, etc. outright rather than trying to pattern-match them.
+    allowedSchemes: ["http", "https"],
+    allowProtocolRelative: false,
+    // We enforce our own iframe host allowlist (with subdomain matching)
+    // rather than the library's exact-hostname list.
+    exclusiveFilter: (frame) => frame.tag === "iframe" && !hostAllowed(frame.attribs.src),
   });
-
-  return out;
 }
