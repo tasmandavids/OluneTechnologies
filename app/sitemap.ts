@@ -16,6 +16,8 @@ const MARKETING_ROUTES: { path: string; priority: number }[] = [
   { path: "/faq", priority: 0.6 },
   { path: "/team", priority: 0.5 },
   { path: "/instructors", priority: 0.5 },
+  { path: "/privacy", priority: 0.3 },
+  { path: "/data-deletion", priority: 0.3 },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

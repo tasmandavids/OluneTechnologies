@@ -105,6 +105,8 @@ export function LandingFooter() {
     { label: t("pricing"), href: "/#pricing" },
     { label: "FAQ", href: "/faq" },
     { label: "Team", href: "/team" },
+    { label: "Privacy", href: "/privacy" },
+    { label: "Data Deletion", href: "/data-deletion" },
     { label: t("signIn"), href: "/login" },
     { label: t("startFree"), href: "/onboarding" },
   ];
