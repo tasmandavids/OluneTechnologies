@@ -251,6 +251,8 @@
     "classes": {
       "title": "课程",
       "subtitle": "{count, plural, other {# 门课程}} · 点击课程查看已报名学员",
+      "viewList": "列表",
+      "viewSchedule": "排课",
       "newClass": "+ 新课程",
       "searchPlaceholder": "按名称、科目或级别搜索…",
       "emptySearch": "没有符合您搜索的课程。",

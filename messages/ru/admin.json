@@ -249,6 +249,8 @@
     "classes": {
       "title": "Классы",
       "subtitle": "{count, plural, one {# сорт} other {# занятий}}· управлять своим расписанием",
+      "viewList": "Список",
+      "viewSchedule": "Расписание",
       "newClass": "+ Новый класс",
       "searchPlaceholder": "Поиск по имени, дисциплине или уровню…",
       "emptySearch": "Нет классов, соответствующих вашему запросу.",

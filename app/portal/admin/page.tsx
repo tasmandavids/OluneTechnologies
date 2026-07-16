@@ -240,7 +240,6 @@ export default async function AdminDashboardPage() {
 
   return (
     <AdminDashboard
-      studioId={studioId}
       stats={stats}
       scheduleClasses={scheduleClasses}
       teachers={teachers}

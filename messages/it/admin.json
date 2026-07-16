@@ -249,6 +249,8 @@
     "classes": {
       "title": "Classi",
       "subtitle": "{count, plural, one {# corso} other {# corsi}} · gestisca il suo orario",
+      "viewList": "Elenco",
+      "viewSchedule": "Orario",
       "newClass": "+ Nuova classe",
       "searchPlaceholder": "Cerca per nome, disciplina o livello...",
       "emptySearch": "Nessun corso corrisponde alla tua ricerca.",

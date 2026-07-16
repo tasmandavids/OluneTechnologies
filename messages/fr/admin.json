@@ -249,6 +249,8 @@
     "classes": {
       "title": "Cours",
       "subtitle": "{count, plural, one {# cours} other {# cours}} · gérez votre emploi du temps",
+      "viewList": "Liste",
+      "viewSchedule": "Planning",
       "newClass": "+ Nouvelle classe",
       "searchPlaceholder": "Recherche par nom, discipline ou niveau…",
       "emptySearch": "Aucun cours ne correspond à votre recherche.",

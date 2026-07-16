@@ -95,11 +95,9 @@ function DayList({
 export function TodayTimeline({
   scheduleClasses,
   todayDow,
-  onFullTimetable,
 }: {
   scheduleClasses: ScheduleClass[];
   todayDow: number;
-  onFullTimetable: () => void;
 }) {
   const t = useTranslations("admin.dashboard.today");
   const tomorrowDow = (todayDow + 1) % 7;
@@ -118,13 +116,6 @@ export function TodayTimeline({
         <div className="mb-3 flex items-baseline gap-2">
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{t("title")}</h2>
           <span className="ml-auto text-xs text-muted">{t("hint", { count: today.length, students: todayStudents })}</span>
-          <button
-            type="button"
-            onClick={onFullTimetable}
-            className="rounded-lg border border-[--hair] px-2.5 py-1.5 text-xs font-semibold text-ink transition-colors hover:bg-base"
-          >
-            {t("fullTimetable")}
-          </button>
         </div>
         <div className="overflow-hidden rounded-[14px] border border-[--hair] bg-surface">
           <DayList classes={today} showStatus emptyLabel={t("empty")} />

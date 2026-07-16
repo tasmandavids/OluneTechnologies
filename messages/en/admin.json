@@ -251,6 +251,8 @@
     "classes": {
       "title": "Classes",
       "subtitle": "{count, plural, one {# class} other {# classes}} · click a class to view enrolled students",
+      "viewList": "List",
+      "viewSchedule": "Schedule",
       "newClass": "+ New class",
       "searchPlaceholder": "Search by name, discipline or level…",
       "emptySearch": "No classes match your search.",

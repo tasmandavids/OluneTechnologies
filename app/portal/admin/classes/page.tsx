@@ -5,7 +5,7 @@
 // ============================================================================
 
 import { requirePortalSession } from "@/lib/portal/session";
-import ClassesManager from "@/components/admin/classes/ClassesManager";
+import { ClassesPageView } from "@/components/admin/classes/ClassesPageView";
 import { getXeroSalesAccountOptions, getXeroItemOptions } from "@/app/portal/admin/accounting/actions";
 import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-accounts";
 
@@ -134,7 +134,8 @@ export default async function ClassesPage() {
   }));
 
   return (
-    <ClassesManager
+    <ClassesPageView
+      studioId={studioId}
       classes={classes}
       teachers={teachers}
       xeroAccounts={xeroAccounts}
