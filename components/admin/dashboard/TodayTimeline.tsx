@@ -4,7 +4,8 @@
 //  TodayTimeline — compact read-only rows for today's + tomorrow's classes,
 //  derived from the scheduleClasses prop already fetched for ScheduleBoard
 //  (no new query). Status (done/live/upcoming) is computed from wall-clock
-//  time vs. each class's start/duration — cosmetic, client-only.
+//  time vs. each class's start/duration — cosmetic, client-only. Row grid
+//  matches the Dashboard V2 mockup's .tl .row exactly (56px/1fr/150px/92px).
 // ============================================================================
 
 import { useMemo } from "react";
@@ -51,32 +52,30 @@ function DayList({
         return (
           <div
             key={cls.id}
-            className="grid grid-cols-[56px_1fr_auto] items-center gap-3 border-b border-[--hair] px-4 py-3 text-sm last:border-b-0"
+            className="grid grid-cols-[56px_1fr_150px_92px] items-center gap-2.5 border-b border-[--hair] px-4 py-3 text-[13.5px] last:border-b-0"
             style={{
               opacity: status === "done" ? 0.55 : 1,
-              background: status === "live" ? "color-mix(in srgb, var(--brand) 6%, transparent)" : "transparent",
+              background: status === "live" ? "color-mix(in srgb, var(--brand) 10%, transparent)" : "transparent",
             }}
           >
-            <span className="text-xs font-medium tabular-nums text-muted">
+            <span className="text-[12.5px] tabular-nums text-muted">
               {cls.startTime ? formatTime(cls.startTime) : "—"}
             </span>
-            <span className="min-w-0">
-              <span className="flex items-center gap-2 truncate font-semibold text-ink">
-                {cls.name}
-                {status === "live" && (
-                  <span
-                    className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white"
-                    style={{ background: "var(--brand)" }}
-                  >
-                    {t("status.live")}
-                  </span>
-                )}
-              </span>
-              <span className="block truncate text-xs text-muted">
-                {[cls.teacherName, cls.room].filter(Boolean).join(" · ")}
-              </span>
+            <span className="flex min-w-0 items-center gap-2 truncate font-semibold text-ink">
+              <span className="truncate">{cls.name}</span>
+              {status === "live" && (
+                <span
+                  className="shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wide text-white"
+                  style={{ background: "var(--brand)" }}
+                >
+                  {t("status.live")}
+                </span>
+              )}
             </span>
-            <span className="flex items-center gap-1.5 text-xs tabular-nums text-muted">
+            <span className="truncate text-[12.5px] text-muted">
+              {[cls.teacherName, cls.room].filter(Boolean).join(" · ")}
+            </span>
+            <span className="flex items-center justify-end gap-1.5 text-[12.5px] tabular-nums text-muted">
               {status === "done" ? (
                 <>
                   <IconCheckCircle className="h-3.5 w-3.5" style={{ color: "#16a34a" }} />
@@ -114,13 +113,11 @@ export function TodayTimeline({
   const tomorrowStudents = tomorrow.reduce((sum, c) => sum + c.enrolled, 0);
 
   return (
-    <div className="flex flex-col gap-5">
-      <section className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
-        <div className="flex items-center justify-between gap-3 border-b border-[--hair] px-4 py-3">
-          <div>
-            <h2 className="text-sm font-semibold text-ink">{t("title")}</h2>
-            <p className="text-xs text-muted">{t("hint", { count: today.length, students: todayStudents })}</p>
-          </div>
+    <div className="flex flex-col gap-[18px]">
+      <div>
+        <div className="mb-3 flex items-baseline gap-2">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{t("title")}</h2>
+          <span className="ml-auto text-xs text-muted">{t("hint", { count: today.length, students: todayStudents })}</span>
           <button
             type="button"
             onClick={onFullTimetable}
@@ -129,16 +126,22 @@ export function TodayTimeline({
             {t("fullTimetable")}
           </button>
         </div>
-        <DayList classes={today} showStatus emptyLabel={t("empty")} />
-      </section>
-
-      <section className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
-        <div className="border-b border-[--hair] px-4 py-3">
-          <h2 className="text-sm font-semibold text-ink">{t("tomorrowTitle")}</h2>
-          <p className="text-xs text-muted">{t("hint", { count: tomorrow.length, students: tomorrowStudents })}</p>
+        <div className="overflow-hidden rounded-[14px] border border-[--hair] bg-surface">
+          <DayList classes={today} showStatus emptyLabel={t("empty")} />
         </div>
-        <DayList classes={tomorrow} showStatus={false} emptyLabel={t("empty")} />
-      </section>
+      </div>
+
+      <div>
+        <div className="mb-3 flex items-baseline gap-2">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{t("tomorrowTitle")}</h2>
+          <span className="ml-auto text-xs text-muted">
+            {t("hint", { count: tomorrow.length, students: tomorrowStudents })}
+          </span>
+        </div>
+        <div className="overflow-hidden rounded-[14px] border border-[--hair] bg-surface">
+          <DayList classes={tomorrow} showStatus={false} emptyLabel={t("empty")} />
+        </div>
+      </div>
     </div>
   );
 }

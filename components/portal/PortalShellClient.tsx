@@ -42,12 +42,16 @@ function AdminTopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
   }, [newOpen]);
 
   return (
-    <div className="flex items-center gap-3 border-b border-[--hair] bg-surface px-5 py-2.5">
+    <div className="flex items-center gap-4 border-b border-[--hair] bg-surface px-7 pb-3.5 pt-[18px]">
       <OluneLogo size="xs" className="hidden sm:inline-flex" />
       <button
         type="button"
         onClick={onOpenPalette}
-        className="ml-auto flex max-w-sm flex-1 items-center gap-2.5 rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-muted transition-colors hover:border-[color-mix(in_srgb,var(--brand)_35%,var(--hair))]"
+        className="ml-auto flex max-w-[400px] flex-1 items-center gap-2.5 rounded-xl border border-[--hair] px-3 py-[9px] text-[13px] text-muted backdrop-blur-[10px] transition-colors hover:border-[color-mix(in_srgb,var(--brand)_35%,var(--hair))]"
+        style={{
+          background: "color-mix(in srgb, 72% var(--surface), transparent)",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25)",
+        }}
       >
         <IconSearch className="h-4 w-4 shrink-0" />
         <span className="flex-1 truncate text-left">{tShell("palette.placeholder")}</span>
@@ -57,9 +61,18 @@ function AdminTopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
         <button
           type="button"
           onClick={() => setNewOpen((o) => !o)}
-          className="flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
-          style={{ background: "var(--brand)" }}
+          className="group relative flex items-center gap-1.5 overflow-hidden rounded-xl px-4 py-[10px] text-[13.5px] font-semibold text-white transition-transform hover:-translate-y-px active:translate-y-0 active:scale-[.97]"
+          style={{
+            background: "linear-gradient(180deg, color-mix(in srgb, 24% #fff, var(--brand)), var(--brand))",
+            border: "1px solid color-mix(in srgb, 40% #fff, var(--brand))",
+            boxShadow:
+              "inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 1px rgba(0,0,0,0.08), 0 10px 22px -10px color-mix(in srgb, 55% var(--brand-deep), transparent)",
+          }}
         >
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -translate-x-[130%] bg-[linear-gradient(115deg,transparent_30%,rgba(255,255,255,0.55)_48%,transparent_66%)] transition-transform duration-700 ease-out group-hover:translate-x-[130%]"
+          />
           <IconPlus className="h-4 w-4" />
           {tShell("palette.new")}
         </button>

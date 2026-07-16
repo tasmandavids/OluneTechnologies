@@ -70,20 +70,20 @@ export function AdminDashboard({
       >
         <div>
           <p className="text-sm text-muted">{greeting},</p>
-          <h1 className="font-display text-[26px] font-medium leading-tight tracking-tight text-ink">
+          <h1 className="font-display text-2xl font-medium leading-tight tracking-tight text-ink">
             {studioName}
           </h1>
         </div>
-        <p className="text-sm text-muted">
+        <p className="text-xs text-muted">
           {new Date().toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
         </p>
       </motion.header>
 
       <motion.div
         variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
-        className="grid gap-5 lg:grid-cols-[300px_1fr_300px]"
+        className="grid gap-[18px] lg:grid-cols-[300px_1fr_300px]"
       >
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-[18px]">
           <AttentionQueue attention={attention} />
           <QuickActions />
           <StaffToday scheduleClasses={scheduleClasses} teachers={teachers} todayDow={todayDow} />

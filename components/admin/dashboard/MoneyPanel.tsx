@@ -2,10 +2,11 @@
 
 // ============================================================================
 //  MoneyPanel — right column of the redesigned Today screen. Big Fraunces
-//  revenue figure with a real month-over-month trend, two real stat tiles
-//  (active students, classes today — reusing already-fetched stats, not
-//  invented percentages), and a real recent-activity feed built from paid
-//  invoices + new leads. No fabricated data (no attendance %, no renewals).
+//  revenue figure with a real month-over-month trend, two stat rings (active
+//  students, classes today — real numbers; the arc fill itself is decorative
+//  chrome, same as the mockup's own hardcoded dasharray, not a claimed
+//  percentage), and a real recent-activity feed from paid invoices + new
+//  leads. No fabricated data (no attendance %, no renewals).
 // ============================================================================
 
 import { useMemo } from "react";
@@ -31,6 +32,30 @@ function timeAgo(
   const hours = Math.floor(mins / 60);
   if (hours < 24) return t("timeAgoHours", { count: hours });
   return t("timeAgoDays", { count: Math.floor(hours / 24) });
+}
+
+function Ring({ value, label, dashArray }: { value: number; label: string; dashArray: string }) {
+  return (
+    <div className="flex items-center gap-2.5 rounded-[14px] border border-[--hair] bg-surface p-3">
+      <svg viewBox="0 0 44 44" className="h-10 w-10 shrink-0 -rotate-90">
+        <circle cx="22" cy="22" r="18" fill="none" stroke="var(--hair)" strokeWidth="4" />
+        <circle
+          cx="22"
+          cy="22"
+          r="18"
+          fill="none"
+          stroke="var(--brand)"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeDasharray={dashArray}
+        />
+      </svg>
+      <div className="min-w-0">
+        <b className="block font-display text-[15px] font-medium text-ink tabular-nums">{value}</b>
+        <span className="block text-[11px] leading-[1.35] text-muted">{label}</span>
+      </div>
+    </div>
+  );
 }
 
 export function MoneyPanel({
@@ -60,13 +85,13 @@ export function MoneyPanel({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-2xl border border-[--hair] bg-surface p-5">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted">{t("collected")}</p>
-        <p className="mt-1 font-display text-[34px] font-medium leading-none tracking-tight text-ink tabular-nums">
+      <div className="rounded-[14px] border border-[--hair] bg-surface p-4">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{t("collected")}</p>
+        <p className="mt-1 font-display text-[32px] font-medium leading-none tracking-tight text-ink tabular-nums">
           {currency.format(revenueCents / 100)}
         </p>
         {lastMonthRevenueCents > 0 && (
-          <p className="mt-2 flex items-center gap-1.5 text-xs text-muted">
+          <p className="mt-0.5 flex items-center gap-[5px] text-xs text-muted">
             <IconTrendingUp
               className="h-3.5 w-3.5"
               style={{ color: trendPercent >= 0 ? "#16a34a" : "#dc2626", transform: trendPercent < 0 ? "scaleY(-1)" : undefined }}
@@ -80,19 +105,13 @@ export function MoneyPanel({
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl border border-[--hair] bg-surface p-4 text-center">
-          <p className="font-display text-2xl font-medium text-ink tabular-nums">{activeStudents}</p>
-          <p className="mt-0.5 text-[11px] text-muted">{t("activeStudents")}</p>
-        </div>
-        <div className="rounded-2xl border border-[--hair] bg-surface p-4 text-center">
-          <p className="font-display text-2xl font-medium text-ink tabular-nums">{classesToday}</p>
-          <p className="mt-0.5 text-[11px] text-muted">{t("classesToday")}</p>
-        </div>
+      <div className="grid grid-cols-2 gap-2">
+        <Ring value={activeStudents} label={t("activeStudents")} dashArray="88 113" />
+        <Ring value={classesToday} label={t("classesToday")} dashArray="64 113" />
       </div>
 
-      <div className="rounded-2xl border border-[--hair] bg-surface p-4">
-        <p className="mb-2.5 text-xs font-semibold uppercase tracking-widest text-muted">{t("activityTitle")}</p>
+      <div className="rounded-[14px] border border-[--hair] bg-surface p-4">
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{t("activityTitle")}</p>
         {activity.length === 0 ? (
           <p className="py-3 text-center text-xs text-muted">{t("activityEmpty")}</p>
         ) : (
@@ -100,7 +119,7 @@ export function MoneyPanel({
             {activity.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center gap-2.5 border-b border-[--hair] py-2.5 text-xs last:border-b-0"
+                className="flex items-center gap-[9px] border-b border-[--hair] py-[9px] text-[12.5px] last:border-b-0"
               >
                 {item.kind === "payment" ? (
                   <IconCreditCard className="h-3.5 w-3.5 shrink-0 text-muted" />
@@ -112,7 +131,7 @@ export function MoneyPanel({
                     ? t("activityPaid", { name: item.name, number: item.invoiceNumber ?? "" })
                     : t("activityLead", { name: item.name })}
                 </span>
-                <span className="shrink-0 text-muted">{timeAgo(item.createdAt, tShared)}</span>
+                <em className="shrink-0 text-[11px] not-italic text-muted">{timeAgo(item.createdAt, tShared)}</em>
               </div>
             ))}
           </div>

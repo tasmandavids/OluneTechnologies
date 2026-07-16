@@ -92,7 +92,7 @@ export function AttentionQueue({ attention }: { attention: AttentionData }) {
               </div>
               <Link
                 href={item.href}
-                className="shrink-0 rounded-lg border border-[--hair] px-2.5 py-1 text-xs font-semibold text-ink transition-colors hover:border-transparent hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]"
+                className="shrink-0 rounded-[9px] border border-[--hair] px-2.5 py-[5px] text-xs font-semibold text-ink transition-colors hover:border-transparent hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]"
               >
                 {item.action}
               </Link>

@@ -124,7 +124,7 @@ function RailButton({
             : "text-muted hover:-translate-y-px hover:bg-base hover:text-ink"
         }`}
       >
-        <Icon className="h-[19px] w-[19px]" strokeWidth={1.7} />
+        <Icon className="h-[17px] w-[17px]" strokeWidth={1.6} />
       </Link>
     );
   }
@@ -143,7 +143,7 @@ function RailButton({
             : "text-muted hover:-translate-y-px hover:bg-base hover:text-ink"
         }`}
       >
-        <Icon className="h-[19px] w-[19px]" strokeWidth={1.7} />
+        <Icon className="h-[17px] w-[17px]" strokeWidth={1.6} />
       </button>
       <AnimatePresence>
         {open && (
@@ -215,10 +215,10 @@ export function AdminRail({
   return (
     <aside
       ref={railRef}
-      className="hidden h-full w-16 shrink-0 flex-col items-center gap-1.5 border-r border-[--hair] bg-surface py-4 md:flex"
+      className="hidden h-full w-16 shrink-0 flex-col items-center gap-1.5 border-r border-[--hair] bg-surface py-[18px] md:flex"
     >
-      <Link href="/portal/admin" prefetch={false} className="mb-2 grid h-8 w-8 place-items-center" title={studioName}>
-        <span className="h-6 w-6 rounded-full" style={{ background: "var(--brand)" }} />
+      <Link href="/portal/admin" prefetch={false} className="mb-3.5 grid h-8 w-8 place-items-center" title={studioName}>
+        <span className="h-[26px] w-[26px] rounded-full" style={{ background: "var(--brand)" }} />
       </Link>
 
       {SPACES.filter((s) => s.id !== "settings").map((space) => (
@@ -246,7 +246,7 @@ export function AdminRail({
           onClick={() => setAccountOpen((o) => !o)}
           title={t("shell.rail.account" as Parameters<typeof t>[0])}
           aria-label={t("shell.rail.account" as Parameters<typeof t>[0])}
-          className="grid h-8 w-8 place-items-center rounded-full text-xs font-bold text-[--brand-deep] transition hover:opacity-80"
+          className="grid h-[34px] w-[34px] place-items-center rounded-full text-xs font-bold text-[--brand-deep] transition hover:opacity-80"
           style={{ background: "color-mix(in srgb, var(--brand) 14%, var(--surface))" }}
         >
           {studioName[0]?.toUpperCase() ?? "S"}
