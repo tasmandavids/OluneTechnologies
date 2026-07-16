@@ -11,7 +11,7 @@ import SiteManager, { type SitePageRow } from "@/components/admin/site/SiteManag
 import { WebsiteSetupWizard } from "@/components/admin/site/WebsiteSetupWizard";
 import { PublicSiteUrlBanner } from "@/components/admin/site/PublicSiteUrlBanner";
 
-/** Additive, low-risk entry point to the rebuilt visual builder (preview). */
+/** Additive, low-risk entry point to the rebuilt visual builder. */
 function StudioPreviewBanner() {
   return (
     <Link
@@ -20,8 +20,8 @@ function StudioPreviewBanner() {
     >
       <div>
         <span className="text-sm font-semibold text-violet-900">Try Studio — the rebuilt visual builder</span>
-        <span className="ml-2 rounded bg-violet-200 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">v2 · preview</span>
-        <p className="mt-0.5 text-xs text-violet-700/80">Hybrid layouts, responsive breakpoints, inline editing & design tokens. Isolated from your live site.</p>
+        <span className="ml-2 rounded bg-violet-200 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">v2</span>
+        <p className="mt-0.5 text-xs text-violet-700/80">Hybrid layouts, responsive breakpoints, inline editing & design tokens. Publish a page when you&apos;re ready to go live.</p>
       </div>
       <span className="shrink-0 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-medium text-white">Open Studio →</span>
     </Link>
