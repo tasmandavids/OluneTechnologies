@@ -52,7 +52,7 @@ function DayList({
         return (
           <div
             key={cls.id}
-            className="grid grid-cols-[56px_1fr_150px_92px] items-center gap-2.5 border-b border-[--hair] px-4 py-3 text-[13.5px] last:border-b-0"
+            className="grid grid-cols-[56px_minmax(84px,1fr)_minmax(0,150px)_92px] items-center gap-2.5 border-b border-[--hair] px-4 py-3 text-[13.5px] last:border-b-0"
             style={{
               opacity: status === "done" ? 0.55 : 1,
               background: status === "live" ? "color-mix(in srgb, var(--brand) 10%, transparent)" : "transparent",
@@ -61,8 +61,8 @@ function DayList({
             <span className="text-[12.5px] tabular-nums text-muted">
               {cls.startTime ? formatTime(cls.startTime) : "—"}
             </span>
-            <span className="flex min-w-0 items-center gap-2 truncate font-semibold text-ink">
-              <span className="truncate">{cls.name}</span>
+            <span className="flex min-w-0 items-center gap-2 font-semibold text-ink">
+              <span className="min-w-0 truncate">{cls.name}</span>
               {status === "live" && (
                 <span
                   className="shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.08em] text-white"

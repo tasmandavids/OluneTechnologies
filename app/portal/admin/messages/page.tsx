@@ -48,7 +48,7 @@ export default async function InboxPage({
   return (
     <div className="flex h-full min-h-0 flex-col">
       {canEmail && (
-        <div className="flex shrink-0 items-center gap-1 border-b border-[--hair] bg-surface px-4 py-2">
+        <div className="flex shrink-0 items-center gap-2 border-b border-[--hair] bg-surface px-5 py-3">
           {(
             [
               { id: "messages", href: "/portal/admin/messages", label: t("tabs.messages") },
@@ -63,8 +63,8 @@ export default async function InboxPage({
               key={id}
               href={href}
               scroll={false}
-              className={`rounded-lg px-4 py-1.5 text-xs font-semibold transition ${
-                tab === id ? "bg-ink text-paper" : "text-muted hover:bg-base hover:text-ink"
+              className={`rounded-full px-5 py-2 text-sm font-bold transition ${
+                tab === id ? "bg-brand text-white" : "text-muted hover:bg-base hover:text-ink"
               }`}
             >
               {label}

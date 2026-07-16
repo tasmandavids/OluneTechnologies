@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { IconSearch } from "@/components/admin/dashboard/icons";
 import { MessageThread, type ThreadMessage } from "@/components/admin/messages/MessageThread";
 import {
   MessageStreamProvider,
@@ -36,6 +37,11 @@ interface Message {
 type Selection =
   | { kind: "parentTopic"; topic: MessageTopic; peerId: string }
   | { kind: "direct"; peerId: string };
+
+const AVATAR_TINTS = ["var(--brand)", "var(--brand-hot)", "var(--brand-deep)"];
+function avatarTint(index: number) {
+  return AVATAR_TINTS[index % AVATAR_TINTS.length];
+}
 
 interface Props {
   currentUserId: string;
@@ -122,6 +128,8 @@ function MessagesPanelContent({
   const [selection, setSelection] = useState<Selection | null>(initial.selection);
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [lastMessages, setLastMessages] = useState<Record<string, Message>>({});
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
 
   const listKeyForMessage = useCallback((m: Message) => {
     const peerId = peerIdForMessage(m, currentUserId);
@@ -223,13 +231,22 @@ function MessagesPanelContent({
         lastMsg,
       }))
       .filter((row) => row.contact)
+      .filter(
+        (row) =>
+          !q ||
+          [row.contact.first_name, row.contact.last_name]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase()
+            .includes(q),
+      )
       .sort((a, b) => {
         const ua = unreadCounts[parentTopicKey(activeTopic, a.contact.id)] ?? 0;
         const ub = unreadCounts[parentTopicKey(activeTopic, b.contact.id)] ?? 0;
         if (ub !== ua) return ub - ua;
         return (b.lastMsg?.sent_at ?? "").localeCompare(a.lastMsg?.sent_at ?? "");
       });
-  }, [activeTopic, recentMessages, parentContacts, parentIds, currentUserId, unreadCounts]);
+  }, [activeTopic, recentMessages, parentContacts, parentIds, currentUserId, unreadCounts, q]);
 
   const handleThreadMessage = (msg: ThreadMessage) => {
     if (!selection) return;
@@ -261,14 +278,21 @@ function MessagesPanelContent({
     setUnreadCounts((prev) => ({ ...prev, [id]: 0 }));
   };
 
-  const sortedOtherContacts = [...otherContacts].sort((a, b) => {
-    const ua = unreadCounts[a.id] ?? 0;
-    const ub = unreadCounts[b.id] ?? 0;
-    if (ub !== ua) return ub - ua;
-    const ta = lastMessages[a.id]?.sent_at ?? "";
-    const tb = lastMessages[b.id]?.sent_at ?? "";
-    return tb.localeCompare(ta);
-  });
+  const sortedOtherContacts = otherContacts
+    .filter(
+      (c) =>
+        !q ||
+        [c.first_name, c.last_name].filter(Boolean).join(" ").toLowerCase().includes(q) ||
+        c.role.toLowerCase().includes(q),
+    )
+    .sort((a, b) => {
+      const ua = unreadCounts[a.id] ?? 0;
+      const ub = unreadCounts[b.id] ?? 0;
+      if (ub !== ua) return ub - ua;
+      const ta = lastMessages[a.id]?.sent_at ?? "";
+      const tb = lastMessages[b.id]?.sent_at ?? "";
+      return tb.localeCompare(ta);
+    });
 
   function formatDate(iso: string) {
     const d = new Date(iso);
@@ -318,8 +342,17 @@ function MessagesPanelContent({
     <div className="flex h-full overflow-hidden bg-base">
       <aside className="flex w-80 shrink-0 flex-col border-r border-[--hair] bg-surface">
         <div className="border-b border-[--hair] px-5 py-4">
-          <h1 className="text-lg font-black text-ink">{t("title")}</h1>
-          <p className="text-xs text-muted">{t("contacts", { count: contacts.length })}</p>
+          <h1 className="font-display text-xl font-bold text-ink">{t("title")}</h1>
+          <p className="mb-3 mt-0.5 text-xs text-muted">{t("contacts", { count: contacts.length })}</p>
+          <div className="flex items-center gap-2 rounded-xl border border-[--hair] bg-base px-3 py-2.5">
+            <IconSearch className="h-4 w-4 shrink-0 text-muted" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("searchPlaceholder")}
+              className="w-full border-none bg-transparent text-sm text-ink outline-none placeholder:text-muted"
+            />
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto">
@@ -341,8 +374,11 @@ function MessagesPanelContent({
                     }`}
                   >
                     <span
-                      className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-xs font-bold text-white"
-                      style={{ background: "var(--brand)" }}
+                      className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-base"
+                      style={{
+                        background: "color-mix(in srgb, var(--brand) 12%, var(--surface))",
+                        color: "var(--brand-deep)",
+                      }}
                     >
                       {topic === "billing" ? "💳" : topic === "absence" ? "📅" : "💬"}
                     </span>
@@ -380,7 +416,7 @@ function MessagesPanelContent({
                   </button>
 
                   {activeTopic === topic &&
-                    parentsInTopic.map(({ contact, lastMsg }) => {
+                    parentsInTopic.map(({ contact, lastMsg }, contactIdx) => {
                       const isSelected =
                         selection?.kind === "parentTopic" &&
                         selection.topic === topic &&
@@ -399,8 +435,8 @@ function MessagesPanelContent({
                           }`}
                         >
                           <span
-                            className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[0.65rem] font-bold text-white"
-                            style={{ background: "var(--brand-deep, var(--brand))" }}
+                            className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-xs font-bold text-white"
+                            style={{ background: avatarTint(contactIdx) }}
                           >
                             {initials(contact)}
                           </span>
@@ -449,7 +485,7 @@ function MessagesPanelContent({
               <p className="px-4 py-2 text-[0.65rem] font-bold uppercase tracking-wider text-muted">
                 {t("otherContacts")}
               </p>
-              {sortedOtherContacts.map((c) => {
+              {sortedOtherContacts.map((c, contactIdx) => {
                 const unread = unreadCounts[c.id] ?? 0;
                 const last = lastMessages[c.id];
                 const isSelected = selection?.kind === "direct" && selection.peerId === c.id;
@@ -466,7 +502,7 @@ function MessagesPanelContent({
                   >
                     <span
                       className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-xs font-bold text-white"
-                      style={{ background: "var(--brand)" }}
+                      style={{ background: avatarTint(contactIdx) }}
                     >
                       {initials(c)}
                     </span>

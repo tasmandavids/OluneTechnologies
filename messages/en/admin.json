@@ -1077,6 +1077,7 @@
     "messages": {
       "title": "Messages",
       "contacts": "{count} contacts",
+      "searchPlaceholder": "Search conversations…",
       "youPrefix": "You: ",
       "selectContact": "Select a contact",
       "selectDescription": "Choose a parent enquiry channel, then pick who sent the message.",

@@ -1034,6 +1034,7 @@
     "messages": {
       "title": "Сообщения",
       "contacts": "{count}контакты",
+      "searchPlaceholder": "Поиск разговоров…",
       "youPrefix": "Ты:",
       "selectContact": "Выберите контакт",
       "selectDescription": "Выберите кого-нибудь из списка, чтобы начать разговор.",

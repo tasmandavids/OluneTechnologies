@@ -1034,6 +1034,7 @@
     "messages": {
       "title": "Messagerie",
       "contacts": "{count} contacts messagerie",
+      "searchPlaceholder": "Rechercher des conversations…",
       "youPrefix": "Toi:",
       "selectContact": "Sélectionnez un contact",
       "selectDescription": "Choisissez quelqu'un dans la liste pour démarrer une conversation.",

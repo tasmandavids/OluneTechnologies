@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState, useTransition } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
+import { IconSearch } from "@/components/admin/dashboard/icons";
 import type { EmailAccountRow, EmailMessageRow, EmailThreadRow } from "@/lib/email/types";
 import { PROVIDER_META } from "@/lib/email/types";
 import {
@@ -47,6 +48,21 @@ function formatWhen(iso: string | null, locale: string) {
 
 function providerLabel(provider: Account["provider"]) {
   return PROVIDER_META[provider].label;
+}
+
+const AVATAR_TINTS = ["var(--brand)", "var(--brand-hot)", "var(--brand-deep)"];
+function avatarTint(index: number) {
+  return AVATAR_TINTS[index % AVATAR_TINTS.length];
+}
+
+function initialsFromLabel(label: string) {
+  const parts = label.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  return parts
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join("")
+    .toUpperCase();
 }
 
 function formatFullWhen(iso: string | null, locale: string) {
@@ -436,58 +452,64 @@ export function EmailInbox({
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[--hair] px-5 py-3">
-        <div>
-          <h1 className="text-lg font-black text-ink">{t("title")}</h1>
-          <p className="text-xs text-muted">{t("realMail")}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <select
-            value={selectedAccountId}
-            onChange={(e) => setSelectedAccountId(e.target.value)}
-            className="rounded-lg border border-[--hair] bg-surface px-3 py-2 text-sm"
-          >
-            <option value="all">{t("allInboxes")}</option>
-            {accounts.map((a) => (
-              <option key={a.id} value={a.id}>
-                {t("accountOption", { email: a.email_address, provider: providerLabel(a.provider) })}
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            onClick={refresh}
-            disabled={pending}
-            className="rounded-lg border border-[--hair] px-3 py-2 text-sm font-medium text-ink hover:bg-base"
-          >
-            {pending ? tShared("syncing") : t("syncNow")}
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowConnect(true)}
-            className="rounded-lg border border-[--hair] px-3 py-2 text-sm text-muted hover:text-ink"
-          >
-            {t("connectMore")}
-          </button>
-        </div>
-      </div>
-
       <div className="flex min-h-0 flex-1 overflow-hidden">
-        <aside className="flex w-[17.5rem] shrink-0 flex-col border-r border-[--hair] bg-surface/60 lg:w-80">
-          <div className="border-b border-[--hair] p-4">
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t("searchPlaceholder")}
-              className="w-full rounded-xl border border-[--hair] bg-base px-4 py-2.5 text-sm"
-            />
+        <aside className="flex w-[17.5rem] shrink-0 flex-col border-r border-[--hair] bg-surface lg:w-80">
+          <div className="border-b border-[--hair] px-5 py-4">
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <h1 className="font-display text-xl font-bold text-ink">{t("title")}</h1>
+                <p className="mt-0.5 text-xs text-muted">{t("realMail")}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowConnect(true)}
+                title={t("connectMore")}
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-white transition hover:opacity-90"
+                style={{ background: "var(--brand)" }}
+              >
+                +
+              </button>
+            </div>
+
+            <div className="mt-3 flex items-center gap-2">
+              <select
+                value={selectedAccountId}
+                onChange={(e) => setSelectedAccountId(e.target.value)}
+                className="min-w-0 flex-1 rounded-lg border border-[--hair] bg-base px-2.5 py-1.5 text-xs text-ink"
+              >
+                <option value="all">{t("allInboxes")}</option>
+                {accounts.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {t("accountOption", { email: a.email_address, provider: providerLabel(a.provider) })}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={refresh}
+                disabled={pending}
+                className="shrink-0 rounded-lg border border-[--hair] px-2.5 py-1.5 text-xs font-medium text-ink hover:bg-base"
+              >
+                {pending ? tShared("syncing") : t("syncNow")}
+              </button>
+            </div>
+
+            <div className="mt-3 flex items-center gap-2 rounded-xl border border-[--hair] bg-base px-3 py-2.5">
+              <IconSearch className="h-4 w-4 shrink-0 text-muted" />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t("searchPlaceholder")}
+                className="w-full border-none bg-transparent text-sm text-ink outline-none placeholder:text-muted"
+              />
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto">
             {filteredThreads.length === 0 ? (
               <p className="p-5 text-sm leading-relaxed text-muted">{t("noConversations")}</p>
             ) : (
-              filteredThreads.map((thread) => {
+              filteredThreads.map((thread, idx) => {
                 const primary = threadPrimaryLabel(thread, accountEmails, contacts, tShared("unknownSender"));
                 const external = thread.participant_addresses?.find((p) => !accountEmails.has(p.toLowerCase()));
                 const contact = resolveContact(external, contacts);
@@ -497,29 +519,48 @@ export function EmailInbox({
                     key={thread.id}
                     type="button"
                     onClick={() => selectThread(thread.id)}
-                    className={`w-full border-b border-[--hair]/60 px-4 py-4 text-left transition ${
+                    className={`flex w-full items-start gap-3 border-b border-[--hair]/60 px-4 py-3.5 text-left transition ${
                       selectedThreadId === thread.id ? "bg-brand/10" : "hover:bg-base"
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <p className={`truncate text-sm ${thread.is_read ? "font-medium text-ink" : "font-bold text-ink"}`}>
-                        {primary}
-                      </p>
-                      <span className="shrink-0 text-xs text-muted">{formatWhen(thread.last_message_at, locale)}</span>
-                    </div>
-                    <p className="mt-1 truncate text-sm font-medium text-ink/80">
-                      {thread.subject ?? tShared("noSubject")}
-                    </p>
-                    {contact && (
-                      <div className="mt-2">
-                        <ContactBadge contact={contact} />
+                    <span
+                      className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-xs font-bold text-white"
+                      style={{ background: avatarTint(idx) }}
+                    >
+                      {initialsFromLabel(contact?.label ?? primary)}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className={`truncate text-sm ${thread.is_read ? "font-medium text-ink" : "font-bold text-ink"}`}>
+                          {primary}
+                        </p>
+                        <span className="shrink-0 text-xs text-muted">{formatWhen(thread.last_message_at, locale)}</span>
                       </div>
-                    )}
-                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">
-                      {thread.snippet ?? thread.participant_addresses.join(", ")}
-                    </p>
-                    {thread.summary && (
-                      <p className="mt-2 line-clamp-2 text-xs text-brand">{thread.summary.split("\n")[0]}</p>
+                      <p
+                        className={`mt-0.5 truncate text-sm ${
+                          thread.is_read ? "text-muted" : "font-semibold text-ink"
+                        }`}
+                      >
+                        {thread.subject ?? tShared("noSubject")}
+                      </p>
+                      <p className="mt-1 line-clamp-1 text-xs text-muted">
+                        {thread.snippet ?? thread.participant_addresses.join(", ")}
+                      </p>
+                      {(contact || thread.summary) && (
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          {contact && <ContactBadge contact={contact} />}
+                          {thread.summary && (
+                            <span className="line-clamp-1 text-xs text-brand">{thread.summary.split("\n")[0]}</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {!thread.is_read && (
+                      <span
+                        className="mt-2 h-2 w-2 shrink-0 rounded-full"
+                        style={{ background: "var(--brand)" }}
+                        aria-hidden
+                      />
                     )}
                   </button>
                 );
@@ -558,8 +599,8 @@ export function EmailInbox({
             <>
               <div className="shrink-0 border-b border-[--hair] bg-surface px-6 py-5 lg:px-8">
                 <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div className="min-w-0 flex-1 space-y-3">
-                    <h2 className="text-2xl font-black tracking-tight text-ink">
+                  <div className="min-w-0 flex-1 space-y-2.5">
+                    <h2 className="font-display text-2xl font-bold text-ink">
                       {activeThread?.subject ?? tShared("conversation")}
                     </h2>
                     <div className="flex flex-wrap gap-2">
@@ -583,21 +624,21 @@ export function EmailInbox({
                     type="button"
                     onClick={summarize}
                     disabled={pending}
-                    className="rounded-xl border border-[--hair] bg-surface px-4 py-2 text-sm font-semibold text-ink transition hover:bg-base"
+                    className="shrink-0 rounded-full border border-[--hair] px-3.5 py-1.5 text-xs font-semibold text-muted transition hover:bg-base hover:text-ink"
                   >
                     {pending ? tShared("summarizing") : t("summarize")}
                   </button>
                 </div>
                 {activeThread?.summary && (
-                  <div className="mt-5 rounded-2xl border border-brand/20 bg-brand/5 px-5 py-4">
+                  <div className="mt-4 rounded-2xl border border-brand/20 bg-brand/5 px-5 py-4">
                     <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand">{tShared("summary")}</p>
                     <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink">{activeThread.summary}</p>
                   </div>
                 )}
               </div>
 
-              <div className="flex-1 overflow-y-auto px-4 py-6 lg:px-8">
-                <div className="mx-auto flex max-w-4xl flex-col gap-8">
+              <div className="flex-1 overflow-y-auto px-4 py-8 lg:px-10">
+                <div className="mx-auto flex max-w-3xl flex-col gap-8">
                   {messages.map((msg) => {
                     const contact = resolveContact(msg.from_address, contacts);
                     return (
@@ -643,42 +684,33 @@ export function EmailInbox({
                 </div>
               </div>
 
-              <div className="shrink-0 border-t border-[--hair] bg-surface px-4 py-5 lg:px-8">
-                <div className="mx-auto max-w-4xl space-y-3">
-                  {(() => {
-                    const replyTo = (activeThread?.participant_addresses ?? []).find(
-                      (p) => !accountEmails.has(p.toLowerCase()),
-                    );
-                    const replyContact = resolveContact(replyTo, contacts);
-                    return (
-                      <p className="text-sm text-muted">
-                        {t("replyFrom")}
-                        {replyContact ? (
-                          <> {t("replyTo", { name: replyContact.label })}</>
-                        ) : replyTo ? (
-                          <> {t("replyTo", { name: replyTo })}</>
-                        ) : null}
-                      </p>
-                    );
-                  })()}
+              <div className="shrink-0 border-t border-[--hair] bg-surface px-4 py-4 lg:px-8">
+                <div className="mx-auto flex max-w-3xl items-end gap-3">
                   <textarea
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
                     placeholder={t("replyPlaceholder")}
-                    rows={6}
-                    className="min-h-[10rem] w-full resize-y rounded-2xl border border-[--hair] bg-base px-5 py-4 text-base leading-relaxed text-ink outline-none ring-brand/30 transition focus:ring-2"
+                    rows={1}
+                    className="flex-1 resize-none rounded-2xl border border-[--hair] bg-base px-4 py-3 text-sm text-ink outline-none ring-brand/30 transition focus:ring-2"
+                    style={{ maxHeight: "140px", overflowY: "auto" }}
                   />
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={sendReply}
-                      disabled={sending || !draft.trim()}
-                      className="rounded-xl px-6 py-2.5 text-sm font-bold text-white disabled:opacity-50"
-                      style={{ background: "var(--brand)" }}
-                    >
-                      {sending ? tShared("sending") : t("sendReply")}
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={sendReply}
+                    disabled={sending || !draft.trim()}
+                    aria-label={t("sendReply")}
+                    className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+                    style={{ background: "var(--brand)" }}
+                  >
+                    {sending ? (
+                      "…"
+                    ) : (
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13" />
+                        <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                      </svg>
+                    )}
+                  </button>
                 </div>
               </div>
             </>

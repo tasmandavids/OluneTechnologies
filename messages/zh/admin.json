@@ -1077,6 +1077,7 @@
     "messages": {
       "title": "消息",
       "contacts": "{count} 个联系人",
+      "searchPlaceholder": "搜索会话…",
       "youPrefix": "您：",
       "selectContact": "选择一个联系人",
       "selectDescription": "选择一个家长咨询渠道，然后选择发送消息的人。",
