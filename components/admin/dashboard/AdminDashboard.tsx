@@ -62,7 +62,7 @@ export function AdminDashboard({
       initial="hidden"
       animate="show"
       variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
-      className="mx-auto max-w-6xl space-y-6 p-6"
+      className="mx-auto max-w-6xl space-y-6 px-7 py-6"
     >
       <motion.header
         variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
@@ -70,18 +70,18 @@ export function AdminDashboard({
       >
         <div>
           <p className="text-sm text-muted">{greeting},</p>
-          <h1 className="font-display text-2xl font-medium leading-tight tracking-tight text-ink">
+          <h1 className="font-display text-[26px] font-medium leading-tight tracking-tight text-ink">
             {studioName}
           </h1>
         </div>
-        <p className="text-xs text-muted">
+        <p className="text-[12.5px] text-muted">
           {new Date().toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
         </p>
       </motion.header>
 
       <motion.div
         variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
-        className="grid gap-[18px] lg:grid-cols-[300px_1fr_300px]"
+        className="grid gap-5 lg:grid-cols-[320px_1fr_320px]"
       >
         <div className="flex flex-col gap-[18px]">
           <AttentionQueue attention={attention} />

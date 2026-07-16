@@ -42,12 +42,12 @@ function AdminTopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
   }, [newOpen]);
 
   return (
-    <div className="flex items-center gap-4 border-b border-[--hair] bg-surface px-7 pb-3.5 pt-[18px]">
+    <div className="flex items-center gap-5 border-b border-[--hair] bg-surface px-7 pb-3.5 pt-5">
       <OluneLogo size="xs" className="hidden sm:inline-flex" />
       <button
         type="button"
         onClick={onOpenPalette}
-        className="ml-auto flex max-w-[400px] flex-1 items-center gap-2.5 rounded-xl border border-[--hair] px-3 py-[9px] text-[13px] text-muted backdrop-blur-[10px] transition-colors hover:border-[color-mix(in_srgb,var(--brand)_35%,var(--hair))]"
+        className="ml-auto flex max-w-[460px] flex-1 items-center gap-2.5 rounded-xl border border-[--hair] px-3 py-[9px] text-[13px] text-muted backdrop-blur-[10px] transition-colors hover:border-[color-mix(in_srgb,var(--brand)_35%,var(--hair))]"
         style={{
           background: "color-mix(in srgb, 72% var(--surface), transparent)",
           boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25)",

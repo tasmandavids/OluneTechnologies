@@ -70,7 +70,7 @@ export function StaffToday({
 
   return (
     <div>
-      <h2 className="mb-2.5 text-xs font-semibold uppercase tracking-widest text-muted">{t("title")}</h2>
+      <h2 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{t("title")}</h2>
       {rows.length === 0 ? (
         <p className="rounded-xl border border-dashed border-[--hair] bg-surface px-3.5 py-3 text-xs text-muted">
           {t("empty")}

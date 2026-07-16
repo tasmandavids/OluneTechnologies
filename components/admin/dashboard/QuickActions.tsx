@@ -21,7 +21,7 @@ export function QuickActions() {
 
   return (
     <div>
-      <h2 className="mb-2.5 text-xs font-semibold uppercase tracking-widest text-muted">{t("title")}</h2>
+      <h2 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{t("title")}</h2>
       <div className="grid grid-cols-2 gap-2">
         {ACTIONS.map(({ key, href, icon: Icon }) => (
           <Link

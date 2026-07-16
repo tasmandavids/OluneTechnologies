@@ -37,7 +37,7 @@ function timeAgo(
 function Ring({ value, label, dashArray }: { value: number; label: string; dashArray: string }) {
   return (
     <div className="flex items-center gap-2.5 rounded-[14px] border border-[--hair] bg-surface p-3">
-      <svg viewBox="0 0 44 44" className="h-10 w-10 shrink-0 -rotate-90">
+      <svg viewBox="0 0 44 44" className="h-11 w-11 shrink-0 -rotate-90">
         <circle cx="22" cy="22" r="18" fill="none" stroke="var(--hair)" strokeWidth="4" />
         <circle
           cx="22"
@@ -51,7 +51,7 @@ function Ring({ value, label, dashArray }: { value: number; label: string; dashA
         />
       </svg>
       <div className="min-w-0">
-        <b className="block font-display text-[15px] font-medium text-ink tabular-nums">{value}</b>
+        <b className="block font-display text-[16px] font-medium text-ink tabular-nums">{value}</b>
         <span className="block text-[11px] leading-[1.35] text-muted">{label}</span>
       </div>
     </div>
@@ -87,7 +87,7 @@ export function MoneyPanel({
     <div className="flex flex-col gap-4">
       <div className="rounded-[14px] border border-[--hair] bg-surface p-4">
         <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{t("collected")}</p>
-        <p className="mt-1 font-display text-[32px] font-medium leading-none tracking-tight text-ink tabular-nums">
+        <p className="mt-1 font-display text-[34px] font-medium leading-none tracking-tight text-ink tabular-nums">
           {currency.format(revenueCents / 100)}
         </p>
         {lastMonthRevenueCents > 0 && (

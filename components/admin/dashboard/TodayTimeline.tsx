@@ -65,7 +65,7 @@ function DayList({
               <span className="truncate">{cls.name}</span>
               {status === "live" && (
                 <span
-                  className="shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wide text-white"
+                  className="shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.08em] text-white"
                   style={{ background: "var(--brand)" }}
                 >
                   {t("status.live")}
