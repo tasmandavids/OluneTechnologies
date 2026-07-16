@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { signOut } from "@/app/portal/actions";
 import type { Role } from "@/lib/types";
@@ -27,9 +27,11 @@ const NEW_MENU_ITEMS = [
   { key: "addLead", href: "/portal/admin/leads", icon: IconUserPlus },
 ] as const;
 
-function AdminTopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
+function AdminTopBar({ studioName, onOpenPalette }: { studioName: string; onOpenPalette: () => void }) {
   const t = useTranslations();
   const tShell = useTranslations("shell");
+  const tGreeting = useTranslations("common.greeting");
+  const locale = useLocale();
   const [newOpen, setNewOpen] = useState(false);
   const newRef = useRef<HTMLDivElement>(null);
 
@@ -41,9 +43,21 @@ function AdminTopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
     return () => document.removeEventListener("mousedown", handler);
   }, [newOpen]);
 
+  const greeting = (() => {
+    const h = new Date().getHours();
+    return h < 12 ? tGreeting("morning") : h < 18 ? tGreeting("afternoon") : tGreeting("evening");
+  })();
+
   return (
     <div className="flex items-center gap-5 border-b border-[--hair] bg-surface px-7 pb-3.5 pt-5">
-      <OluneLogo size="xs" className="hidden sm:inline-flex" />
+      <div className="shrink-0">
+        <p className="font-display text-[26px] font-medium leading-tight tracking-tight text-ink">
+          {greeting}, {studioName}
+        </p>
+        <p className="mt-0.5 text-[12.5px] text-muted">
+          {new Date().toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
+        </p>
+      </div>
       <button
         type="button"
         onClick={onOpenPalette}
@@ -525,7 +539,7 @@ export function PortalShellClient({
       <div className="flex flex-1 flex-col overflow-hidden">
         {isAdminRail ? (
           <div className="hidden md:block">
-            <AdminTopBar onOpenPalette={() => setPaletteOpen(true)} />
+            <AdminTopBar studioName={studioName} onOpenPalette={() => setPaletteOpen(true)} />
           </div>
         ) : (
           showBell && (

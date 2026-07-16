@@ -9,7 +9,6 @@
 // ============================================================================
 
 import { motion } from "framer-motion";
-import { useTranslations, useLocale } from "next-intl";
 import { ScheduleBoard } from "./ScheduleBoard";
 import { AttentionQueue } from "./AttentionQueue";
 import { QuickActions } from "./QuickActions";
@@ -23,7 +22,6 @@ const SCHEDULE_BOARD_ID = "full-schedule-board";
 
 export function AdminDashboard({
   studioId,
-  studioName,
   stats: statsData,
   scheduleClasses,
   teachers,
@@ -33,7 +31,6 @@ export function AdminDashboard({
   activity,
 }: {
   studioId: string;
-  studioName: string;
   stats: StatData[];
   scheduleClasses: ScheduleClass[];
   teachers: TeacherOption[];
@@ -42,13 +39,6 @@ export function AdminDashboard({
   lastMonthRevenueCents: number;
   activity: ActivityItem[];
 }) {
-  const tGreeting = useTranslations("common.greeting");
-  const locale = useLocale();
-  const greeting = (() => {
-    const h = new Date().getHours();
-    return h < 12 ? tGreeting("morning") : h < 18 ? tGreeting("afternoon") : tGreeting("evening");
-  })();
-
   const activeStudents = statsData.find((s) => s.id === "students")?.value ?? 0;
   const revenueCents = Math.round((statsData.find((s) => s.id === "revenue")?.value ?? 0) * 100);
   const classesTodayCount = statsData.find((s) => s.id === "today")?.value ?? 0;
@@ -64,21 +54,6 @@ export function AdminDashboard({
       variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
       className="mx-auto max-w-6xl space-y-6 px-7 py-6"
     >
-      <motion.header
-        variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
-        className="flex flex-wrap items-end justify-between gap-3"
-      >
-        <div>
-          <p className="text-sm text-muted">{greeting},</p>
-          <h1 className="font-display text-[26px] font-medium leading-tight tracking-tight text-ink">
-            {studioName}
-          </h1>
-        </div>
-        <p className="text-[12.5px] text-muted">
-          {new Date().toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
-        </p>
-      </motion.header>
-
       <motion.div
         variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
         className="grid gap-5 lg:grid-cols-[320px_1fr_320px]"

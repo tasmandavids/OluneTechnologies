@@ -25,7 +25,6 @@ export default async function AdminDashboardPage() {
   const todayDow = new Date().getDay();
 
   const [
-    studioRes,
     studentsRes,
     paidRes,
     todayRes,
@@ -36,8 +35,6 @@ export default async function AdminDashboardPage() {
     lastMonthPaidRes,
     recentPaidRes,
   ] = await Promise.all([
-      supabase.from("studios").select("name").eq("id", studioId).single(),
-
       supabase
         .from("profiles")
         .select("id", { count: "exact", head: true })
@@ -244,7 +241,6 @@ export default async function AdminDashboardPage() {
   return (
     <AdminDashboard
       studioId={studioId}
-      studioName={studioRes.data?.name ?? tCommon("yourStudio")}
       stats={stats}
       scheduleClasses={scheduleClasses}
       teachers={teachers}
