@@ -200,6 +200,30 @@
         "live": "In corso",
         "nextAt": "prossimo alle {time}"
       },
+      "today": {
+        "title": "Oggi",
+        "tomorrowTitle": "Domani",
+        "hint": "{count, plural, one {# lezione} other {# lezioni}} · {students, plural, one {# studente atteso} other {# studenti attesi}}",
+        "fullTimetable": "Orario completo",
+        "empty": "Nessuna lezione in programma.",
+        "enrolled": "{count, plural, one {# iscritto} other {# iscritti}}",
+        "status": {
+          "live": "In corso"
+        }
+      },
+      "money": {
+        "title": "Questo mese",
+        "collected": "Incassato",
+        "trendUp": "+{percent}% rispetto al mese scorso",
+        "trendDown": "{percent}% rispetto al mese scorso",
+        "trendFlat": "Come il mese scorso",
+        "activeStudents": "studenti attivi",
+        "classesToday": "lezioni oggi",
+        "activityTitle": "Attività recente",
+        "activityEmpty": "Nessuna attività recente.",
+        "activityPaid": "{name} ha pagato la fattura n.{number}",
+        "activityLead": "Nuova richiesta da {name}"
+      },
       "capacity": {
         "title": "Capacità della classe",
         "subtitle": "Questa settimana, secondo la fascia oraria dello studio.",

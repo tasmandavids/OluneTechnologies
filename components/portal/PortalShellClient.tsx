@@ -16,6 +16,82 @@ import { ThemeSwitcher } from "@/components/portal/ThemeSwitcher";
 import { PortalThemeSync } from "@/components/portal/PortalThemeSync";
 import type { ThemeBase } from "@/lib/types";
 import { NotificationBell } from "@/components/admin/notifications/NotificationBell";
+import { AdminRail } from "@/components/portal/admin/AdminRail";
+import { CommandPalette } from "@/components/portal/admin/CommandPalette";
+import { IconSearch, IconPlus, IconCalendarPlus, IconReceipt, IconMegaphone, IconUserPlus } from "@/components/admin/dashboard/icons";
+
+const NEW_MENU_ITEMS = [
+  { key: "addClass", href: "/portal/admin/classes", icon: IconCalendarPlus },
+  { key: "newInvoice", href: "/portal/admin/billing", icon: IconReceipt },
+  { key: "message", href: "/portal/admin/messages", icon: IconMegaphone },
+  { key: "addLead", href: "/portal/admin/leads", icon: IconUserPlus },
+] as const;
+
+function AdminTopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
+  const t = useTranslations();
+  const tShell = useTranslations("shell");
+  const [newOpen, setNewOpen] = useState(false);
+  const newRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (newOpen && newRef.current && !newRef.current.contains(e.target as Node)) setNewOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [newOpen]);
+
+  return (
+    <div className="flex items-center gap-3 border-b border-[--hair] bg-surface px-5 py-2.5">
+      <OluneLogo size="xs" className="hidden sm:inline-flex" />
+      <button
+        type="button"
+        onClick={onOpenPalette}
+        className="ml-auto flex max-w-sm flex-1 items-center gap-2.5 rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-muted transition-colors hover:border-[color-mix(in_srgb,var(--brand)_35%,var(--hair))]"
+      >
+        <IconSearch className="h-4 w-4 shrink-0" />
+        <span className="flex-1 truncate text-left">{tShell("palette.placeholder")}</span>
+        <kbd className="rounded-md border border-[--hair] px-1.5 py-0.5 text-[11px]">⌘K</kbd>
+      </button>
+      <div className="relative" ref={newRef}>
+        <button
+          type="button"
+          onClick={() => setNewOpen((o) => !o)}
+          className="flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
+          style={{ background: "var(--brand)" }}
+        >
+          <IconPlus className="h-4 w-4" />
+          {tShell("palette.new")}
+        </button>
+        <AnimatePresence>
+          {newOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 6, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 6, scale: 0.98 }}
+              transition={{ duration: 0.15 }}
+              className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-[--hair] bg-surface p-1.5 shadow-2xl"
+            >
+              {NEW_MENU_ITEMS.map(({ key, href, icon: Icon }) => (
+                <Link
+                  key={key}
+                  href={href}
+                  prefetch={false}
+                  onClick={() => setNewOpen(false)}
+                  className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-ink transition-colors hover:bg-base"
+                >
+                  <Icon className="h-4 w-4" style={{ color: "var(--brand-deep)" }} />
+                  {t(`admin.dashboard.quickActions.${key}` as Parameters<typeof t>[0])}
+                </Link>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      <NotificationBell />
+    </div>
+  );
+}
 
 function StudioAvatar({
   studioName,
@@ -281,8 +357,22 @@ export function PortalShellClient({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [hoverPeek, setHoverPeek] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const peekTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const showBell = role === "admin" || role === "office" || role === "parent" || (role === "student" && selfManagedStudent);
+  const isAdminRail = role === "admin";
+
+  useEffect(() => {
+    if (!isAdminRail) return;
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((o) => !o);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [isAdminRail]);
 
   useEffect(() => {
     try {
@@ -336,6 +426,9 @@ export function PortalShellClient({
   return (
     <div className="flex h-screen overflow-hidden bg-base">
       <PortalThemeSync theme={portalTheme} />
+      {isAdminRail ? (
+        <AdminRail studioName={studioName} userName={userName} portalTheme={portalTheme} />
+      ) : (
       <div
         className="relative hidden shrink-0 md:block"
         style={{ width: collapsed && !hoverPeek ? 12 : 224 }}
@@ -380,6 +473,7 @@ export function PortalShellClient({
           />
         </aside>
       </div>
+      )}
 
       <div className="fixed inset-x-0 top-0 z-50 md:hidden">
         <div className="flex items-center justify-between border-b border-[--hair] bg-surface/95 px-4 py-3 backdrop-blur">
@@ -416,14 +510,21 @@ export function PortalShellClient({
       </div>
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        {showBell && (
-          <div className="flex items-center justify-between border-b border-[--hair] bg-surface px-5 py-2">
-            <OluneLogo size="xs" className="hidden sm:inline-flex" />
-            <NotificationBell />
+        {isAdminRail ? (
+          <div className="hidden md:block">
+            <AdminTopBar onOpenPalette={() => setPaletteOpen(true)} />
           </div>
+        ) : (
+          showBell && (
+            <div className="flex items-center justify-between border-b border-[--hair] bg-surface px-5 py-2">
+              <OluneLogo size="xs" className="hidden sm:inline-flex" />
+              <NotificationBell />
+            </div>
+          )
         )}
-        <main className={`flex-1 overflow-auto ${showBell ? "" : "md:pt-0 pt-[53px]"}`}>{children}</main>
+        <main className={`flex-1 overflow-auto ${showBell && !isAdminRail ? "" : "md:pt-0 pt-[53px]"}`}>{children}</main>
       </div>
+      {isAdminRail && <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />}
     </div>
   );
 }

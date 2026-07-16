@@ -201,6 +201,30 @@
         "live": "In session",
         "nextAt": "next at {time}"
       },
+      "today": {
+        "title": "Today",
+        "tomorrowTitle": "Tomorrow",
+        "hint": "{count, plural, one {# class} other {# classes}} · {students, plural, one {# student} other {# students}} expected",
+        "fullTimetable": "Full timetable",
+        "empty": "No classes scheduled.",
+        "enrolled": "{count, plural, one {# enrolled} other {# enrolled}}",
+        "status": {
+          "live": "In session"
+        }
+      },
+      "money": {
+        "title": "This month",
+        "collected": "Collected",
+        "trendUp": "+{percent}% vs last month",
+        "trendDown": "{percent}% vs last month",
+        "trendFlat": "Same as last month",
+        "activeStudents": "active students",
+        "classesToday": "classes today",
+        "activityTitle": "Recent activity",
+        "activityEmpty": "No recent activity.",
+        "activityPaid": "{name} paid invoice #{number}",
+        "activityLead": "New enquiry from {name}"
+      },
       "capacity": {
         "title": "Class capacity",
         "subtitle": "This week, by studio time slot.",

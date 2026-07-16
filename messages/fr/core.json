@@ -77,7 +77,22 @@
     "theme": "Thème",
     "themeLight": "Clair",
     "themeDark": "Sombre",
-    "selectTheme": "Choisir le thème"
+    "selectTheme": "Choisir le thème",
+    "rail": {
+      "today": "Aujourd'hui",
+      "people": "Personnes",
+      "schedule": "Planning",
+      "money": "Finances",
+      "inbox": "Boîte de réception",
+      "studio": "Studio",
+      "settings": "Paramètres",
+      "account": "Compte"
+    },
+    "palette": {
+      "placeholder": "Rechercher n'importe quoi…",
+      "empty": "Aucun résultat",
+      "new": "Nouveau"
+    }
   },
   "nav": {
     "sections": {

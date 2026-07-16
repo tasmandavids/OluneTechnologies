@@ -201,6 +201,30 @@
         "live": "上课中",
         "nextAt": "下一节 {time}"
       },
+      "today": {
+        "title": "今日",
+        "tomorrowTitle": "明日",
+        "hint": "{count} 节课 · 预计 {students} 名学员",
+        "fullTimetable": "完整课表",
+        "empty": "暂无排课。",
+        "enrolled": "{count} 人已报名",
+        "status": {
+          "live": "上课中"
+        }
+      },
+      "money": {
+        "title": "本月",
+        "collected": "已收款",
+        "trendUp": "较上月 +{percent}%",
+        "trendDown": "较上月 {percent}%",
+        "trendFlat": "与上月持平",
+        "activeStudents": "活跃学员",
+        "classesToday": "今日课程",
+        "activityTitle": "近期动态",
+        "activityEmpty": "暂无近期动态。",
+        "activityPaid": "{name} 支付了发票 #{number}",
+        "activityLead": "{name} 提交了新咨询"
+      },
       "capacity": {
         "title": "课程容量",
         "subtitle": "本周，按工作室时段。",

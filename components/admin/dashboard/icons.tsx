@@ -73,3 +73,121 @@ export function IconCheckCircle(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function IconSun(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="12" r="4.25" />
+      <path d="M12 2.5v2.5M12 19v2.5M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2.5 12H5M19 12h2.5M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" />
+    </svg>
+  );
+}
+
+export function IconUsers(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="9" cy="8.5" r="3" />
+      <path d="M3 19.5c0-3 2.7-5 6-5s6 2 6 5" />
+      <path d="M15.5 6.2a3 3 0 0 1 0 5.8M18.7 19c-.2-2.4-1.6-4.1-3.7-4.8" />
+    </svg>
+  );
+}
+
+export function IconCalendarDays(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
+      <path d="M3.5 9.5h17M8 3v3.5M16 3v3.5" />
+      <path d="M7.5 13h1.5M11.25 13h1.5M15 13h1.5M7.5 16.5h1.5M11.25 16.5h1.5" />
+    </svg>
+  );
+}
+
+export function IconWallet(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-9Z" />
+      <path d="M14.5 13a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Z" />
+      <path d="M4 9.5h13.5" />
+    </svg>
+  );
+}
+
+export function IconInbox(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M4 12.5 6.2 5h11.6L20 12.5" />
+      <path d="M4 12.5v5A2.5 2.5 0 0 0 6.5 20h11a2.5 2.5 0 0 0 2.5-2.5v-5h-5l-1.2 2.5H10.2L9 12.5H4Z" />
+    </svg>
+  );
+}
+
+export function IconGlobe(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3c2.4 2.5 3.7 5.6 3.7 9s-1.3 6.5-3.7 9c-2.4-2.5-3.7-5.6-3.7-9S9.6 5.5 12 3Z" />
+    </svg>
+  );
+}
+
+export function IconSettings(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2M6 6l1.4 1.4M16.6 16.6 18 18M18 6l-1.4 1.4M7.4 16.6 6 18" />
+    </svg>
+  );
+}
+
+export function IconSearch(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="10.5" cy="10.5" r="6.5" />
+      <path d="m19.5 19.5-4.35-4.35" />
+    </svg>
+  );
+}
+
+export function IconX(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M5 5l14 14M19 5 5 19" />
+    </svg>
+  );
+}
+
+export function IconChevronDown(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="m5.5 8.5 6.5 7 6.5-7" />
+    </svg>
+  );
+}
+
+export function IconTrendingUp(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M3.5 16 9 10.5l3.5 3.5L20.5 6" />
+      <path d="M14.5 6h6v6" />
+    </svg>
+  );
+}
+
+export function IconPlus(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+export function IconCreditCard(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <rect x="3" y="5.5" width="18" height="13" rx="2.25" />
+      <path d="M3 9.5h18" />
+      <path d="M6.5 14.5h4" />
+    </svg>
+  );
+}

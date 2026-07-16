@@ -200,6 +200,30 @@
         "live": "Идёт занятие",
         "nextAt": "следующее в {time}"
       },
+      "today": {
+        "title": "Сегодня",
+        "tomorrowTitle": "Завтра",
+        "hint": "{count, plural, one {# занятие} few {# занятия} many {# занятий} other {# занятий}} · ожидается {students, plural, one {# студент} few {# студента} many {# студентов} other {# студентов}}",
+        "fullTimetable": "Полное расписание",
+        "empty": "Занятия не запланированы.",
+        "enrolled": "{count, plural, one {# записан} few {# записано} many {# записано} other {# записано}}",
+        "status": {
+          "live": "Идёт занятие"
+        }
+      },
+      "money": {
+        "title": "В этом месяце",
+        "collected": "Собрано",
+        "trendUp": "+{percent}% к прошлому месяцу",
+        "trendDown": "{percent}% к прошлому месяцу",
+        "trendFlat": "Как в прошлом месяце",
+        "activeStudents": "активных студентов",
+        "classesToday": "занятий сегодня",
+        "activityTitle": "Последние действия",
+        "activityEmpty": "Нет недавних действий.",
+        "activityPaid": "{name} оплатил(а) счёт №{number}",
+        "activityLead": "Новая заявка от {name}"
+      },
       "capacity": {
         "title": "Класс мощности",
         "subtitle": "На этой неделе, по времени студии.",

@@ -200,6 +200,30 @@
         "live": "En cours",
         "nextAt": "prochain à {time}"
       },
+      "today": {
+        "title": "Aujourd'hui",
+        "tomorrowTitle": "Demain",
+        "hint": "{count, plural, one {# cours} other {# cours}} · {students, plural, one {# élève attendu} other {# élèves attendus}}",
+        "fullTimetable": "Planning complet",
+        "empty": "Aucun cours prévu.",
+        "enrolled": "{count, plural, one {# inscrit} other {# inscrits}}",
+        "status": {
+          "live": "En cours"
+        }
+      },
+      "money": {
+        "title": "Ce mois-ci",
+        "collected": "Encaissé",
+        "trendUp": "+{percent}% par rapport au mois dernier",
+        "trendDown": "{percent}% par rapport au mois dernier",
+        "trendFlat": "Comme le mois dernier",
+        "activeStudents": "élèves actifs",
+        "classesToday": "cours aujourd'hui",
+        "activityTitle": "Activité récente",
+        "activityEmpty": "Aucune activité récente.",
+        "activityPaid": "{name} a payé la facture n°{number}",
+        "activityLead": "Nouvelle demande de {name}"
+      },
       "capacity": {
         "title": "Capacité de classe",
         "subtitle": "Cette semaine, par plage horaire du studio.",

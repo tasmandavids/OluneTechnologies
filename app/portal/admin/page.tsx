@@ -6,6 +6,7 @@
 import { getTranslations } from "@/lib/i18n/server";
 import { getPortalSession } from "@/lib/portal/session";
 import { type StatData, type ScheduleClass, type AttentionData } from "@/components/admin/dashboard/types";
+import type { ActivityItem } from "@/components/admin/dashboard/MoneyPanel";
 import type { TeacherOption } from "@/app/portal/admin/classes/page";
 import { AdminDashboard } from "@/components/admin/dashboard/AdminDashboard";
 
@@ -20,10 +21,21 @@ export default async function AdminDashboardPage() {
   const { supabase, studioId } = session;
 
   const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+  const startOfLastMonth = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString();
   const todayDow = new Date().getDay();
 
-  const [studioRes, studentsRes, paidRes, todayRes, capacityRes, teachersRes, overdueRes, leadsRes] =
-    await Promise.all([
+  const [
+    studioRes,
+    studentsRes,
+    paidRes,
+    todayRes,
+    capacityRes,
+    teachersRes,
+    overdueRes,
+    leadsRes,
+    lastMonthPaidRes,
+    recentPaidRes,
+  ] = await Promise.all([
       supabase.from("studios").select("name").eq("id", studioId).single(),
 
       supabase
@@ -68,10 +80,26 @@ export default async function AdminDashboardPage() {
 
       supabase
         .from("leads")
-        .select("id, created_at")
+        .select("id, first_name, last_name, created_at")
         .eq("studio_id", studioId)
         .in("status", ["new", "trial"])
         .order("created_at", { ascending: true }),
+
+      supabase
+        .from("invoices")
+        .select("amount_cents")
+        .eq("studio_id", studioId)
+        .eq("status", "paid")
+        .gte("created_at", startOfLastMonth)
+        .lt("created_at", startOfMonth),
+
+      supabase
+        .from("invoices")
+        .select("id, invoice_number, payer_id, created_at")
+        .eq("studio_id", studioId)
+        .eq("status", "paid")
+        .order("created_at", { ascending: false })
+        .limit(5),
     ]);
 
   const revenue =
@@ -173,6 +201,46 @@ export default async function AdminDashboardPage() {
       : 0,
   };
 
+  const lastMonthRevenueCents = (lastMonthPaidRes.data ?? []).reduce(
+    (sum, r) => sum + (r.amount_cents ?? 0),
+    0,
+  );
+
+  const recentPaidRows = recentPaidRes.data ?? [];
+  const payerIds = [...new Set(recentPaidRows.map((r) => r.payer_id).filter(Boolean) as string[])];
+  const payerMap = new Map<string, string>();
+  if (payerIds.length) {
+    const { data: payerRows } = await supabase
+      .from("profiles")
+      .select("id, full_name")
+      .in("id", payerIds);
+    (payerRows ?? []).forEach((p) => {
+      if (p.full_name) payerMap.set(p.id, p.full_name);
+    });
+  }
+
+  const paymentActivity: ActivityItem[] = recentPaidRows.map((r) => ({
+    id: `payment-${r.id}`,
+    kind: "payment",
+    name: payerMap.get(r.payer_id as string) ?? tCommon("unknown"),
+    invoiceNumber: (r.invoice_number as number | null) ?? null,
+    createdAt: r.created_at as string,
+  }));
+
+  const leadActivity: ActivityItem[] = [...leadsRows]
+    .reverse()
+    .slice(0, 5)
+    .map((l) => ({
+      id: `lead-${l.id}`,
+      kind: "lead",
+      name: [l.first_name, l.last_name].filter(Boolean).join(" ") || tCommon("unknown"),
+      createdAt: l.created_at as string,
+    }));
+
+  const activity: ActivityItem[] = [...paymentActivity, ...leadActivity]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 5);
+
   return (
     <AdminDashboard
       studioId={studioId}
@@ -182,6 +250,8 @@ export default async function AdminDashboardPage() {
       teachers={teachers}
       todayDow={todayDow}
       attention={attention}
+      lastMonthRevenueCents={lastMonthRevenueCents}
+      activity={activity}
     />
   );
 }
