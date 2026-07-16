@@ -35,11 +35,11 @@ export function StudioHome({ pages, provisioned }: { pages: StudioPageRow[]; pro
     <div className="mx-auto max-w-5xl p-6">
       <div className="mb-1 flex items-center gap-2">
         <h1 className="text-xl font-semibold text-neutral-900">Studio</h1>
-        <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">v2 · preview</span>
+        <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">v2</span>
       </div>
       <p className="mb-6 text-sm text-neutral-500">
         The rebuilt visual builder — hybrid layouts, responsive breakpoints, inline editing and design tokens.
-        This is isolated from your live website; nothing here is published.
+        Pages start as private drafts; open one and use Publish when you&apos;re ready to put it live.
       </p>
 
       {!provisioned && (

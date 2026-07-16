@@ -4,10 +4,81 @@
 
 "use client";
 
+import { useEffect, useState } from "react";
 import { useBuilder } from "@/lib/builder/store";
 import { BREAKPOINTS, type BreakpointId } from "@/lib/builder/schema";
+import { useStudioHost } from "./HostContext";
 
 const BP_ICON: Record<string, string> = { desktop: "🖥", tablet: "▭", mobile: "▯" };
+
+function PublishMenu() {
+  const host = useStudioHost();
+  const [open, setOpen] = useState(false);
+  const [asHome, setAsHome] = useState(host.isHome);
+  const [showInNav, setShowInNav] = useState(host.showInNav);
+
+  // Keep the draft toggles in sync when the server state changes underneath us.
+  useEffect(() => {
+    setAsHome(host.isHome);
+    setShowInNav(host.showInNav);
+  }, [host.isHome, host.showInNav]);
+
+  const live = host.status === "published";
+  const publicPath = (asHome ? true : host.isHome) ? "/" : `/${host.slug}`;
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium ${
+          live ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+        }`}
+      >
+        <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-emerald-500" : "bg-neutral-400"}`} />
+        {live ? "Live" : "Draft"}
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-9 z-20 w-64 rounded-lg border border-neutral-200 bg-white p-3 text-xs shadow-xl">
+            {live && (
+              <a href={publicPath} target="_blank" rel="noreferrer" className="mb-2 block truncate text-violet-600 hover:underline">
+                View live → {publicPath}
+              </a>
+            )}
+            <label className="mb-1.5 flex items-center gap-2 text-neutral-600">
+              <input type="checkbox" checked={asHome} onChange={(e) => setAsHome(e.target.checked)} />
+              Set as home page
+            </label>
+            <label className="mb-2 flex items-center gap-2 text-neutral-600">
+              <input type="checkbox" checked={showInNav} onChange={(e) => setShowInNav(e.target.checked)} />
+              Show in navigation
+            </label>
+            {host.publishError && <p className="mb-2 text-red-600">{host.publishError}</p>}
+            <div className="flex gap-2">
+              <button
+                disabled={host.publishing}
+                onClick={() => void host.publish({ asHome, showInNav })}
+                className="flex-1 rounded-md bg-emerald-600 px-2 py-1.5 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+              >
+                {host.publishing ? "…" : live ? "Update" : "Publish"}
+              </button>
+              {live && (
+                <button
+                  disabled={host.publishing}
+                  onClick={() => void host.unpublish()}
+                  className="rounded-md border border-neutral-200 px-2 py-1.5 text-neutral-500 hover:bg-neutral-50 disabled:opacity-50"
+                >
+                  Unpublish
+                </button>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export function Topbar({
   saving,
@@ -41,7 +112,7 @@ export function Topbar({
           </button>
         )}
         <span className="font-semibold text-neutral-800">Studio</span>
-        <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">v2 · preview</span>
+        <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">v2</span>
       </div>
 
       {/* breakpoint switcher */}
@@ -90,6 +161,8 @@ export function Topbar({
         >
           {mode === "design" ? "▶ Preview" : "✎ Design"}
         </button>
+
+        <PublishMenu />
 
         <button
           onClick={onSave}

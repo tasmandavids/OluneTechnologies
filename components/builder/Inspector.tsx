@@ -10,13 +10,15 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useBuilder } from "@/lib/builder/store";
 import { cascadeStyle } from "@/lib/builder/cascade";
 import type {
-  BoxEdges, BreakpointId, BuilderNode, CmsBinding, Dim, NodeId, StyleSet, ThemeTokens,
+  BoxEdges, BreakpointId, BuilderNode, CmsBinding, CmsCollection, CmsField, CmsFieldType, CmsItem,
+  Dim, NodeId, StyleSet, ThemeTokens,
 } from "@/lib/builder/schema";
 import { Section, Row, TextInput, NumberInput, SelectInput, SegMode, ColorInput } from "./controls";
+import { useStudioHost } from "./HostContext";
 
 export function Inspector() {
   const selection = useBuilder((s) => s.selection);
@@ -297,6 +299,24 @@ function ContentProps({ node, setProp }: { node: BuilderNode; setProp: (p: Recor
         </Row>
       </Section>
     );
+  if (node.type === "productLoop")
+    return (
+      <Section title="Product grid">
+        <Row label="Source"><span className="text-[11px] text-neutral-400">Shop products</span></Row>
+        <Row label="Limit">
+          <NumberInput value={typeof node.props.limit === "number" ? node.props.limit : ""} onChange={(v) => setProp({ limit: v })} placeholder="6" />
+        </Row>
+      </Section>
+    );
+  if (node.type === "booking")
+    return (
+      <Section title="Booking">
+        <Row label="Source"><span className="text-[11px] text-neutral-400">Classes</span></Row>
+        <Row label="Limit">
+          <NumberInput value={typeof node.props.limit === "number" ? node.props.limit : ""} onChange={(v) => setProp({ limit: v })} placeholder="6" />
+        </Row>
+      </Section>
+    );
   return null;
 }
 
@@ -440,11 +460,48 @@ function PageInspector() {
   const meta = useBuilder((s) => s.doc.meta);
   const cascade = useBuilder((s) => s.doc.cascade);
   const collections = useBuilder((s) => s.doc.collections);
+  const host = useStudioHost();
+  const [slugDraft, setSlugDraft] = useState(meta.slug);
+  const [slugError, setSlugError] = useState<string | null>(null);
+  const renameTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // The slug can also change from the Topbar's publish flow / server round
+  // trip — keep the draft in sync when that happens underneath us.
+  useEffect(() => { setSlugDraft(meta.slug); }, [meta.slug]);
+
+  const commitTitle = (title: string) => {
+    useBuilder.getState().setMeta({ title });
+    if (renameTimer.current) clearTimeout(renameTimer.current);
+    renameTimer.current = setTimeout(() => { void host.rename({ title }); }, 700);
+  };
+  const commitSlug = (slug: string) => {
+    setSlugDraft(slug);
+    setSlugError(null);
+    if (renameTimer.current) clearTimeout(renameTimer.current);
+    renameTimer.current = setTimeout(() => {
+      void host.rename({ slug }).then((res) => {
+        if (res.ok && res.data) {
+          useBuilder.getState().setMeta({ slug: res.data.slug });
+          setSlugDraft(res.data.slug);
+        } else {
+          setSlugError(res.error ?? "Couldn't update the URL.");
+        }
+      });
+    }, 700);
+  };
+
   return (
     <div>
       <Section title="Page">
-        <Row label="Title"><TextInput value={meta.title} onChange={() => { /* meta editing wired in host */ }} /></Row>
-        <Row label="Slug"><TextInput value={meta.slug} onChange={() => { /* meta editing wired in host */ }} /></Row>
+        <Row label="Title"><TextInput value={meta.title} onChange={commitTitle} /></Row>
+        <Row label="Slug"><TextInput value={slugDraft} onChange={commitSlug} /></Row>
+        {slugError && <p className="text-[10px] text-red-500">{slugError}</p>}
+        <Row label="SEO title">
+          <TextInput value={meta.seoTitle ?? ""} placeholder={meta.title} onChange={(v) => useBuilder.getState().setMeta({ seoTitle: v || undefined })} />
+        </Row>
+        <Row label="SEO description">
+          <TextInput value={meta.seoDescription ?? ""} onChange={(v) => useBuilder.getState().setMeta({ seoDescription: v || undefined })} />
+        </Row>
         <Row label="Cascade">
           <SegMode
             value={cascade}
@@ -453,15 +510,141 @@ function PageInspector() {
           />
         </Row>
       </Section>
-      <Section title="CMS collections">
-        {collections.length === 0 && <p className="text-[11px] text-neutral-400">No collections yet.</p>}
+      <CmsCollectionsEditor collections={collections} />
+    </div>
+  );
+}
+
+// ─── CMS collections CRUD (Page tab) ─────────────────────────────────────────────
+
+function CmsCollectionsEditor({ collections }: { collections: CmsCollection[] }) {
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  return (
+    <Section
+      title="CMS collections"
+      right={
+        <button
+          onClick={() => setOpenId(useBuilder.getState().addCollection("New collection"))}
+          className="text-[10px] font-semibold text-violet-600 hover:underline"
+        >
+          + New
+        </button>
+      }
+    >
+      {collections.length === 0 && (
+        <p className="text-[11px] text-neutral-400">No collections yet — add one to bind dynamic content like team members, FAQs, or testimonials.</p>
+      )}
+      <div className="space-y-2">
         {collections.map((c) => (
-          <div key={c.id} className="rounded-md border border-neutral-200 px-2 py-1.5 text-xs">
-            <div className="font-medium">{c.name}</div>
-            <div className="text-[10px] text-neutral-400">{c.fields.length} fields · {c.items.length} items</div>
+          <div key={c.id} className="rounded-md border border-neutral-200">
+            <button
+              onClick={() => setOpenId(openId === c.id ? null : c.id)}
+              className="flex w-full items-center justify-between px-2 py-1.5 text-left text-xs"
+            >
+              <span className="font-medium">{c.name}</span>
+              <span className="text-[10px] text-neutral-400">
+                {c.fields.length} fields · {c.items.length} items {openId === c.id ? "▲" : "▼"}
+              </span>
+            </button>
+            {openId === c.id && <CollectionEditor collection={c} />}
           </div>
         ))}
-      </Section>
+      </div>
+    </Section>
+  );
+}
+
+function CollectionEditor({ collection }: { collection: CmsCollection }) {
+  const [fieldLabel, setFieldLabel] = useState("");
+  const [fieldType, setFieldType] = useState<CmsFieldType>("text");
+
+  const addField = () => {
+    const label = fieldLabel.trim();
+    if (!label) return;
+    const key = label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "") || `field_${collection.fields.length + 1}`;
+    useBuilder.getState().addCmsField(collection.id, { key, label, type: fieldType });
+    setFieldLabel("");
+  };
+
+  return (
+    <div className="space-y-2 border-t border-neutral-100 p-2">
+      <div className="flex items-center justify-between gap-2">
+        <input
+          className="w-full bg-transparent text-xs font-medium text-neutral-800 focus:outline-none"
+          value={collection.name}
+          onChange={(e) => useBuilder.getState().renameCollection(collection.id, e.target.value)}
+        />
+        <button
+          onClick={() => useBuilder.getState().deleteCollection(collection.id)}
+          className="shrink-0 text-[10px] text-neutral-400 hover:text-red-500"
+        >
+          delete
+        </button>
+      </div>
+
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400">Fields</div>
+      {collection.fields.map((f) => (
+        <div key={f.key} className="flex items-center gap-1.5">
+          <span className="flex-1 truncate text-[11px] text-neutral-700">{f.label}</span>
+          <span className="text-[10px] text-neutral-400">{f.type}</span>
+          <button onClick={() => useBuilder.getState().removeCmsField(collection.id, f.key)} className="text-[10px] text-neutral-300 hover:text-red-500">
+            ✕
+          </button>
+        </div>
+      ))}
+      <div className="flex gap-1">
+        <TextInput value={fieldLabel} onChange={setFieldLabel} placeholder="Field name" />
+        <SelectInput
+          value={fieldType}
+          onChange={setFieldType}
+          options={(["text", "richText", "number", "boolean", "image", "url", "date", "option"] as CmsFieldType[]).map((t) => ({ value: t, label: t }))}
+        />
+        <button onClick={addField} className="shrink-0 rounded-md border border-neutral-200 px-2 text-xs hover:bg-neutral-50">+</button>
+      </div>
+
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400">Items</div>
+      {collection.items.map((item) => (
+        <ItemEditor key={item.id} collection={collection} item={item} />
+      ))}
+      <button
+        onClick={() => useBuilder.getState().addCmsItem(collection.id)}
+        className="w-full rounded-md border border-dashed border-neutral-300 py-1 text-[11px] text-neutral-500 hover:bg-neutral-50"
+      >
+        + Add item
+      </button>
+    </div>
+  );
+}
+
+function ItemEditor({ collection, item }: { collection: CmsCollection; item: CmsItem }) {
+  return (
+    <div className="rounded-md border border-neutral-100 bg-neutral-50 p-1.5">
+      <div className="mb-1 flex justify-end">
+        <button onClick={() => useBuilder.getState().deleteCmsItem(collection.id, item.id)} className="text-[10px] text-neutral-400 hover:text-red-500">
+          remove
+        </button>
+      </div>
+      {collection.fields.map((f: CmsField) => (
+        <Row key={f.key} label={f.label}>
+          {f.type === "boolean" ? (
+            <input
+              type="checkbox"
+              checked={Boolean(item.fields[f.key])}
+              onChange={(e) => useBuilder.getState().updateCmsItem(collection.id, item.id, { [f.key]: e.target.checked })}
+            />
+          ) : (
+            <TextInput
+              value={item.fields[f.key] == null ? "" : String(item.fields[f.key])}
+              onChange={(v) =>
+                useBuilder.getState().updateCmsItem(collection.id, item.id, {
+                  [f.key]: f.type === "number" ? (v === "" ? undefined : Number(v)) : v,
+                })
+              }
+            />
+          )}
+        </Row>
+      ))}
     </div>
   );
 }
