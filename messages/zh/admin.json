@@ -176,6 +176,55 @@
         "classesToday": "今日课程",
         "classesTodayHint": "覆盖您的各工作室"
       },
+      "attention": {
+        "title": "需要关注",
+        "allClear": "一切正常",
+        "allClearHint": "目前没有逾期发票或新咨询。",
+        "overdueTitle": "{count} 张发票逾期",
+        "overdueSubtitle": "{amount}，涉及 {families} 个家庭 · 最早逾期 {days} 天",
+        "overdueAction": "催缴",
+        "leadsTitle": "{count} 条新咨询",
+        "leadsSubtitle": "最早于 {days} 天前",
+        "leadsAction": "查看"
+      },
+      "quickActions": {
+        "title": "快捷操作",
+        "addClass": "添加课程",
+        "newInvoice": "新建发票",
+        "message": "消息",
+        "addLead": "添加线索"
+      },
+      "staffToday": {
+        "title": "今日员工",
+        "empty": "今天没有安排教师。",
+        "classCount": "{count} 节课",
+        "live": "上课中",
+        "nextAt": "下一节 {time}"
+      },
+      "today": {
+        "title": "今日",
+        "tomorrowTitle": "明日",
+        "hint": "{count} 节课 · 预计 {students} 名学员",
+        "fullTimetable": "完整课表",
+        "empty": "暂无排课。",
+        "enrolled": "{count} 人已报名",
+        "status": {
+          "live": "上课中"
+        }
+      },
+      "money": {
+        "title": "本月",
+        "collected": "已收款",
+        "trendUp": "较上月 +{percent}%",
+        "trendDown": "较上月 {percent}%",
+        "trendFlat": "与上月持平",
+        "activeStudents": "活跃学员",
+        "classesToday": "今日课程",
+        "activityTitle": "近期动态",
+        "activityEmpty": "暂无近期动态。",
+        "activityPaid": "{name} 支付了发票 #{number}",
+        "activityLead": "{name} 提交了新咨询"
+      },
       "capacity": {
         "title": "课程容量",
         "subtitle": "本周，按工作室时段。",
@@ -202,6 +251,8 @@
     "classes": {
       "title": "课程",
       "subtitle": "{count, plural, other {# 门课程}} · 点击课程查看已报名学员",
+      "viewList": "列表",
+      "viewSchedule": "排课",
       "newClass": "+ 新课程",
       "searchPlaceholder": "按名称、科目或级别搜索…",
       "emptySearch": "没有符合您搜索的课程。",

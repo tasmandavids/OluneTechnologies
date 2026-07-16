@@ -6,6 +6,7 @@
 import { createClient } from "@/lib/supabase/server";
 import PrivateLessonRequests from "@/components/portal/teacher/PrivateLessonRequests";
 import type { TeacherBooking } from "@/lib/private-lessons/types";
+import { studioLocalYmd } from "@/lib/date/studio-date";
 
 type Row = {
   id: string;
@@ -47,7 +48,7 @@ export default async function TeacherPrivateLessonsPage() {
     status: r.status,
   }));
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = studioLocalYmd();
   const pending = bookings.filter((b) => b.status === "requested");
   const upcoming = bookings.filter(
     (b) => b.status === "accepted" && b.lessonDate >= today,

@@ -175,6 +175,55 @@
         "classesToday": "Lezioni oggi",
         "classesTodayHint": "nei tuoi studi"
       },
+      "attention": {
+        "title": "Richiede attenzione",
+        "allClear": "Tutto in ordine",
+        "allClearHint": "Nessuna fattura scaduta o nuova richiesta al momento.",
+        "overdueTitle": "{count, plural, one {# fattura scaduta} other {# fatture scadute}}",
+        "overdueSubtitle": "{amount} da {families, plural, one {# famiglia} other {# famiglie}} · la più vecchia da {days, plural, =0 {oggi} one {# giorno} other {# giorni}}",
+        "overdueAction": "Sollecita",
+        "leadsTitle": "{count, plural, one {# nuova richiesta} other {# nuove richieste}}",
+        "leadsSubtitle": "La più vecchia da {days, plural, =0 {oggi} one {# giorno} other {# giorni}}",
+        "leadsAction": "Rivedi"
+      },
+      "quickActions": {
+        "title": "Azioni rapide",
+        "addClass": "Aggiungi corso",
+        "newInvoice": "Nuova fattura",
+        "message": "Messaggio",
+        "addLead": "Aggiungi contatto"
+      },
+      "staffToday": {
+        "title": "Staff oggi",
+        "empty": "Nessun insegnante previsto oggi.",
+        "classCount": "{count, plural, one {# corso} other {# corsi}}",
+        "live": "In corso",
+        "nextAt": "prossimo alle {time}"
+      },
+      "today": {
+        "title": "Oggi",
+        "tomorrowTitle": "Domani",
+        "hint": "{count, plural, one {# lezione} other {# lezioni}} · {students, plural, one {# studente atteso} other {# studenti attesi}}",
+        "fullTimetable": "Orario completo",
+        "empty": "Nessuna lezione in programma.",
+        "enrolled": "{count, plural, one {# iscritto} other {# iscritti}}",
+        "status": {
+          "live": "In corso"
+        }
+      },
+      "money": {
+        "title": "Questo mese",
+        "collected": "Incassato",
+        "trendUp": "+{percent}% rispetto al mese scorso",
+        "trendDown": "{percent}% rispetto al mese scorso",
+        "trendFlat": "Come il mese scorso",
+        "activeStudents": "studenti attivi",
+        "classesToday": "lezioni oggi",
+        "activityTitle": "Attività recente",
+        "activityEmpty": "Nessuna attività recente.",
+        "activityPaid": "{name} ha pagato la fattura n.{number}",
+        "activityLead": "Nuova richiesta da {name}"
+      },
       "capacity": {
         "title": "Capacità della classe",
         "subtitle": "Questa settimana, secondo la fascia oraria dello studio.",
@@ -200,6 +249,8 @@
     "classes": {
       "title": "Classi",
       "subtitle": "{count, plural, one {# corso} other {# corsi}} · gestisca il suo orario",
+      "viewList": "Elenco",
+      "viewSchedule": "Orario",
       "newClass": "+ Nuova classe",
       "searchPlaceholder": "Cerca per nome, disciplina o livello...",
       "emptySearch": "Nessun corso corrisponde alla tua ricerca.",

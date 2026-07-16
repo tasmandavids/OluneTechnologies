@@ -2,30 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { authorizedCron } from "@/lib/cron/auth";
 import { runSubscriptionInvoicesForStudio, runTermInvoicesForStudio } from "@/lib/subscriptions/cron-run";
+import { studioLocalYmd, studioLocalYmdOffset } from "@/lib/date/studio-date";
 
 export const dynamic = "force-dynamic";
 
-function localYmd(timezone: string, base = new Date()): string {
-  try {
-    const parts = new Intl.DateTimeFormat("en-CA", {
-      timeZone: timezone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).formatToParts(base);
-    const m: Record<string, string> = {};
-    for (const p of parts) m[p.type] = p.value;
-    return `${m.year}-${m.month}-${m.day}`;
-  } catch {
-    return base.toISOString().slice(0, 10);
-  }
-}
+const localYmd = studioLocalYmd;
 
 /** Local calendar date `ymd` minus `days`, as "YYYY-MM-DD". */
 function subtractDays(ymd: string, days: number): string {
-  const d = new Date(`${ymd}T12:00:00Z`);
-  d.setUTCDate(d.getUTCDate() - days);
-  return d.toISOString().slice(0, 10);
+  return studioLocalYmdOffset(-days, undefined, new Date(`${ymd}T12:00:00Z`));
 }
 
 export async function GET(req: NextRequest) {

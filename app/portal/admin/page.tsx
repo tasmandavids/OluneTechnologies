@@ -5,7 +5,8 @@
 
 import { getTranslations } from "@/lib/i18n/server";
 import { getPortalSession } from "@/lib/portal/session";
-import { type StatData, type ScheduleClass } from "@/components/admin/dashboard/types";
+import { type StatData, type ScheduleClass, type AttentionData } from "@/components/admin/dashboard/types";
+import type { ActivityItem } from "@/components/admin/dashboard/MoneyPanel";
 import type { TeacherOption } from "@/app/portal/admin/classes/page";
 import { AdminDashboard } from "@/components/admin/dashboard/AdminDashboard";
 
@@ -20,45 +21,83 @@ export default async function AdminDashboardPage() {
   const { supabase, studioId } = session;
 
   const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+  const startOfLastMonth = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString();
   const todayDow = new Date().getDay();
 
-  const [studioRes, studentsRes, paidRes, todayRes, capacityRes, teachersRes] = await Promise.all([
-    supabase.from("studios").select("name").eq("id", studioId).single(),
+  const [
+    studentsRes,
+    paidRes,
+    todayRes,
+    capacityRes,
+    teachersRes,
+    overdueRes,
+    leadsRes,
+    lastMonthPaidRes,
+    recentPaidRes,
+  ] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("id", { count: "exact", head: true })
+        .eq("role", "student")
+        .eq("studio_id", studioId),
 
-    supabase
-      .from("profiles")
-      .select("id", { count: "exact", head: true })
-      .eq("role", "student")
-      .eq("studio_id", studioId),
+      supabase
+        .from("invoices")
+        .select("amount_cents")
+        .eq("studio_id", studioId)
+        .eq("status", "paid")
+        .gte("created_at", startOfMonth),
 
-    supabase
-      .from("invoices")
-      .select("amount_cents")
-      .eq("studio_id", studioId)
-      .eq("status", "paid")
-      .gte("created_at", startOfMonth),
+      supabase
+        .from("classes")
+        .select("id", { count: "exact", head: true })
+        .eq("studio_id", studioId)
+        .eq("day_of_week", todayDow),
 
-    supabase
-      .from("classes")
-      .select("id", { count: "exact", head: true })
-      .eq("studio_id", studioId)
-      .eq("day_of_week", todayDow),
+      supabase
+        .from("class_capacity")
+        .select(
+          "id, name, discipline, level, room, day_of_week, start_time, end_time, enrolled, capacity, teacher_id",
+        )
+        .eq("studio_id", studioId)
+        .order("name"),
 
-    supabase
-      .from("class_capacity")
-      .select(
-        "id, name, discipline, level, room, day_of_week, start_time, end_time, enrolled, capacity, teacher_id",
-      )
-      .eq("studio_id", studioId)
-      .order("name"),
+      supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .eq("studio_id", studioId)
+        .eq("role", "teacher")
+        .order("full_name"),
 
-    supabase
-      .from("profiles")
-      .select("id, full_name, email")
-      .eq("studio_id", studioId)
-      .eq("role", "teacher")
-      .order("full_name"),
-  ]);
+      supabase
+        .from("invoices")
+        .select("amount_cents, payer_id, due_date")
+        .eq("studio_id", studioId)
+        .eq("status", "overdue"),
+
+      supabase
+        .from("leads")
+        .select("id, first_name, last_name, created_at")
+        .eq("studio_id", studioId)
+        .in("status", ["new", "trial"])
+        .order("created_at", { ascending: true }),
+
+      supabase
+        .from("invoices")
+        .select("amount_cents")
+        .eq("studio_id", studioId)
+        .eq("status", "paid")
+        .gte("created_at", startOfLastMonth)
+        .lt("created_at", startOfMonth),
+
+      supabase
+        .from("invoices")
+        .select("id, invoice_number, payer_id, created_at")
+        .eq("studio_id", studioId)
+        .eq("status", "paid")
+        .order("created_at", { ascending: false })
+        .limit(5),
+    ]);
 
   const revenue =
     (paidRes.data ?? []).reduce((sum, r) => sum + (r.amount_cents ?? 0), 0) / 100;
@@ -137,13 +176,77 @@ export default async function AdminDashboardPage() {
     email: t.email,
   }));
 
+  const overdueRows = overdueRes.data ?? [];
+  const overdueDueDates = overdueRows
+    .map((r) => (r.due_date ? new Date(r.due_date as string).getTime() : null))
+    .filter((t): t is number => t !== null);
+  const now = Date.now();
+  const oneDayMs = 24 * 60 * 60 * 1000;
+
+  const leadsRows = leadsRes.data ?? [];
+
+  const attention: AttentionData = {
+    overdueCount: overdueRows.length,
+    overdueAmountCents: overdueRows.reduce((sum, r) => sum + (r.amount_cents ?? 0), 0),
+    overdueFamilies: new Set(overdueRows.map((r) => r.payer_id)).size,
+    overdueOldestDays: overdueDueDates.length
+      ? Math.max(0, Math.floor((now - Math.min(...overdueDueDates)) / oneDayMs))
+      : 0,
+    leadsCount: leadsRows.length,
+    leadsOldestDays: leadsRows.length
+      ? Math.max(0, Math.floor((now - new Date(leadsRows[0].created_at as string).getTime()) / oneDayMs))
+      : 0,
+  };
+
+  const lastMonthRevenueCents = (lastMonthPaidRes.data ?? []).reduce(
+    (sum, r) => sum + (r.amount_cents ?? 0),
+    0,
+  );
+
+  const recentPaidRows = recentPaidRes.data ?? [];
+  const payerIds = [...new Set(recentPaidRows.map((r) => r.payer_id).filter(Boolean) as string[])];
+  const payerMap = new Map<string, string>();
+  if (payerIds.length) {
+    const { data: payerRows } = await supabase
+      .from("profiles")
+      .select("id, full_name")
+      .in("id", payerIds);
+    (payerRows ?? []).forEach((p) => {
+      if (p.full_name) payerMap.set(p.id, p.full_name);
+    });
+  }
+
+  const paymentActivity: ActivityItem[] = recentPaidRows.map((r) => ({
+    id: `payment-${r.id}`,
+    kind: "payment",
+    name: payerMap.get(r.payer_id as string) ?? tCommon("unknown"),
+    invoiceNumber: (r.invoice_number as number | null) ?? null,
+    createdAt: r.created_at as string,
+  }));
+
+  const leadActivity: ActivityItem[] = [...leadsRows]
+    .reverse()
+    .slice(0, 5)
+    .map((l) => ({
+      id: `lead-${l.id}`,
+      kind: "lead",
+      name: [l.first_name, l.last_name].filter(Boolean).join(" ") || tCommon("unknown"),
+      createdAt: l.created_at as string,
+    }));
+
+  const activity: ActivityItem[] = [...paymentActivity, ...leadActivity]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 5);
+
   return (
     <AdminDashboard
-      studioId={studioId}
-      studioName={studioRes.data?.name ?? tCommon("yourStudio")}
       stats={stats}
       scheduleClasses={scheduleClasses}
       teachers={teachers}
+      todayDow={todayDow}
+      attention={attention}
+      lastMonthRevenueCents={lastMonthRevenueCents}
+      activity={activity}
     />
   );
 }

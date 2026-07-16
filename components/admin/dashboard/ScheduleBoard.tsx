@@ -75,22 +75,31 @@ function fillColor(ratio: number) {
   return `color-mix(in srgb, var(--brand) ${Math.round(ratio * 100)}%, var(--heat-empty))`;
 }
 
-function toClassRow(cls: ScheduleClass): ClassRow {
+function toScheduleClass(row: ClassRow): ScheduleClass {
+  let durationMin = 60;
+  const startTime = normalizeTime(row.startTime);
+  const endTime = normalizeTime(row.endTime);
+  if (startTime && endTime) {
+    const [sh, sm] = startTime.split(":").map(Number);
+    const [eh, em] = endTime.split(":").map(Number);
+    durationMin = (eh * 60 + em) - (sh * 60 + sm);
+  }
   return {
-    id: cls.id,
-    name: cls.name,
-    discipline: cls.discipline || null,
-    level: cls.level || null,
-    room: cls.room,
-    dayOfWeek: cls.dayOfWeek ?? 0,
-    startTime: cls.startTime,
-    endTime: cls.endTime,
-    capacity: cls.capacity,
-    priceCents: cls.priceCents,
-    enrolled: cls.enrolled,
-    teacherId: cls.teacherId,
-    teacherName: cls.teacherName,
-    recurringGroupId: cls.recurringGroupId,
+    id: row.id,
+    name: row.name,
+    discipline: row.discipline ?? "",
+    level: row.level ?? "",
+    room: row.room,
+    durationMin,
+    dayOfWeek: row.dayOfWeek,
+    startTime,
+    endTime,
+    enrolled: row.enrolled,
+    capacity: row.capacity,
+    priceCents: row.priceCents,
+    teacherId: row.teacherId,
+    teacherName: row.teacherName,
+    recurringGroupId: row.recurringGroupId,
   };
 }
 
@@ -152,13 +161,15 @@ function ClassCard({
 
 export function ScheduleBoard({
   studioId,
-  classes,
+  classes: classRows,
   teachers,
 }: {
   studioId: string;
-  classes: ScheduleClass[];
+  classes: ClassRow[];
   teachers: TeacherOption[];
 }) {
+  const classRowMap = useMemo(() => new Map(classRows.map((c) => [c.id, c])), [classRows]);
+  const classes = useMemo(() => classRows.map(toScheduleClass), [classRows]);
   const t = useTranslations("admin.dashboard.schedule");
   const tCapacity = useTranslations("admin.dashboard.capacity");
   const tShared = useTranslations("admin.shared");
@@ -345,7 +356,10 @@ export function ScheduleBoard({
                                 ? t("durationMin", { minutes: block.durationMin })
                                 : undefined
                             }
-                            onView={() => setPanel({ type: "view", cls: toClassRow(block) })}
+                            onView={() => {
+                              const row = classRowMap.get(block.id);
+                              if (row) setPanel({ type: "view", cls: row });
+                            }}
                           />
                         </div>
                       )}
@@ -412,7 +426,10 @@ export function ScheduleBoard({
                                           ? t("durationMin", { minutes: block.durationMin })
                                           : undefined
                                       }
-                                      onView={() => setPanel({ type: "view", cls: toClassRow(block) })}
+                                      onView={() => {
+                                        const row = classRowMap.get(block.id);
+                                        if (row) setPanel({ type: "view", cls: row });
+                                      }}
                                     />
                                   </div>
                                 )}

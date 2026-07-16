@@ -77,7 +77,22 @@
     "theme": "主题",
     "themeLight": "浅色",
     "themeDark": "深色",
-    "selectTheme": "选择主题"
+    "selectTheme": "选择主题",
+    "rail": {
+      "today": "今日",
+      "people": "学员",
+      "schedule": "排课",
+      "money": "财务",
+      "inbox": "收件箱",
+      "studio": "工作室",
+      "settings": "设置",
+      "account": "账户"
+    },
+    "palette": {
+      "placeholder": "搜索任意内容…",
+      "empty": "无匹配结果",
+      "new": "新建"
+    }
   },
   "nav": {
     "sections": {

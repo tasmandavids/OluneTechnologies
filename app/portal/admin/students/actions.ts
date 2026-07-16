@@ -13,6 +13,7 @@ import { getStudioOpsStudio } from "@/lib/portal/access";
 import { gstComponentCents } from "@/lib/currency";
 import { batchEnrollmentBillableCents } from "@/lib/enrollment-billing";
 import { siblingDiscountedCents } from "@/lib/discounts";
+import { studioLocalYmdOffset } from "@/lib/date/studio-date";
 import { xeroSyncOutstandingInvoice } from "@/lib/xero/webhook-sync";
 
 async function getAdminStudio() {
@@ -507,8 +508,7 @@ export async function createDraftInvoiceFromEnrollments(
     return { ok: false, error: "Nothing billable — every enrolled class is fully covered already." };
   }
 
-  const dueDate = new Date();
-  dueDate.setDate(dueDate.getDate() + 7);
+  const dueDate = studioLocalYmdOffset(7);
   const totalCents = charges.reduce((sum, c) => sum + c.chargeCents, 0);
 
   const { data: invoice, error: invErr } = await supabase
@@ -520,7 +520,7 @@ export async function createDraftInvoiceFromEnrollments(
       amount_cents: totalCents,
       gst_cents: gstComponentCents(totalCents),
       status: "draft",
-      due_date: dueDate.toISOString().slice(0, 10),
+      due_date: dueDate,
       issued_at: null,
     })
     .select("id")

@@ -1,0 +1,62 @@
+{
+  "portal": {
+    "progress": {
+      "currentLevel": "当前等级",
+      "attendance": {
+        "title": "出勤记录 · {count} 条",
+        "attendanceRate": "近期课程出勤率 {rate}%",
+        "empty": "暂无出勤记录。",
+        "date": "日期",
+        "class": "课程",
+        "statusColumn": "状态",
+        "status": {
+          "present": "出席",
+          "late": "迟到",
+          "absent": "缺席",
+          "excused": "请假"
+        }
+      },
+      "certificates": {
+        "title": "证书 · {count}",
+        "subtitle": "为每项奖励下载 PDF 证书。",
+        "downloadPdf": "下载 PDF",
+        "downloadAria": "下载 {title} 的 PDF 证书"
+      },
+      "badges": {
+        "title": "徽章 · {earned}/{total}",
+        "subtitle": "在成长历程中获得的成就",
+        "empty": "暂时还没有徽章——达成里程碑后将显示在这里。",
+        "secret": "隐藏徽章",
+        "earnedOn": "获得于 {date}",
+        "levelLabel": "等级 {level}",
+        "xpTotal": "{xp} 经验值",
+        "toNext": "距 {level} 还差 {xp} 经验值",
+        "maxLevel": "已达最高等级——Étoile（明星）！",
+        "familyTitle": "家庭徽章 · {earned}/{total}",
+        "familySubtitle": "您家庭在学院取得的成就",
+        "categories": {
+          "founder": "创始与传承",
+          "beginner": "新手之旅",
+          "commitment": "投入与自律",
+          "technique": "技巧",
+          "level": "等级晋升",
+          "performance": "演出表现",
+          "character": "品格与价值观",
+          "mentor": "教师与导师之路",
+          "community": "社区",
+          "secret": "隐藏与趣味",
+          "family": "家庭"
+        },
+        "award": {
+          "title": "颁发徽章",
+          "subtitle": "表彰一个里程碑。舞者及其家人将收到通知。",
+          "search": "搜索徽章…",
+          "note": "备注（可选）",
+          "awardCta": "颁发",
+          "revoke": "移除",
+          "noResults": "没有找到匹配的徽章。"
+        }
+      }
+    }
+  }
+}

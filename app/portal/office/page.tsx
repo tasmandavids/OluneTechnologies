@@ -7,6 +7,7 @@ import { requirePortalSession } from "@/lib/portal/session";
 import { getWeekRange } from "@/lib/staff/week";
 import { formatTimeShort } from "@/lib/i18n/format";
 import { getTranslations, getLocale } from "@/lib/i18n/server";
+import { studioLocalYmd } from "@/lib/date/studio-date";
 
 export default async function OfficeHomePage() {
   const { supabase, studioId, userId, role } = await requirePortalSession();
@@ -21,7 +22,7 @@ export default async function OfficeHomePage() {
     getLocale(),
   ]);
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = studioLocalYmd();
   const { weekStart, weekEnd } = getWeekRange();
 
   const [profileRes, shiftsRes, studioShiftsRes] = await Promise.all([

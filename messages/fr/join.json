@@ -1,0 +1,20 @@
+{
+  "join": {
+    "title": "Rejoindre le studio",
+    "subtitle": "Créez votre compte pour inscrire et gérer les cours.",
+    "pathParentTitle": "J'inscris mon enfant",
+    "pathParentDescription": "Compte parent ou tuteur — ajoutez des danseurs, inscrivez-les et payez les frais.",
+    "pathAdultTitle": "Je m'inscris moi-même (18 ans et plus)",
+    "pathAdultDescription": "Compte élève adulte — inscrivez-vous, signez les décharges et payez directement.",
+    "changePath": "← Choisir une autre option",
+    "yourBirthday": "Votre date de naissance",
+    "optionalChild": "Ajoutez votre danseur maintenant (facultatif)",
+    "childNamePlaceholder": "Nom complet de l'enfant",
+    "fullNamePlaceholder": "Votre nom complet",
+    "createAccount": "Créer le compte et continuer",
+    "creatingAccount": "Création du compte…",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "completeRegistration": "Terminer l'inscription",
+    "joining": "Inscription en cours…"
+  }
+}

@@ -77,7 +77,22 @@
     "theme": "Тема",
     "themeLight": "Светлая",
     "themeDark": "Тёмная",
-    "selectTheme": "Выберите тему"
+    "selectTheme": "Выберите тему",
+    "rail": {
+      "today": "Сегодня",
+      "people": "Люди",
+      "schedule": "Расписание",
+      "money": "Финансы",
+      "inbox": "Входящие",
+      "studio": "Студия",
+      "settings": "Настройки",
+      "account": "Аккаунт"
+    },
+    "palette": {
+      "placeholder": "Найти что угодно…",
+      "empty": "Ничего не найдено",
+      "new": "Новое"
+    }
   },
   "nav": {
     "sections": {

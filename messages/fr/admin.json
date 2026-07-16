@@ -175,6 +175,55 @@
         "classesToday": "Cours aujourd'hui",
         "classesTodayHint": "dans vos studios"
       },
+      "attention": {
+        "title": "Nécessite votre attention",
+        "allClear": "Tout est à jour",
+        "allClearHint": "Aucune facture en retard ni nouvelle demande pour le moment.",
+        "overdueTitle": "{count, plural, one {# facture en retard} other {# factures en retard}}",
+        "overdueSubtitle": "{amount} pour {families, plural, one {# famille} other {# familles}} · la plus ancienne depuis {days, plural, =0 {aujourd'hui} one {# jour} other {# jours}}",
+        "overdueAction": "Relancer",
+        "leadsTitle": "{count, plural, one {# nouvelle demande} other {# nouvelles demandes}}",
+        "leadsSubtitle": "La plus ancienne depuis {days, plural, =0 {aujourd'hui} one {# jour} other {# jours}}",
+        "leadsAction": "Voir"
+      },
+      "quickActions": {
+        "title": "Actions rapides",
+        "addClass": "Ajouter un cours",
+        "newInvoice": "Nouvelle facture",
+        "message": "Message",
+        "addLead": "Ajouter un prospect"
+      },
+      "staffToday": {
+        "title": "Équipe aujourd'hui",
+        "empty": "Aucun professeur prévu aujourd'hui.",
+        "classCount": "{count, plural, one {# cours} other {# cours}}",
+        "live": "En cours",
+        "nextAt": "prochain à {time}"
+      },
+      "today": {
+        "title": "Aujourd'hui",
+        "tomorrowTitle": "Demain",
+        "hint": "{count, plural, one {# cours} other {# cours}} · {students, plural, one {# élève attendu} other {# élèves attendus}}",
+        "fullTimetable": "Planning complet",
+        "empty": "Aucun cours prévu.",
+        "enrolled": "{count, plural, one {# inscrit} other {# inscrits}}",
+        "status": {
+          "live": "En cours"
+        }
+      },
+      "money": {
+        "title": "Ce mois-ci",
+        "collected": "Encaissé",
+        "trendUp": "+{percent}% par rapport au mois dernier",
+        "trendDown": "{percent}% par rapport au mois dernier",
+        "trendFlat": "Comme le mois dernier",
+        "activeStudents": "élèves actifs",
+        "classesToday": "cours aujourd'hui",
+        "activityTitle": "Activité récente",
+        "activityEmpty": "Aucune activité récente.",
+        "activityPaid": "{name} a payé la facture n°{number}",
+        "activityLead": "Nouvelle demande de {name}"
+      },
       "capacity": {
         "title": "Capacité de classe",
         "subtitle": "Cette semaine, par plage horaire du studio.",
@@ -200,6 +249,8 @@
     "classes": {
       "title": "Cours",
       "subtitle": "{count, plural, one {# cours} other {# cours}} · gérez votre emploi du temps",
+      "viewList": "Liste",
+      "viewSchedule": "Planning",
       "newClass": "+ Nouvelle classe",
       "searchPlaceholder": "Recherche par nom, discipline ou niveau…",
       "emptySearch": "Aucun cours ne correspond à votre recherche.",
