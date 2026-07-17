@@ -5,8 +5,10 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createEmptyDocument, normalizeDocument } from "@/lib/builder/document";
+import { convertBlocksToDocument } from "@/lib/builder/convertV1";
+import { normalizeBlocks } from "@/lib/site/blocks";
 import type { BuilderDocument } from "@/lib/builder/schema";
-import { saveBuilderDocument } from "../actions";
+import { saveBuilderDocument, publishStudioPage, unpublishStudioPage, renameStudioPage } from "../actions";
 import { BuilderStudio } from "@/components/builder/BuilderStudio";
 
 export default async function StudioEditorPage({ params }: { params: Promise<{ pageId: string }> }) {
@@ -15,7 +17,7 @@ export default async function StudioEditorPage({ params }: { params: Promise<{ p
 
   const { data: page } = await supabase
     .from("site_pages")
-    .select("id, title, slug, studio_id")
+    .select("id, title, slug, studio_id, status, is_home, show_in_nav, blocks, seo_title, seo_description")
     .eq("id", pageId)
     .single();
   if (!page) notFound();
@@ -29,20 +31,46 @@ export default async function StudioEditorPage({ params }: { params: Promise<{ p
       .maybeSingle();
     if (row?.document) initialDocument = normalizeDocument(row.document);
   } catch {
-    // Table not provisioned yet — fall through to an empty document.
+    // Table not provisioned yet — fall through below.
   }
 
   if (!initialDocument) {
-    initialDocument = createEmptyDocument({ title: page.title as string, slug: page.slug as string });
+    // No v2 document yet. If this page was built in the old block editor,
+    // seed Studio with a best-effort conversion of its existing content
+    // instead of a blank canvas — publishing a blank page would otherwise
+    // silently wipe out whatever is currently live. Nothing is written here;
+    // the studio still has to review and hit Publish.
+    const blocks = normalizeBlocks(page.blocks);
+    initialDocument = blocks.length
+      ? convertBlocksToDocument({
+          title: page.title as string,
+          slug: page.slug as string,
+          blocks,
+          seoTitle: page.seo_title as string | null,
+          seoDescription: page.seo_description as string | null,
+        })
+      : createEmptyDocument({ title: page.title as string, slug: page.slug as string });
   }
 
   const save = saveBuilderDocument.bind(null, pageId);
+  const publish = publishStudioPage.bind(null, pageId);
+  const unpublish = unpublishStudioPage.bind(null, pageId);
+  const rename = renameStudioPage.bind(null, pageId);
 
   return (
     <BuilderStudio
       initialDocument={initialDocument}
       save={save}
       backHref="/portal/admin/site/studio"
+      pageInfo={{
+        status: (page.status as "draft" | "published") ?? "draft",
+        isHome: Boolean(page.is_home),
+        showInNav: Boolean(page.show_in_nav),
+        slug: page.slug as string,
+      }}
+      publish={publish}
+      unpublish={unpublish}
+      rename={rename}
     />
   );
 }

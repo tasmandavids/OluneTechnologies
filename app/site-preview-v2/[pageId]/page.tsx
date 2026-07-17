@@ -8,8 +8,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { normalizeDocument } from "@/lib/builder/document";
+import { normalizeDocument, scanBuilderDataNeeds } from "@/lib/builder/document";
 import { PublicDocument } from "@/components/builder/PublicDocument";
+import { getSiteClasses, getSiteProducts } from "@/lib/site/queries";
 
 export async function generateMetadata({ params }: { params: Promise<{ pageId: string }> }): Promise<Metadata> {
   const { pageId } = await params;
@@ -36,18 +37,28 @@ export default async function StudioPreviewPage({ params }: { params: Promise<{ 
   const supabase = await createClient();
 
   let document = null;
+  let studioId: string | null = null;
   try {
     const { data } = await supabase
       .from("site_builder_documents")
-      .select("document")
+      .select("document, studio_id")
       .eq("page_id", pageId)
       .maybeSingle();
     if (data?.document) document = normalizeDocument(data.document);
+    studioId = (data?.studio_id as string | undefined) ?? null;
   } catch {
     document = null;
   }
 
   if (!document) notFound();
 
-  return <PublicDocument doc={document} />;
+  const needs = scanBuilderDataNeeds(document);
+  const [products, classes] = studioId
+    ? await Promise.all([
+        needs.productLimit > 0 ? getSiteProducts(studioId, needs.productLimit) : Promise.resolve([]),
+        needs.classLimit > 0 ? getSiteClasses(studioId, needs.classLimit) : Promise.resolve([]),
+      ])
+    : [[], []];
+
+  return <PublicDocument doc={document} data={{ products, classes }} />;
 }

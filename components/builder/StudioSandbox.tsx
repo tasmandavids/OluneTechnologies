@@ -50,7 +50,16 @@ export function StudioSandbox({ backHref }: { backHref?: string }) {
         ))}
       </div>
       {/* key forces a clean remount (re-running loadDocument) when the template changes */}
-      <BuilderStudio key={templateId} initialDocument={doc} save={async () => ({ ok: true })} backHref={backHref} />
+      <BuilderStudio
+        key={templateId}
+        initialDocument={doc}
+        save={async () => ({ ok: true })}
+        backHref={backHref}
+        pageInfo={{ status: "draft", isHome: false, showInNav: false, slug: doc.meta.slug }}
+        publish={async () => ({ ok: false, error: "Publishing isn't available in the sandbox." })}
+        unpublish={async () => ({ ok: false, error: "Publishing isn't available in the sandbox." })}
+        rename={async () => ({ ok: false, error: "Renaming isn't available in the sandbox." })}
+      />
     </>
   );
 }

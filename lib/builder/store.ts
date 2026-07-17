@@ -31,6 +31,8 @@ import {
   type BuilderDocument,
   type BuilderNode,
   type CmsBinding,
+  type CmsField,
+  type PageMeta,
   type AnimationSpec,
   type InteractionState,
   type NodeId,
@@ -38,7 +40,7 @@ import {
   type StyleSet,
   type ThemeTokens,
 } from "./schema";
-import { COMPONENT_LIBRARY, type ComponentDef } from "./defaults";
+import { COMPONENT_LIBRARY, newId, type ComponentDef } from "./defaults";
 import {
   attachSubtree,
   cloneSubtree,
@@ -47,6 +49,16 @@ import {
   removeSubtree,
   reorderChild,
 } from "./document";
+
+function slugifyLocal(input: string): string {
+  return input
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 export type EditorMode = "design" | "preview";
 
@@ -114,6 +126,18 @@ export interface BuilderState {
   setCascade: (mode: "desktop-first" | "mobile-first") => void;
   loadDocument: (doc: BuilderDocument) => void;
   markSaved: () => void;
+
+  // ── page meta / CMS collections (pillar 4) ───────────────────────────
+  setMeta: (patch: Partial<PageMeta>) => void;
+  addCollection: (name: string) => string;
+  renameCollection: (collectionId: string, name: string) => void;
+  deleteCollection: (collectionId: string) => void;
+  addCmsField: (collectionId: string, field: Omit<CmsField, "key"> & { key?: string }) => void;
+  updateCmsField: (collectionId: string, key: string, patch: Partial<CmsField>) => void;
+  removeCmsField: (collectionId: string, key: string) => void;
+  addCmsItem: (collectionId: string) => string;
+  updateCmsItem: (collectionId: string, itemId: string, fields: Record<string, unknown>) => void;
+  deleteCmsItem: (collectionId: string, itemId: string) => void;
 }
 
 const HISTORY_LIMIT = 100;
@@ -313,6 +337,82 @@ export const useBuilder = create<BuilderState>()(
           dirty: false,
         }),
       markSaved: () => set((s) => { s.dirty = false; }),
+
+      // page meta / CMS collections
+      setMeta: (patch) => edit((doc) => { doc.meta = { ...doc.meta, ...patch }; }),
+      addCollection: (name) => {
+        const id = newId("coll");
+        edit((doc) => {
+          doc.collections.push({
+            id,
+            name: name.trim() || "Collection",
+            slug: slugifyLocal(name) || id,
+            fields: [{ key: "title", label: "Title", type: "text" }],
+            items: [],
+          });
+        });
+        return id;
+      },
+      renameCollection: (collectionId, name) =>
+        edit((doc) => {
+          const c = doc.collections.find((c) => c.id === collectionId);
+          if (c) c.name = name;
+        }),
+      deleteCollection: (collectionId) =>
+        edit((doc) => {
+          doc.collections = doc.collections.filter((c) => c.id !== collectionId);
+          for (const n of Object.values(doc.nodes)) {
+            if (n.binding?.collectionId === collectionId) n.binding = undefined;
+          }
+        }),
+      addCmsField: (collectionId, field) =>
+        edit((doc) => {
+          const c = doc.collections.find((c) => c.id === collectionId);
+          if (!c) return;
+          const key = field.key?.trim() || `field_${c.fields.length + 1}`;
+          if (c.fields.some((f) => f.key === key)) return;
+          c.fields.push({
+            key,
+            label: field.label || key,
+            type: field.type,
+            refCollectionId: field.refCollectionId,
+            options: field.options,
+          });
+        }),
+      updateCmsField: (collectionId, key, patch) =>
+        edit((doc) => {
+          const c = doc.collections.find((c) => c.id === collectionId);
+          const f = c?.fields.find((f) => f.key === key);
+          if (f) Object.assign(f, patch);
+        }),
+      removeCmsField: (collectionId, key) =>
+        edit((doc) => {
+          const c = doc.collections.find((c) => c.id === collectionId);
+          if (!c) return;
+          c.fields = c.fields.filter((f) => f.key !== key);
+          for (const item of c.items) delete item.fields[key];
+        }),
+      addCmsItem: (collectionId) => {
+        const id = newId("item");
+        edit((doc) => {
+          const c = doc.collections.find((c) => c.id === collectionId);
+          if (!c) return;
+          c.items.push({ id, fields: {} });
+        });
+        return id;
+      },
+      updateCmsItem: (collectionId, itemId, fields) =>
+        edit((doc) => {
+          const c = doc.collections.find((c) => c.id === collectionId);
+          const item = c?.items.find((i) => i.id === itemId);
+          if (item) Object.assign(item.fields, fields);
+        }),
+      deleteCmsItem: (collectionId, itemId) =>
+        edit((doc) => {
+          const c = doc.collections.find((c) => c.id === collectionId);
+          if (!c) return;
+          c.items = c.items.filter((i) => i.id !== itemId);
+        }),
     };
   }),
 );

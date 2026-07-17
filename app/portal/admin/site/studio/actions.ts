@@ -6,11 +6,12 @@
 //  site_pages row. Never touches site_pages.blocks.
 // ============================================================================
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeDocument } from "@/lib/builder/document";
 import { STARTER_TEMPLATE_MAP } from "@/lib/builder/templates";
 import type { BuilderDocument } from "@/lib/builder/schema";
+import { siteCacheTag } from "@/lib/site/cached-queries";
 
 export type StudioResult<T = null> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -86,6 +87,114 @@ export async function saveBuilderDocument(pageId: string, rawDoc: BuilderDocumen
 
   revalidatePath(`/portal/admin/site/studio/${pageId}`);
   return { ok: true, data: null };
+}
+
+/**
+ * Publish a Studio page to the live public site. Flips the linked site_pages
+ * row to status='published' (RLS then exposes site_builder_documents to
+ * anon), optionally promotes it to the studio's homepage (demoting any
+ * current one — at most one is allowed) and/or adds it to the public nav.
+ */
+export async function publishStudioPage(
+  pageId: string,
+  opts: { asHome: boolean; showInNav: boolean },
+): Promise<StudioResult<{ slug: string }>> {
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
+
+  const { data: page, error: pErr } = await supabase
+    .from("site_pages")
+    .select("slug")
+    .eq("id", pageId)
+    .eq("studio_id", studioId)
+    .single();
+  if (pErr || !page) return { ok: false, error: "Page not found." };
+
+  if (opts.asHome) {
+    // Only one home page per studio (site_pages_one_home unique index) —
+    // demote any current one before promoting this page.
+    await supabase
+      .from("site_pages")
+      .update({ is_home: false })
+      .eq("studio_id", studioId)
+      .eq("is_home", true)
+      .neq("id", pageId);
+  }
+
+  const { error: uErr } = await supabase
+    .from("site_pages")
+    .update({
+      status: "published",
+      is_home: opts.asHome,
+      show_in_nav: opts.showInNav,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", pageId)
+    .eq("studio_id", studioId);
+  if (uErr) return { ok: false, error: uErr.message };
+
+  revalidatePath(`/portal/admin/site/studio/${pageId}`);
+  revalidatePath("/", "layout");
+  revalidateTag(siteCacheTag(studioId));
+  return { ok: true, data: { slug: page.slug as string } };
+}
+
+/** Unpublish a Studio page — takes it off the live site and out of nav/home. */
+export async function unpublishStudioPage(pageId: string): Promise<StudioResult> {
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
+
+  const { error: uErr } = await supabase
+    .from("site_pages")
+    .update({ status: "draft", is_home: false, show_in_nav: false, updated_at: new Date().toISOString() })
+    .eq("id", pageId)
+    .eq("studio_id", studioId);
+  if (uErr) return { ok: false, error: uErr.message };
+
+  revalidatePath(`/portal/admin/site/studio/${pageId}`);
+  revalidatePath("/", "layout");
+  revalidateTag(siteCacheTag(studioId));
+  return { ok: true, data: null };
+}
+
+/** Rename a Studio page's title and/or URL slug (keeps site_pages in sync with the doc). */
+export async function renameStudioPage(
+  pageId: string,
+  patch: { title?: string; slug?: string },
+): Promise<StudioResult<{ title: string; slug: string }>> {
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
+
+  const update: Record<string, string> = {};
+  if (patch.title !== undefined) {
+    const title = patch.title.trim();
+    if (!title) return { ok: false, error: "Title can't be empty." };
+    update.title = title;
+  }
+  if (patch.slug !== undefined) {
+    const slug = slugify(patch.slug);
+    if (!slug) return { ok: false, error: "URL can't be empty." };
+    if (RESERVED.has(slug)) return { ok: false, error: "That URL is reserved." };
+    update.slug = slug;
+  }
+  if (Object.keys(update).length === 0) return { ok: false, error: "Nothing to update." };
+
+  const { data, error: uErr } = await supabase
+    .from("site_pages")
+    .update({ ...update, updated_at: new Date().toISOString() })
+    .eq("id", pageId)
+    .eq("studio_id", studioId)
+    .select("title, slug")
+    .single();
+  if (uErr) {
+    if (uErr.code === "23505") return { ok: false, error: "A page with that URL already exists." };
+    return { ok: false, error: uErr.message };
+  }
+
+  revalidatePath(`/portal/admin/site/studio/${pageId}`);
+  revalidatePath("/", "layout");
+  revalidateTag(siteCacheTag(studioId));
+  return { ok: true, data: { title: data.title as string, slug: data.slug as string } };
 }
 
 export async function deleteStudioPage(pageId: string): Promise<StudioResult> {

@@ -182,6 +182,18 @@ function clamp(n: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, n));
 }
 
+/** What live platform data (products / classes) a published document needs, and how much. */
+export function scanBuilderDataNeeds(doc: BuilderDocument): { productLimit: number; classLimit: number } {
+  let productLimit = 0;
+  let classLimit = 0;
+  for (const node of Object.values(doc.nodes)) {
+    if (node.hidden) continue;
+    if (node.type === "productLoop") productLimit = Math.max(productLimit, node.props.limit ?? 6);
+    if (node.type === "booking") classLimit = Math.max(classLimit, node.props.limit ?? 6);
+  }
+  return { productLimit, classLimit };
+}
+
 // ─── Load-time normalization (defensive; the column is admin-writable) ───────────
 
 export function normalizeDocument(raw: unknown): BuilderDocument | null {

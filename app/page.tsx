@@ -11,6 +11,8 @@ import { getTranslations } from "@/lib/i18n/server";
 import { getBrandingCached } from "@/lib/branding";
 import { getPublishedHomeCached } from "@/lib/site/cached-queries";
 import { PublicSite } from "@/components/site/PublicSite";
+import { PublicDocument } from "@/components/builder/PublicDocument";
+import { getPublishedBuilderDocument, getPublishedBuilderRender } from "@/lib/builder/publicQueries";
 import { PoweredByOlune } from "@/components/brand/PoweredByOlune";
 import Hero from "@/components/marketing/Hero";
 import { ClientParticleBackground } from "@/components/landing/ClientParticleBackground";
@@ -38,9 +40,10 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   const home = await getPublishedHomeCached(studio.id);
+  const builderDoc = home ? await getPublishedBuilderDocument(home.id) : null;
   const branding = await getBrandingCached(studio.id);
-  const title = home?.seoTitle || studio.name;
-  const description = home?.seoDescription || branding.tagline || undefined;
+  const title = builderDoc?.meta.seoTitle || builderDoc?.meta.title || home?.seoTitle || studio.name;
+  const description = builderDoc?.meta.seoDescription || home?.seoDescription || branding.tagline || undefined;
 
   return {
     // A tenant's storefront is their own brand, not Olune's — never let the
@@ -96,6 +99,19 @@ export default async function HomePage({
   });
 
   if (home) {
+    // A Studio (v2) document takes priority over the v1 block renderer when
+    // the homepage has one — the v2 canvas is a self-contained design (own
+    // header/nav sections), so it replaces the whole page rather than
+    // slotting into SiteChrome.
+    const builderRender = await getPublishedBuilderRender(studio.id, home.id);
+    if (builderRender) {
+      return (
+        <>
+          <JsonLd data={studioJsonLd} />
+          <PublicDocument doc={builderRender.doc} data={builderRender.data} />
+        </>
+      );
+    }
     return (
       <>
         <JsonLd data={studioJsonLd} />

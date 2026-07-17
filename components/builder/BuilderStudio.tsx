@@ -14,21 +14,71 @@ import { Topbar } from "./Topbar";
 import { LeftPanel } from "./LeftPanel";
 import { CanvasViewport } from "./CanvasViewport";
 import { Inspector } from "./Inspector";
+import { StudioHostContext, type PublishStatus, type RenameResult } from "./HostContext";
+
+export interface StudioPublishResult {
+  ok: boolean;
+  error?: string;
+  data?: { slug: string };
+}
 
 export function BuilderStudio({
   initialDocument,
   save,
   backHref,
+  pageInfo,
+  publish,
+  unpublish,
+  rename,
 }: {
   initialDocument: BuilderDocument;
   save: (doc: BuilderDocument) => Promise<{ ok: boolean; error?: string }>;
   backHref?: string;
+  pageInfo: { status: PublishStatus; isHome: boolean; showInNav: boolean; slug: string };
+  publish: (opts: { asHome: boolean; showInNav: boolean }) => Promise<StudioPublishResult>;
+  unpublish: () => Promise<{ ok: boolean; error?: string }>;
+  rename: (patch: { title?: string; slug?: string }) => Promise<RenameResult>;
 }) {
   const router = useRouter();
   const loadDocument = useBuilder((s) => s.loadDocument);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const savedRef = useRef(false);
+
+  const [host, setHost] = useState(pageInfo);
+  const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
+
+  const doPublish = async (opts: { asHome: boolean; showInNav: boolean }) => {
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      const res = await publish(opts);
+      if (res.ok) {
+        setHost((h) => ({ ...h, status: "published", isHome: opts.asHome, showInNav: opts.showInNav, slug: res.data?.slug ?? h.slug }));
+      } else {
+        setPublishError(res.error ?? "Publish failed");
+      }
+    } finally {
+      setPublishing(false);
+    }
+  };
+  const doUnpublish = async () => {
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      const res = await unpublish();
+      if (res.ok) setHost((h) => ({ ...h, status: "draft", isHome: false, showInNav: false }));
+      else setPublishError(res.error ?? "Unpublish failed");
+    } finally {
+      setPublishing(false);
+    }
+  };
+  const doRename = async (patch: { title?: string; slug?: string }): Promise<RenameResult> => {
+    const res = await rename(patch);
+    if (res.ok && res.data?.slug) setHost((h) => ({ ...h, slug: res.data!.slug }));
+    return res;
+  };
 
   // Load once.
   useEffect(() => {
@@ -92,14 +142,18 @@ export function BuilderStudio({
   }, []);
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-neutral-100">
-      <Topbar saving={saving} onSave={doSave} onExit={backHref ? () => router.push(backHref) : undefined} />
-      {error && <div className="bg-red-600 px-3 py-1 text-center text-xs text-white">{error}</div>}
-      <div className="flex min-h-0 flex-1">
-        <LeftPanel />
-        <CanvasViewport />
-        <Inspector />
+    <StudioHostContext.Provider
+      value={{ ...host, publishing, publishError, publish: doPublish, unpublish: doUnpublish, rename: doRename }}
+    >
+      <div className="fixed inset-0 flex flex-col bg-neutral-100">
+        <Topbar saving={saving} onSave={doSave} onExit={backHref ? () => router.push(backHref) : undefined} />
+        {error && <div className="bg-red-600 px-3 py-1 text-center text-xs text-white">{error}</div>}
+        <div className="flex min-h-0 flex-1">
+          <LeftPanel />
+          <CanvasViewport />
+          <Inspector />
+        </div>
       </div>
-    </div>
+    </StudioHostContext.Provider>
   );
 }
