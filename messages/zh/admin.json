@@ -192,7 +192,8 @@
         "addClass": "添加课程",
         "newInvoice": "新建发票",
         "message": "消息",
-        "addLead": "添加线索"
+        "addLead": "添加线索",
+        "redeemPass": "核销通行证"
       },
       "staffToday": {
         "title": "今日员工",

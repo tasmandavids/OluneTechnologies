@@ -7,13 +7,14 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { IconCalendarPlus, IconReceipt, IconMegaphone, IconUserPlus } from "./icons";
+import { IconCalendarPlus, IconReceipt, IconMegaphone, IconUserPlus, IconQrCode } from "./icons";
 
 const ACTIONS = [
   { key: "addClass", href: "/portal/admin/classes", icon: IconCalendarPlus },
   { key: "newInvoice", href: "/portal/admin/billing", icon: IconReceipt },
   { key: "message", href: "/portal/admin/messages", icon: IconMegaphone },
   { key: "addLead", href: "/portal/admin/leads", icon: IconUserPlus },
+  { key: "redeemPass", href: "/portal/admin/passes", icon: IconQrCode },
 ] as const;
 
 export function QuickActions() {

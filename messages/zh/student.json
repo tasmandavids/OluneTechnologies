@@ -23,7 +23,6 @@
       "heading": "Class pass",
       "title": "Single class pass",
       "subtitle": "Any single adult ballet class",
-      "passHeld": "Pass held",
       "allSet": "🎉 You're all set!",
       "qrAlt": "Class pass QR code",
       "qrHint": "Show this QR code at the studio to redeem your class.",
@@ -37,7 +36,11 @@
       "cardAtCheckout": "Card payment is collected at checkout.",
       "purchaseFailed": "Purchase failed",
       "paymentStartFailed": "Could not start payment. Please try again.",
-      "networkError": "Network error. Please try again."
+      "networkError": "Network error. Please try again.",
+      "viewQr": "View QR",
+      "buyAnother": "Buy another pass",
+      "yourPass": "Your pass",
+      "purchasedOn": "Purchased {date}"
     }
   }
 }

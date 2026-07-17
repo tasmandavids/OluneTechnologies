@@ -191,3 +191,15 @@ export function IconCreditCard(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function IconQrCode(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <rect x="3.5" y="3.5" width="6" height="6" rx="1" />
+      <rect x="14.5" y="3.5" width="6" height="6" rx="1" />
+      <rect x="3.5" y="14.5" width="6" height="6" rx="1" />
+      <path d="M14.5 14.5h3v3h3v3h-6v-3h-3v-3z" />
+      <path d="M17.5 17.5v.01" />
+    </svg>
+  );
+}

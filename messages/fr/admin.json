@@ -191,7 +191,8 @@
         "addClass": "Ajouter un cours",
         "newInvoice": "Nouvelle facture",
         "message": "Message",
-        "addLead": "Ajouter un prospect"
+        "addLead": "Ajouter un prospect",
+        "redeemPass": "Utiliser un pass"
       },
       "staffToday": {
         "title": "Équipe aujourd'hui",

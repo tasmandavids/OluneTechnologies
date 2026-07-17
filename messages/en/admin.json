@@ -192,7 +192,8 @@
         "addClass": "Add class",
         "newInvoice": "New invoice",
         "message": "Message",
-        "addLead": "Add lead"
+        "addLead": "Add lead",
+        "redeemPass": "Redeem pass"
       },
       "staffToday": {
         "title": "Staff today",
