@@ -121,7 +121,8 @@
       "settings": "Paramètres",
       "substitutes": "Remplaçants",
       "availability": "Disponibilités des profs",
-      "inbox": "Boîte de réception"
+      "inbox": "Boîte de réception",
+      "passes": "Pass classe"
     },
     "teacher": {
       "schedule": "Planning et présence",

@@ -40,6 +40,7 @@
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "framer-motion": "^11.11.0",
+    "html5-qrcode": "^2.3.8",
     "imapflow": "^1.4.2",
     "immer": "^11.1.8",
     "next": "^15.1.0",

@@ -121,7 +121,8 @@
       "settings": "Impostazioni",
       "substitutes": "Sostituzioni",
       "availability": "Disponibilità insegnanti",
-      "inbox": "Posta in arrivo"
+      "inbox": "Posta in arrivo",
+      "passes": "Pass classe"
     },
     "teacher": {
       "schedule": "Orario e presenze",

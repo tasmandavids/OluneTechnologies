@@ -121,7 +121,8 @@
       "settings": "Настройки",
       "substitutes": "Замены",
       "availability": "Расписание учителей",
-      "inbox": "Входящие"
+      "inbox": "Входящие",
+      "passes": "Абонементы"
     },
     "teacher": {
       "schedule": "Расписание и журнал",

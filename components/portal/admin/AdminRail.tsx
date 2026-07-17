@@ -63,6 +63,7 @@ const SPACES: Space[] = [
     hrefs: [
       "/portal/admin/classes",
       "/portal/admin/events",
+      "/portal/admin/passes",
       "/portal/admin/substitutes",
       "/portal/admin/availability",
       "/portal/admin/private-lessons",

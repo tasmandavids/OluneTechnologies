@@ -1359,6 +1359,30 @@
       "forStudent": "For students",
       "forParent": "For parents",
       "create": "Create badge"
+    },
+    "passes": {
+      "searchClass": "Search classes",
+      "searchClassPlaceholder": "e.g. Adult Ballet",
+      "noClasses": "No classes found.",
+      "occurrenceDate": "Class date",
+      "redeeming": "Redeeming…",
+      "confirmRedeem": "Redeem pass",
+      "scanTitle": "Redeem a class pass",
+      "scanSubtitle": "Scan the student's QR code, or enter it manually.",
+      "startCamera": "Start camera",
+      "stopCamera": "Stop camera",
+      "cameraUnavailable": "Camera unavailable. Use manual entry below.",
+      "invalidPayload": "That doesn't look like a valid pass code.",
+      "manualEntryLabel": "Manual entry",
+      "manualEntryPlaceholder": "Paste the pass QR payload here",
+      "useManualEntry": "Use this code",
+      "pickOccurrence": "Which class is this for?",
+      "cancel": "Cancel",
+      "redeemedFor": "Redeemed for {className}",
+      "scanAnother": "Scan another pass",
+      "redeemFailed": "Redemption failed",
+      "networkError": "Network error. Please try again.",
+      "classesLoadFailed": "Could not load classes."
     }
   }
 }

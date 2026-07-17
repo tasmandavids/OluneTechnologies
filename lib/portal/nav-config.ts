@@ -20,6 +20,7 @@ export const ADMIN_NAV: NavSection[] = [
       { href: "/portal/admin", labelKey: "nav.admin.dashboard", exact: true },
       { href: "/portal/admin/classes", labelKey: "nav.admin.classes" },
       { href: "/portal/admin/events", labelKey: "nav.admin.events" },
+      { href: "/portal/admin/passes", labelKey: "nav.admin.passes" },
     ],
   },
   {

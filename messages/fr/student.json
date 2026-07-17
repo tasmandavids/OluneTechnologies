@@ -12,6 +12,26 @@
       "noEnrolments": "Aucune inscription active.",
       "noEnrolmentsHint": "L'administrateur du studio vous assignera des cours.",
       "withTeacher": "avec {name}"
+    },
+    "classPass": {
+      "heading": "Class pass",
+      "title": "Single class pass",
+      "subtitle": "Any single adult ballet class",
+      "passHeld": "Pass held",
+      "allSet": "🎉 You're all set!",
+      "qrAlt": "Class pass QR code",
+      "qrHint": "Show this QR code at the studio to redeem your class.",
+      "done": "Done",
+      "payAmount": "Pay {amount}",
+      "back": "Back",
+      "description": "One pass, good for any single adult ballet class. Show the QR code at the studio and staff will check you in.",
+      "total": "Total",
+      "processing": "Processing…",
+      "buyPass": "Buy pass →",
+      "cardAtCheckout": "Card payment is collected at checkout.",
+      "purchaseFailed": "Purchase failed",
+      "paymentStartFailed": "Could not start payment. Please try again.",
+      "networkError": "Network error. Please try again."
     }
   }
 }

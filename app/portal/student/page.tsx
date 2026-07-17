@@ -7,6 +7,8 @@ import StudentTimetable from "@/components/portal/student/StudentTimetable";
 import AdultStudentHub from "@/components/portal/student/AdultStudentHub";
 import { ParentShop } from "@/components/portal/parent/ParentShop";
 import EventsTickets, { type ParentEvent } from "@/components/portal/parent/EventsTickets";
+import BuyClassPass, { type StudentPass } from "@/components/portal/student/BuyClassPass";
+import { CLASS_PASS_PRICE_CENTS } from "@/lib/passes/constants";
 import type { Child, Invoice, ShopProduct } from "@/app/portal/parent/page";
 
 export type EnrolledClass = {
@@ -107,7 +109,7 @@ export default async function StudentPortal() {
     })),
   };
 
-  const [invoicesRes, productsRes, eventsRes, ticketsRes] = await Promise.all([
+  const [invoicesRes, productsRes, eventsRes, ticketsRes, passesRes] = await Promise.all([
     supabase
       .from("invoices")
       .select("id, amount_cents, gst_cents, status, due_date, issued_at, profiles!student_id ( full_name )")
@@ -127,6 +129,11 @@ export default async function StudentPortal() {
       .eq("status", "published")
       .order("event_date", { ascending: true }),
     supabase.from("event_tickets").select("event_id, quantity, status, qr_code").eq("user_id", user!.id),
+    supabase
+      .from("class_passes")
+      .select("id, status, price_cents, qr_code, purchased_at, redeemed_at")
+      .eq("student_id", user!.id)
+      .order("purchased_at", { ascending: false }),
   ]);
 
   const invoices: Invoice[] = (invoicesRes.data ?? []).map((inv) => ({
@@ -163,6 +170,15 @@ export default async function StudentPortal() {
     };
   });
 
+  const passes: StudentPass[] = (passesRes.data ?? []).map((p) => ({
+    id: p.id as string,
+    status: p.status as StudentPass["status"],
+    priceCents: p.price_cents as number,
+    qrCode: (p.qr_code as string | null) ?? null,
+    purchasedAt: p.purchased_at as string,
+    redeemedAt: (p.redeemed_at as string | null) ?? null,
+  }));
+
   return (
     <>
       <AdultStudentHub
@@ -172,12 +188,11 @@ export default async function StudentPortal() {
         invoices={invoices}
         todayDow={todayDow}
       />
-      {(events.length > 0 || products.length > 0) && (
-        <div className="mx-auto max-w-5xl space-y-12 px-6 pb-16">
-          {events.length > 0 && <EventsTickets events={events} />}
-          {products.length > 0 && <ParentShop products={products} />}
-        </div>
-      )}
+      <div className="mx-auto max-w-5xl space-y-12 px-6 pb-16">
+        <BuyClassPass priceCents={CLASS_PASS_PRICE_CENTS} existingPasses={passes} />
+        {events.length > 0 && <EventsTickets events={events} />}
+        {products.length > 0 && <ParentShop products={products} />}
+      </div>
     </>
   );
 }

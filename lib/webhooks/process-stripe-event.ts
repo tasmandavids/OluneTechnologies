@@ -156,6 +156,49 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
         break;
       }
 
+      // ── Class pass payment ─────────────────────────────────────────────
+      if (target.kind === "class_pass") {
+        const { data: updated, error } = await supabase
+          .from("class_passes")
+          .update({ status: "paid" })
+          .eq("id", target.passId)
+          .eq("stripe_payment_intent_id", intent.id)
+          .eq("status", "reserved")
+          .select("id, studio_id, student_id");
+
+        if (error || !updated?.length) {
+          console.warn(
+            `[stripe-webhook] payment_intent.succeeded — class_pass ${target.passId} PI mismatch or not found`,
+          );
+          break;
+        }
+
+        const pass = updated[0];
+
+        await supabase.from("payments").insert({
+          studio_id: pass.studio_id,
+          payer_id: pass.student_id,
+          invoice_id: null,
+          amount_cents: intent.amount_received,
+          currency: intent.currency,
+          stripe_payment_intent_id: intent.id,
+          status: "succeeded",
+          description: "Adult ballet class pass",
+        });
+
+        await supabase.from("notifications").insert({
+          studio_id: pass.studio_id,
+          user_id: pass.student_id,
+          type: "class_pass_paid",
+          title: "Your class pass is ready",
+          body: "Show the QR code at the studio to redeem it for any single adult ballet class.",
+          link: "/portal/student",
+        });
+
+        console.log(`[stripe-webhook] payment_intent.succeeded — class_pass ${target.passId} marked paid`);
+        break;
+      }
+
       console.log("[stripe-webhook] payment_intent.succeeded — no matching metadata, ignored");
       break;
     }
@@ -389,6 +432,19 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           refStudioId = ev?.studio_id ?? null;
           refPayerId = tkt[0].user_id;
           refTicketId = tkt[0].id;
+        }
+      }
+
+      if (!refStudioId) {
+        const { data: pass } = await supabase
+          .from("class_passes")
+          .update(refundPatch)
+          .eq("stripe_payment_intent_id", piId)
+          .neq("status", "refunded")
+          .select("id, student_id, studio_id");
+        if (pass && pass.length) {
+          refStudioId = pass[0].studio_id;
+          refPayerId = pass[0].student_id;
         }
       }
 

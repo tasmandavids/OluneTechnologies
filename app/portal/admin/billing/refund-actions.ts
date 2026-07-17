@@ -18,7 +18,7 @@ import { stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCY } from "@/lib/currency";
 
-export type RefundKind = "invoice" | "order" | "ticket";
+export type RefundKind = "invoice" | "order" | "ticket" | "class_pass";
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
 async function getAdminStudio() {
@@ -41,7 +41,7 @@ async function getAdminStudio() {
 }
 
 type Sale = {
-  table: "invoices" | "orders" | "event_tickets";
+  table: "invoices" | "orders" | "event_tickets" | "class_passes";
   id: string;
   studioId: string;
   payerId: string | null;
@@ -97,6 +97,26 @@ async function loadSale(
       payerId: data.user_id,
       intentId: data.stripe_payment_intent_id,
       amountCents: data.total_cents,
+      status: data.status,
+      alreadyRefunded: data.status === "refunded",
+      studioOk: data.studio_id === studioId,
+    };
+  }
+
+  if (kind === "class_pass") {
+    const { data } = await supabase
+      .from("class_passes")
+      .select("id, studio_id, student_id, price_cents, status, stripe_payment_intent_id")
+      .eq("id", id)
+      .single();
+    if (!data) return null;
+    return {
+      table: "class_passes",
+      id: data.id,
+      studioId: data.studio_id,
+      payerId: data.student_id,
+      intentId: data.stripe_payment_intent_id,
+      amountCents: data.price_cents,
       status: data.status,
       alreadyRefunded: data.status === "refunded",
       studioOk: data.studio_id === studioId,
@@ -214,6 +234,7 @@ export async function refundSale(
   revalidatePath("/portal/admin/billing");
   if (kind === "order") revalidatePath("/portal/admin/shop");
   if (kind === "ticket") revalidatePath("/portal/admin/events");
+  if (kind === "class_pass") revalidatePath("/portal/admin/passes");
 
   return { ok: true };
 }
