@@ -84,8 +84,30 @@ describe("classifyPaymentIntent", () => {
     });
   });
 
+  it("classifies a class pass payment with optional user_id", () => {
+    expect(classifyPaymentIntent({ class_pass_id: "pass_1", user_id: "u_1" })).toEqual({
+      kind: "class_pass",
+      passId: "pass_1",
+      userId: "u_1",
+    });
+    expect(classifyPaymentIntent({ class_pass_id: "pass_1" })).toEqual({
+      kind: "class_pass",
+      passId: "pass_1",
+      userId: null,
+    });
+  });
+
   it("orders precedence order > ticket", () => {
     expect(classifyPaymentIntent({ order_id: "ord_1", event_id: "ev_1" }).kind).toBe("order");
+  });
+
+  it("keeps class pass behind existing payment-intent sale types", () => {
+    expect(classifyPaymentIntent({ order_id: "ord_1", class_pass_id: "pass_1" }).kind).toBe(
+      "order",
+    );
+    expect(classifyPaymentIntent({ event_id: "ev_1", class_pass_id: "pass_1" }).kind).toBe(
+      "ticket",
+    );
   });
 
   it("returns 'none' for empty, missing, or whitespace-only metadata", () => {
@@ -97,6 +119,7 @@ describe("classifyPaymentIntent", () => {
       kind: "order",
       orderId: "ord_9",
     });
+    expect(classifyPaymentIntent({ class_pass_id: "  " })).toEqual({ kind: "none" });
   });
 });
 
