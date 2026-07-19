@@ -440,7 +440,7 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           .from("class_passes")
           .update(refundPatch)
           .eq("stripe_payment_intent_id", piId)
-          .neq("status", "refunded")
+          .eq("status", "paid")
           .select("id, student_id, studio_id");
         if (pass && pass.length) {
           refStudioId = pass[0].studio_id;

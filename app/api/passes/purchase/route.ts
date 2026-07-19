@@ -78,12 +78,20 @@ export async function POST(req: NextRequest) {
     transfer_data: await resolveTransferData(supabase, studioId),
   });
 
-  const { error: updateErr } = await supabase
+  const { data: updatedPass, error: updateErr } = await supabase
     .from("class_passes")
     .update({ qr_code: qrDataUrl, stripe_payment_intent_id: intent.id })
-    .eq("id", pass.id);
+    .eq("id", pass.id)
+    .eq("student_id", user.id)
+    .eq("studio_id", studioId)
+    .eq("status", "reserved")
+    .select("id")
+    .maybeSingle();
 
   if (updateErr) return NextResponse.json({ error: updateErr.message }, { status: 500 });
+  if (!updatedPass) {
+    return NextResponse.json({ error: "Could not attach checkout details to pass" }, { status: 500 });
+  }
 
   return NextResponse.json(
     { clientSecret: intent.client_secret, qrCode: qrDataUrl, passId: pass.id },
