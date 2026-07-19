@@ -8,6 +8,8 @@ import { PaymentModalBody, PaymentModalShell } from "@/components/payments/Payme
 import { formatMoney } from "@/lib/currency";
 import { listHeldClassPasses, type StudentClassPass } from "@/lib/passes/student-passes";
 
+export type StudentPass = StudentClassPass;
+
 interface Props {
   priceCents: number;
   existingPasses: StudentClassPass[];
