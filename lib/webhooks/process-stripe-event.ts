@@ -436,15 +436,26 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
       }
 
       if (!refStudioId) {
-        const { data: pass } = await supabase
+        const { data: refundedPass } = await supabase
           .from("class_passes")
           .update(refundPatch)
           .eq("stripe_payment_intent_id", piId)
           .eq("status", "paid")
           .select("id, student_id, studio_id");
-        if (pass && pass.length) {
-          refStudioId = pass[0].studio_id;
-          refPayerId = pass[0].student_id;
+        if (refundedPass && refundedPass.length) {
+          refStudioId = refundedPass[0].studio_id;
+          refPayerId = refundedPass[0].student_id;
+        } else {
+          const { data: redeemedPass } = await supabase
+            .from("class_passes")
+            .select("id, student_id, studio_id")
+            .eq("stripe_payment_intent_id", piId)
+            .eq("status", "redeemed")
+            .maybeSingle();
+          if (redeemedPass) {
+            refStudioId = redeemedPass.studio_id;
+            refPayerId = redeemedPass.student_id;
+          }
         }
       }
 

@@ -70,23 +70,29 @@ describe("class pass checkout UI", () => {
 
 class FakeQuery {
   filters: Array<{ op: "eq" | "neq"; column: string; value: unknown }> = [];
+  insertPayload: unknown;
   private selectColumns: string | null = null;
   private limitCount: number | null = null;
   private updatePatch: unknown;
+  private operation: "select" | "update" | "insert" | null = null;
+  private single = false;
 
   constructor(
     readonly table: string,
     private readonly calls: FakeQuery[],
+    private readonly options: { redeemedClassPass?: Record<string, unknown> } = {},
   ) {
     this.calls.push(this);
   }
 
   select(columns: string) {
+    this.operation ??= "select";
     this.selectColumns = columns;
     return this;
   }
 
   update(patch: unknown) {
+    this.operation = "update";
     this.updatePatch = patch;
     return this;
   }
@@ -106,7 +112,14 @@ class FakeQuery {
     return this;
   }
 
-  insert() {
+  maybeSingle() {
+    this.single = true;
+    return this;
+  }
+
+  insert(payload: unknown) {
+    this.operation = "insert";
+    this.insertPayload = payload;
     return Promise.resolve({ data: null, error: null });
   }
 
@@ -117,17 +130,25 @@ class FakeQuery {
     void this.selectColumns;
     void this.limitCount;
     void this.updatePatch;
-    return Promise.resolve({ data: [], error: null }).then(onfulfilled, onrejected);
+    let data: unknown[] | Record<string, unknown> | null = [];
+    if (
+      this.table === "class_passes" &&
+      this.operation === "select" &&
+      this.filters.some((filter) => filter.op === "eq" && filter.column === "status" && filter.value === "redeemed")
+    ) {
+      data = this.single ? (this.options.redeemedClassPass ?? null) : this.options.redeemedClassPass ? [this.options.redeemedClassPass] : [];
+    }
+    return Promise.resolve({ data, error: null }).then(onfulfilled, onrejected);
   }
 }
 
-function fakeSupabase() {
+function fakeSupabase(options: { redeemedClassPass?: Record<string, unknown> } = {}) {
   const calls: FakeQuery[] = [];
   return {
     calls,
     client: {
       from(table: string) {
-        return new FakeQuery(table, calls);
+        return new FakeQuery(table, calls, options);
       },
     },
   };
@@ -157,6 +178,56 @@ describe("class pass Stripe refund reconciliation", () => {
       op: "neq",
       column: "status",
       value: "refunded",
+    });
+  });
+
+  it("records a Stripe refund ledger row for redeemed passes without mutating redemption status", async () => {
+    const supabase = fakeSupabase({
+      redeemedClassPass: {
+        id: "pass_redeemed",
+        student_id: "student_1",
+        studio_id: "studio_1",
+      },
+    });
+    const event = {
+      type: "charge.refunded",
+      data: {
+        object: {
+          id: "ch_redeemed_class_pass_refund",
+          payment_intent: "pi_redeemed_class_pass",
+          amount_refunded: 2500,
+          currency: "nzd",
+          refunds: { data: [{ id: "re_redeemed_class_pass" }] },
+        },
+      },
+    } as unknown as Stripe.Event;
+
+    await processStripeEvent(event, supabase.client as never);
+
+    const redeemedLookup = supabase.calls.find(
+      (call) =>
+        call.table === "class_passes" &&
+        call.filters.some((filter) => filter.op === "eq" && filter.column === "status" && filter.value === "redeemed"),
+    );
+    const paidStatusUpdate = supabase.calls.find(
+      (call) =>
+        call.table === "class_passes" &&
+        call.filters.some((filter) => filter.op === "eq" && filter.column === "status" && filter.value === "paid"),
+    );
+    const ledgerInsert = supabase.calls.find(
+      (call) => call.table === "payments" && call.insertPayload && !call.filters.length,
+    );
+
+    expect(redeemedLookup).toBeDefined();
+    expect(paidStatusUpdate).toBeDefined();
+    expect(ledgerInsert?.insertPayload).toMatchObject({
+      studio_id: "studio_1",
+      payer_id: "student_1",
+      amount_cents: -2500,
+      currency: "nzd",
+      stripe_payment_intent_id: "pi_redeemed_class_pass",
+      stripe_refund_id: "re_redeemed_class_pass",
+      status: "refunded",
     });
   });
 });
