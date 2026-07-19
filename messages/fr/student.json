@@ -14,7 +14,6 @@
       "withTeacher": "avec {name}"
     },
     "classPass": {
-      "heading": "Class pass",
       "title": "Single class pass",
       "subtitle": "Any single adult ballet class",
       "allSet": "🎉 You're all set!",
@@ -34,7 +33,20 @@
       "viewQr": "View QR",
       "buyAnother": "Buy another pass",
       "yourPass": "Your pass",
-      "purchasedOn": "Purchased {date}"
+      "purchasedOn": "Purchased {date}",
+      "myPasses": "My Passes",
+      "myPassesSubtitle": "Tap a pass to show its QR code at the studio.",
+      "passesHeldCount": "{count, plural, one {# pass held} other {# passes held}}",
+      "viewPasses": "View →",
+      "noPassesYet": "No passes yet"
+    },
+    "completeProfile": {
+      "heading": "Finish setting up your account",
+      "subheading": "We need your full name and date of birth before you can access your dashboard.",
+      "fullNameLabel": "Full name",
+      "birthdayLabel": "Date of birth",
+      "saving": "Saving…",
+      "continue": "Continue"
     }
   }
 }

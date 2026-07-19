@@ -1,5 +1,12 @@
 "use client";
 
+// ============================================================================
+//  MyPasses — single entry point for an adult student's class passes.
+//  Clicking it opens: a list of currently-held (paid, unredeemed) passes if
+//  any exist — tap one to reveal its QR — or, with none held, goes straight
+//  into the buy flow.
+// ============================================================================
+
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
@@ -21,7 +28,7 @@ interface Props {
   existingPasses: StudentPass[];
 }
 
-type ModalState = { mode: "view"; pass: StudentPass } | { mode: "buy" } | null;
+type ModalState = { mode: "list" } | { mode: "view"; pass: StudentPass } | { mode: "buy" } | null;
 
 export default function BuyClassPass({ priceCents, existingPasses }: Props) {
   const t = useTranslations("student.classPass");
@@ -48,6 +55,14 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
     setClientSecret(null);
     setPurchasedQr(null);
     setModal({ mode: "buy" });
+  }
+
+  function openMyPasses() {
+    if (heldPasses.length > 0) {
+      setModal({ mode: "list" });
+    } else {
+      openBuy();
+    }
   }
 
   function viewPass(pass: StudentPass) {
@@ -85,44 +100,37 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
     }
   }
 
+  const modalTitle =
+    modal?.mode === "list"
+      ? t("myPasses")
+      : modal?.mode === "view"
+        ? t("yourPass")
+        : t("title");
+  const modalSubtitle =
+    modal?.mode === "list" ? t("myPassesSubtitle") : modal?.mode === "view" ? "" : t("subtitle");
+
   return (
     <section>
-      <h2 className="mb-3 text-xs uppercase tracking-widest text-muted">{t("heading")}</h2>
-
-      <div className="flex flex-col gap-2 sm:max-w-sm">
-        {heldPasses.map((pass) => (
-          <button
-            key={pass.id}
-            type="button"
-            onClick={() => viewPass(pass)}
-            className="group flex items-center justify-between rounded-2xl border border-[--hair] bg-surface p-4 text-left transition-shadow hover:shadow-md"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🎫</span>
-              <div>
-                <p className="font-semibold text-ink">{t("title")}</p>
-                <p className="text-xs text-muted">{t("purchasedOn", { date: formatDate(pass.purchasedAt) })}</p>
-              </div>
-            </div>
-            <span className="text-xs font-semibold text-brand group-hover:underline">{t("viewQr")} →</span>
-          </button>
-        ))}
-
-        <button
-          type="button"
-          onClick={openBuy}
-          className="flex items-center justify-between rounded-2xl border border-dashed border-[--hair] bg-surface p-4 text-left transition-shadow hover:shadow-md"
-        >
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🩰</span>
-            <div>
-              <p className="font-semibold text-ink">{heldPasses.length ? t("buyAnother") : t("title")}</p>
-              <p className="text-xs text-muted">{t("subtitle")}</p>
-            </div>
+      <button
+        type="button"
+        onClick={openMyPasses}
+        className="group flex w-full items-center justify-between rounded-2xl border border-[--hair] bg-surface p-4 text-left transition-shadow hover:shadow-md sm:max-w-sm"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">🎫</span>
+          <div>
+            <p className="font-semibold text-ink">{t("myPasses")}</p>
+            <p className="text-xs text-muted">
+              {heldPasses.length > 0
+                ? t("passesHeldCount", { count: heldPasses.length })
+                : t("noPassesYet")}
+            </p>
           </div>
-          <span className="font-black text-brand">{formatMoney(priceCents)}</span>
-        </button>
-      </div>
+        </div>
+        <span className="text-xs font-semibold text-brand group-hover:underline">
+          {heldPasses.length > 0 ? t("viewPasses") : formatMoney(priceCents)}
+        </span>
+      </button>
 
       <AnimatePresence>
         {modal && (
@@ -130,8 +138,8 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
             <div className="shrink-0 border-b border-[--hair] px-6 py-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-black text-ink">{t("title")}</h3>
-                  <p className="mt-0.5 text-xs text-muted">{t("subtitle")}</p>
+                  <h3 className="text-lg font-black text-ink">{modalTitle}</h3>
+                  {modalSubtitle && <p className="mt-0.5 text-xs text-muted">{modalSubtitle}</p>}
                 </div>
                 <button onClick={close} className="text-lg text-muted hover:text-ink">
                   ✕
@@ -140,9 +148,36 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
             </div>
 
             <PaymentModalBody>
-              {modal.mode === "view" ? (
+              {modal.mode === "list" ? (
+                <div className="flex flex-col gap-2">
+                  {heldPasses.map((pass) => (
+                    <button
+                      key={pass.id}
+                      type="button"
+                      onClick={() => viewPass(pass)}
+                      className="group flex items-center justify-between rounded-xl border border-[--hair] bg-base px-4 py-3 text-left hover:border-[color-mix(in_srgb,var(--brand)_35%,var(--hair))]"
+                    >
+                      <div>
+                        <p className="text-sm font-semibold text-ink">{t("title")}</p>
+                        <p className="text-xs text-muted">
+                          {t("purchasedOn", { date: formatDate(pass.purchasedAt) })}
+                        </p>
+                      </div>
+                      <span className="text-xs font-semibold text-brand group-hover:underline">
+                        {t("viewQr")} →
+                      </span>
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={openBuy}
+                    className="mt-2 rounded-xl border border-dashed border-[--hair] px-4 py-3 text-center text-sm font-semibold text-brand hover:bg-base"
+                  >
+                    {t("buyAnother")}
+                  </button>
+                </div>
+              ) : modal.mode === "view" ? (
                 <div className="flex flex-col items-center text-center">
-                  <p className="mb-3 font-semibold text-ink">{t("yourPass")}</p>
                   {modal.pass.qrCode && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img

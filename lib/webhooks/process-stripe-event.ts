@@ -27,6 +27,7 @@ import {
   xeroSyncTicketByPaymentIntent,
 } from "@/lib/xero/webhook-sync";
 import { syncStripeAccountStatus } from "@/lib/stripe/connect";
+import { CLASS_PASS_XERO_ACCOUNT_CODE } from "@/lib/passes/constants";
 
 export async function processStripeEvent(event: Stripe.Event, supabase: ServiceSupabase): Promise<void> {
   switch (event.type) {
@@ -174,11 +175,52 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
         }
 
         const pass = updated[0];
+        const nowIso = new Date().toISOString();
+
+        // A pass sale is a real invoice (not just a payments-ledger row like
+        // tickets/orders) so it reports correctly in accounting — classified
+        // under the studio's chart-of-accounts code for class-pass revenue.
+        const { data: newInvoice, error: invErr } = await supabase
+          .from("invoices")
+          .insert({
+            studio_id: pass.studio_id,
+            payer_id: pass.student_id,
+            student_id: pass.student_id,
+            amount_cents: intent.amount_received,
+            gst_cents: gstComponentCents(intent.amount_received),
+            status: "paid",
+            due_date: nowIso.slice(0, 10),
+            issued_at: nowIso,
+            paid_at: nowIso,
+            stripe_payment_intent_id: intent.id,
+            description: "Adult ballet class pass",
+          })
+          .select("id")
+          .single();
+
+        if (invErr || !newInvoice) {
+          console.warn(
+            `[stripe-webhook] class_pass ${target.passId} paid but invoice creation failed: ${invErr?.message}`,
+          );
+        } else {
+          await supabase.from("invoice_line_items").insert({
+            invoice_id: newInvoice.id,
+            item_type: "custom",
+            reference_id: pass.id,
+            description: "Adult ballet class pass",
+            quantity: 1,
+            unit_cents: intent.amount_received,
+            line_total_cents: intent.amount_received,
+            sort_order: 0,
+            account_code: CLASS_PASS_XERO_ACCOUNT_CODE,
+          });
+          await supabase.from("class_passes").update({ invoice_id: newInvoice.id }).eq("id", pass.id);
+        }
 
         await supabase.from("payments").insert({
           studio_id: pass.studio_id,
           payer_id: pass.student_id,
-          invoice_id: null,
+          invoice_id: newInvoice?.id ?? null,
           amount_cents: intent.amount_received,
           currency: intent.currency,
           stripe_payment_intent_id: intent.id,
@@ -194,6 +236,10 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           body: "Show the QR code at the studio to redeem it for any single adult ballet class.",
           link: "/portal/student",
         });
+
+        if (newInvoice?.id) {
+          await xeroSyncAfterPayment(supabase, "invoice", newInvoice.id);
+        }
 
         console.log(`[stripe-webhook] payment_intent.succeeded — class_pass ${target.passId} marked paid`);
         break;
@@ -435,19 +481,6 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
         }
       }
 
-      if (!refStudioId) {
-        const { data: pass } = await supabase
-          .from("class_passes")
-          .update(refundPatch)
-          .eq("stripe_payment_intent_id", piId)
-          .neq("status", "refunded")
-          .select("id, student_id, studio_id");
-        if (pass && pass.length) {
-          refStudioId = pass[0].studio_id;
-          refPayerId = pass[0].student_id;
-        }
-      }
-
       if (refStudioId) {
         await supabase.from("payments").insert({
           studio_id: refStudioId,
@@ -473,6 +506,16 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
       } else {
         console.log(`[stripe-webhook] charge.refunded — no matching sale for ${piId}`);
       }
+
+      // A class pass shares its stripe_payment_intent_id with the invoice
+      // created for it (not a mutually-exclusive "sale table" the way
+      // invoices/orders/tickets are above) — always check for and flip a
+      // linked pass too, independent of which branch above matched.
+      await supabase
+        .from("class_passes")
+        .update(refundPatch)
+        .eq("stripe_payment_intent_id", piId)
+        .neq("status", "refunded");
       break;
     }
 

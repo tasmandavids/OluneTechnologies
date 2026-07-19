@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useFullDayNames, useTimeGreeting, useFormatTimeShort } from "@/lib/i18n/client";
 import { EnrollModal } from "@/components/portal/parent/EnrollModal";
 import { PayInvoiceModal } from "@/components/portal/parent/PayInvoiceModal";
+import BuyClassPass, { type StudentPass } from "@/components/portal/student/BuyClassPass";
 import type { EnrolledClass } from "@/app/portal/student/page";
 import type { Child, Invoice } from "@/app/portal/parent/page";
 
@@ -58,12 +59,16 @@ export default function AdultStudentHub({
   classes,
   invoices,
   todayDow,
+  passes,
+  passPriceCents,
 }: {
   studentName: string | null;
   selfChild: Child;
   classes: EnrolledClass[];
   invoices: Invoice[];
   todayDow: number;
+  passes: StudentPass[];
+  passPriceCents: number;
 }) {
   const t = useTranslations("student.timetable");
   const tHub = useTranslations("parent.hub");
@@ -128,6 +133,11 @@ export default function AdultStudentHub({
           </button>
         </div>
       </motion.header>
+
+      {/* ── My Passes ──────────────────────────────────────────── */}
+      <motion.section variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+        <BuyClassPass priceCents={passPriceCents} existingPasses={passes} />
+      </motion.section>
 
       {/* ── Today ──────────────────────────────────────────────── */}
       <motion.section variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>

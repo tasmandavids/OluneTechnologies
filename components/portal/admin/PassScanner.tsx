@@ -30,7 +30,16 @@ function parsePayload(raw: string): DecodedPass | null {
 
 export default function PassScanner() {
   const t = useTranslations("admin.passes");
-  const [cameraActive, setCameraActive] = useState(false);
+  // Intent, not scanner state — the container div below only mounts (with
+  // real dimensions) once this flips true. html5-qrcode measures the
+  // container's clientWidth/clientHeight *synchronously* when start() runs;
+  // if that div were only CSS-hidden (display:none) rather than unmounted,
+  // it would measure 0x0 at that instant and the video/scan-box canvas would
+  // render at zero size forever, even after the div is later shown — which
+  // is exactly "camera permission granted, nothing appears". Gating the
+  // effect below on this same flag guarantees React has already committed
+  // the real-sized div to the DOM before start() ever runs.
+  const [cameraRequested, setCameraRequested] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [manualPayload, setManualPayload] = useState("");
   const [decoded, setDecoded] = useState<DecodedPass | null>(null);
@@ -54,40 +63,51 @@ export default function PassScanner() {
   }, [t]);
 
   useEffect(() => {
-    return () => {
-      scannerRef.current?.stop().catch(() => {});
-    };
-  }, []);
+    if (!cameraRequested) return;
+    let cancelled = false;
 
-  async function startCamera() {
+    (async () => {
+      try {
+        const { Html5Qrcode } = await import("html5-qrcode");
+        if (cancelled) return;
+        const scanner = new Html5Qrcode(SCANNER_ELEMENT_ID);
+        scannerRef.current = scanner;
+        await scanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: 250 },
+          (decodedText) => {
+            const parsed = parsePayload(decodedText);
+            if (parsed) {
+              setDecoded(parsed);
+              scanner.stop().catch(() => {});
+              setCameraRequested(false);
+            }
+          },
+          undefined,
+        );
+      } catch {
+        if (!cancelled) {
+          setCameraError(t("cameraUnavailable"));
+          setCameraRequested(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      const scanner = scannerRef.current;
+      scannerRef.current = null;
+      if (scanner?.isScanning) scanner.stop().catch(() => {});
+    };
+  }, [cameraRequested, t]);
+
+  function startCamera() {
     setCameraError(null);
-    try {
-      const { Html5Qrcode } = await import("html5-qrcode");
-      const scanner = new Html5Qrcode(SCANNER_ELEMENT_ID);
-      scannerRef.current = scanner;
-      await scanner.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        (decodedText) => {
-          const parsed = parsePayload(decodedText);
-          if (parsed) {
-            setDecoded(parsed);
-            scanner.stop().catch(() => {});
-            setCameraActive(false);
-          }
-        },
-        undefined,
-      );
-      setCameraActive(true);
-    } catch {
-      setCameraError(t("cameraUnavailable"));
-      setCameraActive(false);
-    }
+    setCameraRequested(true);
   }
 
-  async function stopCamera() {
-    await scannerRef.current?.stop().catch(() => {});
-    setCameraActive(false);
+  function stopCamera() {
+    setCameraRequested(false);
   }
 
   function submitManual() {
@@ -175,12 +195,11 @@ export default function PassScanner() {
       <h2 className="mb-1 text-lg font-black text-ink">{t("scanTitle")}</h2>
       <p className="mb-4 text-sm text-muted">{t("scanSubtitle")}</p>
 
-      <div
-        id={SCANNER_ELEMENT_ID}
-        className={`mb-4 overflow-hidden rounded-xl ${cameraActive ? "block" : "hidden"}`}
-      />
+      {cameraRequested && (
+        <div id={SCANNER_ELEMENT_ID} className="mb-4 h-64 w-full overflow-hidden rounded-xl bg-black" />
+      )}
 
-      {!cameraActive && (
+      {!cameraRequested && (
         <button
           onClick={startCamera}
           className="mb-4 w-full rounded-xl bg-brand py-3 text-sm font-semibold text-white hover:opacity-90"
@@ -188,7 +207,7 @@ export default function PassScanner() {
           {t("startCamera")}
         </button>
       )}
-      {cameraActive && (
+      {cameraRequested && (
         <button
           onClick={stopCamera}
           className="mb-4 w-full rounded-xl border border-[--hair] bg-base py-3 text-sm font-semibold text-muted hover:text-ink"

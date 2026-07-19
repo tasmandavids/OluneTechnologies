@@ -2,12 +2,13 @@
 //  /portal/student — Timetable (minors) or full self-service hub (adult students).
 // ============================================================================
 
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import StudentTimetable from "@/components/portal/student/StudentTimetable";
 import AdultStudentHub from "@/components/portal/student/AdultStudentHub";
 import { ParentShop } from "@/components/portal/parent/ParentShop";
 import EventsTickets, { type ParentEvent } from "@/components/portal/parent/EventsTickets";
-import BuyClassPass, { type StudentPass } from "@/components/portal/student/BuyClassPass";
+import { type StudentPass } from "@/components/portal/student/BuyClassPass";
 import { CLASS_PASS_PRICE_CENTS } from "@/lib/passes/constants";
 import type { Child, Invoice, ShopProduct } from "@/app/portal/parent/page";
 
@@ -34,7 +35,7 @@ export default async function StudentPortal() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, studio_id, self_managed")
+    .select("full_name, studio_id, self_managed, birthday")
     .eq("id", user!.id)
     .single();
 
@@ -91,6 +92,10 @@ export default async function StudentPortal() {
         todayDow={todayDow}
       />
     );
+  }
+
+  if (!profile.full_name?.trim() || !profile.birthday) {
+    redirect("/portal/student/complete-profile");
   }
 
   const studioId = profile.studio_id as string;
@@ -187,12 +192,15 @@ export default async function StudentPortal() {
         classes={classes}
         invoices={invoices}
         todayDow={todayDow}
+        passes={passes}
+        passPriceCents={CLASS_PASS_PRICE_CENTS}
       />
-      <div className="mx-auto max-w-5xl space-y-12 px-6 pb-16">
-        <BuyClassPass priceCents={CLASS_PASS_PRICE_CENTS} existingPasses={passes} />
-        {events.length > 0 && <EventsTickets events={events} />}
-        {products.length > 0 && <ParentShop products={products} />}
-      </div>
+      {(events.length > 0 || products.length > 0) && (
+        <div className="mx-auto max-w-5xl space-y-12 px-6 pb-16">
+          {events.length > 0 && <EventsTickets events={events} />}
+          {products.length > 0 && <ParentShop products={products} />}
+        </div>
+      )}
     </>
   );
 }
