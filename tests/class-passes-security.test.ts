@@ -16,6 +16,7 @@ vi.mock("@/lib/stripe/connect", () => ({
 import { processStripeEvent } from "@/lib/webhooks/process-stripe-event";
 
 const repoRoot = process.cwd();
+type FakeResult = { data: unknown[] | Record<string, unknown> | null; error: null };
 
 function readRepoFile(path: string) {
   return readFileSync(join(repoRoot, path), "utf8");
@@ -123,8 +124,8 @@ class FakeQuery {
     return Promise.resolve({ data: null, error: null });
   }
 
-  then<TResult1 = { data: unknown[]; error: null }, TResult2 = never>(
-    onfulfilled?: ((value: { data: unknown[]; error: null }) => TResult1 | PromiseLike<TResult1>) | null,
+  then<TResult1 = FakeResult, TResult2 = never>(
+    onfulfilled?: ((value: FakeResult) => TResult1 | PromiseLike<TResult1>) | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null,
   ) {
     void this.selectColumns;
@@ -138,7 +139,7 @@ class FakeQuery {
     ) {
       data = this.single ? (this.options.redeemedClassPass ?? null) : this.options.redeemedClassPass ? [this.options.redeemedClassPass] : [];
     }
-    return Promise.resolve({ data, error: null }).then(onfulfilled, onrejected);
+    return Promise.resolve({ data, error: null } satisfies FakeResult).then(onfulfilled, onrejected);
   }
 }
 
