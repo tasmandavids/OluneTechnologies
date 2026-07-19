@@ -12,6 +12,7 @@ import { normalizeDocument } from "@/lib/builder/document";
 import { STARTER_TEMPLATE_MAP } from "@/lib/builder/templates";
 import type { BuilderDocument } from "@/lib/builder/schema";
 import { siteCacheTag } from "@/lib/site/cached-queries";
+import { getAdminStudio as getAdminStudioAccess } from "@/lib/portal/access";
 
 export type StudioResult<T = null> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -22,13 +23,12 @@ function slugify(input: string): string {
 }
 
 async function getAdminStudio() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not signed in.", supabase, studioId: null };
-  const { data: profile } = await supabase.from("profiles").select("studio_id, role").eq("id", user.id).single();
-  if (profile?.role !== "admin") return { error: "Admin only.", supabase, studioId: null };
-  if (!profile.studio_id) return { error: "No studio found.", supabase, studioId: null };
-  return { error: null, supabase, studioId: profile.studio_id as string };
+  const ctx = await getAdminStudioAccess();
+  return {
+    error: ctx.error,
+    supabase: ctx.supabase,
+    studioId: ctx.studioId,
+  };
 }
 
 /** Create a draft site_pages row + its builder document from a starter template. */

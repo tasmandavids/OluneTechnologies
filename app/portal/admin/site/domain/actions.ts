@@ -16,6 +16,7 @@ import {
   validateCustomDomain,
   type DomainKind,
 } from "@/lib/site/domain-setup";
+import { getAdminStudio as getAdminStudioAccess } from "@/lib/portal/access";
 
 export type DomainActionResult<T = null> =
   | { ok: true; data: T }
@@ -24,23 +25,11 @@ export type DomainActionResult<T = null> =
 const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
 
 async function getAdminStudioId(): Promise<{ studioId: string } | { error: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "You're not signed in." };
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("studio_id, role")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile?.studio_id) return { error: "No studio found." };
-  if (profile.role !== "admin") return { error: "Only studio admins can manage domains." };
-
-  return { studioId: profile.studio_id };
+  const ctx = await getAdminStudioAccess();
+  if (ctx.error || !ctx.studioId) return { error: ctx.error ?? "Admin only." };
+  return { studioId: ctx.studioId };
 }
+
 
 const SaveSchema = z.object({
   domain: z.string().min(3).max(253),

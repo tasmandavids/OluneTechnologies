@@ -24,6 +24,11 @@ interface CheckoutFormProps {
   onSuccess: () => void;
   onCancel?: () => void;
   cancelLabel?: string;
+  /**
+   * Optional: wait for the server/webhook to confirm the sale before calling
+   * onSuccess. Return true when the DB row is paid; false to show processing.
+   */
+  confirmPaid?: () => Promise<boolean>;
 }
 
 function InnerForm({
@@ -31,6 +36,7 @@ function InnerForm({
   onSuccess,
   onCancel,
   cancelLabel,
+  confirmPaid,
 }: Omit<CheckoutFormProps, "clientSecret">) {
   const t = useTranslations("payments");
   const tCommon = useTranslations("common");
@@ -69,6 +75,14 @@ function InnerForm({
     // arrives, so we show a truthful "still processing" state and leave the
     // record untouched here.
     if (paymentIntent?.status === "succeeded") {
+      if (confirmPaid) {
+        const paid = await confirmPaid();
+        if (!paid) {
+          setProcessing(true);
+          setBusy(false);
+          return;
+        }
+      }
       onSuccess();
       return;
     }
@@ -148,6 +162,7 @@ export default function CheckoutForm({
   onSuccess,
   onCancel,
   cancelLabel,
+  confirmPaid,
 }: CheckoutFormProps) {
   const appearance = useMemo(() => buildStripeAppearance(), []);
 
@@ -163,6 +178,7 @@ export default function CheckoutForm({
         onSuccess={onSuccess}
         onCancel={onCancel}
         cancelLabel={cancelLabel}
+        confirmPaid={confirmPaid}
       />
     </Elements>
   );

@@ -9,8 +9,8 @@
 //  URL the editor stores on the block prop.
 // ============================================================================
 
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getAdminStudio } from "@/lib/portal/access";
 
 const BUCKET = "site-images";
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB
@@ -28,7 +28,6 @@ const ALLOWED: Record<string, string> = {
   "image/png": "png",
   "image/webp": "webp",
   "image/gif": "gif",
-  "image/svg+xml": "svg",
   "image/avif": "avif",
 };
 
@@ -46,21 +45,9 @@ export type UploadResult =
 async function requireAdminStudio(): Promise<
   { studioId: string } | { error: string }
 > {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not signed in." };
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("studio_id, role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin") return { error: "Admin only." };
-  if (!profile.studio_id) return { error: "No studio found." };
-  return { studioId: profile.studio_id as string };
+  const ctx = await getAdminStudio();
+  if (ctx.error || !ctx.studioId) return { error: ctx.error ?? "Admin only." };
+  return { studioId: ctx.studioId };
 }
 
 /**
@@ -76,7 +63,7 @@ export async function createSiteImageUploadUrl(
   if ("error" in guard) return { ok: false, error: guard.error };
 
   const ext = ALLOWED[contentType];
-  if (!ext) return { ok: false, error: "Unsupported file type. Use JPG, PNG, WebP, GIF, AVIF or SVG." };
+  if (!ext) return { ok: false, error: "Unsupported file type. Use JPG, PNG, WebP, GIF or AVIF." };
   if (!Number.isFinite(sizeBytes) || sizeBytes <= 0) return { ok: false, error: "Invalid file." };
   if (sizeBytes > MAX_BYTES) return { ok: false, error: "Image is too large (max 8 MB)." };
 

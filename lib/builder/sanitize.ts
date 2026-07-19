@@ -52,7 +52,7 @@ export function sanitizeEmbedHtml(html: string | undefined | null): string {
   return sanitizeHtmlLib(html, {
     allowedTags: ALLOWED_TAGS,
     allowedAttributes: {
-      "*": ["class", "id", "style", "title", "aria-*", "data-*"],
+      "*": ["class", "id", "title", "aria-*", "data-*"],
       a: ["href", "name", "target", "rel"],
       img: ["src", "alt", "width", "height", "loading"],
       iframe: ["src", "width", "height", "frameborder", "allow", "allowfullscreen", "loading", "title"],

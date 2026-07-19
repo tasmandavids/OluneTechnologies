@@ -18,6 +18,7 @@ import type {
   GeneratedAdCopy,
   SocialPlatform,
 } from "@/lib/advertising/types";
+import { getAdminStudio as getAdminStudioAccess } from "@/lib/portal/access";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 export type ActionResultWith<T> = ({ ok: true } & T) | { ok: false; error: string };
@@ -27,22 +28,13 @@ const OBJECTIVES: AdObjective[] = ["awareness", "traffic", "engagement", "conver
 const STATUSES: AdCampaignStatus[] = ["draft", "scheduled", "active", "paused", "completed", "failed"];
 
 async function getAdminStudio() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not signed in.", supabase, studioId: null, userId: null };
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("studio_id, role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin") return { error: "Admin only.", supabase, studioId: null, userId: null };
-  if (!profile.studio_id) return { error: "No studio.", supabase, studioId: null, userId: null };
-
-  return { error: null, supabase, studioId: profile.studio_id as string, userId: user.id };
+  const ctx = await getAdminStudioAccess();
+  return {
+    error: ctx.error,
+    supabase: ctx.supabase,
+    studioId: ctx.studioId,
+    userId: ctx.userId,
+  };
 }
 
 const GenerateAdSchema = z.object({

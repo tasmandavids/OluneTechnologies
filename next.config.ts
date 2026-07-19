@@ -27,15 +27,36 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   // Don't leak full URLs/paths to third parties via the Referer header.
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  // Drop powerful browser features the app doesn't use.
+  // Drop powerful browser features the app doesn't use. camera=() is
+  // intentionally open enough for QR scanning via getUserMedia on admin
+  // ticket-check pages — Permissions-Policy still blocks mic/geo.
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+    value: "microphone=(), geolocation=(), browsing-topics=()",
   },
   // Force HTTPS for 2 years incl. subdomains.
   {
     key: "Strict-Transport-Security",
     value: "max-age=63072000; includeSubDomains; preload",
+  },
+  // Baseline CSP — allows Stripe Elements, Supabase, and Next inline bootstraps.
+  // Tighten further once nonce-based script loading is wired.
+  {
+    key: "Content-Security-Policy",
+    value: [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "object-src 'none'",
+      "frame-ancestors 'self'",
+      "form-action 'self'",
+      "img-src 'self' data: blob: https:",
+      "font-src 'self' data: https://js.stripe.com",
+      "style-src 'self' 'unsafe-inline' https://js.stripe.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://maps.googleapis.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://maps.googleapis.com",
+      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://calendly.com https://form.typeform.com https://docs.google.com",
+      "worker-src 'self' blob:",
+    ].join("; "),
   },
 ];
 

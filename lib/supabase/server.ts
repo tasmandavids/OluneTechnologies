@@ -3,6 +3,7 @@
 
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { withAuthCookieDomain } from "@/lib/auth/cookie-domain";
 
 export async function createClient() {
   const cookieStore = await cookies(); // async in Next.js 15
@@ -20,7 +21,7 @@ export async function createClient() {
           // refreshes the session, so swallowing this write is safe.
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options),
+              cookieStore.set(name, value, withAuthCookieDomain(options)),
             );
           } catch {
             /* called from a Server Component — ignore */

@@ -16,27 +16,17 @@ import {
 import { refreshStudioXeroSync } from "@/lib/xero/inbound-sync";
 import { removeInvoiceFromActivePlan } from "@/lib/term-payment-plan-service";
 import { getTranslations } from "@/lib/i18n/server";
+import { getAdminStudio as getAdminStudioAccess } from "@/lib/portal/access";
 
 const VOIDABLE_INVOICE_STATUSES = ["draft", "sent", "overdue"] as const;
 
 async function getAdminStudio() {
-  const t = await getTranslations("errors.actions");
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: t("notSignedIn"), supabase, studioId: null };
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("studio_id, role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin") return { error: t("adminOnly"), supabase, studioId: null };
-  if (!profile.studio_id) return { error: t("noStudioFound"), supabase, studioId: null };
-
-  return { error: null, supabase, studioId: profile.studio_id as string };
+  const ctx = await getAdminStudioAccess();
+  return {
+    error: ctx.error,
+    supabase: ctx.supabase,
+    studioId: ctx.studioId,
+  };
 }
 
 const InvoiceLineItemInputSchema = z.object({

@@ -12,6 +12,7 @@ import { familyDiscountInfo } from "@/lib/discounts";
 import { isUuid } from "@/lib/validation/uuid";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveTransferData } from "@/lib/stripe/connect";
+import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -19,6 +20,10 @@ export async function POST(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!checkRateLimit(rateLimitKey("event-purchase", user.id), { limit: 20, windowMs: 60_000 })) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
 
   const body = await req.json();
   const { eventId, quantity = 1 } = body as { eventId: string; quantity?: number };

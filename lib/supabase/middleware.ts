@@ -3,6 +3,7 @@
 
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { withAuthCookieDomain } from "@/lib/auth/cookie-domain";
 
 export function createMiddlewareClient(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -19,7 +20,7 @@ export function createMiddlewareClient(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
+            response.cookies.set(name, value, withAuthCookieDomain(options)),
           );
         },
       },
