@@ -37,6 +37,10 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  // qrCode from /api/passes/purchase, held here until payment actually
+  // confirms — only promoted to purchasedQr in CheckoutForm's onSuccess, so
+  // the "all set" QR view can never render before the card has been charged.
+  const [pendingQr, setPendingQr] = useState<string | null>(null);
   const [purchasedQr, setPurchasedQr] = useState<string | null>(null);
 
   // Every unredeemed, paid pass stays individually accessible — a student may
@@ -53,6 +57,7 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
   function openBuy() {
     setError(null);
     setClientSecret(null);
+    setPendingQr(null);
     setPurchasedQr(null);
     setModal({ mode: "buy" });
   }
@@ -73,6 +78,7 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
     setModal(null);
     setError(null);
     setClientSecret(null);
+    setPendingQr(null);
     setPurchasedQr(null);
     setBusy(false);
   }
@@ -88,7 +94,7 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
         return;
       }
       if (data.clientSecret) {
-        setPurchasedQr(data.qrCode ?? null);
+        setPendingQr(data.qrCode ?? null);
         setClientSecret(data.clientSecret);
       } else {
         setError(t("paymentStartFailed"));
@@ -194,6 +200,27 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
                     {t("done")}
                   </button>
                 </div>
+              ) : clientSecret ? (
+                <div>
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className="text-sm text-muted">{t("title")}</span>
+                    <span className="text-lg font-black text-brand">{formatMoney(priceCents)}</span>
+                  </div>
+                  <CheckoutForm
+                    clientSecret={clientSecret}
+                    submitLabel={t("payAmount", { amount: formatMoney(priceCents) })}
+                    onSuccess={() => {
+                      setPurchasedQr(pendingQr);
+                      setPendingQr(null);
+                      setClientSecret(null);
+                    }}
+                    onCancel={() => {
+                      setPendingQr(null);
+                      setClientSecret(null);
+                    }}
+                    cancelLabel={t("back")}
+                  />
+                </div>
               ) : purchasedQr ? (
                 <div className="flex flex-col items-center text-center">
                   <p className="mb-3 font-semibold text-ink">{t("allSet")}</p>
@@ -210,20 +237,6 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
                   >
                     {t("done")}
                   </button>
-                </div>
-              ) : clientSecret ? (
-                <div>
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="text-sm text-muted">{t("title")}</span>
-                    <span className="text-lg font-black text-brand">{formatMoney(priceCents)}</span>
-                  </div>
-                  <CheckoutForm
-                    clientSecret={clientSecret}
-                    submitLabel={t("payAmount", { amount: formatMoney(priceCents) })}
-                    onSuccess={() => setClientSecret(null)}
-                    onCancel={() => setClientSecret(null)}
-                    cancelLabel={t("back")}
-                  />
                 </div>
               ) : (
                 <>

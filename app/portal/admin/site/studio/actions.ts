@@ -77,6 +77,18 @@ export async function saveBuilderDocument(pageId: string, rawDoc: BuilderDocumen
   const { error, supabase, studioId } = await getAdminStudio();
   if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
 
+  // Without this, an admin could save a document for a *different* studio's
+  // page_id (e.g. a guessed/reused id) and have the public renderer serve it
+  // there — verify the target page actually belongs to this studio first.
+  const { data: page, error: pErr } = await supabase
+    .from("site_pages")
+    .select("id")
+    .eq("id", pageId)
+    .eq("studio_id", studioId)
+    .maybeSingle();
+  if (pErr) return { ok: false, error: pErr.message };
+  if (!page) return { ok: false, error: "Page not found." };
+
   const doc = normalizeDocument(rawDoc);
   if (!doc) return { ok: false, error: "Document failed validation." };
 

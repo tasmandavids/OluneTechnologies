@@ -510,12 +510,15 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
       // A class pass shares its stripe_payment_intent_id with the invoice
       // created for it (not a mutually-exclusive "sale table" the way
       // invoices/orders/tickets are above) — always check for and flip a
-      // linked pass too, independent of which branch above matched.
+      // linked pass too, independent of which branch above matched. Only
+      // flip it while still 'paid': a *redeemed* pass keeps that status even
+      // if refunded later (the class was already attended — the invoice
+      // refund above still records the ledger entry correctly regardless).
       await supabase
         .from("class_passes")
         .update(refundPatch)
         .eq("stripe_payment_intent_id", piId)
-        .neq("status", "refunded");
+        .eq("status", "paid");
       break;
     }
 
