@@ -12,28 +12,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { parseClassPassQrPayload, type DecodedClassPassQr } from "@/lib/passes/qr";
 import ClassOccurrencePicker, { type PickableClass } from "./ClassOccurrencePicker";
 
-type DecodedPass = { passId: string; qrToken: string };
-
 const SCANNER_ELEMENT_ID = "class-pass-scanner-viewport";
-
-function parsePayload(raw: string): DecodedPass | null {
-  try {
-    const data = JSON.parse(raw) as { kind?: string; pass_id?: string; qr_token?: string };
-    if (data.kind !== "class_pass" || !data.pass_id || !data.qr_token) return null;
-    return { passId: data.pass_id, qrToken: data.qr_token };
-  } catch {
-    return null;
-  }
-}
 
 export default function PassScanner() {
   const t = useTranslations("admin.passes");
   const [cameraActive, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [manualPayload, setManualPayload] = useState("");
-  const [decoded, setDecoded] = useState<DecodedPass | null>(null);
+  const [decoded, setDecoded] = useState<DecodedClassPassQr | null>(null);
   const [classes, setClasses] = useState<PickableClass[]>([]);
   const [classesError, setClassesError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -69,7 +58,7 @@ export default function PassScanner() {
         { facingMode: "environment" },
         { fps: 10, qrbox: 250 },
         (decodedText) => {
-          const parsed = parsePayload(decodedText);
+          const parsed = parseClassPassQrPayload(decodedText);
           if (parsed) {
             setDecoded(parsed);
             scanner.stop().catch(() => {});
@@ -91,7 +80,7 @@ export default function PassScanner() {
   }
 
   function submitManual() {
-    const parsed = parsePayload(manualPayload);
+    const parsed = parseClassPassQrPayload(manualPayload);
     if (!parsed) {
       setCameraError(t("invalidPayload"));
       return;

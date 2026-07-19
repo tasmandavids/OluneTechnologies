@@ -13,6 +13,7 @@ import { CURRENCY } from "@/lib/currency";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveTransferData } from "@/lib/stripe/connect";
 import { CLASS_PASS_PRICE_CENTS } from "@/lib/passes/constants";
+import { buildClassPassQrPayload } from "@/lib/passes/qr";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -54,12 +55,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: insertErr?.message ?? "Could not create pass" }, { status: 500 });
   }
 
-  const qrPayload = JSON.stringify({
-    kind: "class_pass",
-    pass_id: pass.id,
-    qr_token: pass.qr_token,
-    student_id: user.id,
-    issued_at: new Date().toISOString(),
+  const qrPayload = buildClassPassQrPayload({
+    passId: pass.id,
+    qrToken: pass.qr_token,
+    studentId: user.id,
+    issuedAt: new Date(),
   });
   const qrDataUrl = await QRCode.toDataURL(qrPayload, { width: 300, margin: 2 });
 

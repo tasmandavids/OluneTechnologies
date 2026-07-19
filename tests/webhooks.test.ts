@@ -84,14 +84,39 @@ describe("classifyPaymentIntent", () => {
     });
   });
 
+  it("classifies a class-pass payment with optional user_id", () => {
+    expect(classifyPaymentIntent({ class_pass_id: "pass_1", user_id: "u_1" })).toEqual({
+      kind: "class_pass",
+      passId: "pass_1",
+      userId: "u_1",
+    });
+    expect(classifyPaymentIntent({ class_pass_id: "pass_1" })).toEqual({
+      kind: "class_pass",
+      passId: "pass_1",
+      userId: null,
+    });
+  });
+
   it("orders precedence order > ticket", () => {
     expect(classifyPaymentIntent({ order_id: "ord_1", event_id: "ev_1" }).kind).toBe("order");
+  });
+
+  it("keeps existing payment targets ahead of class-pass metadata", () => {
+    expect(classifyPaymentIntent({ payment_plan_id: "plan_1", class_pass_id: "pass_1" }).kind).toBe(
+      "term_plan",
+    );
+    expect(classifyPaymentIntent({ invoice_id: "inv_1", class_pass_id: "pass_1" }).kind).toBe(
+      "invoice",
+    );
+    expect(classifyPaymentIntent({ order_id: "ord_1", class_pass_id: "pass_1" }).kind).toBe("order");
+    expect(classifyPaymentIntent({ event_id: "ev_1", class_pass_id: "pass_1" }).kind).toBe("ticket");
   });
 
   it("returns 'none' for empty, missing, or whitespace-only metadata", () => {
     expect(classifyPaymentIntent(null)).toEqual({ kind: "none" });
     expect(classifyPaymentIntent(undefined)).toEqual({ kind: "none" });
     expect(classifyPaymentIntent({})).toEqual({ kind: "none" });
+    expect(classifyPaymentIntent({ class_pass_id: "  " })).toEqual({ kind: "none" });
     // empty string must not shadow a real later key
     expect(classifyPaymentIntent({ invoice_id: "  ", order_id: "ord_9" })).toEqual({
       kind: "order",

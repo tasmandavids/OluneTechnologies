@@ -6,22 +6,14 @@ import { useLocale, useTranslations } from "next-intl";
 import CheckoutForm from "@/components/payments/CheckoutForm";
 import { PaymentModalBody, PaymentModalShell } from "@/components/payments/PaymentModalShell";
 import { formatMoney } from "@/lib/currency";
-
-export type StudentPass = {
-  id: string;
-  status: "reserved" | "paid" | "redeemed" | "cancelled" | "refunded";
-  priceCents: number;
-  qrCode: string | null;
-  purchasedAt: string;
-  redeemedAt: string | null;
-};
+import { listHeldClassPasses, type StudentClassPass } from "@/lib/passes/student-passes";
 
 interface Props {
   priceCents: number;
-  existingPasses: StudentPass[];
+  existingPasses: StudentClassPass[];
 }
 
-type ModalState = { mode: "view"; pass: StudentPass } | { mode: "buy" } | null;
+type ModalState = { mode: "view"; pass: StudentClassPass } | { mode: "buy" } | null;
 
 export default function BuyClassPass({ priceCents, existingPasses }: Props) {
   const t = useTranslations("student.classPass");
@@ -35,9 +27,7 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
   // Every unredeemed, paid pass stays individually accessible — a student may
   // hold more than one (e.g. bought ahead of a few drop-ins), and each needs
   // its own QR shown at the door.
-  const heldPasses = existingPasses
-    .filter((p) => p.status === "paid")
-    .sort((a, b) => new Date(b.purchasedAt).getTime() - new Date(a.purchasedAt).getTime());
+  const heldPasses = listHeldClassPasses(existingPasses);
 
   function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" });
