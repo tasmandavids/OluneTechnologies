@@ -75,6 +75,7 @@ When Xero is connected and sync is enabled:
 | Invoice paid (tuition / auto-pay) | Paid ACCREC invoice + contact |
 | Shop order paid | Paid invoice with line items |
 | Event ticket paid | Paid invoice |
+| Class pass paid | Paid invoice with account code `200-01` |
 | Refund | Credit note |
 
 Olune stores only `xero_invoice_id` / `xero_contact_id` references. Full line-item and P&L detail is read from Xero on demand.
@@ -102,6 +103,8 @@ Studios can adjust settings in the connection row (`settings` jsonb):
 
 - `sales_account_code` — default `200`
 - `payment_account_code` — default `090`
+- Class-pass invoice line items use `200-01` from
+  `CLASS_PASS_XERO_ACCOUNT_CODE` in `lib/passes/constants.ts`.
 
 Ensure these codes exist in your Xero chart of accounts (NZ demo orgs often use similar codes).
 
