@@ -527,6 +527,32 @@
       "messages": {
         "description": "向 {name} 发送内部消息。他们将收到通知。",
         "openInHub": "在消息中心打开"
+      },
+      "massEmail": {
+        "button": "群发家长邮件",
+        "title": "群发家长邮件",
+        "subtitle": "向已登记有效邮箱的家长发送消息。",
+        "recipients": "收件人",
+        "scopeAll": "所有有邮箱的家长（{count}）",
+        "scopeSelected": "选定家长",
+        "scopeClass": "某班级的家长",
+        "selectedCount": "{count, plural, one {# selected} other {# selected}}",
+        "selectAll": "全选有邮箱的家长",
+        "noEmailable": "暂无可用邮箱的家长。",
+        "classLabel": "班级",
+        "classPlaceholder": "选择班级…",
+        "noClasses": "暂无班级。",
+        "subject": "主题",
+        "subjectPlaceholder": "例如：学期日期更新",
+        "body": "正文",
+        "bodyPlaceholder": "撰写给家长的消息…",
+        "bodyHint": "邮件会按家长姓名称呼，结尾附上工作室名称。",
+        "confirmTitle": "发送此邮件？",
+        "confirmCount": "将发送给 {count} 位家长。",
+        "confirmClass": "将发送给所选班级在读学员的家长。",
+        "send": "发送邮件",
+        "sending": "发送中…",
+        "result": "已发送：{sent}。已跳过：{skipped}.{failed, plural, =0 {} other { 失败：{failed}。}}"
       }
     },
     "billing": {

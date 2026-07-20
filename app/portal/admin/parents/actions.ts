@@ -3,12 +3,20 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getStudioOpsStudio } from "@/lib/portal/access";
+import {
+  getAdminStudio as getOwnerStudio,
+  getStudioOpsStudio,
+} from "@/lib/portal/access";
 import { listStudioMemberProfileIds } from "@/lib/portal/studio-members";
+import {
+  dedupeParentsByEmail,
+  renderMassParentEmail,
+  type ParentEmailCandidate,
+} from "@/lib/parents/mass-email";
 import type { GuardianRelationship } from "@/lib/parents/types";
 
+/** Front-desk + owner — roster CRUD. */
 async function getAdminStudio() {
   const ctx = await getStudioOpsStudio();
   return {
@@ -680,6 +688,174 @@ export async function bulkInviteMembers(): Promise<BulkInviteResult> {
       details.push(`${profile.email}: ${result.error}`);
     } else {
       sent++;
+    }
+  }
+
+  return { ok: true, sent, skipped, failed, details };
+}
+
+// ─── MASS EMAIL PARENTS ───────────────────────────────────────────────────────
+// Studio owners compose a subject + body and send via Resend to parents with
+// real email addresses. Scope: all parents, selected IDs, or parents of a class.
+
+export type MassEmailResult =
+  | { ok: true; sent: number; skipped: number; failed: number; details: string[] }
+  | { ok: false; error: string };
+
+const MassEmailSchema = z.object({
+  subject: z.string().trim().min(1, "Subject is required").max(200),
+  body: z.string().trim().min(1, "Message is required").max(10_000),
+  scope: z.enum(["all", "selected", "class"]),
+  parentIds: z.array(z.string().uuid()).max(500).optional(),
+  classId: z.string().uuid().optional(),
+});
+
+async function resolveMassEmailRecipients(
+  supabase: SupabaseClient,
+  studioId: string,
+  input: z.infer<typeof MassEmailSchema>,
+): Promise<{ ok: true; parents: ParentEmailCandidate[] } | { ok: false; error: string }> {
+  const parentIds = await listStudioMemberProfileIds(supabase, studioId, "parent");
+  if (parentIds.length === 0) {
+    return { ok: true, parents: [] };
+  }
+
+  let targetIds = parentIds;
+
+  if (input.scope === "selected") {
+    const selected = input.parentIds ?? [];
+    if (selected.length === 0) {
+      return { ok: false, error: "Select at least one parent." };
+    }
+    const allowed = new Set(parentIds);
+    targetIds = selected.filter((id) => allowed.has(id));
+    if (targetIds.length === 0) {
+      return { ok: false, error: "No valid parents selected." };
+    }
+  } else if (input.scope === "class") {
+    if (!input.classId) {
+      return { ok: false, error: "Choose a class." };
+    }
+
+    const { data: enrollments, error: enrollErr } = await supabase
+      .from("enrollments")
+      .select("student_id")
+      .eq("studio_id", studioId)
+      .eq("class_id", input.classId)
+      .eq("status", "active");
+
+    if (enrollErr) return { ok: false, error: enrollErr.message };
+
+    const studentIds = [...new Set((enrollments ?? []).map((e) => e.student_id as string))];
+    if (studentIds.length === 0) {
+      return { ok: true, parents: [] };
+    }
+
+    const { data: links, error: linkErr } = await supabase
+      .from("guardianships")
+      .select("guardian_id")
+      .eq("studio_id", studioId)
+      .in("student_id", studentIds);
+
+    if (linkErr) return { ok: false, error: linkErr.message };
+
+    const guardianSet = new Set((links ?? []).map((l) => l.guardian_id as string));
+    targetIds = parentIds.filter((id) => guardianSet.has(id));
+  }
+
+  if (targetIds.length === 0) {
+    return { ok: true, parents: [] };
+  }
+
+  const { data: profiles, error: profilesErr } = await supabase
+    .from("profiles")
+    .select("id, full_name, email")
+    .in("id", targetIds)
+    .eq("role", "parent");
+
+  if (profilesErr) return { ok: false, error: profilesErr.message };
+
+  return {
+    ok: true,
+    parents: dedupeParentsByEmail((profiles ?? []) as ParentEmailCandidate[]),
+  };
+}
+
+export async function massEmailParents(input: unknown): Promise<MassEmailResult> {
+  const parsed = MassEmailSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  // Studio owners only (admin) — office staff manage roster but do not blast email.
+  const { error, supabase, studioId } = await getOwnerStudio();
+  if (error || !studioId || !supabase) {
+    return { ok: false, error: error ?? "Not authorized." };
+  }
+
+  const { isEmailConfigured } = await import("@/lib/notify/config");
+  if (!isEmailConfigured()) {
+    return {
+      ok: false,
+      error: "Email is not configured. Set RESEND_API_KEY and RESEND_FROM to send mass emails.",
+    };
+  }
+
+  const recipients = await resolveMassEmailRecipients(supabase, studioId, parsed.data);
+  if (!recipients.ok) return recipients;
+
+  if (recipients.parents.length === 0) {
+    return {
+      ok: true,
+      sent: 0,
+      skipped: 0,
+      failed: 0,
+      details: ["No parents with a deliverable email address matched this selection."],
+    };
+  }
+
+  const { data: studio } = await supabase
+    .from("studios")
+    .select("name")
+    .eq("id", studioId)
+    .maybeSingle();
+
+  const studioName = (studio?.name as string | null)?.trim() || "Your studio";
+  const { sendEmail } = await import("@/lib/notify/providers");
+
+  let sent = 0;
+  let skipped = 0;
+  let failed = 0;
+  const details: string[] = [];
+
+  for (const parent of recipients.parents) {
+    if (!parent.email) {
+      skipped++;
+      continue;
+    }
+
+    const rendered = renderMassParentEmail({
+      studioName,
+      subject: parsed.data.subject,
+      body: parsed.data.body,
+      parentName: parent.full_name,
+    });
+
+    const result = await sendEmail({
+      to: parent.email,
+      subject: rendered.subject,
+      html: rendered.html,
+      text: rendered.text,
+    });
+
+    if (result.ok) {
+      sent++;
+    } else if (result.skipped) {
+      skipped++;
+      details.push(`${parent.email}: email provider not configured`);
+    } else {
+      failed++;
+      details.push(`${parent.email}: ${result.error}`);
     }
   }
 

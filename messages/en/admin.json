@@ -527,6 +527,32 @@
       "messages": {
         "description": "Send an internal message to {name}. They will receive a notification.",
         "openInHub": "Open in Messages hub"
+      },
+      "massEmail": {
+        "button": "Email parents",
+        "title": "Email parents",
+        "subtitle": "Send a message to parents with a real email on file.",
+        "recipients": "Recipients",
+        "scopeAll": "All parents with email ({count})",
+        "scopeSelected": "Selected parents",
+        "scopeClass": "Parents of a class",
+        "selectedCount": "{count, plural, one {# selected} other {# selected}}",
+        "selectAll": "Select all with email",
+        "noEmailable": "No parents have a deliverable email yet.",
+        "classLabel": "Class",
+        "classPlaceholder": "Choose a class…",
+        "noClasses": "No classes yet.",
+        "subject": "Subject",
+        "subjectPlaceholder": "e.g. Term dates update",
+        "body": "Message",
+        "bodyPlaceholder": "Write your message to parents…",
+        "bodyHint": "Parents are greeted by name. Your studio name is added at the end.",
+        "confirmTitle": "Send this email?",
+        "confirmCount": "This will email {count, plural, one {# parent} other {# parents}}.",
+        "confirmClass": "This will email parents of students currently enrolled in the selected class.",
+        "send": "Send email",
+        "sending": "Sending…",
+        "result": "Emails sent: {sent}. Skipped: {skipped}.{failed, plural, =0 {} other { Failed: {failed}.}}"
       }
     },
     "billing": {

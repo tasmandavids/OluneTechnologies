@@ -10,15 +10,17 @@ import type { ParentRow, StudentOption } from "@/lib/parents/types";
 export type { ParentRow } from "@/lib/parents/types";
 
 export default async function ParentsPage() {
-  const { supabase, studioId } = await requirePortalSession();
+  const { supabase, studioId, role } = await requirePortalSession();
   if (!studioId) return <ParentsManager parents={[]} students={[]} />;
+
+  const canMassEmail = role === "admin";
 
   const [parentIds, studentIds] = await Promise.all([
     listStudioMemberProfileIds(supabase, studioId, "parent"),
     listStudioMemberProfileIds(supabase, studioId, "student"),
   ]);
 
-  const [parentsRes, guardianshipsRes, studentsRes] = await Promise.all([
+  const [parentsRes, guardianshipsRes, studentsRes, classesRes] = await Promise.all([
     parentIds.length === 0
       ? Promise.resolve({ data: [] as never[] })
       : supabase
@@ -44,6 +46,14 @@ export default async function ParentsPage() {
           .in("id", studentIds)
           .eq("role", "student")
           .order("full_name"),
+
+    canMassEmail
+      ? supabase
+          .from("classes")
+          .select("id, name")
+          .eq("studio_id", studioId)
+          .order("name")
+      : Promise.resolve({ data: [] as { id: string; name: string }[] }),
   ]);
 
   const allGuardianships = guardianshipsRes.data ?? [];
@@ -96,5 +106,17 @@ export default async function ParentsPage() {
     name: s.full_name,
   }));
 
-  return <ParentsManager parents={parents} students={students} />;
+  const classes = (classesRes.data ?? []).map((c) => ({
+    id: c.id as string,
+    name: (c.name as string) || "Untitled class",
+  }));
+
+  return (
+    <ParentsManager
+      parents={parents}
+      students={students}
+      classes={classes}
+      canMassEmail={canMassEmail}
+    />
+  );
 }

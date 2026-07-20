@@ -491,6 +491,32 @@
       "messages": {
         "description": "Отправьте внутреннее сообщение на{name}. Они получат уведомление.",
         "openInHub": "Открыть в разделе «Сообщения»"
+      },
+      "massEmail": {
+        "button": "Письмо родителям",
+        "title": "Письмо родителям",
+        "subtitle": "Отправьте сообщение родителям с действительным email.",
+        "recipients": "Получатели",
+        "scopeAll": "Все родители с email ({count})",
+        "scopeSelected": "Выбранные родители",
+        "scopeClass": "Родители класса",
+        "selectedCount": "{count, plural, one {# selected} other {# selected}}",
+        "selectAll": "Выбрать всех с email",
+        "noEmailable": "Пока нет родителей с рабочим email.",
+        "classLabel": "Класс",
+        "classPlaceholder": "Выберите класс…",
+        "noClasses": "Классов пока нет.",
+        "subject": "Тема",
+        "subjectPlaceholder": "напр. Обновление дат семестра",
+        "body": "Сообщение",
+        "bodyPlaceholder": "Напишите сообщение родителям…",
+        "bodyHint": "Родителей приветствуют по имени. Название студии добавляется в конце.",
+        "confirmTitle": "Отправить это письмо?",
+        "confirmCount": "Письмо получат {count, plural, one {# родитель} few {# родителя} other {# родителей}}.",
+        "confirmClass": "Письмо получат родители учеников, записанных в выбранный класс.",
+        "send": "Отправить",
+        "sending": "Отправка…",
+        "result": "Отправлено: {sent}. Пропущено: {skipped}.{failed, plural, =0 {} other { Ошибок: {failed}.}}"
       }
     },
     "billing": {
