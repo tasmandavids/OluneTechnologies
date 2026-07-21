@@ -99,6 +99,15 @@ async function resolveProfileAccess(
 }
 
 export async function middleware(request: NextRequest) {
+  // The OAuth callback must complete its PKCE code exchange untouched. Running
+  // the session refresh here signs out any stale prior session, and signOut()
+  // deletes the in-flight `sb-*-auth-token-code-verifier` cookie — which makes
+  // exchangeCodeForSession fail and breaks Google sign-in for returning users.
+  // Leave the whole /auth/ handshake alone. (Matcher below also skips it.)
+  if (request.nextUrl.pathname.startsWith("/auth/")) {
+    return NextResponse.next();
+  }
+
   const { supabase, response, user: sessionUser } = await refreshSession(request);
 
   const { pathname } = request.nextUrl;
@@ -181,6 +190,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   // Page routes only — skip Next.js internals, static assets, and API routes.
   matcher: [
-    "/((?!_next/static|_next/image|favicon\\.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|json)$).*)",
+    "/((?!_next/static|_next/image|favicon\\.ico|api/|auth/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|json)$).*)",
   ],
 };
