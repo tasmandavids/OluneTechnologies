@@ -41,6 +41,14 @@ function makeSession(): Session {
   } as Session;
 }
 
+function decodeAuthCookie(value: string) {
+  const encoded = value.replace(/^base64-/, "");
+  return JSON.parse(Buffer.from(encoded, "base64url").toString("utf8")) as Record<
+    string,
+    unknown
+  >;
+}
+
 describe("Supabase auth cookie helpers", () => {
   beforeEach(() => {
     process.env = {
@@ -130,7 +138,13 @@ describe("Supabase auth cookie helpers", () => {
 
     const html = await response.text();
     expect(html).toContain("https://app.olune.test/portal");
-    expect(response.cookies.get(key)?.value).toMatch(/^base64-/);
+    const freshCookie = response.cookies.get(key)?.value;
+    expect(freshCookie).toMatch(/^base64-/);
+    expect(decodeAuthCookie(freshCookie!)).toMatchObject({
+      access_token: "fresh-access-token",
+      refresh_token: "fresh-refresh-token",
+      token_type: "bearer",
+    });
     expect(response.cookies.get(`${key}.0`)?.value).toBe("");
     expect(response.cookies.get(`${key}-user`)?.value).toBe("");
     expect(response.cookies.get(`${key}-code-verifier`)?.value).toBe("");
