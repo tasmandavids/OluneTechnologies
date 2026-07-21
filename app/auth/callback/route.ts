@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { sanitizeNextPath } from "@/lib/auth/oauth";
+import { createAuthRouteClient } from "@/lib/supabase/route-handler";
 
 export const dynamic = "force-dynamic";
 
@@ -19,13 +19,15 @@ export async function GET(request: Request) {
     return NextResponse.redirect(loginOnError);
   }
 
-  const supabase = await createClient();
+  // Build the redirect first so exchangeCodeForSession can attach session
+  // cookies directly to the response the browser will follow.
+  const response = NextResponse.redirect(`${origin}${next}`);
+  const supabase = await createAuthRouteClient(response);
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
     return NextResponse.redirect(loginOnError);
   }
 
-  // Redirect to the same origin the user started from and preserve ?next=...
-  return NextResponse.redirect(`${origin}${next}`);
+  return response;
 }
