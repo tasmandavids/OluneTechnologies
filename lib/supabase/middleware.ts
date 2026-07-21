@@ -2,6 +2,7 @@
 // without stampeding the refresh-token endpoint (see refreshSession below).
 
 import { createServerClient } from "@supabase/ssr";
+import { stringFromBase64URL } from "@supabase/ssr/dist/module/utils";
 import { NextResponse, type NextRequest } from "next/server";
 
 /** The only bits of the user the routing layer in middleware.ts needs. */
@@ -179,7 +180,7 @@ function readStoredSession(request: NextRequest): StoredSession | null {
   try {
     let raw = parts.map((c) => c.value).join("");
     if (raw.startsWith("base64-")) {
-      raw = utf8FromBase64(raw.slice("base64-".length));
+      raw = stringFromBase64URL(raw.slice("base64-".length));
     }
     const parsed = JSON.parse(raw);
     const session = Array.isArray(parsed) ? parsed[0] : parsed;

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sanitizeNextPath } from "@/lib/auth/oauth";
 import {
-  createAuthRouteClient,
+  createOAuthCallbackClient,
   finalizeOAuthSession,
 } from "@/lib/supabase/route-handler";
 
@@ -23,13 +23,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(loginOnError);
   }
 
-  const { supabase, getResponse } = createAuthRouteClient(request, redirectUrl);
+  const { supabase, getResponse } = createOAuthCallbackClient(request, redirectUrl);
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error || !data.session) {
-    return NextResponse.redirect(loginOnError);
+    const reason = error?.code ?? "no_session";
+    return NextResponse.redirect(`${loginOnError}&reason=${encodeURIComponent(reason)}`);
   }
 
-  const response = await finalizeOAuthSession(request, getResponse(), data.session);
-  return response;
+  return finalizeOAuthSession(request, getResponse(), data.session);
 }

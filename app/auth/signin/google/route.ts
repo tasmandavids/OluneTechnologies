@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sanitizeNextPath } from "@/lib/auth/oauth";
 import { mergeSessionCookies } from "@/lib/supabase/middleware";
-import { createAuthRouteClient } from "@/lib/supabase/route-handler";
+import {
+  createOAuthSignInClient,
+} from "@/lib/supabase/route-handler";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -28,8 +30,7 @@ export async function GET(request: NextRequest) {
 
   const loginOnError = `${origin}/login?error=auth_callback_error&next=${encodeURIComponent(next)}`;
 
-  // Holder redirect collects PKCE verifier cookies during signInWithOAuth.
-  const { supabase, getResponse } = createAuthRouteClient(request, origin);
+  const { supabase, getResponse } = createOAuthSignInClient(request, origin);
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
