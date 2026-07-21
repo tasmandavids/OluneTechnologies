@@ -4,6 +4,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { stringFromBase64URL } from "@supabase/ssr/dist/module/utils";
 import { NextResponse, type NextRequest } from "next/server";
+import { purgeAuthCookies } from "@/lib/supabase/auth-cookies";
 
 /** The only bits of the user the routing layer in middleware.ts needs. */
 export type SessionUser = { id: string; email: string | null };
@@ -85,8 +86,10 @@ export async function refreshSession(request: NextRequest) {
   // to getUser(). When logged out this is cheap (no token, no network refresh);
   // it's also a safe last resort if the cookie encoding ever changes.
   if (!stored?.accessToken || !stored.refreshToken || stored.expiresAt == null) {
-    const { data: { user } } = await supabase.auth.getUser();
-    return { supabase, response: getResponse(), user: toSessionUser(user) };
+    const { data: { user }, error } = await supabase.auth.getUser();
+    const response = getResponse();
+    if (!user && error) purgeAuthCookies(response, request);
+    return { supabase, response, user: toSessionUser(user) };
   }
 
   const secondsLeft = stored.expiresAt - Math.floor(Date.now() / 1000);
@@ -117,9 +120,9 @@ export async function refreshSession(request: NextRequest) {
 
   const outcome = await flight;
   if (!outcome.ok) {
-    // Refresh failed (token already rotated away, or transient). Do NOT sign
-    // out — treat as unauthenticated for this request only.
-    return { supabase, response: getResponse(), user: null };
+    const response = getResponse();
+    purgeAuthCookies(response, request);
+    return { supabase, response, user: null };
   }
 
   if (!isLeader) {
