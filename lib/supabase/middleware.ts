@@ -29,27 +29,29 @@ export function createMiddlewareClient(request: NextRequest) {
   return { supabase, getResponse: () => response };
 }
 
-/** Refresh session; on invalid refresh token, sign out so stale cookies are cleared. */
+/**
+ * Validate the session for this request, letting Supabase rotate an expired
+ * access token (the happy path writes fresh cookies via setAll).
+ *
+ * On a refresh error we deliberately do NOT sign out. A page load fires several
+ * requests in parallel, each running this middleware and each refreshing the
+ * SAME refresh token; rotation + the 10s reuse grace lets one win while an
+ * unlucky sibling gets a transient `refresh_token_not_found`. The old code
+ * reacted by calling `supabase.auth.signOut()` — which defaults to
+ * `scope: 'global'` and revokes EVERY session the user has on every device.
+ * One racing request then cascaded into a cross-device mass logout (visible in
+ * the auth logs as floods of `refresh_token_not_found` plus
+ * `Possible abuse attempt` family revocations). Instead we simply treat this
+ * request as unauthenticated: the winning request's rotated cookie stands, and
+ * a genuinely dead session resolves to logged-out on the next navigation with
+ * no server-side revocation.
+ */
 export async function refreshSession(request: NextRequest) {
   const { supabase, getResponse } = createMiddlewareClient(request);
 
-  const { data: { user }, error } = await supabase.auth.getUser();
-
-  if (error && isStaleRefreshError(error)) {
-    await supabase.auth.signOut();
-    return { supabase, response: getResponse(), user: null };
-  }
+  const { data: { user } } = await supabase.auth.getUser();
 
   return { supabase, response: getResponse(), user: user ?? null };
-}
-
-function isStaleRefreshError(error: { message?: string; code?: string }): boolean {
-  const msg = error.message?.toLowerCase() ?? "";
-  return (
-    msg.includes("refresh token") ||
-    error.code === "refresh_token_not_found" ||
-    error.code === "invalid_refresh_token"
-  );
 }
 
 /** Copy refreshed auth cookies onto redirects so the browser keeps the session. */
