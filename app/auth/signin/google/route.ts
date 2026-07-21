@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { sanitizeNextPath } from "@/lib/auth/oauth";
 import { mergeSessionCookies } from "@/lib/supabase/middleware";
 import { createAuthRouteClient } from "@/lib/supabase/route-handler";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 // Server-initiated Google OAuth.
 //
@@ -20,23 +21,20 @@ export const dynamic = "force-dynamic";
 // persist the verifier through this route handler's `Set-Cookie` response
 // header — a first-party HTTP cookie Safari does not subject to ITP's
 // script-cookie handling — then we redirect the browser to the provider URL.
-export async function GET(request: Request) {
-  const url = new URL(request.url);
+export async function GET(request: NextRequest) {
+  const url = request.nextUrl;
   const origin = url.origin;
   const next = sanitizeNextPath(url.searchParams.get("next"));
 
   const loginOnError = `${origin}/login?error=auth_callback_error&next=${encodeURIComponent(next)}`;
 
-  // Holder response collects PKCE verifier cookies during signInWithOAuth.
-  const cookieHolder = new NextResponse(null, { status: 200 });
-  const supabase = await createAuthRouteClient(cookieHolder);
+  // Holder redirect collects PKCE verifier cookies during signInWithOAuth.
+  const { supabase, getResponse } = createAuthRouteClient(request, origin);
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
       redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
       queryParams: { prompt: "select_account" },
-      // Return the provider URL instead of throwing a redirect from inside the
-      // SDK, so the verifier cookie lands on THIS response before we navigate.
       skipBrowserRedirect: true,
     },
   });
@@ -45,5 +43,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect(loginOnError);
   }
 
-  return mergeSessionCookies(NextResponse.redirect(data.url), cookieHolder);
+  const providerRedirect = NextResponse.redirect(data.url);
+  return mergeSessionCookies(providerRedirect, getResponse());
 }
