@@ -1,28 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sanitizeNextPath } from "@/lib/auth/oauth";
 import { mergeSessionCookies } from "@/lib/supabase/middleware";
-import {
-  createOAuthSignInClient,
-} from "@/lib/supabase/route-handler";
+import { createServerClient } from "@supabase/ssr";
+import { purgeAuthCookies } from "@/lib/supabase/auth-cookies";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-// Server-initiated Google OAuth.
-//
-// Initiating the PKCE flow here (rather than in the browser via
-// signInWithOAuth) is what makes Google sign-in work in Safari. When the
-// browser client starts the flow it writes the `sb-*-auth-token-code-verifier`
-// via document.cookie; Safari's "Prevent Cross-Site Tracking" (ITP, on by
-// default) drops/partitions that script-set cookie across the
-// Google → Supabase → /auth/callback redirect chain, so the callback has no
-// verifier and exchangeCodeForSession fails — the user just bounces back to
-// /login. Chrome keeps the cookie, which is why it only breaks in Safari.
-//
-// Running the same call server-side with skipBrowserRedirect makes Supabase
-// persist the verifier through this route handler's `Set-Cookie` response
-// header — a first-party HTTP cookie Safari does not subject to ITP's
-// script-cookie handling — then we redirect the browser to the provider URL.
+// Server-initiated Google OAuth — see comments in prior revisions for Safari/ITP context.
 export async function GET(request: NextRequest) {
   const url = request.nextUrl;
   const origin = url.origin;
@@ -30,7 +15,38 @@ export async function GET(request: NextRequest) {
 
   const loginOnError = `${origin}/login?error=auth_callback_error&next=${encodeURIComponent(next)}`;
 
-  const { supabase, getResponse } = createOAuthSignInClient(request, origin);
+  let response = NextResponse.redirect(origin);
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return [];
+        },
+        setAll(cookiesToSet, cacheHeaders) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.redirect(origin);
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, {
+              ...options,
+              ...(request.nextUrl.protocol === "https:" ? { secure: true } : {}),
+            });
+          });
+          if (cacheHeaders) {
+            for (const [key, value] of Object.entries(cacheHeaders)) {
+              response.headers.set(key, value);
+            }
+          }
+        },
+      },
+      auth: { autoRefreshToken: false },
+    },
+  );
+
+  purgeAuthCookies(response, request);
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
@@ -45,5 +61,5 @@ export async function GET(request: NextRequest) {
   }
 
   const providerRedirect = NextResponse.redirect(data.url);
-  return mergeSessionCookies(providerRedirect, getResponse());
+  return mergeSessionCookies(providerRedirect, response);
 }

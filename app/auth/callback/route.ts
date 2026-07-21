@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sanitizeNextPath } from "@/lib/auth/oauth";
-import {
-  createOAuthCallbackClient,
-  finalizeOAuthRedirect,
-} from "@/lib/supabase/route-handler";
-import { purgeAuthCookies } from "@/lib/supabase/auth-cookies";
+import { buildSessionRedirect, purgeAuthCookies } from "@/lib/supabase/auth-cookies";
+import { createOAuthCallbackClient } from "@/lib/supabase/route-handler";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -21,7 +18,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(loginOnError);
   }
 
-  const { supabase, getResponse } = createOAuthCallbackClient(request, redirectUrl);
+  const supabase = createOAuthCallbackClient(request);
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error || !data.session) {
@@ -33,5 +30,5 @@ export async function GET(request: NextRequest) {
     return fail;
   }
 
-  return finalizeOAuthRedirect(redirectUrl, getResponse());
+  return buildSessionRedirect(request, redirectUrl, data.session);
 }

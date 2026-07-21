@@ -1,8 +1,11 @@
 // Shared Supabase auth cookie helpers for middleware + OAuth route handlers.
 
-import { isChunkLike } from "@supabase/ssr/dist/module/utils";
+import { createChunks, isChunkLike, stringToBase64URL } from "@supabase/ssr/dist/module/utils";
 import type { CookieOptions } from "@supabase/ssr";
+import type { Session } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
+
+const BASE64_PREFIX = "base64-";
 
 /** `sb-<project-ref>-auth-token` — matches @supabase/ssr / auth-js defaults. */
 export function supabaseAuthStorageKey(): string {
@@ -22,6 +25,12 @@ export function authCookieOptions(request: NextRequest, maxAge: number): CookieO
 
 /** Max chunked session cookies @supabase/ssr may write (0 = unsuffixed). */
 const MAX_AUTH_CHUNKS = 8;
+
+const NO_STORE_HEADERS = {
+  "Cache-Control": "private, no-cache, no-store, must-revalidate, max-age=0",
+  Expires: "0",
+  Pragma: "no-cache",
+} as const;
 
 /**
  * Tell the browser to delete every Supabase auth cookie variant for this
@@ -69,4 +78,48 @@ export function stripSessionFromRequest(request: NextRequest): void {
       request.cookies.delete(cookie.name);
     }
   }
+}
+
+export function requestHasAuthCookies(request: NextRequest): boolean {
+  const storageKey = supabaseAuthStorageKey();
+  return request.cookies.getAll().some(
+    (c) =>
+      isChunkLike(c.name, storageKey) ||
+      c.name === `${storageKey}-code-verifier` ||
+      c.name === `${storageKey}-user`,
+  );
+}
+
+/** Write a fresh session onto a response (same encoding/chunking as @supabase/ssr). */
+export function writeSessionCookies(
+  response: NextResponse,
+  request: NextRequest,
+  session: Session,
+): void {
+  const storageKey = supabaseAuthStorageKey();
+  const encoded = BASE64_PREFIX + stringToBase64URL(JSON.stringify(session));
+  const chunks = createChunks(storageKey, encoded);
+  const setOpts = authCookieOptions(request, 400 * 24 * 60 * 60);
+
+  for (const chunk of chunks) {
+    response.cookies.set(chunk.name, chunk.value, setOpts);
+  }
+}
+
+/**
+ * OAuth success redirect: purge every stale/orphan chunk, then write the new
+ * session on the SAME response object (setAll recreates would drop purges).
+ */
+export function buildSessionRedirect(
+  request: NextRequest,
+  redirectUrl: string,
+  session: Session,
+): NextResponse {
+  const response = NextResponse.redirect(redirectUrl, 303);
+  purgeAuthCookies(response, request);
+  writeSessionCookies(response, request, session);
+  for (const [key, value] of Object.entries(NO_STORE_HEADERS)) {
+    response.headers.set(key, value);
+  }
+  return response;
 }

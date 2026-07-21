@@ -1,19 +1,10 @@
 // Supabase client for Route Handlers that mutate auth cookies and redirect.
-//
-// Next.js 15+ does not propagate cookies().set() onto a separately returned
-// NextResponse.redirect() — mirror every write onto the outgoing response.
 
 import { createServerClient } from "@supabase/ssr";
-import { NextRequest, NextResponse } from "next/server";
-import {
-  purgeAuthCookies,
-  stripSessionFromRequest,
-} from "@/lib/supabase/auth-cookies";
-import { mergeSessionCookies } from "@/lib/supabase/middleware";
+import { NextRequest } from "next/server";
+import { purgeAuthCookies, stripSessionFromRequest } from "@/lib/supabase/auth-cookies";
 
-function createRedirectClient(request: NextRequest, redirectUrl: string) {
-  let response = NextResponse.redirect(redirectUrl);
-
+function createOAuthClient(request: NextRequest) {
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -22,18 +13,9 @@ function createRedirectClient(request: NextRequest, redirectUrl: string) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet, cacheHeaders) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.redirect(redirectUrl);
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
-          );
-          if (cacheHeaders) {
-            for (const [key, value] of Object.entries(cacheHeaders)) {
-              response.headers.set(key, value);
-            }
-          }
-        },
+        // OAuth routes return buildSessionRedirect() — we only need reads here
+        // for the PKCE verifier during exchangeCodeForSession.
+        setAll() {},
       },
       auth: {
         autoRefreshToken: false,
@@ -41,34 +23,44 @@ function createRedirectClient(request: NextRequest, redirectUrl: string) {
     },
   );
 
-  return { supabase, getResponse: () => response };
+  return supabase;
+}
+
+/** Google OAuth initiation — purge stale auth cookies; verifier set via setAll in caller. */
+export function createOAuthSignInClient(request: NextRequest) {
+  return createOAuthClient(request);
 }
 
 /**
- * Google OAuth initiation — purge every stale auth cookie before starting PKCE.
+ * OAuth callback — hide stale session from auth-js, keep PKCE verifier only.
+ * Session cookies are written explicitly by buildSessionRedirect() after exchange.
  */
-export function createOAuthSignInClient(request: NextRequest, redirectUrl: string) {
-  const { supabase, getResponse } = createRedirectClient(request, redirectUrl);
-  purgeAuthCookies(getResponse(), request);
-  return { supabase, getResponse };
-}
-
-/**
- * OAuth callback — strip stale session from the request, purge orphaned chunks
- * on the response, then run the PKCE exchange with a normal getAll/setAll so
- * applyServerStorage can remove old chunks before writing the new session.
- */
-export function createOAuthCallbackClient(request: NextRequest, redirectUrl: string) {
+export function createOAuthCallbackClient(request: NextRequest) {
   stripSessionFromRequest(request);
-  const { supabase, getResponse } = createRedirectClient(request, redirectUrl);
-  purgeAuthCookies(getResponse(), request, { keepVerifier: true });
-  return { supabase, getResponse };
+  const storageKey = (() => {
+    const ref = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname.split(".")[0];
+    return `sb-${ref}-auth-token`;
+  })();
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies
+            .getAll()
+            .filter((c) => c.name === `${storageKey}-code-verifier`);
+        },
+        setAll() {},
+      },
+      auth: {
+        autoRefreshToken: false,
+      },
+    },
+  );
+
+  return supabase;
 }
 
-/** Copy session cookies from the exchange response onto the final redirect. */
-export function finalizeOAuthRedirect(
-  targetUrl: string,
-  sessionResponse: NextResponse,
-): NextResponse {
-  return mergeSessionCookies(NextResponse.redirect(targetUrl), sessionResponse);
-}
+export { purgeAuthCookies };

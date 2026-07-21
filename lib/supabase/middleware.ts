@@ -4,7 +4,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { stringFromBase64URL } from "@supabase/ssr/dist/module/utils";
 import { NextResponse, type NextRequest } from "next/server";
-import { purgeAuthCookies } from "@/lib/supabase/auth-cookies";
+import { purgeAuthCookies, requestHasAuthCookies } from "@/lib/supabase/auth-cookies";
 
 /** The only bits of the user the routing layer in middleware.ts needs. */
 export type SessionUser = { id: string; email: string | null };
@@ -83,11 +83,16 @@ export async function refreshSession(request: NextRequest) {
   const stored = readStoredSession(request);
 
   // No stored session (logged out) or an unrecognised cookie shape → fall back
-  // to getUser(). When logged out this is cheap (no token, no network refresh);
-  // it's also a safe last resort if the cookie encoding ever changes.
+  // to getUser(). If auth cookies are present but unreadable (orphaned chunks
+  // from a partial OAuth write), purge them locally instead of calling getUser()
+  // — that would present a dead refresh token and spam refresh_token_not_found.
   if (!stored?.accessToken || !stored.refreshToken || stored.expiresAt == null) {
-    const { data: { user }, error } = await supabase.auth.getUser();
     const response = getResponse();
+    if (requestHasAuthCookies(request)) {
+      purgeAuthCookies(response, request);
+      return { supabase, response, user: null };
+    }
+    const { data: { user }, error } = await supabase.auth.getUser();
     if (!user && error) purgeAuthCookies(response, request);
     return { supabase, response, user: toSessionUser(user) };
   }
