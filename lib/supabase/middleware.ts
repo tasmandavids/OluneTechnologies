@@ -4,7 +4,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { stringFromBase64URL } from "@supabase/ssr/dist/module/utils";
 import { NextResponse, type NextRequest } from "next/server";
-import { purgeAuthCookies, requestHasAuthCookies } from "@/lib/supabase/auth-cookies";
+import { purgeAuthCookies, readSessionJsonFromRequest } from "@/lib/supabase/auth-cookies";
 
 /** The only bits of the user the routing layer in middleware.ts needs. */
 export type SessionUser = { id: string; email: string | null };
@@ -42,8 +42,12 @@ export function createMiddlewareClient(request: NextRequest) {
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
+          const secure = request.nextUrl.protocol === "https:";
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
+            response.cookies.set(name, value, {
+              ...options,
+              ...(secure ? { secure: true } : {}),
+            }),
           );
         },
       },
@@ -82,19 +86,15 @@ export async function refreshSession(request: NextRequest) {
   const { supabase, getResponse } = createMiddlewareClient(request);
   const stored = readStoredSession(request);
 
-  // No stored session (logged out) or an unrecognised cookie shape → fall back
-  // to getUser(). If auth cookies are present but unreadable (orphaned chunks
-  // from a partial OAuth write), purge them locally instead of calling getUser()
-  // — that would present a dead refresh token and spam refresh_token_not_found.
+  // No parseable session in cookies → logged out. Never call getUser() here:
+  // poisoned/stale cookies trigger refresh_token_not_found / already_used storms.
   if (!stored?.accessToken || !stored.refreshToken || stored.expiresAt == null) {
     const response = getResponse();
-    if (requestHasAuthCookies(request)) {
+    if (readSessionJsonFromRequest(request)) {
+      // Auth cookies present but corrupt (e.g. mixed orphan chunks) — clear them.
       purgeAuthCookies(response, request);
-      return { supabase, response, user: null };
     }
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (!user && error) purgeAuthCookies(response, request);
-    return { supabase, response, user: toSessionUser(user) };
+    return { supabase, response, user: null, accessToken: null };
   }
 
   const secondsLeft = stored.expiresAt - Math.floor(Date.now() / 1000);
@@ -102,10 +102,18 @@ export async function refreshSession(request: NextRequest) {
   // Token still valid with headroom → route from claims, skip the network.
   if (secondsLeft > REFRESH_MARGIN_SECONDS) {
     const user = userFromAccessToken(stored.accessToken);
-    if (user) return { supabase, response: getResponse(), user };
-    // Claims failed to decode unexpectedly — degrade to a validated read.
-    const { data: { user: fetched } } = await supabase.auth.getUser();
-    return { supabase, response: getResponse(), user: toSessionUser(fetched) };
+    if (user) {
+      return {
+        supabase,
+        response: getResponse(),
+        user,
+        accessToken: stored.accessToken,
+      };
+    }
+    // Claims failed to decode unexpectedly — treat as logged out, purge corrupt jar.
+    const response = getResponse();
+    purgeAuthCookies(response, request);
+    return { supabase, response, user: null, accessToken: null };
   }
 
   // At/near expiry → rotate exactly once across concurrent requests.
@@ -127,7 +135,7 @@ export async function refreshSession(request: NextRequest) {
   if (!outcome.ok) {
     const response = getResponse();
     purgeAuthCookies(response, request);
-    return { supabase, response, user: null };
+    return { supabase, response, user: null, accessToken: null };
   }
 
   if (!isLeader) {
@@ -138,13 +146,18 @@ export async function refreshSession(request: NextRequest) {
       access_token: outcome.accessToken,
       refresh_token: outcome.refreshToken,
     });
-    if (error) return { supabase, response: getResponse(), user: null };
+    if (error) {
+      const response = getResponse();
+      purgeAuthCookies(response, request);
+      return { supabase, response, user: null, accessToken: null };
+    }
   }
 
   return {
     supabase,
     response: getResponse(),
     user: userFromAccessToken(outcome.accessToken),
+    accessToken: outcome.accessToken,
   };
 }
 
@@ -179,18 +192,15 @@ type StoredSession = {
  * JSON or a `base64-`-prefixed base64 of that JSON.
  */
 function readStoredSession(request: NextRequest): StoredSession | null {
-  const parts = request.cookies
-    .getAll()
-    .filter((c) => /^sb-.+-auth-token(\.\d+)?$/.test(c.name))
-    .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
-  if (parts.length === 0) return null;
+  const raw = readSessionJsonFromRequest(request);
+  if (!raw) return null;
 
   try {
-    let raw = parts.map((c) => c.value).join("");
-    if (raw.startsWith("base64-")) {
-      raw = stringFromBase64URL(raw.slice("base64-".length));
+    let decoded = raw;
+    if (decoded.startsWith("base64-")) {
+      decoded = stringFromBase64URL(decoded.slice("base64-".length));
     }
-    const parsed = JSON.parse(raw);
+    const parsed = JSON.parse(decoded);
     const session = Array.isArray(parsed) ? parsed[0] : parsed;
     if (!session || typeof session !== "object") return null;
     return {
@@ -212,10 +222,6 @@ function userFromAccessToken(accessToken: string): SessionUser | null {
   } catch {
     return null;
   }
-}
-
-function toSessionUser(user: { id: string; email?: string | null } | null): SessionUser | null {
-  return user ? { id: user.id, email: user.email ?? null } : null;
 }
 
 function base64UrlToBase64(input: string): string {

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sanitizeNextPath } from "@/lib/auth/oauth";
-import { buildSessionRedirect, purgeAuthCookies } from "@/lib/supabase/auth-cookies";
+import {
+  buildSessionCompleteResponse,
+  purgeAuthCookies,
+} from "@/lib/supabase/auth-cookies";
 import { createOAuthCallbackClient } from "@/lib/supabase/route-handler";
 
 export const dynamic = "force-dynamic";
@@ -30,5 +33,5 @@ export async function GET(request: NextRequest) {
     return fail;
   }
 
-  return buildSessionRedirect(request, redirectUrl, data.session);
+  return buildSessionCompleteResponse(request, redirectUrl, data.session);
 }

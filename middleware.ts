@@ -108,7 +108,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const { supabase, response, user: sessionUser } = await refreshSession(request);
+  const { supabase, response, user: sessionUser, accessToken } = await refreshSession(request);
 
   const { pathname } = request.nextUrl;
   const inPortal   = pathname === "/portal" || pathname.startsWith("/portal/");
@@ -129,8 +129,7 @@ export async function middleware(request: NextRequest) {
     if (!user) return redirectWithSession(request, "/login", response, { next: pathname });
     const isOperator = await checkPlatformOperator(supabase, user.id, user.email);
     if (!isOperator) {
-      const { data: { session } } = await supabase.auth.getSession();
-      const profile = await resolveProfileAccess(supabase, session?.access_token, user.id);
+      const profile = await resolveProfileAccess(supabase, accessToken ?? undefined, user.id);
       const dest = profile?.studioId ? resolveHome(profile) : noStudioDestination(request);
       return mergeSessionCookies(NextResponse.redirect(new URL(dest, request.url)), response);
     }
@@ -143,10 +142,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
-    // Try JWT claims first (zero DB cost); fall back to DB for old/stale tokens
-    // (pre-hook tokens, or tokens minted at signup before the user had a studio).
-    const { data: { session } } = await supabase.auth.getSession();
-    const profile = await resolveProfileAccess(supabase, session?.access_token, user.id);
+    const profile = await resolveProfileAccess(supabase, accessToken ?? undefined, user.id);
 
     if (!profile?.studioId) {
       if (inJoin) return response;
