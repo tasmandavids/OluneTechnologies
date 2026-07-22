@@ -31,6 +31,8 @@ export type CommandCentreProps = {
   pendingFormCount: number;
   costumeActionCount: number;
   unreadNotificationCount: number;
+  /** Unread chat + email messages for this parent — flags a buried inbox. */
+  unreadMessageCount?: number;
 };
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -73,6 +75,7 @@ export function CommandCentre({
   pendingFormCount,
   costumeActionCount,
   unreadNotificationCount,
+  unreadMessageCount = 0,
 }: CommandCentreProps) {
   const schedule = getNextOccurrences(upcomingClasses);
   const today = new Date();
@@ -102,7 +105,8 @@ export function CommandCentre({
       href: "/portal/parent/recital",
     });
 
-  if (schedule.length === 0 && actions.length === 0) return null;
+  if (schedule.length === 0 && actions.length === 0 && unreadMessageCount === 0)
+    return null;
 
   return (
     <motion.section
@@ -114,20 +118,52 @@ export function CommandCentre({
         <h2 className="text-xs font-semibold uppercase tracking-widest text-muted">
           This week
         </h2>
-        {unreadNotificationCount > 0 && (
-          <Link
-            href="/portal/parent/notifications"
-            className="flex items-center gap-1.5 text-xs font-semibold text-[--brand] hover:underline"
-          >
-            <span
-              className="grid h-4 w-4 place-items-center rounded-full text-[0.6rem] font-black text-white"
-              style={{ background: "var(--brand-hot)" }}
+        <div className="flex items-center gap-4">
+          {unreadMessageCount > 0 && (
+            <Link
+              href="/portal/parent/chat"
+              className="flex items-center gap-1.5 text-xs font-semibold text-[--brand] hover:underline"
             >
-              {unreadNotificationCount > 9 ? "9+" : unreadNotificationCount}
-            </span>
-            {unreadNotificationCount} new
-          </Link>
-        )}
+              <span className="relative inline-grid place-items-center text-ink">
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="m3 7 9 6 9-6" />
+                </svg>
+                <span
+                  className="absolute -right-1.5 -top-1.5 grid h-3.5 min-w-[0.875rem] place-items-center rounded-full px-0.5 text-[0.55rem] font-black text-white"
+                  style={{ background: "var(--brand-hot)" }}
+                >
+                  {unreadMessageCount > 9 ? "9+" : unreadMessageCount}
+                </span>
+              </span>
+              {unreadMessageCount === 1
+                ? "1 new message"
+                : `${unreadMessageCount} new messages`}
+            </Link>
+          )}
+          {unreadNotificationCount > 0 && (
+            <Link
+              href="/portal/parent/notifications"
+              className="flex items-center gap-1.5 text-xs font-semibold text-[--brand] hover:underline"
+            >
+              <span
+                className="grid h-4 w-4 place-items-center rounded-full text-[0.6rem] font-black text-white"
+                style={{ background: "var(--brand-hot)" }}
+              >
+                {unreadNotificationCount > 9 ? "9+" : unreadNotificationCount}
+              </span>
+              {unreadNotificationCount} new
+            </Link>
+          )}
+        </div>
       </div>
 
       <div className="grid divide-y divide-[--hair] sm:grid-cols-[1fr_auto] sm:divide-x sm:divide-y-0">
