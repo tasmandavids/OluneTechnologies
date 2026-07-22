@@ -73,7 +73,10 @@
         "lost": "Perso"
       },
       "invoiceStatus": {
-        "all": "Tutti gli stati"
+        "all": "Tutti gli stati",
+        "filterLabel": "Stato",
+        "showAll": "Mostra tutti",
+        "reset": "Reimposta"
       },
       "relationships": {
         "mother": "Madre",

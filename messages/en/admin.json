@@ -74,7 +74,10 @@
         "lost": "Lost"
       },
       "invoiceStatus": {
-        "all": "All statuses"
+        "all": "All statuses",
+        "filterLabel": "Status",
+        "showAll": "Show all",
+        "reset": "Reset"
       },
       "relationships": {
         "mother": "Mother",
