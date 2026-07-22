@@ -73,7 +73,10 @@
         "lost": "Perdu"
       },
       "invoiceStatus": {
-        "all": "Tous les statuts"
+        "all": "Tous les statuts",
+        "filterLabel": "Statut",
+        "showAll": "Tout afficher",
+        "reset": "Réinitialiser"
       },
       "relationships": {
         "mother": "Mère",

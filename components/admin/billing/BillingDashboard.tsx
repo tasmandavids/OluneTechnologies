@@ -63,6 +63,13 @@ const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   refunded: { bg: "#ede9fe", text: "#7c3aed" },
 };
 
+// Order the "All invoices" status filter chips present to the studio owner.
+const FILTERABLE_STATUSES = ["draft", "sent", "overdue", "paid", "refunded", "void"] as const;
+// Closed/settled statuses hidden by default — the owner opts in to see them.
+const DEFAULT_HIDDEN_STATUSES = ["paid", "void"];
+const defaultActiveStatuses = () =>
+  new Set(FILTERABLE_STATUSES.filter((s) => !DEFAULT_HIDDEN_STATUSES.includes(s)));
+
 function StatusBadge({ status }: { status: string }) {
   const tStatus = useTranslations("admin.shared.status");
   const s = STATUS_STYLES[status] ?? { bg: "#f1f5f9", text: "#64748b" };
@@ -663,8 +670,21 @@ export function BillingDashboard({
       ? initialInvoices.find((i) => i.id === initialInvoiceId) ?? null
       : null,
   );
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [activeStatuses, setActiveStatuses] = useState<Set<string>>(defaultActiveStatuses);
   const [search, setSearch] = useState("");
+
+  const toggleStatus = (status: string) =>
+    setActiveStatuses((prev) => {
+      const next = new Set(prev);
+      if (next.has(status)) next.delete(status);
+      else next.add(status);
+      return next;
+    });
+
+  const allStatusesActive = FILTERABLE_STATUSES.every((s) => activeStatuses.has(s));
+  const isDefaultStatusFilter =
+    activeStatuses.size === FILTERABLE_STATUSES.length - DEFAULT_HIDDEN_STATUSES.length &&
+    FILTERABLE_STATUSES.every((s) => activeStatuses.has(s) !== DEFAULT_HIDDEN_STATUSES.includes(s));
   const [invoices, setInvoices] = useState<InvoiceRow[]>(initialInvoices);
   const [templates, setTemplates] = useState<InvoiceTemplate[]>(initialTemplates);
   const [bulkPending, startBulk] = useTransition();
@@ -728,7 +748,9 @@ export function BillingDashboard({
   };
 
   const filtered = invoices.filter((inv) => {
-    if (statusFilter !== "all" && inv.status !== statusFilter) return false;
+    // Only hide statuses we render a chip for — never silently drop an unknown status.
+    const isFilterable = (FILTERABLE_STATUSES as readonly string[]).includes(inv.status);
+    if (isFilterable && !activeStatuses.has(inv.status)) return false;
     if (search) {
       const q = search.toLowerCase();
       return (
@@ -995,18 +1017,50 @@ export function BillingDashboard({
               onChange={(e) => setSearch(e.target.value)}
               className="w-44 rounded-lg border border-[--hair] bg-base px-3 py-1.5 text-xs text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
             />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-lg border border-[--hair] bg-base px-3 py-1.5 text-xs text-ink"
-            >
-              <option value="all">{tShared("invoiceStatus.all")}</option>
-              <option value="paid">{tStatus("paid")}</option>
-              <option value="sent">{tStatus("sent")}</option>
-              <option value="overdue">{tStatus("overdue")}</option>
-              <option value="draft">{tStatus("draft")}</option>
-              <option value="refunded">{tStatus("refunded")}</option>
-            </select>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5 border-b border-[--hair] px-6 py-3">
+            <span className="mr-1 text-[0.62rem] font-semibold uppercase tracking-wider text-muted">
+              {tShared("invoiceStatus.filterLabel")}
+            </span>
+            {FILTERABLE_STATUSES.map((status) => {
+              const active = activeStatuses.has(status);
+              const style = STATUS_STYLES[status] ?? { bg: "#f1f5f9", text: "#64748b" };
+              return (
+                <button
+                  key={status}
+                  type="button"
+                  onClick={() => toggleStatus(status)}
+                  aria-pressed={active}
+                  className="rounded-full border px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-wider transition-colors"
+                  style={
+                    active
+                      ? { background: style.bg, color: style.text, borderColor: "transparent" }
+                      : { borderColor: "var(--hair)", color: "var(--muted)", opacity: 0.6 }
+                  }
+                >
+                  {tStatus(status)}
+                </button>
+              );
+            })}
+            {!allStatusesActive && (
+              <button
+                type="button"
+                onClick={() => setActiveStatuses(new Set(FILTERABLE_STATUSES))}
+                className="ml-1 text-[0.62rem] font-semibold uppercase tracking-wider text-ink underline decoration-dotted hover:opacity-70"
+              >
+                {tShared("invoiceStatus.showAll")}
+              </button>
+            )}
+            {!isDefaultStatusFilter && (
+              <button
+                type="button"
+                onClick={() => setActiveStatuses(defaultActiveStatuses())}
+                className="text-[0.62rem] font-semibold uppercase tracking-wider text-muted underline decoration-dotted hover:opacity-70"
+              >
+                {tShared("invoiceStatus.reset")}
+              </button>
+            )}
           </div>
 
           {draftBulkError && (

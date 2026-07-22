@@ -74,7 +74,10 @@
         "lost": "已流失"
       },
       "invoiceStatus": {
-        "all": "所有状态"
+        "all": "所有状态",
+        "filterLabel": "状态",
+        "showAll": "显示全部",
+        "reset": "重置"
       },
       "relationships": {
         "mother": "母亲",

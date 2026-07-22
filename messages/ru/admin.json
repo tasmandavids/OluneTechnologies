@@ -73,7 +73,10 @@
         "lost": "Потерянный"
       },
       "invoiceStatus": {
-        "all": "Все статусы"
+        "all": "Все статусы",
+        "filterLabel": "Статус",
+        "showAll": "Показать все",
+        "reset": "Сбросить"
       },
       "relationships": {
         "mother": "Мать",
