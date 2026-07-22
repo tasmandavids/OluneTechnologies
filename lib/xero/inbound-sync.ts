@@ -29,7 +29,7 @@ export interface ReconcilePlan {
   nextStatus: OluneInvoiceStatus | null;
   /** Cancel any pending Stripe payment link (paid/voided outside the portal). */
   cancelStripe: boolean;
-  /** Rewrite amount_cents + line items from Xero (only safe while a local draft). */
+  /** Rewrite amount_cents + line items from Xero (safe until the invoice is financially final). */
   syncAmount: boolean;
   /** Rewrite due_date from Xero. */
   syncDueDate: boolean;
@@ -64,11 +64,19 @@ export function planInvoiceReconcile(
     case "AUTHORISED":
       // Authorising in Xero == the invoice going live to the customer. If we
       // still think it's a draft, promote it to "sent" and capture Xero's
-      // final numbers in the same pass. Once already sent/overdue, only the
-      // (cosmetic) due date is still safe to follow.
+      // final numbers in the same pass.
+      //
+      // Once already sent/overdue we still follow Xero's numbers: Xero is the
+      // source of truth for pricing, and admins routinely apply discounts or
+      // fix line items *after* authorising. Refusing to follow left Olune
+      // billing a stale amount with no way to correct it short of voiding.
+      // Safe because the invoice is not yet financially final on our side —
+      // paid/refunded/void are already short-circuited above — and the caller
+      // re-prices any pending Stripe intent so the payer is never charged the
+      // old figure.
       return olune === "draft"
         ? { nextStatus: "sent", cancelStripe: false, syncAmount: true, syncDueDate: true }
-        : { nextStatus: null, cancelStripe: false, syncAmount: false, syncDueDate: true };
+        : { nextStatus: null, cancelStripe: false, syncAmount: true, syncDueDate: true };
     case "SUBMITTED":
     case "DRAFT":
       return olune === "draft"
@@ -144,6 +152,35 @@ async function cancelStripeIntent(intentId: string | null): Promise<void> {
 }
 
 /**
+ * Keep a pending payment link in step with a re-priced invoice. Without this an
+ * amount pulled down from Xero would only change what the portal *displays* —
+ * the payer would still be charged whatever the intent was created at.
+ *
+ * Stripe only allows an amount change while the intent is still awaiting the
+ * customer; anything further along (processing/succeeded) is left alone and
+ * logged, since money is already in flight.
+ */
+async function repriceStripeIntent(intentId: string | null, amountCents: number): Promise<void> {
+  if (!intentId) return;
+  try {
+    const intent = await stripe.paymentIntents.retrieve(intentId);
+    if (intent.amount === amountCents) return;
+
+    const repriceable = ["requires_payment_method", "requires_confirmation", "requires_action"];
+    if (!repriceable.includes(intent.status)) {
+      console.warn(
+        `[xero-inbound] payment intent ${intentId} is ${intent.status}; left at ${intent.amount} rather than re-pricing to ${amountCents}`,
+      );
+      return;
+    }
+
+    await stripe.paymentIntents.update(intentId, { amount: amountCents });
+  } catch (err) {
+    console.warn(`[xero-inbound] could not re-price payment intent ${intentId}:`, err);
+  }
+}
+
+/**
  * Core reconcile for one invoice once we already know which studio it belongs
  * to. Shared by the webhook path (tenant → studio lookup) and the manual
  * "Refresh from Xero" button (studio already known from the signed-in admin).
@@ -157,7 +194,7 @@ async function reconcileInvoiceForStudio(
 ): Promise<boolean> {
   const { data: invoiceRow } = await supabase
     .from("invoices")
-    .select("id, status, stripe_payment_intent_id, paid_at, issued_at")
+    .select("id, status, amount_cents, due_date, stripe_payment_intent_id, paid_at, issued_at")
     .eq("studio_id", studioId)
     .eq("xero_invoice_id", xeroInvoiceId)
     .maybeSingle();
@@ -192,15 +229,20 @@ async function reconcileInvoiceForStudio(
 
   if (plan.syncDueDate) {
     const due = isoDate(xeroInvoice.dueDate);
-    if (due) updates.due_date = due;
+    // Only record a genuine change — the caller reports "n updated" back to the
+    // admin, and rewriting an identical date would count every invoice checked.
+    if (due && due !== invoiceRow.due_date) updates.due_date = due;
   }
+
+  let repricedTo: number | null = null;
 
   if (plan.syncAmount) {
     const total = xeroInvoice.total ?? 0;
     const amountCents = centsFromDollars(total);
-    if (amountCents > 0) {
+    if (amountCents > 0 && amountCents !== invoiceRow.amount_cents) {
       updates.amount_cents = amountCents;
       updates.gst_cents = gstComponentCents(amountCents);
+      repricedTo = amountCents;
     }
   }
 
@@ -208,24 +250,33 @@ async function reconcileInvoiceForStudio(
     await supabase.from("invoices").update(updates).eq("id", invoiceRow.id);
   }
 
-  // Rebuild line items to match Xero's, but only when we actually re-synced
-  // the amount (i.e. the invoice is still an editable draft on our side).
+  // Rebuild line items to match Xero's whenever we re-synced the amount, so the
+  // payer's breakdown can never disagree with the total we're billing.
   if (plan.syncAmount) {
     const lines = (xeroInvoice.lineItems ?? []).filter((li) => (li.lineAmount ?? 0) !== 0);
     if (lines.length > 0) {
       await supabase.from("invoice_line_items").delete().eq("invoice_id", invoiceRow.id);
       await supabase.from("invoice_line_items").insert(
         lines.map((li, idx) => {
-          const unitCents = centsFromDollars(li.unitAmount ?? 0);
           const qty = li.quantity ?? 1;
+          // Xero carries discounts as a separate discountRate/discountAmount on
+          // top of an undiscounted unitAmount, but Olune has no discount column
+          // — so derive the effective unit price from lineAmount (which is net
+          // of the discount). Otherwise qty x unit wouldn't reconcile with the
+          // line total on any discounted invoice.
+          const lineTotalCents =
+            li.lineAmount != null
+              ? centsFromDollars(li.lineAmount)
+              : centsFromDollars(li.unitAmount ?? 0) * qty;
+          const unitCents =
+            qty !== 0 ? Math.round(lineTotalCents / qty) : centsFromDollars(li.unitAmount ?? 0);
           return {
             invoice_id: invoiceRow.id,
             item_type: "custom",
             description: li.description ?? "Xero line item",
             quantity: qty,
             unit_cents: unitCents,
-            line_total_cents:
-              li.lineAmount != null ? centsFromDollars(li.lineAmount) : unitCents * qty,
+            line_total_cents: lineTotalCents,
             sort_order: idx,
           };
         }),
@@ -235,6 +286,8 @@ async function reconcileInvoiceForStudio(
 
   if (plan.cancelStripe) {
     await cancelStripeIntent(invoiceRow.stripe_payment_intent_id as string | null);
+  } else if (repricedTo !== null) {
+    await repriceStripeIntent(invoiceRow.stripe_payment_intent_id as string | null, repricedTo);
   }
 
   await supabase
