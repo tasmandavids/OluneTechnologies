@@ -77,6 +77,8 @@ export default async function ParentPortal() {
     pendingFormsRes,
     costumeActionRes,
     unreadNotifRes,
+    unreadMsgRes,
+    unreadEmailRes,
   ] = await Promise.all([
     supabase
       .from("guardianships")
@@ -147,7 +149,26 @@ export default async function ParentPortal() {
       .select("id", { count: "exact", head: true })
       .eq("parent_id", user!.id)
       .is("read_at", null),
+
+    // Unread direct chat messages sent to this parent
+    supabase
+      .from("messages")
+      .select("id", { count: "exact", head: true })
+      .eq("to_user_id", user!.id)
+      .is("read_at", null),
+
+    // Unread studio email threads for this parent
+    supabase
+      .from("parent_email_threads")
+      .select("id", { count: "exact", head: true })
+      .eq("parent_id", user!.id)
+      .eq("is_read", false),
   ]);
+
+  // New messages the parent hasn't opened yet — chat + email combined.
+  // Surfaced on the home hub so replies aren't missed in the buried inbox.
+  const unreadMessageCount =
+    (unreadMsgRes.count ?? 0) + (unreadEmailRes.count ?? 0);
 
   const children: Child[] = (guardianshipsRes.data ?? []).map((g) => {
     const profile = g.profiles as unknown as {
@@ -262,6 +283,7 @@ export default async function ParentPortal() {
           pendingFormCount: 0,
           costumeActionCount: 0,
           unreadNotificationCount: unreadNotifRes.count ?? 0,
+          unreadMessageCount,
         }}
       />
 
