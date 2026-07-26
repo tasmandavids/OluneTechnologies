@@ -25,7 +25,7 @@ const navLinkStyle: CSSProperties = { color: "rgba(26,21,53,0.66)", fontSize: 15
 export function DevBanner() {
   return (
     <div style={{ background: "#efeafb", color: "rgba(26,21,53,0.6)", textAlign: "center", padding: "10px 20px", fontSize: 13, letterSpacing: "0.01em", position: "relative", zIndex: 60, borderBottom: "1px solid rgba(26,21,53,0.07)" }}>
-      Olune is currently under development — general release is due in early August. All plans are free to try as much as you like until then.
+      Olune is currently under development — general release is due in December. All plans are free to try as much as you like until then.
     </div>
   );
 }

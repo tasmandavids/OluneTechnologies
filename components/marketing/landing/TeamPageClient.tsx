@@ -76,7 +76,7 @@ export function TeamPageClient() {
 
         <div style={{ maxWidth: 640, margin: "96px auto 0", textAlign: "center", position: "relative", zIndex: 2 }}>
           <h2 style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(28px, 3.4vw, 42px)", lineHeight: 1.1, letterSpacing: "-0.015em", color: NAVY, margin: 0 }}>Follow the build.</h2>
-          <p style={{ fontSize: 16, lineHeight: 1.6, color: "rgba(26,21,53,0.56)", maxWidth: 480, margin: "16px auto 0" }}>Olune ships in the open — try it free before general release in early August and help shape where it goes next.</p>
+          <p style={{ fontSize: 16, lineHeight: 1.6, color: "rgba(26,21,53,0.56)", maxWidth: 480, margin: "16px auto 0" }}>Olune ships in the open — try it free before general release in December and help shape where it goes next.</p>
           <div style={{ marginTop: 32 }}>
             <PrimaryButton href="/onboarding">Start free</PrimaryButton>
             <p style={{ margin: "16px 0 0", fontSize: 14, color: "rgba(26,21,53,0.48)" }}>No card needed. Set up in minutes.</p>
