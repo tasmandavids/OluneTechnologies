@@ -18,6 +18,7 @@ import {
   buildOfficeNav,
   buildPortalNav,
   buildSelfManagedStudentNav,
+  flattenNav,
   type NavItem,
   type NavSection,
 } from "@/lib/portal/nav-config";
@@ -29,6 +30,7 @@ import {
   allVerticals,
   authoredVerticals,
   isAuthored,
+  isSignupReady,
 } from "@/lib/verticals/registry";
 import onboardingMessages from "@/messages/en/onboarding.json";
 import { MODULE_KEYS, moduleForPath } from "@/lib/verticals/modules";
@@ -93,22 +95,41 @@ describe("the dance pack declares every module the nav reaches", () => {
 });
 
 describe("module gating actually gates", () => {
-  it("hides recital and costume surfaces from a pack that omits them", () => {
-    const swimLike: Entitlements = {
-      ...danceStudio,
-      vertical: "swim",
-      modules: new Set([...dancePack.modules].filter((m) => m !== "production" && m !== "costumes")),
-    };
+  // The REAL swim pack, not a hand-rolled stand-in — so this test fails if
+  // swim ever gains production/costumes, rather than passing against a fixture
+  // that can drift from the pack it is meant to represent.
+  const swimStudio: Entitlements = packEntitlements("studio-2", "swim");
 
-    const adminHrefs = buildAdminNav(swimLike).flatMap((s) => s.items.map((i) => i.href));
+  it("the swim pack genuinely omits the dance-only modules", () => {
+    // Guards the whole gating story: while every vertical fell back to the
+    // dance pack, nothing could be gated off and Gate G1 was unprovable.
+    expect(swimStudio.pack.key).toBe("swim");
+    expect(hasModule(swimStudio, "production")).toBe(false);
+    expect(hasModule(swimStudio, "costumes")).toBe(false);
+    // …but keeps the generic core.
+    expect(hasModule(swimStudio, "billing")).toBe(true);
+    expect(hasModule(swimStudio, "classes")).toBe(true);
+    expect(hasModule(swimStudio, "messaging")).toBe(true);
+  });
+
+  it("hides recital and costume surfaces from a pack that omits them", () => {
+    const adminHrefs = buildAdminNav(swimStudio).flatMap((s) => s.items.map((i) => i.href));
     expect(adminHrefs).not.toContain("/portal/admin/events");
 
-    const parentHrefs = buildPortalNav("parent", swimLike).map((i) => i.href);
+    const parentHrefs = buildPortalNav("parent", swimStudio).map((i) => i.href);
     expect(parentHrefs).not.toContain("/portal/parent/recital");
 
     // …and the rest of the parent nav survives intact.
     expect(parentHrefs).toContain("/portal/parent/billing");
     expect(parentHrefs).toContain("/portal/parent/schedule");
+  });
+
+  it("keeps ⌘K from surfacing a gated destination", () => {
+    // CommandPalette flattens the same filtered nav, so a gated module must not
+    // reappear as a search result.
+    const hrefs = flattenNav(buildAdminNav(swimStudio)).map((i) => i.href);
+    expect(hrefs).not.toContain("/portal/admin/events");
+    expect(hrefs).toContain("/portal/admin/classes");
   });
 
   it("drops a section that loses all of its items", () => {
@@ -139,14 +160,16 @@ describe("module gating actually gates", () => {
 
 describe("registry", () => {
   it("degrades to dance for a vertical with no authored pack yet", () => {
-    // Phase 0 ships dance only; the other seven are authored in Phase 2.
+    // dance and swim are authored; the other six land in Phase 2. Note the
+    // consequence: an unauthored vertical inherits dance's modules, so it is
+    // NOT gated — which is exactly why swim was authored early.
     expect(getPack("gymnastics")).toBe(dancePack);
     expect(getPack("not-a-vertical")).toBe(dancePack);
     expect(getPack(null)).toBe(dancePack);
   });
 
   it("only offers verticals that have a pack", () => {
-    expect(authoredVerticals()).toEqual(["dance"]);
+    expect(authoredVerticals()).toEqual(["dance", "swim"]);
   });
 
   it("offers all eight in the signup picker regardless of pack", () => {
@@ -156,11 +179,23 @@ describe("registry", () => {
     expect(allVerticals()).toContain("gymnastics");
   });
 
-  it("isAuthored separates what can sign up from what waitlists", () => {
+  it("isAuthored reports which packs exist", () => {
     expect(isAuthored("dance")).toBe(true);
+    expect(isAuthored("swim")).toBe(true);
     expect(isAuthored("gymnastics")).toBe(false);
     expect(isAuthored("not-a-vertical")).toBe(false);
     expect(isAuthored(null)).toBe(false);
+  });
+
+  it("isSignupReady is stricter than isAuthored", () => {
+    // swim has a working pack an operator can assign, but it has not been
+    // through copy vocabularisation — a swim school signing up today would
+    // read "dancer" throughout the portal, so signup routes it to the
+    // waitlist instead. This is the gap the two predicates exist to express.
+    expect(isSignupReady("dance")).toBe(true);
+    expect(isSignupReady("swim")).toBe(false);
+    expect(isAuthored("swim")).toBe(true);
+    expect(isSignupReady("gymnastics")).toBe(false);
   });
 
   it("every picker option has a label to render", () => {

@@ -7,7 +7,7 @@ export default async function PlatformStudiosPage() {
 
   const { data: studios } = await admin
     .from("studios")
-    .select("id, name, slug, status, custom_domain, created_at")
+    .select("id, name, slug, status, custom_domain, created_at, vertical")
     .order("created_at", { ascending: false });
 
   const studioIds = (studios ?? []).map((s) => s.id);
@@ -69,8 +69,26 @@ export default async function PlatformStudiosPage() {
       adminCount: 1,
       stripeConnected: stripeByStudio.get(s.id) ?? false,
       xeroConnected: xeroConnectedStudios.has(s.id),
+      vertical: (s.vertical as string | null) ?? "dance",
     };
   });
 
-  return <StudiosManager studios={summaries} />;
+  // Registry drives the picker, so a vertical can be dark-launched (or pulled)
+  // without a deploy. Hidden ones are never offered.
+  const { data: verticalRows } = await admin
+    .from("verticals")
+    .select("key, label, status")
+    .neq("status", "hidden")
+    .order("sort");
+
+  return (
+    <StudiosManager
+      studios={summaries}
+      verticals={(verticalRows ?? []).map((v) => ({
+        key: v.key as string,
+        label: v.label as string,
+        status: v.status as string,
+      }))}
+    />
+  );
 }

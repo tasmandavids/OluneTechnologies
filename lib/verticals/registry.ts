@@ -8,20 +8,25 @@
 
 import type { TaxonomyOption, VerticalKey, VerticalPack } from "./types";
 import { dancePack } from "./packs/dance";
+import { swimPack } from "./packs/swim";
 
 export const DEFAULT_VERTICAL: VerticalKey = "dance";
 
 /**
  * Authored packs.
  *
- * Partial by design: Phase 0 ships dance only, as a faithful transcription of
- * pre-vertical behaviour. The remaining seven are authored in Phase 2. Until
- * then the gap is unreachable — migration 0097 seeds every studio to 'dance'
- * and the onboarding vertical picker does not ship until Phase 2 — but
- * getPack() degrades to dance rather than throwing if one slips through.
+ * Partial by design — the remaining six are authored in Phase 2, and getPack()
+ * degrades to dance rather than throwing for anything not yet written.
+ *
+ * ⚠️ That fallback has a consequence worth understanding: an unauthored
+ * vertical resolves to the DANCE pack, so it inherits `production` and
+ * `costumes` and nothing is gated off. Module gating only becomes observable
+ * once a pack omits a module — which is why swim is authored here rather than
+ * waiting for Phase 2. It is the fixture Gate G1 runs against.
  */
 export const PACKS: Partial<Record<VerticalKey, VerticalPack>> = {
   dance: dancePack,
+  swim: swimPack,
 };
 
 const VERTICAL_KEYS: VerticalKey[] = [
@@ -56,14 +61,26 @@ export function authoredVerticals(): VerticalKey[] {
 }
 
 /**
- * Whether a vertical can be signed up for today.
+ * Whether a pack has been written for this vertical.
  *
- * The signup picker offers all eight; choosing an unauthored one captures a
- * waitlist row (public.vertical_waitlist) rather than creating a workspace
- * that would silently fall back to the dance pack.
+ * Authored is NOT the same as ready for the public — an operator can assign an
+ * authored-but-beta vertical to a studio for testing, but signup should not
+ * offer it. Use isSignupReady() for that.
  */
 export function isAuthored(key: string | null | undefined): key is VerticalKey {
   return isVerticalKey(key) && !!PACKS[key];
+}
+
+/**
+ * Whether signup may create a workspace on this vertical today.
+ *
+ * Requires an authored pack AND `status: "ga"`. A beta pack (swim) has working
+ * modules and taxonomy but has not been through copy vocabularisation, so a
+ * tenant on it would still read "dancer" throughout the portal. Offering that
+ * at signup would be a worse experience than the waitlist.
+ */
+export function isSignupReady(key: string | null | undefined): key is VerticalKey {
+  return isAuthored(key) && PACKS[key]!.status === "ga";
 }
 
 /**

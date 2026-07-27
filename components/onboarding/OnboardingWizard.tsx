@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { derivePalette } from "@/lib/branding";
 import type { AccountKind } from "@/lib/account/kinds";
-import { allVerticals, isAuthored, isVerticalKey, DEFAULT_VERTICAL } from "@/lib/verticals/registry";
+import { allVerticals, isSignupReady, isVerticalKey, DEFAULT_VERTICAL } from "@/lib/verticals/registry";
 import type { VerticalKey } from "@/lib/verticals/types";
 import { OluneLogo } from "@/components/brand/OluneLogo";
 import { OluneHomeLink } from "@/components/brand/OluneHomeLink";
@@ -83,7 +83,7 @@ export function OnboardingWizard({
     if (!picked) return "vertical";
     // A deep link to a vertical we cannot serve yet lands on the waitlist
     // rather than silently dropping the visitor into the dance pack.
-    if (!isAuthored(picked)) return "waitlist";
+    if (!isSignupReady(picked)) return "waitlist";
     if (signedIn) return readStoredAccountKind() ? "studio" : "system";
     return "system";
   });
@@ -120,7 +120,7 @@ export function OnboardingWizard({
   function pickVertical(key: VerticalKey) {
     setVertical(key);
     setError(null);
-    if (!isAuthored(key)) {
+    if (!isSignupReady(key)) {
       // Don't persist an unbuilt vertical — if they come back we want the
       // picker again, not a workspace we can't create.
       go("waitlist");
@@ -265,7 +265,7 @@ export function OnboardingWizard({
                     <p className="mt-1 text-sm text-muted">{t("vertical.subtitle")}</p>
                     <div className="mt-6 grid grid-cols-2 gap-2.5">
                       {allVerticals().map((key) => {
-                        const ready = isAuthored(key);
+                        const ready = isSignupReady(key);
                         return (
                           <button
                             key={key}

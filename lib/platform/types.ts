@@ -27,6 +27,8 @@ export type PlatformStudioSummary = {
   adminCount: number;
   stripeConnected: boolean;
   xeroConnected: boolean;
+  /** Which activity vertical this tenant runs. Drives its pack and modules. */
+  vertical: string;
 };
 
 export type PlatformOwner = {

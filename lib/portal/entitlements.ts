@@ -126,17 +126,30 @@ async function loadEntitlements(studioId: string): Promise<Entitlements> {
   return { studioId, vertical, pack, modules, plan: null, vocabulary };
 }
 
+/** Invalidates one studio's entitlements. */
+export const entitlementsTag = (studioId: string) => `entitlements-${studioId}`;
+
+/**
+ * Invalidates EVERY studio's entitlements at once.
+ *
+ * Needed because a global platform_feature_flags row (studio_id is null)
+ * changes the answer for all tenants, and there is no way to enumerate the
+ * per-studio tags to bust them individually. Every cache entry carries both
+ * tags, so a global toggle revalidates this one.
+ */
+export const ENTITLEMENTS_ALL_TAG = "entitlements-all";
+
 /**
  * Request-scoped dedup wrapped around a tagged 5-minute cache — the same shape
  * as getBrandingCached (lib/branding.ts:149). Invalidate with
- * revalidateTag(`entitlements-${studioId}`) from the operator flag-toggle
- * action and the admin module-toggle action.
+ * revalidateTag(entitlementsTag(studioId)) for a single studio, or
+ * revalidateTag(ENTITLEMENTS_ALL_TAG) when a global flag changes.
  */
 export const getEntitlementsCached = cache(async (studioId: string): Promise<Entitlements> => {
   return unstable_cache(
     () => loadEntitlements(studioId),
     ["entitlements", studioId],
-    { tags: [`entitlements-${studioId}`], revalidate: 300 },
+    { tags: [entitlementsTag(studioId), ENTITLEMENTS_ALL_TAG], revalidate: 300 },
   )();
 });
 
