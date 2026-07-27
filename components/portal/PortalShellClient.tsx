@@ -7,7 +7,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { signOut } from "@/app/portal/actions";
 import type { Role } from "@/lib/types";
-import { ADMIN_NAV, OFFICE_NAV, PORTAL_NAV, ROLE_BADGE_KEYS, SELF_MANAGED_STUDENT_NAV, type NavItem } from "@/lib/portal/nav-config";
+import { ADMIN_NAV, OFFICE_NAV, PORTAL_NAV, ROLE_BADGE_KEYS, SELF_MANAGED_STUDENT_NAV, type NavItem, type NavSection } from "@/lib/portal/nav-config";
 import { OptimizableImage } from "@/components/ui/OptimizableImage";
 import { OluneLogo } from "@/components/brand/OluneLogo";
 import { PoweredByOlune } from "@/components/brand/PoweredByOlune";
@@ -161,6 +161,9 @@ function SidebarContent({
   showAffiliations = false,
   selfManagedStudent = false,
   portalTheme = "light",
+  adminNav = ADMIN_NAV,
+  officeNav = OFFICE_NAV,
+  roleNav,
 }: {
   role: Role;
   studioName: string;
@@ -173,6 +176,9 @@ function SidebarContent({
   showAffiliations?: boolean;
   selfManagedStudent?: boolean;
   portalTheme?: ThemeBase;
+  adminNav?: NavSection[];
+  officeNav?: NavSection[];
+  roleNav?: NavItem[];
 }) {
   const t = useTranslations();
   const tCommon = useTranslations("common");
@@ -310,7 +316,7 @@ function SidebarContent({
 
       <nav className="flex-1 overflow-y-auto p-3">
         {role === "admin" ? (
-          ADMIN_NAV.map((section, index) => (
+          adminNav.map((section, index) => (
             <div key={section.titleKey ?? `section-${index}`} className={index > 0 ? "mt-4" : ""}>
               {section.titleKey && (
                 <p className="mb-1 px-3 text-[0.62rem] font-semibold uppercase tracking-widest text-muted">
@@ -321,7 +327,7 @@ function SidebarContent({
             </div>
           ))
         ) : role === "office" ? (
-          OFFICE_NAV.map((section, index) => (
+          officeNav.map((section, index) => (
             <div key={section.titleKey ?? `section-${index}`} className={index > 0 ? "mt-4" : ""}>
               {section.titleKey && (
                 <p className="mb-1 px-3 text-[0.62rem] font-semibold uppercase tracking-widest text-muted">
@@ -333,14 +339,18 @@ function SidebarContent({
           ))
         ) : (
           <div className="space-y-0.5">
-            {(role === "teacher"
-              ? PORTAL_NAV.teacher.filter(
-                  (item) => showAffiliations || item.href !== "/portal/teacher/affiliations",
-                )
-              : role === "student" && selfManagedStudent
+            {(roleNav ??
+              (role === "student" && selfManagedStudent
                 ? SELF_MANAGED_STUDENT_NAV
-                : PORTAL_NAV[role]
-            ).map(renderNavItem)}
+                : PORTAL_NAV[role])
+            )
+              .filter(
+                (item) =>
+                  role !== "teacher" ||
+                  showAffiliations ||
+                  item.href !== "/portal/teacher/affiliations",
+              )
+              .map(renderNavItem)}
           </div>
         )}
       </nav>
@@ -368,6 +378,9 @@ export function PortalShellClient({
   showAffiliations = false,
   selfManagedStudent = false,
   portalTheme = "light",
+  adminNav = ADMIN_NAV,
+  officeNav = OFFICE_NAV,
+  roleNav,
   children,
 }: {
   role: Role;
@@ -377,6 +390,11 @@ export function PortalShellClient({
   showAffiliations?: boolean;
   selfManagedStudent?: boolean;
   portalTheme?: ThemeBase;
+  /** Nav pre-filtered by the studio's entitlements, resolved server-side in
+   *  app/portal/layout.tsx. Defaults keep the unfiltered shape. */
+  adminNav?: NavSection[];
+  officeNav?: NavSection[];
+  roleNav?: NavItem[];
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -454,7 +472,7 @@ export function PortalShellClient({
     <div className="flex h-screen overflow-hidden bg-base">
       <PortalThemeSync theme={portalTheme} />
       {isAdminRail ? (
-        <AdminRail studioName={studioName} userName={userName} portalTheme={portalTheme} />
+        <AdminRail studioName={studioName} userName={userName} portalTheme={portalTheme} nav={adminNav} />
       ) : (
       <div
         className="relative hidden shrink-0 md:block"
@@ -497,6 +515,9 @@ export function PortalShellClient({
             showAffiliations={showAffiliations}
             selfManagedStudent={selfManagedStudent}
             portalTheme={portalTheme}
+            adminNav={adminNav}
+            officeNav={officeNav}
+            roleNav={roleNav}
           />
         </aside>
       </div>
@@ -532,6 +553,9 @@ export function PortalShellClient({
             showAffiliations={showAffiliations}
             selfManagedStudent={selfManagedStudent}
             portalTheme={portalTheme}
+            adminNav={adminNav}
+            officeNav={officeNav}
+            roleNav={roleNav}
           />
         </div>
       </div>
@@ -551,7 +575,9 @@ export function PortalShellClient({
         )}
         <main className={`flex-1 overflow-auto ${showBell && !isAdminRail ? "" : "md:pt-0 pt-[53px]"}`}>{children}</main>
       </div>
-      {isAdminRail && <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />}
+      {isAdminRail && (
+        <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} nav={adminNav} />
+      )}
     </div>
   );
 }

@@ -1,10 +1,18 @@
 import type { Role } from "@/lib/types";
+import type { ModuleKey } from "@/lib/verticals/types";
+import type { Entitlements } from "./entitlements";
 
 export type NavItem = {
   href: string;
   labelKey: string;
   exact?: boolean;
   children?: NavItem[];
+  /**
+   * Gate this item behind a module. ABSENT MEANS ALWAYS SHOWN — a missing
+   * module key is "not gated", never "hidden". Dashboards, settings and the
+   * people directories are deliberately ungated.
+   */
+  module?: ModuleKey;
 };
 
 export type NavSection = {
@@ -18,9 +26,9 @@ export const ADMIN_NAV: NavSection[] = [
   {
     items: [
       { href: "/portal/admin", labelKey: "nav.admin.dashboard", exact: true },
-      { href: "/portal/admin/classes", labelKey: "nav.admin.classes" },
-      { href: "/portal/admin/events", labelKey: "nav.admin.events" },
-      { href: "/portal/admin/passes", labelKey: "nav.admin.passes" },
+      { href: "/portal/admin/classes", labelKey: "nav.admin.classes", module: "classes" },
+      { href: "/portal/admin/events", labelKey: "nav.admin.events", module: "production" },
+      { href: "/portal/admin/passes", labelKey: "nav.admin.passes", module: "passes" },
     ],
   },
   {
@@ -29,10 +37,11 @@ export const ADMIN_NAV: NavSection[] = [
       {
         href: "/portal/admin/staff",
         labelKey: "nav.admin.staff",
+        module: "staff",
         children: [
-          { href: "/portal/admin/substitutes", labelKey: "nav.admin.substitutes" },
-          { href: "/portal/admin/availability", labelKey: "nav.admin.availability" },
-          { href: "/portal/admin/private-lessons", labelKey: "nav.admin.privateLessons" },
+          { href: "/portal/admin/substitutes", labelKey: "nav.admin.substitutes", module: "substitutes" },
+          { href: "/portal/admin/availability", labelKey: "nav.admin.availability", module: "availability" },
+          { href: "/portal/admin/private-lessons", labelKey: "nav.admin.privateLessons", module: "privateLessons" },
         ],
       },
     ],
@@ -42,15 +51,15 @@ export const ADMIN_NAV: NavSection[] = [
     items: [
       { href: "/portal/admin/parents", labelKey: "nav.admin.parents" },
       { href: "/portal/admin/students", labelKey: "nav.admin.students" },
-      { href: "/portal/admin/badges", labelKey: "nav.admin.badges" },
-      { href: "/portal/admin/leads", labelKey: "nav.admin.leads" },
+      { href: "/portal/admin/badges", labelKey: "nav.admin.badges", module: "badges" },
+      { href: "/portal/admin/leads", labelKey: "nav.admin.leads", module: "leads" },
     ],
   },
   {
     titleKey: "nav.sections.finance",
     items: [
-      { href: "/portal/admin/billing", labelKey: "nav.admin.billing" },
-      { href: "/portal/admin/accounting", labelKey: "nav.admin.accounting" },
+      { href: "/portal/admin/billing", labelKey: "nav.admin.billing", module: "billing" },
+      { href: "/portal/admin/accounting", labelKey: "nav.admin.accounting", module: "billing" },
     ],
   },
   {
@@ -59,16 +68,17 @@ export const ADMIN_NAV: NavSection[] = [
       {
         href: "/portal/admin/site",
         labelKey: "nav.admin.website",
+        module: "site",
         children: [
-          { href: "/portal/admin/advertising", labelKey: "nav.admin.advertising" },
+          { href: "/portal/admin/advertising", labelKey: "nav.admin.advertising", module: "site" },
         ],
       },
-      { href: "/portal/admin/shop", labelKey: "nav.admin.shop" },
+      { href: "/portal/admin/shop", labelKey: "nav.admin.shop", module: "shop" },
     ],
   },
   {
     items: [
-      { href: "/portal/admin/messages", labelKey: "nav.admin.inbox" },
+      { href: "/portal/admin/messages", labelKey: "nav.admin.inbox", module: "messaging" },
       { href: "/portal/admin/support", labelKey: "nav.admin.support" },
     ],
   },
@@ -86,13 +96,13 @@ export const OFFICE_NAV: NavSection[] = [
     items: [
       { href: "/portal/admin/parents", labelKey: "nav.admin.parents" },
       { href: "/portal/admin/students", labelKey: "nav.admin.students" },
-      { href: "/portal/admin/leads", labelKey: "nav.admin.leads" },
-      { href: "/portal/admin/classes", labelKey: "nav.admin.classes" },
+      { href: "/portal/admin/leads", labelKey: "nav.admin.leads", module: "leads" },
+      { href: "/portal/admin/classes", labelKey: "nav.admin.classes", module: "classes" },
     ],
   },
   {
     titleKey: "nav.sections.communications",
-    items: [{ href: "/portal/admin/messages", labelKey: "nav.admin.messages" }],
+    items: [{ href: "/portal/admin/messages", labelKey: "nav.admin.messages", module: "messaging" }],
   },
 ];
 
@@ -104,10 +114,10 @@ export const PORTAL_NAV: Record<Exclude<Role, "admin">, NavItem[]> = {
     { href: "/portal/teacher/invoices", labelKey: "nav.teacher.invoices" },
     { href: "/portal/teacher/expenses", labelKey: "nav.teacher.expenses" },
     { href: "/portal/teacher/vault", labelKey: "nav.teacher.vault" },
-    { href: "/portal/teacher/availability", labelKey: "nav.teacher.availability" },
-    { href: "/portal/teacher/private-lessons", labelKey: "nav.teacher.privateLessons" },
-    { href: "/portal/teacher/substitutes", labelKey: "nav.teacher.substitutes" },
-    { href: "/portal/teacher/messages", labelKey: "nav.teacher.messages" },
+    { href: "/portal/teacher/availability", labelKey: "nav.teacher.availability", module: "availability" },
+    { href: "/portal/teacher/private-lessons", labelKey: "nav.teacher.privateLessons", module: "privateLessons" },
+    { href: "/portal/teacher/substitutes", labelKey: "nav.teacher.substitutes", module: "substitutes" },
+    { href: "/portal/teacher/messages", labelKey: "nav.teacher.messages", module: "messaging" },
     { href: "/portal/teacher/affiliations", labelKey: "nav.teacher.affiliations" },
     { href: "/settings/notifications", labelKey: "nav.teacher.notifications" },
   ],
@@ -118,25 +128,25 @@ export const PORTAL_NAV: Record<Exclude<Role, "admin">, NavItem[]> = {
   parent: [
     { href: "/portal/parent", labelKey: "nav.parent.familyHub", exact: true },
     { href: "/portal/parent/schedule", labelKey: "nav.parent.schedule" },
-    { href: "/portal/parent/private-lessons", labelKey: "nav.parent.privateLessons" },
-    { href: "/portal/parent/absences", labelKey: "nav.parent.absences" },
-    { href: "/portal/parent/recital", labelKey: "nav.parent.recital" },
-    { href: "/portal/parent/forms", labelKey: "nav.parent.forms" },
-    { href: "/portal/parent/billing", labelKey: "nav.parent.billing" },
-    { href: "/portal/parent/chat", labelKey: "nav.parent.messages" },
+    { href: "/portal/parent/private-lessons", labelKey: "nav.parent.privateLessons", module: "privateLessons" },
+    { href: "/portal/parent/absences", labelKey: "nav.parent.absences", module: "attendance" },
+    { href: "/portal/parent/recital", labelKey: "nav.parent.recital", module: "costumes" },
+    { href: "/portal/parent/forms", labelKey: "nav.parent.forms", module: "forms" },
+    { href: "/portal/parent/billing", labelKey: "nav.parent.billing", module: "billing" },
+    { href: "/portal/parent/chat", labelKey: "nav.parent.messages", module: "messaging" },
   ],
   student: [
     { href: "/portal/student", labelKey: "nav.student.timetable", exact: true },
-    { href: "/portal/student/progress", labelKey: "nav.student.progress" },
+    { href: "/portal/student/progress", labelKey: "nav.student.progress", module: "progress" },
   ],
 };
 
 export const SELF_MANAGED_STUDENT_NAV: NavItem[] = [
   { href: "/portal/student", labelKey: "nav.student.hub", exact: true },
-  { href: "/portal/parent/billing", labelKey: "nav.parent.billing" },
-  { href: "/portal/parent/forms", labelKey: "nav.parent.forms" },
-  { href: "/portal/student/progress", labelKey: "nav.student.progress" },
-  { href: "/portal/student/messages", labelKey: "nav.student.messages" },
+  { href: "/portal/parent/billing", labelKey: "nav.parent.billing", module: "billing" },
+  { href: "/portal/parent/forms", labelKey: "nav.parent.forms", module: "forms" },
+  { href: "/portal/student/progress", labelKey: "nav.student.progress", module: "progress" },
+  { href: "/portal/student/messages", labelKey: "nav.student.messages", module: "messaging" },
 ];
 
 export const ROLE_BADGE_KEYS: Record<Role, string> = {
@@ -146,6 +156,75 @@ export const ROLE_BADGE_KEYS: Record<Role, string> = {
   parent: "roles.parent",
   student: "roles.student",
 };
+
+// ============================================================================
+//  Entitlement-aware builders.
+//
+//  These are the ONLY way the shell should read nav. The raw ADMIN_NAV /
+//  PORTAL_NAV exports remain for the parity test and for callers that
+//  genuinely want the unfiltered shape.
+//
+//  Invariant enforced by tests/entitlements.test.ts: for a dance studio with
+//  no studio_modules rows and no flags, these return today's arrays byte for
+//  byte. If that snapshot fails, the change is wrong — do not update it to
+//  match new output.
+// ============================================================================
+
+/** Every destination in a nav tree, parents and children alike. */
+export function flattenNav(sections: NavSection[]): NavItem[] {
+  const out: NavItem[] = [];
+  for (const section of sections) {
+    for (const item of section.items) {
+      out.push(item);
+      if (item.children) out.push(...item.children);
+    }
+  }
+  return out;
+}
+
+function keeps(item: NavItem, ent: Entitlements | null): boolean {
+  // No entitlements resolved (or no module tag) ⇒ show it. Failing open here
+  // is correct: this layer is presentation, and the page + action guards are
+  // the ones that actually enforce.
+  if (!ent || !item.module) return true;
+  return ent.modules.has(item.module);
+}
+
+function filterItems(items: NavItem[], ent: Entitlements | null): NavItem[] {
+  const out: NavItem[] = [];
+  for (const item of items) {
+    if (!keeps(item, ent)) continue;
+    if (!item.children) {
+      out.push(item);
+      continue;
+    }
+    const children = filterItems(item.children, ent);
+    // Preserve the exact shape: an item that had no surviving children keeps
+    // an empty array rather than losing the key, so deep-equal parity holds.
+    out.push({ ...item, children });
+  }
+  return out;
+}
+
+export function buildAdminNav(ent: Entitlements | null): NavSection[] {
+  return ADMIN_NAV.map((section) => ({ ...section, items: filterItems(section.items, ent) })).filter(
+    (section) => section.items.length > 0,
+  );
+}
+
+export function buildOfficeNav(ent: Entitlements | null): NavSection[] {
+  return OFFICE_NAV.map((section) => ({ ...section, items: filterItems(section.items, ent) })).filter(
+    (section) => section.items.length > 0,
+  );
+}
+
+export function buildPortalNav(role: Exclude<Role, "admin">, ent: Entitlements | null): NavItem[] {
+  return filterItems(PORTAL_NAV[role], ent);
+}
+
+export function buildSelfManagedStudentNav(ent: Entitlements | null): NavItem[] {
+  return filterItems(SELF_MANAGED_STUDENT_NAV, ent);
+}
 
 export const PLATFORM_NAV: NavItem[] = [
   { href: "/platform", labelKey: "nav.platform.overview", exact: true },

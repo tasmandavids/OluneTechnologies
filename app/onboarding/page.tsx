@@ -6,7 +6,14 @@ import { portalHomeForAccount } from "@/lib/account/memberships";
 import type { AccountKind } from "@/lib/account/kinds";
 import type { Role } from "@/lib/types";
 
-export default async function OnboardingPage() {
+export default async function OnboardingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ vertical?: string }>;
+}) {
+  // /onboarding?vertical=gymnastics pre-selects and skips the picker. This is
+  // what the /for/[vertical] marketing pages link to.
+  const { vertical } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -38,5 +45,11 @@ export default async function OnboardingPage() {
     }
   }
 
-  return <OnboardingWizard signedIn={!!user} email={user?.email ?? ""} />;
+  return (
+    <OnboardingWizard
+      signedIn={!!user}
+      email={user?.email ?? ""}
+      presetVertical={vertical ?? null}
+    />
+  );
 }

@@ -8,6 +8,8 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { derivePalette } from "@/lib/branding";
 import type { AccountKind } from "@/lib/account/kinds";
+import { allVerticals, isAuthored, isVerticalKey, DEFAULT_VERTICAL } from "@/lib/verticals/registry";
+import type { VerticalKey } from "@/lib/verticals/types";
 import { OluneLogo } from "@/components/brand/OluneLogo";
 import { OluneHomeLink } from "@/components/brand/OluneHomeLink";
 import { AuthDivider, OAuthButtons } from "@/components/auth/OAuthButtons";
@@ -17,8 +19,9 @@ const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
 const EASE = [0.16, 1, 0.3, 1] as const;
 const PRESETS = ["#C8102E", "#5B5BFF", "#C9A227", "#E84A8A", "#13B6A4"];
 const ACCOUNT_KIND_KEY = "olune_onboarding_account_kind";
+const VERTICAL_KEY = "olune_onboarding_vertical";
 
-type Step = "system" | "account" | "studio" | "brand" | "done";
+type Step = "vertical" | "waitlist" | "system" | "account" | "studio" | "brand" | "done";
 type SlugStatus = "idle" | "invalid" | "checking" | "available" | "taken";
 
 const slugify = (s: string) =>
@@ -38,7 +41,30 @@ function storeAccountKind(kind: AccountKind) {
   }
 }
 
-export function OnboardingWizard({ signedIn, email: initialEmail = "" }: { signedIn: boolean; email?: string }) {
+function readStoredVertical(): VerticalKey | null {
+  if (typeof window === "undefined") return null;
+  const v = sessionStorage.getItem(VERTICAL_KEY);
+  return isVerticalKey(v) ? v : null;
+}
+
+function storeVertical(key: VerticalKey) {
+  try {
+    sessionStorage.setItem(VERTICAL_KEY, key);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function OnboardingWizard({
+  signedIn,
+  email: initialEmail = "",
+  presetVertical = null,
+}: {
+  signedIn: boolean;
+  email?: string;
+  /** From ?vertical= — pre-selects and skips the picker. */
+  presetVertical?: string | null;
+}) {
   const t = useTranslations("onboarding");
   const router = useRouter();
   const reduce = useReducedMotion();
@@ -46,7 +72,18 @@ export function OnboardingWizard({ signedIn, email: initialEmail = "" }: { signe
   const [accountKind, setAccountKind] = useState<AccountKind | null>(() => readStoredAccountKind());
   const isInstructor = accountKind === "instructor";
 
+  // Holds whatever was picked, authored or not — the waitlist step needs to
+  // know which vertical they wanted.
+  const [vertical, setVertical] = useState<VerticalKey | null>(() =>
+    isVerticalKey(presetVertical) ? presetVertical : readStoredVertical(),
+  );
+
   const [step, setStep] = useState<Step>(() => {
+    const picked = isVerticalKey(presetVertical) ? presetVertical : readStoredVertical();
+    if (!picked) return "vertical";
+    // A deep link to a vertical we cannot serve yet lands on the waitlist
+    // rather than silently dropping the visitor into the dance pack.
+    if (!isAuthored(picked)) return "waitlist";
     if (signedIn) return readStoredAccountKind() ? "studio" : "system";
     return "system";
   });
@@ -64,6 +101,7 @@ export function OnboardingWizard({ signedIn, email: initialEmail = "" }: { signe
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [awaitingConfirm, setAwaitingConfirm] = useState(false);
+  const [waitlistDone, setWaitlistDone] = useState(false);
 
   useEffect(() => { if (!slugEdited) setSlug(slugify(studioName)); }, [studioName, slugEdited]);
 
@@ -78,6 +116,40 @@ export function OnboardingWizard({ signedIn, email: initialEmail = "" }: { signe
     }, 450);
     return () => clearTimeout(timer);
   }, [slug, step]);
+
+  function pickVertical(key: VerticalKey) {
+    setVertical(key);
+    setError(null);
+    if (!isAuthored(key)) {
+      // Don't persist an unbuilt vertical — if they come back we want the
+      // picker again, not a workspace we can't create.
+      go("waitlist");
+      return;
+    }
+    storeVertical(key);
+    go(signedIn ? (readStoredAccountKind() ? "studio" : "system") : "system");
+  }
+
+  async function joinWaitlist(e: React.FormEvent) {
+    e.preventDefault();
+    if (!vertical) return;
+    setBusy(true);
+    setError(null);
+
+    const { error: insertError } = await createClient().from("vertical_waitlist").insert({
+      vertical,
+      email,
+      org_name: studioName.trim() || null,
+      source: "onboarding",
+    });
+    setBusy(false);
+
+    // 23505 = already on the list for this vertical. That's success, not an
+    // error — telling someone "you're already signed up" as a red banner is
+    // just punishing them for coming back.
+    if (insertError && insertError.code !== "23505") return setError(insertError.message);
+    setWaitlistDone(true);
+  }
 
   function pickSystem(kind: AccountKind) {
     setAccountKind(kind);
@@ -102,6 +174,7 @@ export function OnboardingWizard({ signedIn, email: initialEmail = "" }: { signe
     const { data: studioId, error: rpcError } = await supabase.rpc(rpcName, {
       p_name: studioName,
       p_slug: slug,
+      p_vertical: vertical ?? DEFAULT_VERTICAL,
     });
     if (rpcError) { setBusy(false); return setError(rpcError.message); }
 
@@ -129,7 +202,7 @@ export function OnboardingWizard({ signedIn, email: initialEmail = "" }: { signe
     : (["account", "studio", "brand"] as const);
 
   const stepIndex =
-    step === "system" ? -1
+    step === "vertical" || step === "waitlist" || step === "system" ? -1
     : step === "account" ? 0
     : step === "studio" ? 1
     : step === "brand" ? 2
@@ -157,7 +230,7 @@ export function OnboardingWizard({ signedIn, email: initialEmail = "" }: { signe
           </div>
         </div>
 
-        {step !== "done" && step !== "system" && (
+        {step !== "done" && step !== "system" && step !== "vertical" && step !== "waitlist" && (
           <div className="mb-8 flex items-center justify-center gap-2">
             {progressKeys.map((key, i) => (
               <div key={key} className="flex items-center gap-2">
@@ -186,6 +259,97 @@ export function OnboardingWizard({ signedIn, email: initialEmail = "" }: { signe
             <AnimatePresence mode="wait" custom={dir}>
               <motion.div key={step} custom={dir} variants={variants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.35, ease: EASE }}>
 
+                {step === "vertical" && (
+                  <div>
+                    <h1 className="text-2xl font-black tracking-tight">{t("vertical.title")}</h1>
+                    <p className="mt-1 text-sm text-muted">{t("vertical.subtitle")}</p>
+                    <div className="mt-6 grid grid-cols-2 gap-2.5">
+                      {allVerticals().map((key) => {
+                        const ready = isAuthored(key);
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => pickVertical(key)}
+                            className="rounded-2xl border border-[--hair] bg-base/40 p-4 text-left transition hover:border-[--brand]"
+                          >
+                            <p className="text-sm font-black text-ink">{t(`vertical.options.${key}`)}</p>
+                            {!ready && (
+                              <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">
+                                {t("vertical.comingSoon")}
+                              </p>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {step === "waitlist" && (
+                  <div>
+                    {waitlistDone ? (
+                      <div className="text-center">
+                        <h1 className="text-xl font-black">{t("waitlist.doneTitle")}</h1>
+                        <p className="mt-2 text-sm text-muted">
+                          {t("waitlist.doneBody", {
+                            vertical: t(`vertical.options.${vertical ?? DEFAULT_VERTICAL}`),
+                          })}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => { setWaitlistDone(false); go("vertical", -1); }}
+                          className="btn-glow mt-6 w-full justify-center"
+                        >
+                          {t("waitlist.pickAnother")}
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <h1 className="text-2xl font-black tracking-tight">
+                          {t("waitlist.title", {
+                            vertical: t(`vertical.options.${vertical ?? DEFAULT_VERTICAL}`),
+                          })}
+                        </h1>
+                        <p className="mt-1 text-sm text-muted">{t("waitlist.subtitle")}</p>
+                        <form onSubmit={joinWaitlist} className="mt-6">
+                          <div className="space-y-3">
+                            <input
+                              className="field-premium"
+                              type="email"
+                              required
+                              placeholder={t("waitlist.emailPlaceholder")}
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <input
+                              className="field-premium"
+                              type="text"
+                              placeholder={t("waitlist.orgPlaceholder")}
+                              value={studioName}
+                              onChange={(e) => setStudioName(e.target.value)}
+                            />
+                          </div>
+                          <button
+                            type="submit"
+                            disabled={busy}
+                            className="btn-glow btn-glow--solid mt-6 w-full justify-center disabled:opacity-60"
+                          >
+                            {busy ? t("waitlist.submitting") : t("waitlist.submit")}
+                          </button>
+                        </form>
+                        <button
+                          type="button"
+                          onClick={() => go("vertical", -1)}
+                          className="btn-glow mt-4 w-full justify-center"
+                        >
+                          {t("system.back")}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {step === "system" && (
                   <div>
                     <h1 className="text-2xl font-black tracking-tight">{t("system.title")}</h1>
@@ -208,6 +372,13 @@ export function OnboardingWizard({ signedIn, email: initialEmail = "" }: { signe
                         <p className="mt-1 text-sm text-muted">{t("system.instructor.desc")}</p>
                       </button>
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => go("vertical", -1)}
+                      className="btn-glow mt-4 w-full justify-center"
+                    >
+                      {t("system.back")}
+                    </button>
                   </div>
                 )}
 
