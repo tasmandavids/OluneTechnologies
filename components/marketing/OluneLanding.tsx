@@ -462,9 +462,14 @@ export default function OluneLanding() {
     v: t(`compareSection.highlights.${k}.v`),
   }));
 
+  // Keep these two lists in step with LandingNav/LandingFooter in
+  // components/marketing/landing/chrome.tsx — the home page carries its own
+  // copy, so a link added there has to be added here too or it only shows up
+  // on the FAQ/Team/Mobile pages.
   const navLinks = [
     { label: t("features"), href: "/#features" },
     { label: t("pricing"), href: "/#pricing" },
+    { label: "Mobile", href: "/mobile" },
     { label: "FAQ", href: "/faq" },
     { label: "Team", href: "/team" },
     { label: t("about"), href: "/#about" },
@@ -472,6 +477,7 @@ export default function OluneLanding() {
   const footerLinks = [
     { label: t("features"), href: "/#features" },
     { label: t("pricing"), href: "/#pricing" },
+    { label: "Mobile", href: "/mobile" },
     { label: "FAQ", href: "/faq" },
     { label: "Team", href: "/team" },
     { label: t("signIn"), href: "/login" },
