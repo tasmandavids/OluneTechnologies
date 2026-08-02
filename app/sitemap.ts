@@ -13,6 +13,7 @@ import { originForHost } from "@/lib/seo";
 
 const MARKETING_ROUTES: { path: string; priority: number }[] = [
   { path: "", priority: 1 },
+  { path: "/mobile", priority: 0.7 },
   { path: "/faq", priority: 0.6 },
   { path: "/team", priority: 0.5 },
   { path: "/instructors", priority: 0.5 },

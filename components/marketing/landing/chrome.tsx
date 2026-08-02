@@ -47,6 +47,7 @@ export function LandingNav() {
   const links = [
     { label: t("features"), href: "/#features" },
     { label: t("pricing"), href: "/#pricing" },
+    { label: "Mobile", href: "/mobile" },
     { label: "FAQ", href: "/faq" },
     { label: "Team", href: "/team" },
     { label: t("about"), href: "/#about" },
@@ -103,6 +104,7 @@ export function LandingFooter() {
   const footerLinks = [
     { label: t("features"), href: "/#features" },
     { label: t("pricing"), href: "/#pricing" },
+    { label: "Mobile", href: "/mobile" },
     { label: "FAQ", href: "/faq" },
     { label: "Team", href: "/team" },
     { label: "Privacy", href: "/privacy" },
