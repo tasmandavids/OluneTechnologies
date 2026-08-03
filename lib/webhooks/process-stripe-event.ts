@@ -28,6 +28,7 @@ import {
 } from "@/lib/xero/webhook-sync";
 import { syncStripeAccountStatus } from "@/lib/stripe/connect";
 import { CLASS_PASS_XERO_ACCOUNT_CODE } from "@/lib/passes/constants";
+import { refundPaidClassPassesForPaymentIntent } from "@/lib/passes/refunds";
 
 export async function processStripeEvent(event: Stripe.Event, supabase: ServiceSupabase): Promise<void> {
   switch (event.type) {
@@ -414,6 +415,23 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
         break;
       }
 
+      const nowIso = new Date().toISOString();
+      const refundPatch = {
+        status: "refunded" as const,
+        refunded_at: nowIso,
+        refund_amount_cents: refundedCents,
+        stripe_refund_id: refundId,
+      };
+
+      // A class pass shares its stripe_payment_intent_id with the invoice
+      // created for it. Invalidate paid passes before the idempotency gate so
+      // admin-issued refunds that already wrote a ledger row cannot leave a
+      // still-redeemable pass behind.
+      const passRefundErr = await refundPaidClassPassesForPaymentIntent(supabase, piId, refundPatch);
+      if (passRefundErr) {
+        console.warn(`[stripe-webhook] charge.refunded — class-pass refund update failed: ${passRefundErr}`);
+      }
+
       // Already recorded by our admin action (or a previous delivery)?
       const { data: ledgered } = await supabase
         .from("payments")
@@ -424,14 +442,6 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
         console.log(`[stripe-webhook] charge.refunded — ${refundId} already recorded`);
         break;
       }
-
-      const nowIso = new Date().toISOString();
-      const refundPatch = {
-        status: "refunded",
-        refunded_at: nowIso,
-        refund_amount_cents: refundedCents,
-        stripe_refund_id: refundId,
-      };
 
       // Try each sale table in turn; only one will match the payment intent.
       let refStudioId: string | null = null;
@@ -507,18 +517,6 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
         console.log(`[stripe-webhook] charge.refunded — no matching sale for ${piId}`);
       }
 
-      // A class pass shares its stripe_payment_intent_id with the invoice
-      // created for it (not a mutually-exclusive "sale table" the way
-      // invoices/orders/tickets are above) — always check for and flip a
-      // linked pass too, independent of which branch above matched. Only
-      // flip it while still 'paid': a *redeemed* pass keeps that status even
-      // if refunded later (the class was already attended — the invoice
-      // refund above still records the ledger entry correctly regardless).
-      await supabase
-        .from("class_passes")
-        .update(refundPatch)
-        .eq("stripe_payment_intent_id", piId)
-        .eq("status", "paid");
       break;
     }
 
