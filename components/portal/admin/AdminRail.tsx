@@ -66,7 +66,7 @@ const SPACES: Space[] = [
     id: "money",
     labelKey: "shell.rail.money",
     icon: IconWallet,
-    hrefs: ["/portal/admin/billing", "/portal/admin/accounting", "/portal/admin/shop"],
+    hrefs: ["/portal/admin/money", "/portal/admin/shop"],
   },
   {
     id: "inbox",

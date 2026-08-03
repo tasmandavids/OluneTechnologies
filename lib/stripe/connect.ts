@@ -33,6 +33,51 @@ export async function loadStudioStripeAccount(
   return (data as StripeConnectAccountRow | null) ?? null;
 }
 
+export type StripeBalanceSummary = {
+  availableCents: number;
+  pendingCents: number;
+  currency: string;
+};
+
+/** Available + pending balance sitting on the studio's own connected account. */
+export async function loadStripeBalance(stripeAccountId: string): Promise<StripeBalanceSummary> {
+  const balance = await stripe.balance.retrieve({}, { stripeAccount: stripeAccountId });
+  const available = balance.available[0];
+  const pending = balance.pending[0];
+  return {
+    availableCents: available?.amount ?? 0,
+    pendingCents: pending?.amount ?? 0,
+    currency: (available?.currency ?? pending?.currency ?? "nzd").toUpperCase(),
+  };
+}
+
+export type StripePayoutRow = {
+  id: string;
+  amountCents: number;
+  currency: string;
+  status: string;
+  arrivalDate: string;
+  createdAt: string;
+  method: string;
+};
+
+/** Recent payouts to the studio's own bank account, most recent first. */
+export async function listStripePayouts(
+  stripeAccountId: string,
+  limit = 20,
+): Promise<StripePayoutRow[]> {
+  const res = await stripe.payouts.list({ limit }, { stripeAccount: stripeAccountId });
+  return res.data.map((p) => ({
+    id: p.id,
+    amountCents: p.amount,
+    currency: p.currency.toUpperCase(),
+    status: p.status,
+    arrivalDate: new Date(p.arrival_date * 1000).toISOString(),
+    createdAt: new Date(p.created * 1000).toISOString(),
+    method: p.method,
+  }));
+}
+
 export function isChargeable(row: StripeConnectAccountRow | null): boolean {
   return row?.charges_enabled === true;
 }

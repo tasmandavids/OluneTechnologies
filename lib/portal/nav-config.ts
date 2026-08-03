@@ -57,10 +57,7 @@ export const ADMIN_NAV: NavSection[] = [
   },
   {
     titleKey: "nav.sections.finance",
-    items: [
-      { href: "/portal/admin/billing", labelKey: "nav.admin.billing", module: "billing" },
-      { href: "/portal/admin/accounting", labelKey: "nav.admin.accounting", module: "billing" },
-    ],
+    items: [{ href: "/portal/admin/money", labelKey: "nav.admin.money", module: "billing" }],
   },
   {
     titleKey: "nav.sections.digital",

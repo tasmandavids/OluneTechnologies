@@ -640,6 +640,117 @@
         "paymentPlans": "Piani di pagamento"
       }
     },
+    "money": {
+      "title": "Finanze",
+      "subtitle": "Fatturazione, recupero crediti e piani di pagamento — tutto in un unico posto.",
+      "tabs": {
+        "overview": "Panoramica",
+        "invoices": "Fatture",
+        "collections": "Recupero crediti",
+        "plans": "Piani",
+        "ledger": "Registro",
+        "reconcile": "Riconciliazione",
+        "payouts": "Versamenti",
+        "reports": "Report"
+      },
+      "comingSoon": {
+        "title": "Prossimamente",
+        "body": "Questa parte di Finanze è ancora in fase di sviluppo."
+      },
+      "overview": {
+        "title": "Panoramica",
+        "subtitle": "Come si muovono i soldi in questo momento.",
+        "stats": {
+          "outstanding": "In sospeso",
+          "outstandingSub": "{count} fatture non pagate",
+          "overdue": "Scadute",
+          "overdueSub": "{count} fatture scadute",
+          "collectedYtd": "Incassato (da inizio anno)",
+          "collectedSub": "Fatture di retta pagate",
+          "mrr": "Ricavi ricorrenti mensili (MRR)",
+          "mrrSub": "{count} in addebito automatico"
+        },
+        "attention": {
+          "title": "Richiede attenzione",
+          "overdueTitle": "{count} fatture scadute",
+          "overdueDetail": "{amount} in sospeso — sollecitale da Fatture",
+          "draftsTitle": "{count} fatture bozza pronte per l'invio",
+          "draftsDetail": "Non ancora inviate alle famiglie",
+          "gstTitle": "{amount} di GST riscossa questo mese",
+          "gstDetail": "Vedi il dettaglio completo in Report"
+        },
+        "chart": {
+          "title": "Ricavi mensili da retta",
+          "noData": "Nessun ricavo pagato ancora registrato.",
+          "revenue": "Ricavi",
+          "footnote": "Fatture di retta e quote contrassegnate come pagate, ultimi 12 mesi. I ricavi di negozio ed eventi sono in Fatture → Approfondimenti."
+        }
+      },
+      "collections": {
+        "title": "Recupero crediti",
+        "subtitle": "Conti scaduti, classificati per importo × giorni di ritardo — affronta prima i problemi più grandi.",
+        "remindAll": "Sollecita tutti gli scaduti ({count})",
+        "remindAllResult": "{count} sollecito/i inviato/i.",
+        "sending": "Invio…",
+        "remind": "Sollecita",
+        "empty": {
+          "title": "Nessuno scaduto",
+          "body": "Ogni fattura è pagata o non ancora scaduta — ottimo lavoro."
+        },
+        "queueTitle": "Coda di recupero crediti",
+        "queueSubtitle": "{count} famiglie · {amount} scaduto",
+        "overdueTag": "{days}g di ritardo",
+        "invoiceList": "{refs}"
+      },
+      "reports": {
+        "title": "Report",
+        "subtitle": "Conto economico da Xero, GST riscossa e chi ti deve ancora dei soldi — raggruppati per giorni di ritardo.",
+        "gst": {
+          "month": "GST riscossa (questo mese)",
+          "quarter": "GST riscossa (questo trimestre)",
+          "sub": "Dalle fatture contrassegnate come pagate"
+        },
+        "aged": {
+          "title": "Crediti per anzianità",
+          "subtitle": "{total} in sospeso su tutte le fatture non pagate",
+          "current": "Non ancora scaduto",
+          "d1to30": "1–30 giorni di ritardo",
+          "d31to60": "31–60 giorni di ritardo",
+          "d61plus": "61+ giorni di ritardo",
+          "count": "{count, plural, one {# fattura} other {# fatture}}"
+        },
+        "comingSoon": {
+          "programme": "Ricavi per corso",
+          "programmeBody": "Prossimamente — ricavi, iscritti e abbandoni affiancati per ogni tipo di corso.",
+          "export": "Esportazione personalizzata",
+          "exportBody": "Prossimamente — qualsiasi periodo, qualsiasi conto, CSV o PDF."
+        }
+      },
+      "ledger": {
+        "title": "Registro",
+        "subtitle": "Ogni pagamento e rimborso reale registrato in Olune, in ordine — non un registro manuale modificabile.",
+        "stats": { "net": "Totale netto", "count": "Transazioni" },
+        "empty": {
+          "title": "Nessuna transazione ancora",
+          "body": "Pagamenti e rimborsi appariranno qui man mano che avvengono."
+        },
+        "table": {
+          "date": "Data",
+          "description": "Descrizione",
+          "family": "Famiglia",
+          "amount": "Importo",
+          "runningTotal": "Totale progressivo",
+          "invoiceRef": "Fattura n. {number}",
+          "payment": "Pagamento",
+          "refund": "Rimborso"
+        }
+      },
+      "reconcile": {
+        "title": "La riconciliazione bancaria non è ancora disponibile",
+        "body": "La riconciliazione riga per riga dell'estratto conto con fatture e versamenti arriverà presto in Olune.",
+        "note": "Lo stato delle fatture è già sincronizzato automaticamente con Xero — vedi Report."
+      }
+    },
     "accounting": {
       "title": "Contabilità",
       "subtitle": "Entrate, spese e profitti da Xero: tutti i dettagli rimangono nella tua organizzazione Xero.",

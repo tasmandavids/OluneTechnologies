@@ -40,7 +40,15 @@ export const MODULE_KEYS: ModuleKey[] = [
  */
 export const MODULE_ROUTES: Partial<Record<ModuleKey, string[]>> = {
   classes: ["/portal/admin/classes"],
-  billing: ["/portal/admin/billing", "/portal/admin/accounting", "/portal/parent/billing"],
+  billing: [
+    "/portal/admin/money",
+    "/portal/admin/billing",
+    "/portal/admin/accounting",
+    "/portal/admin/payments",
+    "/portal/admin/payment-plans",
+    "/portal/admin/subscriptions",
+    "/portal/parent/billing",
+  ],
   messaging: ["/portal/admin/messages", "/portal/parent/chat", "/portal/teacher/messages"],
   leads: ["/portal/admin/leads"],
   forms: ["/portal/parent/forms"],

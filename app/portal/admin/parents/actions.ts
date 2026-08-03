@@ -40,8 +40,7 @@ const AddFamilySchema = z.object({
 
 const PARENT_PATHS = [
   "/portal/admin/parents",
-  "/portal/admin/subscriptions",
-  "/portal/admin/billing",
+  "/portal/admin/money",
 ];
 
 function revalidateParentPaths(parentId?: string) {

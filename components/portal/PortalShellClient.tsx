@@ -22,7 +22,7 @@ import { IconSearch, IconPlus, IconCalendarPlus, IconReceipt, IconMegaphone, Ico
 
 const NEW_MENU_ITEMS = [
   { key: "addClass", href: "/portal/admin/classes", icon: IconCalendarPlus },
-  { key: "newInvoice", href: "/portal/admin/billing", icon: IconReceipt },
+  { key: "newInvoice", href: "/portal/admin/money?tab=invoices", icon: IconReceipt },
   { key: "message", href: "/portal/admin/messages", icon: IconMegaphone },
   { key: "addLead", href: "/portal/admin/leads", icon: IconUserPlus },
 ] as const;

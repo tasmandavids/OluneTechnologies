@@ -140,17 +140,30 @@ export const entitlementsTag = (studioId: string) => `entitlements-${studioId}`;
 export const ENTITLEMENTS_ALL_TAG = "entitlements-all";
 
 /**
+ * unstable_cache round-trips its return value through JSON, which silently
+ * drops a Set down to "{}" — so the cached shape carries modules as a plain
+ * array and getEntitlementsCached rebuilds the real Set on the way out.
+ */
+type CachedEntitlements = Omit<Entitlements, "modules"> & { modules: ModuleKey[] };
+
+async function loadEntitlementsCacheSafe(studioId: string): Promise<CachedEntitlements> {
+  const ent = await loadEntitlements(studioId);
+  return { ...ent, modules: [...ent.modules] };
+}
+
+/**
  * Request-scoped dedup wrapped around a tagged 5-minute cache — the same shape
  * as getBrandingCached (lib/branding.ts:149). Invalidate with
  * revalidateTag(entitlementsTag(studioId)) for a single studio, or
  * revalidateTag(ENTITLEMENTS_ALL_TAG) when a global flag changes.
  */
 export const getEntitlementsCached = cache(async (studioId: string): Promise<Entitlements> => {
-  return unstable_cache(
-    () => loadEntitlements(studioId),
+  const cached = await unstable_cache(
+    () => loadEntitlementsCacheSafe(studioId),
     ["entitlements", studioId],
     { tags: [entitlementsTag(studioId), ENTITLEMENTS_ALL_TAG], revalidate: 300 },
   )();
+  return { ...cached, modules: new Set(cached.modules) };
 });
 
 /** Entitlements for a studio with no overrides — used by tests and fallbacks. */

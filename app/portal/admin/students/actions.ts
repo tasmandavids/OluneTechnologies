@@ -553,6 +553,6 @@ export async function createDraftInvoiceFromEnrollments(
   });
 
   revalidatePath("/portal/admin/students");
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   return { ok: true, invoiceId, xeroError: xero.ok ? undefined : xero.error };
 }

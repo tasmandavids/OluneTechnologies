@@ -676,6 +676,117 @@
         "paymentPlans": "付款计划"
       }
     },
+    "money": {
+      "title": "财务",
+      "subtitle": "开票、催收和分期付款计划 — 一站式管理。",
+      "tabs": {
+        "overview": "概览",
+        "invoices": "发票",
+        "collections": "催收",
+        "plans": "分期计划",
+        "ledger": "总账",
+        "reconcile": "对账",
+        "payouts": "打款",
+        "reports": "报表"
+      },
+      "comingSoon": {
+        "title": "即将上线",
+        "body": "财务的这部分功能仍在建设中。"
+      },
+      "overview": {
+        "title": "概览",
+        "subtitle": "资金的实时动态。",
+        "stats": {
+          "outstanding": "未结清",
+          "outstandingSub": "{count} 张未付发票",
+          "overdue": "逾期",
+          "overdueSub": "{count} 张逾期发票",
+          "collectedYtd": "已收款（年初至今）",
+          "collectedSub": "已支付的学费发票",
+          "mrr": "月度经常性收入",
+          "mrrSub": "{count} 个自动扣款"
+        },
+        "attention": {
+          "title": "需要关注",
+          "overdueTitle": "{count} 张发票已逾期",
+          "overdueDetail": "尚欠 {amount} — 请在发票页面催缴",
+          "draftsTitle": "{count} 张草稿发票待发送",
+          "draftsDetail": "尚未发送给家长",
+          "gstTitle": "本月已收 GST {amount}",
+          "gstDetail": "完整明细见报表页面"
+        },
+        "chart": {
+          "title": "月度学费收入",
+          "noData": "暂无已支付收入记录。",
+          "revenue": "收入",
+          "footnote": "过去 12 个月内标记为已支付的学费及费用发票。商店和活动收入见发票 → 洞察。"
+        }
+      },
+      "collections": {
+        "title": "催收",
+        "subtitle": "按逾期金额 × 逾期天数排序的欠款账户 — 优先处理问题最大的。",
+        "remindAll": "催缴全部逾期（{count}）",
+        "remindAllResult": "已发送 {count} 条催缴提醒。",
+        "sending": "发送中…",
+        "remind": "催缴",
+        "empty": {
+          "title": "暂无逾期",
+          "body": "所有发票都已支付或尚未到期 — 做得很好。"
+        },
+        "queueTitle": "催收队列",
+        "queueSubtitle": "{count} 个家庭 · 逾期 {amount}",
+        "overdueTag": "逾期 {days} 天",
+        "invoiceList": "{refs}"
+      },
+      "reports": {
+        "title": "报表",
+        "subtitle": "来自 Xero 的损益表、已收 GST，以及仍欠款的家庭 — 按逾期程度分组。",
+        "gst": {
+          "month": "已收 GST（本月）",
+          "quarter": "已收 GST（本季度）",
+          "sub": "根据已标记为已支付的发票"
+        },
+        "aged": {
+          "title": "账龄分析",
+          "subtitle": "所有未付发票共欠 {total}",
+          "current": "尚未到期",
+          "d1to30": "逾期 1–30 天",
+          "d31to60": "逾期 31–60 天",
+          "d61plus": "逾期 61 天以上",
+          "count": "{count, plural, other {# 张发票}}"
+        },
+        "comingSoon": {
+          "programme": "按课程分类的收入",
+          "programmeBody": "即将上线 — 按课程类型并列展示收入、人数和流失率。",
+          "export": "自定义导出",
+          "exportBody": "即将上线 — 任意日期范围、任意科目，CSV 或 PDF。"
+        }
+      },
+      "ledger": {
+        "title": "总账",
+        "subtitle": "Olune 中记录的每一笔真实付款和退款，按时间顺序排列 — 不是可手动编辑的账本。",
+        "stats": { "net": "净额", "count": "交易笔数" },
+        "empty": {
+          "title": "暂无交易记录",
+          "body": "付款和退款发生后会显示在这里。"
+        },
+        "table": {
+          "date": "日期",
+          "description": "说明",
+          "family": "家庭",
+          "amount": "金额",
+          "runningTotal": "累计总额",
+          "invoiceRef": "发票 #{number}",
+          "payment": "付款",
+          "refund": "退款"
+        }
+      },
+      "reconcile": {
+        "title": "银行对账功能尚未上线",
+        "body": "将银行流水与发票、打款逐笔匹配的功能即将加入 Olune。",
+        "note": "发票状态已自动与 Xero 同步 — 详见报表。"
+      }
+    },
     "accounting": {
       "title": "会计",
       "subtitle": "来自 Xero 的收入、支出与利润——完整明细保留在您的 Xero 组织中。",

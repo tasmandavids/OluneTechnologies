@@ -68,7 +68,7 @@ export const TOUR_FEATURES = [
   { id: "dashboard" as const, href: "/portal/admin", emoji: "📊" },
   { id: "classes" as const, href: "/portal/admin/classes", emoji: "🩰" },
   { id: "students" as const, href: "/portal/admin/students", emoji: "👨‍👩‍👧" },
-  { id: "billing" as const, href: "/portal/admin/billing", emoji: "💳" },
+  { id: "billing" as const, href: "/portal/admin/money", emoji: "💳" },
   { id: "website" as const, href: "/portal/admin/site", emoji: "🌐" },
   { id: "leads" as const, href: "/portal/admin/leads", emoji: "✉️" },
 ] as const;

@@ -640,6 +640,117 @@
         "paymentPlans": "Plans de paiement"
       }
     },
+    "money": {
+      "title": "Argent",
+      "subtitle": "Facturation, recouvrement et échéanciers de paiement — tout au même endroit.",
+      "tabs": {
+        "overview": "Aperçu",
+        "invoices": "Factures",
+        "collections": "Recouvrement",
+        "plans": "Échéanciers",
+        "ledger": "Grand livre",
+        "reconcile": "Rapprochement",
+        "payouts": "Versements",
+        "reports": "Rapports"
+      },
+      "comingSoon": {
+        "title": "Bientôt disponible",
+        "body": "Cette partie d'Argent est encore en cours de développement."
+      },
+      "overview": {
+        "title": "Aperçu",
+        "subtitle": "Où en est l'argent en ce moment.",
+        "stats": {
+          "outstanding": "En attente",
+          "outstandingSub": "{count} factures impayées",
+          "overdue": "En retard",
+          "overdueSub": "{count} factures en retard",
+          "collectedYtd": "Encaissé (cumul annuel)",
+          "collectedSub": "Factures de scolarité payées",
+          "mrr": "RRM",
+          "mrrSub": "{count} en prélèvement automatique"
+        },
+        "attention": {
+          "title": "Nécessite votre attention",
+          "overdueTitle": "{count} factures en retard",
+          "overdueDetail": "{amount} en attente — relancez-les depuis Factures",
+          "draftsTitle": "{count} factures brouillon prêtes à envoyer",
+          "draftsDetail": "Pas encore envoyées aux familles",
+          "gstTitle": "{amount} de GST perçue ce mois-ci",
+          "gstDetail": "Voir le détail complet dans Rapports"
+        },
+        "chart": {
+          "title": "Revenu mensuel de scolarité",
+          "noData": "Aucun revenu payé enregistré pour l'instant.",
+          "revenue": "Revenu",
+          "footnote": "Factures de scolarité et de frais marquées payées, 12 derniers mois. Le revenu de la boutique et des événements se trouve dans Factures → Analyses."
+        }
+      },
+      "collections": {
+        "title": "Recouvrement",
+        "subtitle": "Comptes en retard, classés par montant × jours de retard — traitez les plus gros problèmes en premier.",
+        "remindAll": "Relancer tous les impayés ({count})",
+        "remindAllResult": "{count} relance(s) envoyée(s).",
+        "sending": "Envoi…",
+        "remind": "Relancer",
+        "empty": {
+          "title": "Rien en retard",
+          "body": "Chaque facture est payée ou pas encore due — bravo."
+        },
+        "queueTitle": "File de recouvrement",
+        "queueSubtitle": "{count} familles · {amount} en retard",
+        "overdueTag": "{days} j de retard",
+        "invoiceList": "{refs}"
+      },
+      "reports": {
+        "title": "Rapports",
+        "subtitle": "Compte de résultat depuis Xero, GST perçue, et qui vous doit encore de l'argent — regroupé par retard.",
+        "gst": {
+          "month": "GST perçue (ce mois-ci)",
+          "quarter": "GST perçue (ce trimestre)",
+          "sub": "D'après les factures marquées payées"
+        },
+        "aged": {
+          "title": "Créances par ancienneté",
+          "subtitle": "{total} en attente sur toutes les factures impayées",
+          "current": "Pas encore échu",
+          "d1to30": "1 à 30 jours de retard",
+          "d31to60": "31 à 60 jours de retard",
+          "d61plus": "61 jours de retard ou plus",
+          "count": "{count, plural, one {# facture} other {# factures}}"
+        },
+        "comingSoon": {
+          "programme": "Revenu par programme",
+          "programmeBody": "Bientôt disponible — revenu, effectif et attrition côte à côte pour chaque type de cours.",
+          "export": "Export personnalisé",
+          "exportBody": "Bientôt disponible — toute période, tous comptes, CSV ou PDF."
+        }
+      },
+      "ledger": {
+        "title": "Grand livre",
+        "subtitle": "Chaque paiement et remboursement réel enregistré dans Olune, dans l'ordre — pas un registre manuel modifiable.",
+        "stats": { "net": "Total net", "count": "Transactions" },
+        "empty": {
+          "title": "Aucune transaction pour l'instant",
+          "body": "Les paiements et remboursements apparaîtront ici au fur et à mesure."
+        },
+        "table": {
+          "date": "Date",
+          "description": "Description",
+          "family": "Famille",
+          "amount": "Montant",
+          "runningTotal": "Total cumulé",
+          "invoiceRef": "Facture n° {number}",
+          "payment": "Paiement",
+          "refund": "Remboursement"
+        }
+      },
+      "reconcile": {
+        "title": "Le rapprochement bancaire n'est pas encore disponible",
+        "body": "Le rapprochement ligne par ligne de votre relevé bancaire avec les factures et versements arrive bientôt dans Olune.",
+        "note": "Le statut des factures est déjà synchronisé automatiquement avec Xero — voir Rapports."
+      }
+    },
     "accounting": {
       "title": "Comptabilité",
       "subtitle": "Revenus, dépenses et bénéfices de Xero — tous les détails restent dans votre organisation Xero.",
