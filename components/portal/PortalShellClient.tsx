@@ -284,8 +284,8 @@ function SidebarContent({
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="border-b border-[--hair] p-5">
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="shrink-0 border-b border-[--hair] p-5">
         <div className="mb-1 flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2.5">
             <StudioAvatar studioName={studioName} logoUrl={logoUrl} />
@@ -308,7 +308,7 @@ function SidebarContent({
         </p>
       </div>
 
-      <nav className="flex-1 overflow-y-auto p-3">
+      <nav className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
         {role === "admin" ? (
           ADMIN_NAV.map((section, index) => (
             <div key={section.titleKey ?? `section-${index}`} className={index > 0 ? "mt-4" : ""}>
@@ -345,7 +345,7 @@ function SidebarContent({
         )}
       </nav>
 
-      <div className="border-t border-[--hair] p-4">
+      <div className="shrink-0 border-t border-[--hair] p-4">
         <PoweredByOlune className="mb-4" />
         <ThemeSwitcher value={portalTheme} className="mb-3 w-full justify-between" />
         <LanguageSwitcher className="mb-4 w-full justify-between" />
@@ -518,8 +518,10 @@ export function PortalShellClient({
         </div>
 
         <div
-          className={`overflow-hidden border-b border-[--hair] bg-surface shadow-2xl transition-[max-height,opacity] duration-200 ease-out ${
-            mobileOpen ? "max-h-[80vh] opacity-100" : "max-h-0 opacity-0"
+          className={`border-b border-[--hair] bg-surface shadow-2xl transition-[max-height,opacity] duration-200 ease-out ${
+            mobileOpen
+              ? "max-h-[min(80vh,calc(100dvh-3.5rem))] overflow-y-auto overscroll-contain opacity-100"
+              : "max-h-0 overflow-hidden opacity-0"
           }`}
         >
           <SidebarContent
