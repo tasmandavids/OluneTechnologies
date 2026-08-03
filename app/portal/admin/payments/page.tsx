@@ -1,33 +1,19 @@
 // ============================================================================
-//  /portal/admin/payments — Stripe Connect status for this studio.
-//
-//  Each studio connects its own Stripe Express account so payments settle
-//  directly to their own bank instead of pooling in Olune's platform
-//  account. Mirrors /portal/admin/accounting's connect/status/disconnect
-//  shape for the Xero integration.
+//  /portal/admin/payments — merged into Money's Payouts tab. Route kept as a
+//  redirect (with the Stripe Connect error/connected params preserved) so
+//  old links, bookmarks, and the Stripe Connect return flow keep working.
 // ============================================================================
 
-export const dynamic = "force-dynamic";
-
-import { requirePortalSession } from "@/lib/portal/session";
-import { loadStudioStripeAccount } from "@/lib/stripe/connect";
-import { PaymentsSettings } from "@/components/admin/payments/PaymentsSettings";
+import { redirect } from "next/navigation";
 
 export default async function PaymentsPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string; connected?: string }>;
 }) {
-  const { supabase, studioId } = await requirePortalSession();
-  const account = await loadStudioStripeAccount(supabase, studioId);
   const params = await searchParams;
-
-  return (
-    <PaymentsSettings
-      account={account}
-      bannerError={params.error ?? null}
-      bannerConnected={params.connected === "1"}
-      bannerIncomplete={params.connected === "0"}
-    />
-  );
+  const qs = new URLSearchParams({ tab: "payouts" });
+  if (params.error) qs.set("error", params.error);
+  if (params.connected) qs.set("connected", params.connected);
+  redirect(`/portal/admin/money?${qs.toString()}`);
 }

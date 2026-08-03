@@ -16,17 +16,17 @@ import { resolveAppOriginFromHeaders } from "@/lib/xero/app-origin";
 
 export const runtime = "nodejs";
 
-const BASE = "/portal/admin/payments";
+const BASE = "/portal/admin/money?tab=payouts";
 
 export async function GET(req: NextRequest) {
   const stateParam = req.nextUrl.searchParams.get("state");
   if (!stateParam) {
-    return NextResponse.redirect(new URL(`${BASE}?error=Missing+state`, req.url));
+    return NextResponse.redirect(new URL(`${BASE}&error=Missing+state`, req.url));
   }
 
   const payload = verifyStripeConnectState(stateParam);
   if (!payload) {
-    return NextResponse.redirect(new URL(`${BASE}?error=Invalid+or+expired+link`, req.url));
+    return NextResponse.redirect(new URL(`${BASE}&error=Invalid+or+expired+link`, req.url));
   }
 
   const supabase = await createClient();
@@ -34,19 +34,19 @@ export async function GET(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user || user.id !== payload.userId) {
-    return NextResponse.redirect(new URL(`/login?next=${BASE}`, req.url));
+    return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(BASE)}`, req.url));
   }
 
   const authz = await verifyAdminOAuthCallback(supabase, user, payload);
   if (!authz.ok) {
     return NextResponse.redirect(
-      new URL(`${BASE}?error=${encodeURIComponent(authz.reason)}`, req.url),
+      new URL(`${BASE}&error=${encodeURIComponent(authz.reason)}`, req.url),
     );
   }
 
   const account = await loadStudioStripeAccount(supabase, payload.studioId);
   if (!account) {
-    return NextResponse.redirect(new URL(`${BASE}?error=No+Stripe+account+to+resume`, req.url));
+    return NextResponse.redirect(new URL(`${BASE}&error=No+Stripe+account+to+resume`, req.url));
   }
 
   try {
@@ -67,6 +67,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(accountLink.url);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to resume Stripe onboarding";
-    return NextResponse.redirect(new URL(`${BASE}?error=${encodeURIComponent(msg)}`, req.url));
+    return NextResponse.redirect(new URL(`${BASE}&error=${encodeURIComponent(msg)}`, req.url));
   }
 }

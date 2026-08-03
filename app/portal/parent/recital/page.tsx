@@ -2,8 +2,12 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { CostumeHub } from "@/components/portal/parent/CostumeHub";
 import { updateCostumeSize } from "./actions";
+import { requireModule } from "@/lib/portal/require-module";
 
 export default async function RecitalPage() {
+  // Costume hub is dance-only; redirects to the parent home when off.
+  await requireModule("costumes");
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");

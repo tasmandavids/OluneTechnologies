@@ -218,7 +218,7 @@ export async function createAdminSubscription(
   }
 
   revalidatePath("/portal/admin/subscriptions");
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   revalidatePath("/portal/parent");
   return { ok: true, subscriptionId, monthlyCents, chargeCents };
 }
@@ -260,7 +260,7 @@ export async function adminCancelSubscription(
     .eq("stripe_subscription_id", stripeSubscriptionId);
 
   revalidatePath("/portal/admin/subscriptions");
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   revalidatePath("/portal/parent");
   return { ok: true };
 }

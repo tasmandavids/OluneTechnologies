@@ -99,9 +99,9 @@ export default function ParentBillingTab({
                   <tr key={inv.id} className="border-b border-[--hair] last:border-0">
                     <td className="px-4 py-3 font-mono text-xs">
                       {/* Contextual read-only view — actions (send/remind/refund) live in
-                          the Billing hub, so link out instead of duplicating them here. */}
+                          Money, so link out instead of duplicating them here. */}
                       <Link
-                        href={`/portal/admin/billing?invoice=${inv.id}`}
+                        href={`/portal/admin/money?tab=invoices&invoice=${inv.id}`}
                         className="text-ink underline decoration-dotted hover:opacity-70"
                       >
                         {formatInvoiceNumber(inv.invoiceNumber)}

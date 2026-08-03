@@ -211,7 +211,7 @@ export async function createInvoice(
   if (xero.ok) xeroInvoiceId = xero.xeroInvoiceId;
   else xeroError = xero.error;
 
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   return { ok: true, invoiceId: invoice.id as string, xeroInvoiceId, xeroError };
 }
 
@@ -281,7 +281,7 @@ export async function sendInvoiceNow(
     if (!xero.ok) xeroError = xero.error;
   }
 
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   return { ok: true, xeroError };
 }
 
@@ -333,7 +333,7 @@ export async function refreshXeroSync(): Promise<
   const result = await refreshStudioXeroSync(supabase, studioId);
   if (!result.ok) return result;
 
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   return result;
 }
 
@@ -389,7 +389,7 @@ export async function sendPaymentReminder(
 
   if (notifyErr) return { ok: false, error: notifyErr.message };
 
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   return { ok: true };
 }
 
@@ -463,7 +463,7 @@ export async function voidInvoice(
   const xero = await xeroVoidInvoice(supabase, invoiceId);
   const xeroError = xero.ok ? undefined : xero.error;
 
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   return { ok: true, xeroError };
 }
 
@@ -550,7 +550,7 @@ export async function updateInvoice(
     }
   }
 
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
 
   let xeroError: string | undefined;
   if (Object.keys(updates).length > 0 || changingAmount) {
@@ -607,7 +607,7 @@ export async function createInvoiceTemplate(
   );
   if (lineErr) return { ok: false, error: lineErr.message };
 
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   return { ok: true, templateId };
 }
 
@@ -654,7 +654,7 @@ export async function updateInvoiceTemplate(
   );
   if (lineErr) return { ok: false, error: lineErr.message };
 
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   return { ok: true };
 }
 
@@ -676,6 +676,6 @@ export async function deleteInvoiceTemplate(
   const { error: delErr } = await supabase.from("invoice_templates").delete().eq("id", templateId);
   if (delErr) return { ok: false, error: delErr.message };
 
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   return { ok: true };
 }

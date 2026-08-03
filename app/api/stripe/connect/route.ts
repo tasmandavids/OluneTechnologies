@@ -17,12 +17,14 @@ export const runtime = "nodejs";
 export async function GET(req: NextRequest) {
   const ctx = await getAdminStudio();
   if (ctx.error || !ctx.studioId || !ctx.userId) {
-    return NextResponse.redirect(new URL("/login?next=/portal/admin/payments", req.url));
+    return NextResponse.redirect(
+      new URL(`/login?next=${encodeURIComponent("/portal/admin/money?tab=payouts")}`, req.url),
+    );
   }
 
   if (!isStripeConfigured()) {
     return NextResponse.redirect(
-      new URL("/portal/admin/payments?error=Stripe+is+not+configured", req.url),
+      new URL("/portal/admin/money?tab=payouts&error=Stripe+is+not+configured", req.url),
     );
   }
 
@@ -80,7 +82,7 @@ export async function GET(req: NextRequest) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to start Stripe onboarding";
     return NextResponse.redirect(
-      new URL(`/portal/admin/payments?error=${encodeURIComponent(msg)}`, req.url),
+      new URL(`/portal/admin/money?tab=payouts&error=${encodeURIComponent(msg)}`, req.url),
     );
   }
 }

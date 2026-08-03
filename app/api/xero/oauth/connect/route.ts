@@ -9,12 +9,14 @@ export const runtime = "nodejs";
 export async function GET(req: NextRequest) {
   const ctx = await getAdminXeroContext();
   if (ctx.error) {
-    return NextResponse.redirect(new URL("/login?next=/portal/admin/accounting", req.url));
+    return NextResponse.redirect(
+      new URL(`/login?next=${encodeURIComponent("/portal/admin/money?tab=reports")}`, req.url),
+    );
   }
 
   if (!isXeroConfigured()) {
     return NextResponse.redirect(
-      new URL("/portal/admin/accounting?error=Xero+is+not+configured", req.url),
+      new URL("/portal/admin/money?tab=reports&error=Xero+is+not+configured", req.url),
     );
   }
 
@@ -31,6 +33,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(url);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "OAuth not configured";
-    return NextResponse.redirect(new URL(`/portal/admin/accounting?error=${encodeURIComponent(msg)}`, req.url));
+    return NextResponse.redirect(
+      new URL(`/portal/admin/money?tab=reports&error=${encodeURIComponent(msg)}`, req.url),
+    );
   }
 }

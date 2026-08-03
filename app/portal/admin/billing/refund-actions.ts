@@ -247,7 +247,7 @@ export async function refundSale(
     });
   }
 
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   if (kind === "order") revalidatePath("/portal/admin/shop");
   if (kind === "ticket") revalidatePath("/portal/admin/events");
   if (kind === "class_pass" || kind === "invoice") revalidatePath("/portal/admin/passes");

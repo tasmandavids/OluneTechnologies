@@ -5,10 +5,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { EventsManager } from "@/components/admin/events/EventsManager";
+import { requireModule } from "@/lib/portal/require-module";
 
 export const dynamic = "force-dynamic";
 
 export default async function EventsPage() {
+  // Recitals and productions are dance-only. Redirects to the role home for a
+  // studio whose pack omits the module, so a direct URL is not a way in.
+  await requireModule("production");
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");

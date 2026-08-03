@@ -1,6 +1,8 @@
 // ============================================================================
-//  Invoices tab — AR hub: create invoices, chase payments, revenue.
-//  Server loader moved verbatim from the old /portal/admin/billing page body.
+//  Invoices tab (Money) — AR hub: create invoices, chase payments, revenue.
+//  Loader is identical to the old /portal/admin/billing invoices tab — same
+//  tables, same BillingDashboard. Types still live at billing/page.tsx until
+//  the old route is retired (tracked separately) so both can coexist safely.
 // ============================================================================
 
 import { requirePortalSession } from "@/lib/portal/session";
@@ -15,7 +17,7 @@ import type {
   RevenueSeries,
   SourceBreakdown,
   UnpaidAccount,
-} from "./page";
+} from "@/app/portal/admin/billing/page";
 
 const YEAR_AGO = () => new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
 const YEAR_START = () => `${new Date().getFullYear()}-01-01`;

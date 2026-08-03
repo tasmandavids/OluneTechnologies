@@ -1,0 +1,111 @@
+// ============================================================================
+//  /portal/admin/money — Studio owner finance hub: overview, invoices,
+//  collections, plans, ledger, reconciliation, payouts, reports. One door for
+//  "how's the money doing" — tab state lives in ?tab= for deep links.
+//
+//  Replaces /portal/admin/billing, /accounting, /payments, /payment-plans and
+//  /subscriptions, which now redirect here. Every tab is wired to real data
+//  except Reconcile (bank-feed matching), which doesn't exist anywhere in the
+//  app yet — it gets an honest "still being built" panel, not fabricated
+//  transactions. See ComingSoonTab.
+// ============================================================================
+
+import Link from "next/link";
+import { getTranslations } from "@/lib/i18n/server";
+import { OverviewTab } from "./overview-tab";
+import { InvoicesTab } from "./invoices-tab";
+import { CollectionsTab } from "./collections-tab";
+import { PlansTab } from "./plans-tab";
+import { PayoutsTab } from "./payouts-tab";
+import { ReportsTab } from "./reports-tab";
+import { LedgerTab } from "./ledger-tab";
+
+const TABS = [
+  "overview",
+  "invoices",
+  "collections",
+  "plans",
+  "ledger",
+  "reconcile",
+  "payouts",
+  "reports",
+] as const;
+export type MoneyTabId = (typeof TABS)[number];
+
+function resolveTab(tab: string | undefined): MoneyTabId {
+  return TABS.includes(tab as MoneyTabId) ? (tab as MoneyTabId) : "overview";
+}
+
+function ComingSoonTab({ title, body, note }: { title: string; body: string; note?: string }) {
+  return (
+    <div className="mx-auto max-w-6xl p-6">
+      <div className="rounded-2xl border border-dashed border-[--hair] bg-base/50 p-14 text-center">
+        <p className="text-sm font-semibold text-ink">{title}</p>
+        <p className="mx-auto mt-1 max-w-sm text-sm text-muted">{body}</p>
+        {note && <p className="mx-auto mt-4 max-w-md text-xs text-muted">{note}</p>}
+      </div>
+    </div>
+  );
+}
+
+export default async function MoneyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string; invoice?: string; error?: string; connected?: string }>;
+}) {
+  const params = await searchParams;
+  const tab = resolveTab(params.tab);
+  const t = await getTranslations("admin.money");
+
+  const tabs: { id: MoneyTabId; href: string; label: string }[] = TABS.map((id) => ({
+    id,
+    href: id === "overview" ? "/portal/admin/money" : `/portal/admin/money?tab=${id}`,
+    label: t(`tabs.${id}`),
+  }));
+
+  const comingSoonTitle = t("comingSoon.title");
+  const comingSoonBody = t("comingSoon.body");
+  const reconcileTitle = t("reconcile.title");
+  const reconcileBody = t("reconcile.body");
+  const reconcileNote = t("reconcile.note");
+
+  return (
+    <div>
+      <div className="mx-auto max-w-6xl px-6 pt-6">
+        <div className="flex w-fit flex-wrap gap-1 rounded-xl border border-[--hair] bg-surface p-1">
+          {tabs.map(({ id, href, label }) => (
+            <Link
+              key={id}
+              href={href}
+              scroll={false}
+              className={`rounded-lg px-4 py-1.5 text-xs font-semibold transition ${
+                tab === id ? "bg-ink text-paper" : "text-muted hover:text-ink"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {tab === "overview" && <OverviewTab />}
+      {tab === "invoices" && <InvoicesTab initialInvoiceId={params.invoice ?? null} />}
+      {tab === "collections" && <CollectionsTab />}
+      {tab === "plans" && <PlansTab />}
+      {tab === "ledger" && <LedgerTab />}
+      {tab === "reconcile" && (
+        <ComingSoonTab title={reconcileTitle} body={reconcileBody} note={reconcileNote} />
+      )}
+      {tab === "payouts" && (
+        <PayoutsTab
+          bannerError={params.error ?? null}
+          bannerConnected={params.connected === "1"}
+          bannerIncomplete={params.connected === "0"}
+        />
+      )}
+      {tab === "reports" && (
+        <ReportsTab bannerError={params.error ?? null} bannerConnected={params.connected === "1"} />
+      )}
+    </div>
+  );
+}

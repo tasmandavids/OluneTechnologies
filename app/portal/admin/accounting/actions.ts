@@ -14,7 +14,7 @@ export async function disconnectXero(): Promise<{ ok: true } | { ok: false; erro
   try {
     const origin = await resolveAppOriginFromHeaders();
     await revokeXeroConnection(ctx.supabase, ctx.studioId, xeroRedirectUri(origin));
-    revalidatePath("/portal/admin/accounting");
+    revalidatePath("/portal/admin/money");
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Disconnect failed" };
@@ -25,7 +25,7 @@ export async function refreshAccountingData(): Promise<{ ok: true } | { ok: fals
   const ctx = await getAdminXeroContext();
   if (ctx.error) return { ok: false, error: ctx.error };
 
-  revalidatePath("/portal/admin/accounting");
+  revalidatePath("/portal/admin/money");
   return { ok: true };
 }
 
@@ -79,6 +79,6 @@ export async function updateXeroSettings(
     .eq("studio_id", ctx.studioId);
 
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/portal/admin/accounting");
+  revalidatePath("/portal/admin/money");
   return { ok: true };
 }
