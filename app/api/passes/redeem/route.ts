@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
+import { rollbackRedeemedClassPassClaim } from "@/lib/passes/redemption";
 
 const RedeemSchema = z.object({
   passId: z.string().uuid(),
@@ -97,7 +98,24 @@ export async function POST(req: NextRequest) {
 
   if (attErr) {
     console.error(`[passes/redeem] pass ${passId} redeemed but attendance upsert failed:`, attErr.message);
-    return NextResponse.json({ ok: true, attendanceWarning: true, className: cls.name });
+    const rollbackErr = await rollbackRedeemedClassPassClaim(supabase, {
+      passId,
+      studioId: claimed.studio_id,
+      classId,
+      date,
+      redeemedBy: user.id,
+    });
+    if (rollbackErr) {
+      console.error(`[passes/redeem] failed to roll back pass ${passId} after attendance error:`, rollbackErr);
+      return NextResponse.json(
+        { error: "Attendance could not be recorded, and the pass rollback failed. Please contact support." },
+        { status: 500 },
+      );
+    }
+    return NextResponse.json(
+      { error: "Attendance could not be recorded, so the pass was not redeemed. Please try again." },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ ok: true, className: cls.name });

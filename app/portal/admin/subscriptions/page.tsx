@@ -1,7 +1,7 @@
 // ============================================================================
-//  /portal/admin/subscriptions — merged into the Billing hub (1.6.1 IA).
-//  Route kept as a redirect so old links and bookmarks keep working; the
-//  type exports below are still imported by SubscriptionsManager.
+//  /portal/admin/subscriptions — merged into Money's Plans tab. Route kept
+//  as a redirect so old links and bookmarks keep working; the type exports
+//  below are still imported by SubscriptionsManager.
 // ============================================================================
 
 import { redirect } from "next/navigation";
@@ -42,5 +42,5 @@ export type ProductOption = {
 };
 
 export default function SubscriptionsPage() {
-  redirect("/portal/admin/billing?tab=subscriptions");
+  redirect("/portal/admin/money?tab=plans");
 }

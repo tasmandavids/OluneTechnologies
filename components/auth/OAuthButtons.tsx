@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { createClient } from "@/lib/supabase/client";
-import { authCallbackUrl, GOOGLE_ACCOUNT_RECOVERY_URL } from "@/lib/auth/oauth";
+import { GOOGLE_ACCOUNT_RECOVERY_URL } from "@/lib/auth/oauth";
 
 export function OAuthButtons({
   next,
@@ -16,25 +15,14 @@ export function OAuthButtons({
 }) {
   const t = useTranslations("auth");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const googleError = error ?? (callbackError ? t("callbackError") : null);
+  const googleError = callbackError ? t("callbackError") : null;
 
-  async function signInWithGoogle() {
+  // Start the flow on the server so the PKCE verifier is set via an HTTP
+  // cookie that Safari keeps through the OAuth redirect chain (see
+  // app/auth/signin/google/route.ts). A full navigation, not a client call.
+  function signInWithGoogle() {
     setBusy(true);
-    setError(null);
-
-    const { error: oauthError } = await createClient().auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: authCallbackUrl(next),
-        queryParams: { prompt: "select_account" },
-      },
-    });
-
-    if (oauthError) {
-      setError(oauthError.message);
-      setBusy(false);
-    }
+    window.location.href = `/auth/signin/google?next=${encodeURIComponent(next)}`;
   }
 
   return (

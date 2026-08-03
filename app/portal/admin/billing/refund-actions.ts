@@ -17,6 +17,7 @@ import { stripe } from "@/lib/stripe";
 import { CURRENCY } from "@/lib/currency";
 import { getAdminStudio } from "@/lib/portal/access";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { refundPaidClassPassesForInvoice } from "@/lib/passes/refunds";
 
 export type RefundKind = "invoice" | "order" | "ticket" | "class_pass";
 export type ActionResult = { ok: true } | { ok: false; error: string };
@@ -208,6 +209,21 @@ export async function refundSale(
     };
   }
 
+  if (kind === "invoice") {
+    const passRefundErr = await refundPaidClassPassesForInvoice(supabase, id, studioId, {
+      status: "refunded",
+      refunded_at: nowIso,
+      refund_amount_cents: refundCents,
+      stripe_refund_id: refundId,
+    });
+    if (passRefundErr) {
+      return {
+        ok: false,
+        error: `Refunded in Stripe (${refundId}) but failed to update linked class passes: ${passRefundErr}`,
+      };
+    }
+  }
+
   // 3. Negative ledger row so revenue nets out. Idempotent-ish: skip if the
   //    webhook already recorded this refund.
   const { data: existing } = await supabase
@@ -230,10 +246,10 @@ export async function refundSale(
     });
   }
 
-  revalidatePath("/portal/admin/billing");
+  revalidatePath("/portal/admin/money");
   if (kind === "order") revalidatePath("/portal/admin/shop");
   if (kind === "ticket") revalidatePath("/portal/admin/events");
-  if (kind === "class_pass") revalidatePath("/portal/admin/passes");
+  if (kind === "class_pass" || kind === "invoice") revalidatePath("/portal/admin/passes");
 
   return { ok: true };
 }

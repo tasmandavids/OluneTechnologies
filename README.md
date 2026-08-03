@@ -26,10 +26,12 @@ olune/
 
 **Studio portal** (`/portal/admin`, `/portal/teacher`, `/portal/parent`,
 `/portal/student`, `/portal/office`) — classes, enrollments, waitlist, billing,
-Stripe payments, subscriptions, events, shop, leads CRM, messaging, email
-inbox, support, staff HR + shifts, parent profiles, student progress, site
-builder, advertising hub (Meta/TikTok OAuth, AI campaigns, SEO audits), Xero
-accounting, and studio settings.
+Stripe payments and Connect settlement ([docs](docs/STRIPE_CONNECT.md)),
+subscriptions, events, shop, self-managed student class passes
+([docs](docs/class-passes.md)), leads CRM, messaging, email inbox, support,
+staff HR + shifts, parent profiles, student progress, Studio site builder
+([docs](docs/site-builder-v2.md)), advertising hub (Meta/TikTok OAuth, AI
+campaigns, SEO audits), Xero accounting, and studio settings.
 
 **Platform console** (`/platform`) — cross-tenant studio directory, owners,
 support inbox, ops tasks, feature flags, announcements, audit log.

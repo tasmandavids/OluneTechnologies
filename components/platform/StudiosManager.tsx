@@ -4,11 +4,23 @@ import { useState, useTransition } from "react";
 import { motion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import type { PlatformStudioSummary } from "@/lib/platform/types";
-import { updateStudioStatus, deleteStudio } from "@/app/platform/studios/actions";
+import {
+  updateStudioStatus,
+  deleteStudio,
+  updateStudioVertical,
+} from "@/app/platform/studios/actions";
 
 const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
 
-export function StudiosManager({ studios }: { studios: PlatformStudioSummary[] }) {
+export type VerticalOption = { key: string; label: string; status: string };
+
+export function StudiosManager({
+  studios,
+  verticals = [],
+}: {
+  studios: PlatformStudioSummary[];
+  verticals?: VerticalOption[];
+}) {
   const t = useTranslations("platform.studios");
   const locale = useLocale();
   const [items, setItems] = useState(studios);
@@ -24,6 +36,35 @@ export function StudiosManager({ studios }: { studios: PlatformStudioSummary[] }
       const res = await updateStudioStatus({ studioId, status });
       setStatusMsg(res.ok ? t("updated") : res.error);
       setTimeout(() => setStatusMsg(null), 2000);
+    });
+  }
+
+  function setVertical(studioId: string, vertical: string) {
+    startTransition(async () => {
+      const res = await updateStudioVertical({ studioId, vertical });
+
+      // The action refuses on the first attempt when the switch would orphan
+      // data, and hands back what would be hidden. Confirm, then retry with the
+      // acknowledgement — never auto-acknowledge on the studio's behalf.
+      if (!res.ok && "needsAcknowledgement" in res) {
+        if (!window.confirm(`${res.error}\n\nSwitch anyway?`)) {
+          setStatusMsg(null);
+          return;
+        }
+        const retry = await updateStudioVertical({
+          studioId,
+          vertical,
+          acknowledgeDataLoss: true,
+        });
+        if (retry.ok) setItems((p) => p.map((s) => (s.id === studioId ? { ...s, vertical } : s)));
+        setStatusMsg(retry.ok ? t("updated") : retry.error);
+        setTimeout(() => setStatusMsg(null), 3000);
+        return;
+      }
+
+      if (res.ok) setItems((p) => p.map((s) => (s.id === studioId ? { ...s, vertical } : s)));
+      setStatusMsg(res.ok ? t("updated") : res.error);
+      setTimeout(() => setStatusMsg(null), 3000);
     });
   }
 
@@ -69,6 +110,7 @@ export function StudiosManager({ studios }: { studios: PlatformStudioSummary[] }
               <th className="p-4">{t("tableStudio")}</th>
               <th className="p-4">{t("tableOwner")}</th>
               <th className="p-4">{t("tableStudents")}</th>
+              <th className="p-4">Vertical</th>
               <th className="p-4">{t("tableStatus")}</th>
               <th className="p-4">{t("tableJoined")}</th>
               <th className="p-4">{t("tableActions")}</th>
@@ -107,6 +149,31 @@ export function StudiosManager({ studios }: { studios: PlatformStudioSummary[] }
                   <p className="text-xs text-muted">{s.ownerEmail ?? ""}</p>
                 </td>
                 <td className="p-4 text-ink">{s.studentCount}</td>
+                <td className="p-4">
+                  {verticals.length > 0 ? (
+                    <select
+                      disabled={pending}
+                      value={s.vertical}
+                      onChange={(e) => setVertical(s.id, e.target.value)}
+                      className="rounded-lg border border-[--hair] bg-base px-2 py-1 text-xs"
+                    >
+                      {/* A studio may sit on a vertical that has since been
+                          hidden; keep it selectable so the value is not
+                          silently rewritten by the picker. */}
+                      {!verticals.some((v) => v.key === s.vertical) && (
+                        <option value={s.vertical}>{s.vertical}</option>
+                      )}
+                      {verticals.map((v) => (
+                        <option key={v.key} value={v.key}>
+                          {v.label}
+                          {v.status === "beta" ? " (beta)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span className="text-xs text-muted">{s.vertical}</span>
+                  )}
+                </td>
                 <td className="p-4">
                   <span className="rounded-full bg-base px-2 py-0.5 text-[0.65rem] uppercase tracking-wide">
                     {s.status}

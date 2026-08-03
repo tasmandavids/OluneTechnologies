@@ -74,7 +74,10 @@
         "lost": "Lost"
       },
       "invoiceStatus": {
-        "all": "All statuses"
+        "all": "All statuses",
+        "filterLabel": "Status",
+        "showAll": "Show all",
+        "reset": "Reset"
       },
       "relationships": {
         "mother": "Mother",
@@ -697,6 +700,120 @@
         "invoices": "Invoices",
         "subscriptions": "Subscriptions",
         "paymentPlans": "Payment plans"
+      }
+    },
+    "money": {
+      "title": "Money",
+      "subtitle": "Invoicing, collections and payment plans — all in one place.",
+      "tabs": {
+        "overview": "Overview",
+        "invoices": "Invoices",
+        "collections": "Collections",
+        "plans": "Plans",
+        "ledger": "Ledger",
+        "reconcile": "Reconcile",
+        "payouts": "Payouts",
+        "reports": "Reports"
+      },
+      "comingSoon": {
+        "title": "Coming soon",
+        "body": "This part of Money is still being built."
+      },
+      "overview": {
+        "title": "Overview",
+        "subtitle": "How the money's moving right now.",
+        "stats": {
+          "outstanding": "Outstanding",
+          "outstandingSub": "{count} unpaid invoices",
+          "overdue": "Overdue",
+          "overdueSub": "{count} invoices overdue",
+          "collectedYtd": "Collected (YTD)",
+          "collectedSub": "Paid tuition invoices",
+          "mrr": "MRR",
+          "mrrSub": "{count} on auto-pay"
+        },
+        "attention": {
+          "title": "Needs your attention",
+          "overdueTitle": "{count} invoices overdue",
+          "overdueDetail": "{amount} outstanding — chase them from Invoices",
+          "draftsTitle": "{count} draft invoices ready to send",
+          "draftsDetail": "Not yet sent to families",
+          "gstTitle": "{amount} GST collected this month",
+          "gstDetail": "See the full breakdown in Reports"
+        },
+        "chart": {
+          "title": "Monthly tuition revenue",
+          "noData": "No paid revenue recorded yet.",
+          "revenue": "Revenue",
+          "footnote": "Tuition and fee invoices marked paid, last 12 months. Shop and event revenue live in Invoices → Insights."
+        }
+      },
+      "collections": {
+        "title": "Collections",
+        "subtitle": "Overdue accounts, ranked by amount × days overdue — chase the biggest problems first.",
+        "remindAll": "Remind all overdue ({count})",
+        "remindAllResult": "Sent {count} reminder(s).",
+        "sending": "Sending…",
+        "remind": "Remind",
+        "empty": {
+          "title": "Nothing overdue",
+          "body": "Every invoice is either paid or not yet due — nice work."
+        },
+        "queueTitle": "Collections queue",
+        "queueSubtitle": "{count} families · {amount} overdue",
+        "overdueTag": "{days}d overdue",
+        "invoiceList": "{refs}"
+      },
+      "reports": {
+        "title": "Reports",
+        "subtitle": "Profit & loss from Xero, GST collected, and who still owes you — grouped by how overdue they are.",
+        "gst": {
+          "month": "GST collected (this month)",
+          "quarter": "GST collected (this quarter)",
+          "sub": "From invoices marked paid"
+        },
+        "aged": {
+          "title": "Aged receivables",
+          "subtitle": "{total} outstanding across all unpaid invoices",
+          "current": "Not yet due",
+          "d1to30": "1–30 days overdue",
+          "d31to60": "31–60 days overdue",
+          "d61plus": "61+ days overdue",
+          "count": "{count, plural, one {# invoice} other {# invoices}}"
+        },
+        "comingSoon": {
+          "programme": "Revenue by programme",
+          "programmeBody": "Coming soon — revenue, headcount and churn side by side for each class type.",
+          "export": "Custom export",
+          "exportBody": "Coming soon — any date range, any accounts, CSV or PDF."
+        }
+      },
+      "ledger": {
+        "title": "Ledger",
+        "subtitle": "Every real payment and refund recorded in Olune, in order — not an editable manual ledger.",
+        "stats": {
+          "net": "Net total",
+          "count": "Transactions"
+        },
+        "empty": {
+          "title": "No transactions yet",
+          "body": "Payments and refunds will show up here as they happen."
+        },
+        "table": {
+          "date": "Date",
+          "description": "Description",
+          "family": "Family",
+          "amount": "Amount",
+          "runningTotal": "Running total",
+          "invoiceRef": "Invoice #{number}",
+          "payment": "Payment",
+          "refund": "Refund"
+        }
+      },
+      "reconcile": {
+        "title": "Bank reconciliation isn't built yet",
+        "body": "Matching your bank feed against invoices and payouts line-by-line is coming to Olune.",
+        "note": "Invoice status already syncs automatically with Xero — see Reports for that."
       }
     },
     "accounting": {

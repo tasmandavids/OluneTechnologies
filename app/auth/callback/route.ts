@@ -1,31 +1,37 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
 import { sanitizeNextPath } from "@/lib/auth/oauth";
+import {
+  buildSessionCompleteResponse,
+  purgeAuthCookies,
+} from "@/lib/supabase/auth-cookies";
+import { createOAuthCallbackClient } from "@/lib/supabase/route-handler";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
-export async function GET(request: Request) {
-  const url = new URL(request.url);
+export async function GET(request: NextRequest) {
+  const url = request.nextUrl;
   const code = url.searchParams.get("code");
   const next = sanitizeNextPath(url.searchParams.get("next"));
-  const origin = url.origin;
+  const redirectUrl = `${url.origin}${next}`;
 
-  // Errors go back to the login page on the SAME origin the callback landed on
-  // (the studio subdomain the user signed in from), keeping ?next so a retry
-  // resumes the flow — never the platform-site login.
-  const loginOnError = `${origin}/login?error=auth_callback_error&next=${encodeURIComponent(next)}`;
+  const loginOnError = `${url.origin}/login?error=auth_callback_error&next=${encodeURIComponent(next)}`;
 
   if (!code) {
     return NextResponse.redirect(loginOnError);
   }
 
-  const supabase = await createClient();
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  const supabase = createOAuthCallbackClient(request);
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
-  if (error) {
-    return NextResponse.redirect(loginOnError);
+  if (error || !data.session) {
+    const reason = error?.code ?? "no_session";
+    const fail = NextResponse.redirect(
+      `${loginOnError}&reason=${encodeURIComponent(reason)}`,
+    );
+    purgeAuthCookies(fail, request);
+    return fail;
   }
 
-  // Redirect to the same origin the user started from and preserve ?next=...
-  return NextResponse.redirect(`${origin}${next}`);
+  return buildSessionCompleteResponse(request, redirectUrl, data.session);
 }

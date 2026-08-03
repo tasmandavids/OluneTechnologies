@@ -462,9 +462,14 @@ export default function OluneLanding() {
     v: t(`compareSection.highlights.${k}.v`),
   }));
 
+  // Keep these two lists in step with LandingNav/LandingFooter in
+  // components/marketing/landing/chrome.tsx — the home page carries its own
+  // copy, so a link added there has to be added here too or it only shows up
+  // on the FAQ/Team/Mobile pages.
   const navLinks = [
     { label: t("features"), href: "/#features" },
     { label: t("pricing"), href: "/#pricing" },
+    { label: "Mobile", href: "/mobile" },
     { label: "FAQ", href: "/faq" },
     { label: "Team", href: "/team" },
     { label: t("about"), href: "/#about" },
@@ -472,6 +477,7 @@ export default function OluneLanding() {
   const footerLinks = [
     { label: t("features"), href: "/#features" },
     { label: t("pricing"), href: "/#pricing" },
+    { label: "Mobile", href: "/mobile" },
     { label: "FAQ", href: "/faq" },
     { label: "Team", href: "/team" },
     { label: t("signIn"), href: "/login" },
@@ -515,30 +521,31 @@ export default function OluneLanding() {
         </div>
       )}
 
-      {/* announcement bar */}
-      <div style={{ background: "#efeafb", color: "rgba(26,21,53,0.6)", textAlign: "center", padding: "10px 20px", fontSize: 13, letterSpacing: "0.01em", position: "relative", zIndex: 60, borderBottom: "1px solid rgba(26,21,53,0.07)" }}>
-        Olune is currently under development — general release is due in early August. All plans are free to try as much as you like until then.
-      </div>
+      {/* nav + announcement bar, pinned together so the banner never overlaps the nav */}
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 60 }}>
+        <nav className="dcl-nav" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: scrolled ? "15px 48px" : "24px 48px", background: scrolled ? "rgba(247,246,251,0.82)" : "#f7f6fb", backdropFilter: scrolled ? "blur(16px) saturate(1.4)" : "none", WebkitBackdropFilter: scrolled ? "blur(16px) saturate(1.4)" : "none", borderBottom: scrolled ? "1px solid rgba(26,21,53,0.07)" : "1px solid transparent", transition: "all 450ms cubic-bezier(.16,1,.3,1)" }}>
+          <a href="#hero" style={{ display: "flex", alignItems: "center", gap: 11, fontFamily: DISPLAY, fontSize: 24, color: NAVY, letterSpacing: "0.005em", transition: "color 0.4s ease" }}>
+            <span style={{ position: "relative", width: 22, height: 22, display: "inline-block", animation: "bobY 6s ease-in-out infinite" }}>
+              <span style={{ position: "absolute", top: "15%", left: "17%", width: "76%", height: "76%", borderRadius: "50%", background: ACCENT }} />
+              <span style={{ position: "absolute", top: "6%", left: "5%", width: "76%", height: "76%", borderRadius: "50%", background: NAVY }} />
+            </span>
+            olune
+          </a>
+          <div className="dcl-nav-links" style={{ display: "flex", alignItems: "center", gap: 40, flexWrap: "wrap" }}>
+            {navLinks.map((l) => (
+              <Link key={l.href} href={l.href} className="dcl-navlink" style={navLinkStyle}>{l.label}</Link>
+            ))}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+            <Link href="/login" className="dcl-navlink" style={navLinkStyle}>{t("signIn")}</Link>
+            <Link href="/onboarding" className="dcl-cta-primary" style={{ padding: "10px 22px", borderRadius: 999, background: NAVY, color: "#ffffff", fontSize: 14.5, fontWeight: 700, transition: "transform 0.3s ease, box-shadow 0.3s ease" }}>{t("startFree")}</Link>
+          </div>
+        </nav>
 
-      {/* nav */}
-      <nav className="dcl-nav" style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "space-between", padding: scrolled ? "15px 48px" : "24px 48px", background: scrolled ? "rgba(247,246,251,0.82)" : "transparent", backdropFilter: scrolled ? "blur(16px) saturate(1.4)" : "none", WebkitBackdropFilter: scrolled ? "blur(16px) saturate(1.4)" : "none", borderBottom: scrolled ? "1px solid rgba(26,21,53,0.07)" : "1px solid transparent", transition: "all 450ms cubic-bezier(.16,1,.3,1)" }}>
-        <a href="#hero" style={{ display: "flex", alignItems: "center", gap: 11, fontFamily: DISPLAY, fontSize: 24, color: NAVY, letterSpacing: "0.005em", transition: "color 0.4s ease" }}>
-          <span style={{ position: "relative", width: 22, height: 22, display: "inline-block", animation: "bobY 6s ease-in-out infinite" }}>
-            <span style={{ position: "absolute", top: "15%", left: "17%", width: "76%", height: "76%", borderRadius: "50%", background: ACCENT }} />
-            <span style={{ position: "absolute", top: "6%", left: "5%", width: "76%", height: "76%", borderRadius: "50%", background: NAVY }} />
-          </span>
-          olune
-        </a>
-        <div className="dcl-nav-links" style={{ display: "flex", alignItems: "center", gap: 40, flexWrap: "wrap" }}>
-          {navLinks.map((l) => (
-            <Link key={l.href} href={l.href} className="dcl-navlink" style={navLinkStyle}>{l.label}</Link>
-          ))}
+        <div style={{ background: "#efeafb", color: "rgba(26,21,53,0.6)", textAlign: "center", padding: "10px 20px", fontSize: 13, letterSpacing: "0.01em", borderBottom: "1px solid rgba(26,21,53,0.07)" }}>
+          Olune is currently under development — general release is due in December. All plans are free to try as much as you like until then.
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-          <Link href="/login" className="dcl-navlink" style={navLinkStyle}>{t("signIn")}</Link>
-          <Link href="/onboarding" className="dcl-cta-primary" style={{ padding: "10px 22px", borderRadius: 999, background: NAVY, color: "#ffffff", fontSize: 14.5, fontWeight: 700, transition: "transform 0.3s ease, box-shadow 0.3s ease" }}>{t("startFree")}</Link>
-        </div>
-      </nav>
+      </div>
 
       {/* HERO */}
       <section id="hero" className="dcl-section" style={{ position: "relative", background: "linear-gradient(180deg, #efeafb 0%, #f7f6fb 60%)", padding: "148px 48px 0", overflow: "hidden" }}>

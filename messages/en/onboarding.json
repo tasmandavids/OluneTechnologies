@@ -6,17 +6,43 @@
       "profile": "Profile",
       "brand": "Brand"
     },
+    "vertical": {
+      "title": "What do you run?",
+      "subtitle": "We'll set Olune up around your activity — classes, levels and the words your families use.",
+      "comingSoon": "Coming soon",
+      "options": {
+        "dance": "Dance studio",
+        "gymnastics": "Gymnastics club",
+        "sports-club": "Sports club",
+        "swim": "Swim school",
+        "martial-arts": "Martial arts",
+        "music": "Music school",
+        "cheer": "Cheer",
+        "tutoring": "Tutoring"
+      }
+    },
+    "waitlist": {
+      "title": "{vertical} is on the way",
+      "subtitle": "We're building Olune for your activity now. Leave your details and we'll come to you first when it opens.",
+      "emailPlaceholder": "you@yourclub.co.nz",
+      "orgPlaceholder": "Your club or school name (optional)",
+      "submit": "Keep me posted",
+      "submitting": "Adding you…",
+      "doneTitle": "You're on the list",
+      "doneBody": "We'll email you the moment Olune is ready for {vertical}.",
+      "pickAnother": "Choose something else"
+    },
     "system": {
       "title": "How will you use Olune?",
       "subtitle": "Pick the setup that fits you — you can always adjust later.",
       "back": "Back",
       "studioOwner": {
-        "title": "I run a dance studio",
-        "desc": "Manage classes, families, billing, and your studio website."
+        "title": "I run a studio or club",
+        "desc": "Manage classes, families, billing, and your website."
       },
       "instructor": {
-        "title": "I'm an independent teacher",
-        "desc": "Work across studios, track your schedule, and manage your teaching profile."
+        "title": "I'm an independent coach or teacher",
+        "desc": "Work across clubs, track your schedule, and manage your teaching profile."
       }
     },
     "account": {
@@ -37,8 +63,8 @@
       "body": "We sent a confirmation link to {email}. Click it, then come back — we'll pick up right where you left off."
     },
     "studio": {
-      "title": "Name your studio",
-      "subtitle": "This is what your dancers and whānau will see.",
+      "title": "Name your organisation",
+      "subtitle": "This is what your members and their families will see.",
       "namePlaceholder": "Sunrise Dance Studio",
       "slugPlaceholder": "your-studio",
       "checking": "Checking…",

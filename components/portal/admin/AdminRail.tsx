@@ -9,11 +9,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { signOut } from "@/app/portal/actions";
-import { ADMIN_NAV, type NavItem, type NavSection } from "@/lib/portal/nav-config";
+import { ADMIN_NAV, flattenNav, type NavItem, type NavSection } from "@/lib/portal/nav-config";
 import { ThemeSwitcher } from "@/components/portal/ThemeSwitcher";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import type { ThemeBase } from "@/lib/types";
@@ -27,19 +27,12 @@ import {
   IconSettings,
 } from "@/components/admin/dashboard/icons";
 
-function flattenNav(sections: NavSection[]): NavItem[] {
-  const out: NavItem[] = [];
-  for (const section of sections) {
-    for (const item of section.items) {
-      out.push(item);
-      if (item.children) out.push(...item.children);
-    }
-  }
-  return out;
-}
+type Lookup = (href: string) => NavItem | undefined;
 
-const FLAT_NAV = flattenNav(ADMIN_NAV);
-const byHref = (href: string) => FLAT_NAV.find((i) => i.href === href);
+function lookupFor(sections: NavSection[]): Lookup {
+  const flat = flattenNav(sections);
+  return (href) => flat.find((i) => i.href === href);
+}
 
 type Space = {
   id: string;
@@ -73,7 +66,7 @@ const SPACES: Space[] = [
     id: "money",
     labelKey: "shell.rail.money",
     icon: IconWallet,
-    hrefs: ["/portal/admin/billing", "/portal/admin/accounting", "/portal/admin/shop"],
+    hrefs: ["/portal/admin/money", "/portal/admin/shop"],
   },
   {
     id: "inbox",
@@ -99,13 +92,17 @@ function RailButton({
   pathname,
   open,
   onToggle,
+  byHref,
 }: {
   space: Space;
   pathname: string;
   open: boolean;
   onToggle: () => void;
+  byHref: Lookup;
 }) {
   const t = useTranslations();
+  // Hrefs the studio's entitlements filtered out simply do not resolve, so a
+  // space collapses to its surviving destinations (or disappears entirely).
   const items = space.hrefs.map(byHref).filter((i): i is NavItem => !!i);
   const active = items.some((i) => isActiveHref(pathname, i));
   const Icon = space.icon;
@@ -187,12 +184,17 @@ export function AdminRail({
   studioName,
   userName,
   portalTheme = "light",
+  nav = ADMIN_NAV,
 }: {
   studioName: string;
   userName: string | null;
   portalTheme?: ThemeBase;
+  /** Entitlement-filtered admin nav. Defaults to the full set — this layer is
+   *  presentation; the page and action guards do the enforcing. */
+  nav?: NavSection[];
 }) {
   const pathname = usePathname() ?? "";
+  const byHref = useMemo(() => lookupFor(nav), [nav]);
   const t = useTranslations();
   const tCommon = useTranslations("common");
   const [openSpace, setOpenSpace] = useState<string | null>(null);
@@ -229,6 +231,7 @@ export function AdminRail({
           pathname={pathname}
           open={openSpace === space.id}
           onToggle={() => setOpenSpace((cur) => (cur === space.id ? null : space.id))}
+          byHref={byHref}
         />
       ))}
 
@@ -239,6 +242,7 @@ export function AdminRail({
         pathname={pathname}
         open={openSpace === "settings"}
         onToggle={() => setOpenSpace((cur) => (cur === "settings" ? null : "settings"))}
+        byHref={byHref}
       />
 
       <div className="relative mt-1" ref={accountRef}>
@@ -280,4 +284,3 @@ export function AdminRail({
   );
 }
 
-export { FLAT_NAV };

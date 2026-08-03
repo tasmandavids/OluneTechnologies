@@ -7,20 +7,40 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getAdminStudio as getAdminStudioAccess } from "@/lib/portal/access";
+import { getEntitlementsCached } from "@/lib/portal/entitlements";
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
+/** Every action in this file is part of the dance-only production module. */
+const MODULE = "production" as const;
+
+const MODULE_OFF = "The recital and production tools are not enabled for this studio.";
+
 async function getAdminStudio() {
-  const ctx = await getAdminStudioAccess();
-  return {
-    error: ctx.error,
-    supabase: ctx.supabase,
-    studioId: ctx.studioId,
-    userId: ctx.userId,
-  };
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not signed in.", supabase, studioId: null, userId: null };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("studio_id, role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role !== "admin") return { error: "Admin only.", supabase, studioId: null, userId: null };
+  if (!profile.studio_id)        return { error: "No studio.",  supabase, studioId: null, userId: null };
+
+  // Module gate. Hiding the nav item is a UX nicety; this is the boundary that
+  // actually stops a crafted POST from a studio whose pack has no production
+  // module. Returns rather than throws to match this file's house style.
+  const entitlements = await getEntitlementsCached(profile.studio_id as string);
+  if (!entitlements.modules.has(MODULE)) {
+    return { error: MODULE_OFF, supabase, studioId: null, userId: null };
+  }
+
+  return { error: null, supabase, studioId: profile.studio_id as string, userId: user.id };
 }
 
 // ─── Legacy types (kept for backward compat with existing EventsManager) ─────
@@ -721,6 +741,12 @@ export async function updateParticipantCostume(
 export async function fetchMusicMetadata(
   url: string
 ): Promise<{ ok: true; meta: Omit<MusicCueData, "id" | "sourceUrl"> } | { ok: false; error: string }> {
+  // This is the one action in the file that never resolved a studio, so it had
+  // no caller check at all — an unauthenticated server-side fetch proxy. The
+  // module gate closes that as well as scoping it to the production module.
+  const { error: gate } = await getAdminStudio();
+  if (gate) return { ok: false, error: gate };
+
   const isSpotify     = url.includes("spotify.com");
   const isAppleMusic  = url.includes("music.apple.com");
 

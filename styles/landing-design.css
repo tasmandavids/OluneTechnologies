@@ -40,6 +40,26 @@ html:has(#olune-landing-root) {
 @keyframes shootStar { 0% { transform: translate3d(0, 0, 0) rotate(32deg); opacity: 0; } 3% { opacity: 1; } 18% { transform: translate3d(300px, 190px, 0) rotate(32deg); opacity: 0; } 100% { transform: translate3d(300px, 190px, 0) rotate(32deg); opacity: 0; } }
 @keyframes bobY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 
+/* ── Olune Mobile prototype (verbatim from the "Olune Mobile" export) ── */
+@keyframes olBreathe { 0%, 100% { transform: scale(1); opacity: 0.92; } 50% { transform: scale(1.035); opacity: 1; } }
+@keyframes olPulse { 0% { transform: scale(1); opacity: 0.9; } 70% { transform: scale(2.6); opacity: 0; } 100% { opacity: 0; } }
+@keyframes olRise { 0% { opacity: 0; transform: translateY(14px) scale(0.98); } 100% { opacity: 1; transform: none; } }
+@keyframes olSheet { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+@keyframes olTick { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: none; } }
+
+/* The phone's own scrollers are chromeless, like the device. */
+.dcl-ph-scroll { scrollbar-width: none; }
+.dcl-ph-scroll::-webkit-scrollbar { width: 0; height: 0; }
+
+.dcl-ph-primary:hover { background: #5f54a3 !important; }
+.dcl-ph-primary:active { transform: scale(0.98); }
+.dcl-ph-ghost:hover { color: #0a0a0a !important; background: rgba(10, 10, 10, 0.05); }
+.dcl-ph-switch:hover { background: rgba(10, 10, 10, 0.06) !important; }
+.dcl-ph-row:hover { border-color: rgba(139, 124, 240, 0.5) !important; }
+.dcl-ph-ask:hover { border-color: #8b7cf0 !important; }
+.dcl-ph-chase:hover { background: #8b7cf0 !important; border-color: #8b7cf0 !important; color: #ffffff !important; }
+.dcl-ph-chip:hover { color: #0a0a0a !important; border-color: #8b7cf0 !important; }
+
 /* ── hover states (the export's style-hover bindings) ─────────────────── */
 .dcl-navlink:hover { color: #8b7cf0 !important; }
 .dcl-cta-primary:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 28px 56px -18px #8b7cf0 !important; }
@@ -71,7 +91,15 @@ html:has(#olune-landing-root) {
   .dcl-grid-bento { grid-template-columns: repeat(2, 1fr) !important; }
   .dcl-why-inner { border-left: none !important; padding-left: 10px !important; padding-right: 10px !important; }
   .dcl-grid-stats3 { grid-template-columns: 1fr !important; gap: 24px !important; }
-  .dcl-stat-cell { border-left: none !important; }
+  .dcl-stat-cell { border-left: none !important; padding-left: 0 !important; }
+  .dcl-mobile-showcase { grid-template-columns: 1fr !important; justify-items: center; gap: 40px !important; }
+  .dcl-mobile-showcase aside { width: 100%; max-width: 402px; }
+}
+
+@media (max-width: 460px) {
+  /* The frame narrows with the viewport (aspect-ratio keeps it phone-shaped);
+     soften the corner radius so it stays proportional. */
+  .dcl-phone { border-radius: 36px !important; }
 }
 
 @media (max-width: 600px) {

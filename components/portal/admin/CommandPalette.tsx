@@ -12,10 +12,19 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEscToClose } from "@/lib/useEscToClose";
-import { FLAT_NAV } from "./AdminRail";
+import { ADMIN_NAV, flattenNav, type NavSection } from "@/lib/portal/nav-config";
 import { IconSearch, IconX } from "@/components/admin/dashboard/icons";
 
-export function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function CommandPalette({
+  open,
+  onClose,
+  nav = ADMIN_NAV,
+}: {
+  open: boolean;
+  onClose: () => void;
+  /** Entitlement-filtered admin nav — ⌘K must not surface a gated module. */
+  nav?: NavSection[];
+}) {
   const t = useTranslations();
   const tShell = useTranslations("shell");
   const router = useRouter();
@@ -33,10 +42,13 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const labeled = FLAT_NAV.map((item) => ({ item, label: t(item.labelKey as Parameters<typeof t>[0]) }));
+    const labeled = flattenNav(nav).map((item) => ({
+      item,
+      label: t(item.labelKey as Parameters<typeof t>[0]),
+    }));
     if (!q) return labeled;
     return labeled.filter((r) => r.label.toLowerCase().includes(q));
-  }, [query, t]);
+  }, [query, t, nav]);
 
   function go(href: string) {
     router.push(href);

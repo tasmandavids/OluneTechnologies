@@ -12,11 +12,14 @@ describe("planInvoiceReconcile", () => {
     expect(plan.cancelStripe).toBe(false);
   });
 
-  it("syncs an already-sent invoice's due date but not its amount", () => {
-    const plan = planInvoiceReconcile("sent", "AUTHORISED");
-    expect(plan.nextStatus).toBeNull();
-    expect(plan.syncAmount).toBe(false);
-    expect(plan.syncDueDate).toBe(true);
+  it("follows Xero's amount on an already-sent invoice without re-sending it", () => {
+    for (const olune of ["sent", "overdue"] as const) {
+      const plan = planInvoiceReconcile(olune, "AUTHORISED");
+      expect(plan.nextStatus).toBeNull();
+      expect(plan.syncAmount).toBe(true);
+      expect(plan.syncDueDate).toBe(true);
+      expect(plan.cancelStripe).toBe(false);
+    }
   });
 
   it("marks paid and cancels the Stripe link when paid in Xero", () => {

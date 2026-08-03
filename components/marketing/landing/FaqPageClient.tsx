@@ -84,7 +84,7 @@ export function FaqPageClient() {
 
         <div style={{ maxWidth: 640, margin: "96px auto 0", textAlign: "center", position: "relative", zIndex: 2 }}>
           <h2 style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(28px, 3.4vw, 42px)", lineHeight: 1.1, letterSpacing: "-0.015em", color: NAVY, margin: 0 }}>Still curious? Just try it.</h2>
-          <p style={{ fontSize: 16, lineHeight: 1.6, color: "rgba(26,21,53,0.56)", maxWidth: 480, margin: "16px auto 0" }}>Everything is free to use until general release in early August — the fastest way to see if Olune fits your studio.</p>
+          <p style={{ fontSize: 16, lineHeight: 1.6, color: "rgba(26,21,53,0.56)", maxWidth: 480, margin: "16px auto 0" }}>Everything is free to use until general release in December — the fastest way to see if Olune fits your studio.</p>
           <div style={{ marginTop: 32 }}>
             <PrimaryButton href="/onboarding">Start free</PrimaryButton>
             <p style={{ margin: "16px 0 0", fontSize: 14, color: "rgba(26,21,53,0.48)" }}>No card needed. Set up in minutes.</p>

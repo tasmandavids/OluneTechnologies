@@ -11,6 +11,13 @@ import { PortalShell } from "@/components/portal/PortalShell";
 import { PlatformAnnouncementsBanner } from "@/components/admin/PlatformAnnouncementsBanner";
 import { SetupResumeBanner } from "@/components/setup/SetupResumeBanner";
 import { getBrandingCached } from "@/lib/branding";
+import { getEntitlementsCached } from "@/lib/portal/entitlements";
+import {
+  buildAdminNav,
+  buildOfficeNav,
+  buildPortalNav,
+  buildSelfManagedStudentNav,
+} from "@/lib/portal/nav-config";
 import { resolvePortalTheme } from "@/lib/portal/resolve-portal-theme";
 import { fetchStudioSetupState, setupBlocksPortal, setupNeedsBanner } from "@/lib/setup/server";
 import { showAffiliationsNav } from "@/lib/account/memberships";
@@ -47,8 +54,16 @@ export default async function PortalLayout({
   const accountKind = (profile.account_kind as AccountKind | null) ?? null;
   const now = new Date().toISOString();
 
-  const [{ count: membershipCount }, activeStudioRes, setupResult, announcementsResult, branding, tCommon, portalTheme] =
-    await Promise.all([
+  const [
+    { count: membershipCount },
+    activeStudioRes,
+    setupResult,
+    announcementsResult,
+    branding,
+    entitlements,
+    tCommon,
+    portalTheme,
+  ] = await Promise.all([
     supabase
       .from("studio_memberships")
       .select("id", { count: "exact", head: true })
@@ -68,6 +83,7 @@ export default async function PortalLayout({
           .limit(10)
       : Promise.resolve({ data: null }),
     getBrandingCached(studioId),
+    getEntitlementsCached(studioId),
     getTranslations("common"),
     resolvePortalTheme(),
   ]);
@@ -92,15 +108,30 @@ export default async function PortalLayout({
       ? (profile.full_name ?? studio?.name ?? tCommon("yourStudio"))
       : (studio?.name ?? tCommon("yourStudio"));
 
+  // Nav is filtered server-side so a module the studio does not have never
+  // reaches the client. This is presentation only — requireModule()/
+  // assertModule() on the pages and server actions do the enforcing.
+  const role = profile.role as Role;
+  const selfManagedStudent = role === "student" && !!profile.self_managed;
+  const roleNav =
+    role === "admin"
+      ? undefined
+      : role === "student" && selfManagedStudent
+        ? buildSelfManagedStudentNav(entitlements)
+        : buildPortalNav(role, entitlements);
+
   return (
     <PortalShell
-      role={profile.role as Role}
+      role={role}
       studioName={displayName}
       logoUrl={branding.logoUrl}
       userName={profile.full_name}
       showAffiliations={showAffiliationsNav(accountKind, membershipCount ?? 0)}
-      selfManagedStudent={profile.role === "student" && !!profile.self_managed}
+      selfManagedStudent={selfManagedStudent}
       portalTheme={portalTheme}
+      adminNav={buildAdminNav(entitlements)}
+      officeNav={buildOfficeNav(entitlements)}
+      roleNav={roleNav}
     >
       {isAdmin && setupState && setupNeedsBanner(setupState) && (
         <SetupResumeBanner

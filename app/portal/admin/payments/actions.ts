@@ -17,7 +17,7 @@ export async function refreshStripeConnectStatus(): Promise<ActionResult> {
 
   try {
     await syncStripeAccountStatus(ctx.supabase, account.stripe_account_id);
-    revalidatePath("/portal/admin/payments");
+    revalidatePath("/portal/admin/money");
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Refresh failed" };

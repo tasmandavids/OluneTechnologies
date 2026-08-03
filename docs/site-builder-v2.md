@@ -1,19 +1,34 @@
-# Site Builder v2 — "Studio" (preview)
+# Site Builder v2 — Studio
 
-A ground-up rebuild of the website builder as a Webflow/Framer-class visual
-canvas. It is **fully compartmentalized**: a new `lib/builder/*` engine, a new
-`components/builder/*` UI, new routes under `/portal/admin/site/studio`, and a
-dedicated `site_builder_documents` table. The v1 builder (`lib/site/*`,
-`site_pages.blocks`, the public site renderer) is **never imported or modified**,
-so v2 cannot regress the live site or the rest of the admin portal.
+Studio is the current admin website editor at `/portal/admin/site/studio`. It is
+a visual canvas backed by a normalized JSON document in
+`site_builder_documents`, separate from the legacy `site_pages.blocks` column.
 
-> Status: preview branch `preview/site-builder-v2`. Not wired into the public
-> site rendering. Reachable from the site manager banner or directly at
-> `/portal/admin/site/studio`.
+Studio pages can now be published to the live public site. The public renderer
+prefers a published v2 document when one exists and falls back to the legacy v1
+block renderer for pages that have not been opened or published in Studio.
 
 ---
 
-## 1. The JSON document schema (deliverable #1)
+## Runtime architecture
+
+| Layer | Codepath | Notes |
+| --- | --- | --- |
+| Admin routes | `app/portal/admin/site/studio/*` | List, edit, save, publish, unpublish, rename, delete. |
+| Editor engine | `lib/builder/*` | Schema, normalized document helpers, cascade, tokens, store, v1 converter. |
+| Editor UI | `components/builder/*` | Canvas, node renderer, inspector, topbar, publish menu. |
+| Persistence | `site_builder_documents` | One v2 document per `site_pages` row. |
+| Public home rendering | `app/page.tsx` | Studio subdomains prefer `PublicDocument` for a published v2 home page. |
+| Public sub-page rendering | `app/[siteSlug]/page.tsx` | Published v2 document replaces the legacy `PublicSite` page. |
+| Public data needs | `lib/builder/publicQueries.ts` | Loads products/classes for `productLoop` and `booking` nodes. |
+
+The v2 document is self-contained: when public rendering selects
+`PublicDocument`, it replaces the page chrome rather than slotting into the
+legacy `PublicSite` block layout.
+
+---
+
+## JSON document schema
 
 `lib/builder/schema.ts` is the single source of truth. The document is a
 **normalized graph**, not a nested tree:
@@ -44,7 +59,7 @@ BuilderNode {
 
 Why normalized? Because every editor mutation targets exactly one node. A flat
 map means a write is `nodes[id] = …` — no tree walk, no deep clone. Combined
-with Immer's structural sharing this is what keeps the canvas fast (see §2).
+with Immer's structural sharing this is what keeps the canvas fast.
 
 **Hybrid layout (pillar 1).** A node's `StyleSet.layout` is `flow | flex | grid |
 absolute`. A container chooses how it arranges children; a child carries its own
@@ -72,7 +87,7 @@ letter-spacing, so per-character styling round-trips losslessly (no HTML soup).
 
 ---
 
-## 2. State-management strategy (deliverable #2)
+## State management
 
 `lib/builder/store.ts` — **Zustand + Immer**. Four mechanisms keep rapid drag /
 typing lag-free:
@@ -98,7 +113,7 @@ interaction-state layer), so the inspector "just works" on every breakpoint.
 
 ---
 
-## 3. Core canvas boilerplate (deliverable #3)
+## Editor surface
 
 `components/builder/NodeRenderer.tsx` parses a node and renders an interactive,
 inline-editable, draggable element, recursing into `children`. It:
@@ -118,9 +133,8 @@ vars injected, zoom, palette drop hit-testing), `SelectionOverlay` (bounding box
 switcher, history, zoom, preview toggle, cascade direction, save), `LeftPanel`
 (insert palette + layers tree), `Inspector` (element / theme / page tabs).
 
-`components/builder/PublicDocument.tsx` renders a document **without** the editor
-store (store-independent recursion) so it is safe for SSR / shareable preview at
-`/site-preview-v2/[pageId]`.
+`components/builder/PublicDocument.tsx` renders a document without the editor
+store (store-independent recursion), so it is safe for SSR and public pages.
 
 ---
 
@@ -138,23 +152,66 @@ store (store-independent recursion) so it is safe for SSR / shareable preview at
 
 ---
 
-## Persistence & isolation
+## Persistence, publishing, and tenant isolation
 
-- Migration `supabase/migrations/0057_site_builder_v2.sql` adds
-  `site_builder_documents (page_id PK, studio_id, document jsonb, template_id)`
-  with admin-RLS mirroring `site_pages`. **Run `npm run db:push` to apply.**
-- Server actions: `app/portal/admin/site/studio/actions.ts`
-  (`createStudioPage`, `saveBuilderDocument`, `deleteStudioPage`). v2 pages are
-  created as **non-home, hidden, draft** `site_pages` rows so they can never
-  affect the live site.
-- Routes degrade gracefully if the table isn't provisioned (a banner prompts the
-  migration; the editor falls back to an empty document).
+Migrations:
+
+| Migration | Purpose |
+| --- | --- |
+| `0057_site_builder_v2.sql` | Creates `site_builder_documents (page_id PK, studio_id, document jsonb, template_id)` and base RLS. |
+| `0094_site_builder_document_tenant_guard.sql` | Adds a composite `(page_id, studio_id)` foreign key and tightens admin/public RLS so a document cannot be attached to another studio's page. |
+
+Server actions live in `app/portal/admin/site/studio/actions.ts`:
+
+| Action | Behavior |
+| --- | --- |
+| `createStudioPage` | Creates a non-home, hidden, draft `site_pages` row and inserts a starter v2 document. |
+| `saveBuilderDocument` | Verifies the target page belongs to the admin's studio, normalizes the document, then upserts it. |
+| `publishStudioPage` | Sets the linked `site_pages` row to `published`, optionally makes it the home page and/or shows it in nav, then revalidates public caches. |
+| `unpublishStudioPage` | Returns the page to `draft`, removes it from home/nav, then revalidates public caches. |
+| `renameStudioPage` | Updates title and/or slug on `site_pages`; reserved slugs are rejected. |
+| `deleteStudioPage` | Deletes the linked `site_pages` row; the v2 document cascades. |
+
+Public reads use the cookieless Supabase public client. RLS only exposes a
+document when the linked `site_pages` row is published and belongs to the same
+studio. If the table is missing in an environment, `getPublishedBuilderDocument`
+returns `null` and the public routes fall back to v1 rendering.
+
+## v1 coexistence and conversion
+
+Studio is the admin editing surface, but the legacy public renderer remains
+important for pages that have never been published from Studio:
+
+- Published v2 document exists -> `PublicDocument`.
+- No published v2 document -> legacy `PublicSite` / `site_pages.blocks`.
+
+When an admin opens an existing v1 page in Studio and no v2 document exists,
+`lib/builder/convertV1.ts` seeds the editor with a best-effort conversion of the
+current blocks. The converter is a flattener, not a pixel-perfect port:
+
+- every block produces something visible when it has usable content,
+- layout, markdown-lite formatting, and exact branding colors may change,
+- nothing is written until the admin saves/publishes,
+- admins should review the converted page before publishing it live.
 
 ## The 5 starter templates
 
 `lib/builder/templates.ts`: **Aurora** (SaaS), **Atelier** (portfolio, freeform
 hero), **Ledger** (editorial), **Pulse** (community + booking), **Market**
 (commerce). Each ships its own theme to demonstrate one-click reskinning.
+
+## Operational checklist
+
+- Apply migrations `0057` and `0094`.
+- Use `/portal/admin/site/studio` for page editing; v1-only public pages still
+  render until a v2 document is published.
+- After publishing, check the studio subdomain root or `/<slug>` path, depending
+  on whether the page was published as home.
+- If a page unexpectedly renders through v1, verify the `site_pages` row is
+  `published` and that a matching `site_builder_documents.page_id/studio_id`
+  row exists.
+- If a save fails with "Page not found", check tenant ownership first; both app
+  code and migration `0094` reject cross-studio page/document pairs.
 
 ## Deliberate simplifications / next steps
 

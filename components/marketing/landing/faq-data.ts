@@ -23,7 +23,7 @@ export const CATEGORIES: FaqCategory[] = [
     label: "Pricing & plans",
     items: [
       { q: "How much does Olune cost?", a: "Plans start at $19/month for Solo, $49/month for Studio, and $99/month for Scale. For comparison, a separate PM tool, accounting app and website builder usually run $80–150/month combined." },
-      { q: "Is there a free trial?", a: "Better — Olune is completely free to use as much as you like until general release in early August. After that, every plan starts with 14 days free and no card is needed to sign up." },
+      { q: "Is there a free trial?", a: "Better — Olune is completely free to use as much as you like until general release in December. After that, every plan starts with 14 days free and no card is needed to sign up." },
       { q: "Can I change plans or cancel?", a: "Anytime. Upgrade, downgrade or cancel from your settings in a couple of clicks — no lock-in contracts, no cancellation fees." },
       { q: "Are there setup fees or hidden costs?", a: "No. The plan price is the whole price. Hosting for your client sites is included, and updates ship free to every plan." },
     ],

@@ -42,7 +42,7 @@ export function AttentionQueue({ attention }: { attention: AttentionData }) {
         days: attention.overdueOldestDays,
       }),
       action: t("overdueAction"),
-      href: "/portal/admin/billing",
+      href: "/portal/admin/money?tab=collections",
     });
   }
 
