@@ -2,10 +2,11 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createStudentAuthUser } from "@/lib/students/login-email";
 import { escapeHtml } from "@/lib/notify/messages";
+import { getParentStudio } from "@/lib/portal/access";
+import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 export type ChildActionResult = { ok: true; studentId: string } | { ok: false; error: string };
 
@@ -21,20 +22,13 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Not signed in." };
+  const ctx = await getParentStudio();
+  if (ctx.error || !ctx.userId || !ctx.studioId || ctx.mode !== "parent") {
+    return { ok: false, error: ctx.error ?? "Parent access required." };
+  }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("studio_id, role, full_name")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "parent" || !profile.studio_id) {
-    return { ok: false, error: "Parent access required." };
+  if (!checkRateLimit(rateLimitKey("add-child", ctx.userId), { limit: 10, windowMs: 60 * 60_000 })) {
+    return { ok: false, error: "Too many invite attempts. Please try again later." };
   }
 
   let admin;
@@ -67,7 +61,7 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
 
   const { error: profileErr } = await admin.from("profiles").upsert({
     id: studentId,
-    studio_id: profile.studio_id,
+    studio_id: ctx.studioId,
     role: "student",
     full_name: d.fullName,
     email: d.email || generatedLoginEmail,
@@ -77,19 +71,29 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
   if (profileErr) return { ok: false, error: profileErr.message };
 
   const { error: linkErr } = await admin.from("guardianships").insert({
-    studio_id: profile.studio_id,
-    guardian_id: user.id,
+    studio_id: ctx.studioId,
+    guardian_id: ctx.userId,
     student_id: studentId,
     is_primary: true,
     relationship: "guardian",
   });
   if (linkErr) return { ok: false, error: linkErr.message };
 
-  if (generatedLoginEmail && user.email && !user.email.endsWith(".olune.local")) {
+  const { data: parentProfile } = await ctx.supabase
+    .from("profiles")
+    .select("full_name, email")
+    .eq("id", ctx.userId)
+    .single();
+
+  if (
+    generatedLoginEmail &&
+    parentProfile?.email &&
+    !String(parentProfile.email).endsWith(".olune.local")
+  ) {
     await notifyParentOfStudentLogin({
       admin,
-      parentEmail: user.email,
-      parentName: profile.full_name,
+      parentEmail: parentProfile.email as string,
+      parentName: (parentProfile.full_name as string | null) ?? null,
       studentName: d.fullName,
       loginEmail: generatedLoginEmail,
     });

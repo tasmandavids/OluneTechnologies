@@ -4,10 +4,9 @@
 //  Admin · Refund server actions
 //
 //  Issues a Stripe refund for a paid invoice, shop order or event ticket, then
-//  marks the local row 'refunded' and records a negative payments ledger row so
-//  revenue reporting nets correctly. Stock (orders) and event capacity (tickets)
-//  are restored by DB triggers when the row flips to 'refunded' (migrations
-//  0023 + 0009 respectively).
+//  updates refund_amount_cents. Full refunds flip status to 'refunded' (which
+//  fires restock / capacity-release triggers). Partial refunds keep status
+//  'paid' so the remainder can still be refunded.
 //
 //  Refunds that originate in the Stripe Dashboard are reconciled by the
 //  charge.refunded webhook handler (idempotent on stripe_refund_id).
@@ -15,31 +14,13 @@
 
 import { revalidatePath } from "next/cache";
 import { stripe } from "@/lib/stripe";
-import { createClient } from "@/lib/supabase/server";
 import { CURRENCY } from "@/lib/currency";
+import { getAdminStudio } from "@/lib/portal/access";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { refundPaidClassPassesForInvoice } from "@/lib/passes/refunds";
 
 export type RefundKind = "invoice" | "order" | "ticket" | "class_pass";
 export type ActionResult = { ok: true } | { ok: false; error: string };
-
-async function getAdminStudio() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not signed in.", supabase, studioId: null };
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("studio_id, role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin") return { error: "Admin only.", supabase, studioId: null };
-  if (!profile.studio_id) return { error: "No studio found.", supabase, studioId: null };
-
-  return { error: null, supabase, studioId: profile.studio_id as string };
-}
 
 type Sale = {
   table: "invoices" | "orders" | "event_tickets" | "class_passes";
@@ -48,8 +29,9 @@ type Sale = {
   payerId: string | null;
   intentId: string | null;
   amountCents: number;
+  refundedCents: number;
   status: string;
-  alreadyRefunded: boolean;
+  alreadyFullyRefunded: boolean;
   /** event_tickets are scoped to the studio via their parent event, not a column. */
   studioOk: boolean;
 };
@@ -59,7 +41,7 @@ type Sale = {
  * needs, with a studio-ownership check (defence-in-depth on top of RLS).
  */
 async function loadSale(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: SupabaseClient,
   kind: RefundKind,
   id: string,
   studioId: string,
@@ -67,10 +49,11 @@ async function loadSale(
   if (kind === "invoice") {
     const { data } = await supabase
       .from("invoices")
-      .select("id, studio_id, payer_id, amount_cents, status, stripe_payment_intent_id")
+      .select("id, studio_id, payer_id, amount_cents, status, stripe_payment_intent_id, refund_amount_cents")
       .eq("id", id)
       .single();
     if (!data) return null;
+    const refundedCents = Number(data.refund_amount_cents ?? 0);
     return {
       table: "invoices",
       id: data.id,
@@ -78,8 +61,9 @@ async function loadSale(
       payerId: data.payer_id,
       intentId: data.stripe_payment_intent_id,
       amountCents: data.amount_cents,
+      refundedCents,
       status: data.status,
-      alreadyRefunded: data.status === "refunded",
+      alreadyFullyRefunded: data.status === "refunded" || refundedCents >= data.amount_cents,
       studioOk: data.studio_id === studioId,
     };
   }
@@ -87,10 +71,11 @@ async function loadSale(
   if (kind === "order") {
     const { data } = await supabase
       .from("orders")
-      .select("id, studio_id, user_id, total_cents, status, stripe_payment_intent_id")
+      .select("id, studio_id, user_id, total_cents, status, stripe_payment_intent_id, refund_amount_cents")
       .eq("id", id)
       .single();
     if (!data) return null;
+    const refundedCents = Number(data.refund_amount_cents ?? 0);
     return {
       table: "orders",
       id: data.id,
@@ -98,8 +83,9 @@ async function loadSale(
       payerId: data.user_id,
       intentId: data.stripe_payment_intent_id,
       amountCents: data.total_cents,
+      refundedCents,
       status: data.status,
-      alreadyRefunded: data.status === "refunded",
+      alreadyFullyRefunded: data.status === "refunded" || refundedCents >= data.total_cents,
       studioOk: data.studio_id === studioId,
     };
   }
@@ -107,10 +93,11 @@ async function loadSale(
   if (kind === "class_pass") {
     const { data } = await supabase
       .from("class_passes")
-      .select("id, studio_id, student_id, price_cents, status, stripe_payment_intent_id")
+      .select("id, studio_id, student_id, price_cents, status, stripe_payment_intent_id, refund_amount_cents")
       .eq("id", id)
       .single();
     if (!data) return null;
+    const refundedCents = Number(data.refund_amount_cents ?? 0);
     return {
       table: "class_passes",
       id: data.id,
@@ -118,8 +105,9 @@ async function loadSale(
       payerId: data.student_id,
       intentId: data.stripe_payment_intent_id,
       amountCents: data.price_cents,
+      refundedCents,
       status: data.status,
-      alreadyRefunded: data.status === "refunded",
+      alreadyFullyRefunded: data.status === "refunded" || refundedCents >= data.price_cents,
       studioOk: data.studio_id === studioId,
     };
   }
@@ -128,12 +116,13 @@ async function loadSale(
   const { data } = await supabase
     .from("event_tickets")
     .select(
-      "id, user_id, total_cents, status, stripe_payment_intent_id, events!inner ( studio_id )",
+      "id, user_id, total_cents, status, stripe_payment_intent_id, refund_amount_cents, events!inner ( studio_id )",
     )
     .eq("id", id)
     .single();
   if (!data) return null;
   const ev = data.events as unknown as { studio_id: string } | null;
+  const refundedCents = Number(data.refund_amount_cents ?? 0);
   return {
     table: "event_tickets",
     id: data.id,
@@ -141,15 +130,16 @@ async function loadSale(
     payerId: data.user_id,
     intentId: data.stripe_payment_intent_id,
     amountCents: data.total_cents,
+    refundedCents,
     status: data.status,
-    alreadyRefunded: data.status === "refunded",
+    alreadyFullyRefunded: data.status === "refunded" || refundedCents >= data.total_cents,
     studioOk: ev?.studio_id === studioId,
   };
 }
 
 /**
- * Fully refund a sale. Pass `amountCents` to issue a partial refund (defaults
- * to the full charged amount).
+ * Fully or partially refund a sale. Pass `amountCents` to issue a partial
+ * refund (defaults to the remaining unrefunded balance).
  */
 export async function refundSale(
   kind: RefundKind,
@@ -162,16 +152,24 @@ export async function refundSale(
   const sale = await loadSale(supabase, kind, id, studioId);
   if (!sale) return { ok: false, error: "Record not found." };
   if (!sale.studioOk) return { ok: false, error: "Not your studio's record." };
-  if (sale.alreadyRefunded) return { ok: false, error: "Already refunded." };
-  if (sale.status !== "paid") {
+  if (sale.alreadyFullyRefunded) return { ok: false, error: "Already refunded." };
+  if (sale.status !== "paid" && sale.status !== "refunded") {
     return { ok: false, error: `Only paid records can be refunded (status: ${sale.status}).` };
+  }
+  if (sale.status === "refunded") {
+    return { ok: false, error: "Already refunded." };
   }
   if (!sale.intentId) {
     return { ok: false, error: "No Stripe payment on file for this record." };
   }
 
+  const remaining = Math.max(0, sale.amountCents - sale.refundedCents);
+  if (remaining <= 0) return { ok: false, error: "Already refunded." };
+
   const refundCents =
-    amountCents != null ? Math.min(Math.max(0, Math.round(amountCents)), sale.amountCents) : sale.amountCents;
+    amountCents != null
+      ? Math.min(Math.max(0, Math.round(amountCents)), remaining)
+      : remaining;
   if (refundCents <= 0) return { ok: false, error: "Refund amount must be positive." };
 
   // 1. Issue the Stripe refund.
@@ -189,21 +187,22 @@ export async function refundSale(
   }
 
   const nowIso = new Date().toISOString();
+  const totalRefunded = sale.refundedCents + refundCents;
+  const fullyRefunded = totalRefunded >= sale.amountCents;
 
-  // 2. Flip the local row to 'refunded' (fires restock / capacity-release triggers).
+  // 2. Update local row. Only flip to 'refunded' when fully refunded so
+  //    restock / capacity triggers fire once; partials stay 'paid'.
   const { error: updErr } = await supabase
     .from(sale.table)
     .update({
-      status: "refunded",
-      refunded_at: nowIso,
-      refund_amount_cents: refundCents,
+      status: fullyRefunded ? "refunded" : "paid",
+      refunded_at: fullyRefunded ? nowIso : null,
+      refund_amount_cents: totalRefunded,
       stripe_refund_id: refundId,
     })
     .eq("id", id);
 
   if (updErr) {
-    // The money is already refunded in Stripe — surface the reconciliation gap
-    // rather than silently swallowing it. The webhook will still mirror it.
     return {
       ok: false,
       error: `Refunded in Stripe (${refundId}) but failed to update the record: ${updErr.message}`,
@@ -243,7 +242,7 @@ export async function refundSale(
       stripe_payment_intent_id: sale.intentId,
       stripe_refund_id: refundId,
       status: "refunded",
-      description: `Refund — ${kind}`,
+      description: fullyRefunded ? `Refund — ${kind}` : `Partial refund — ${kind}`,
     });
   }
 

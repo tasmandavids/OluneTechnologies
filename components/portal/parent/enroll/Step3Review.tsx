@@ -13,6 +13,7 @@ import {
   enrollChildInClass,
   createEnrollmentIntent,
   createEnrollmentPayLaterInvoice,
+  waitForInvoicePaid,
 } from "@/app/portal/parent/enroll/actions";
 import {
   startTermPlanAfterEnrollment,
@@ -40,6 +41,7 @@ export function Step3Review({
   const t = useTranslations("parent.enroll");
   const [phase, setPhase] = useState<"summary" | "pay">("summary");
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [pendingInvoiceId, setPendingInvoiceId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
@@ -175,6 +177,7 @@ export function Step3Review({
     }
 
     setClientSecret(intentRes.data.clientSecret);
+    setPendingInvoiceId(intentRes.data.invoiceId);
     setPhase("pay");
     setBusy(false);
   }
@@ -217,6 +220,11 @@ export function Step3Review({
         <CheckoutForm
           clientSecret={clientSecret}
           submitLabel={t("payAmount", { amount: NZD.format(chargeCents / 100) })}
+          confirmPaid={async () => {
+            if (!pendingInvoiceId) return true;
+            const res = await waitForInvoicePaid(pendingInvoiceId);
+            return res.ok && res.data.status === "paid";
+          }}
           onSuccess={() =>
             onComplete(false, {
               paidOnline: !payMeta,

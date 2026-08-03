@@ -2,7 +2,8 @@
   "programmes": {
     "eyebrow": "{studioName} · Programmes",
     "title": "Our classes",
-    "body": "Ballet · Contemporary · Jazz · Hip-Hop · Tap · Lyrical · Acro · Pointe. The full class catalogue is coming soon — in the meantime, book a free trial and we'll match you to the right class.",
+    "body": "Browse this studio's current class schedule. Book a free trial and we'll help match you to the right programme.",
+    "empty": "No classes are published yet — book a trial and the studio will place you.",
     "bookTrial": "Book a free trial →",
     "backHome": "Back to home"
   }

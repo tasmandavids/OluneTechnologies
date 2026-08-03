@@ -43,7 +43,27 @@ export async function enrollStudent(input: unknown): Promise<ActionResult> {
 
   const { studentId, classId } = parsed.data;
 
-  // Check capacity
+  // Check capacity — prefer atomic RPC (migration 0095)
+  const { data: atomicRows, error: rpcErr } = await supabase.rpc("enroll_student_atomic", {
+    p_studio_id: studioId,
+    p_student_id: studentId,
+    p_class_id: classId,
+  });
+
+  if (!rpcErr && atomicRows?.[0]) {
+    revalidatePath("/portal/admin/students");
+    revalidatePath("/portal/admin/classes");
+    revalidatePath("/portal/admin");
+    return { ok: true };
+  }
+
+  if (rpcErr && !/function .*enroll_student_atomic/i.test(rpcErr.message)) {
+    if (/already enrolled/i.test(rpcErr.message)) {
+      return { ok: false, error: "Student is already enrolled." };
+    }
+    return { ok: false, error: rpcErr.message };
+  }
+
   const { data: cap } = await supabase
     .from("class_capacity")
     .select("enrolled, capacity")

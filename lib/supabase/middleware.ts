@@ -4,6 +4,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { stringFromBase64URL } from "@supabase/ssr/dist/module/utils";
 import { NextResponse, type NextRequest } from "next/server";
+import { withAuthCookieDomain } from "@/lib/auth/cookie-domain";
 import { purgeAuthCookies, readSessionJsonFromRequest } from "@/lib/supabase/auth-cookies";
 
 /** The only bits of the user the routing layer in middleware.ts needs. */
@@ -45,7 +46,7 @@ export function createMiddlewareClient(request: NextRequest) {
           const secure = request.nextUrl.protocol === "https:";
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, {
-              ...options,
+              ...withAuthCookieDomain(options),
               ...(secure ? { secure: true } : {}),
             }),
           );

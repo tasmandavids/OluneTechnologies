@@ -494,6 +494,32 @@
       "messages": {
         "description": "Envoyez un message interne à {name}. Ils recevront une notification.",
         "openInHub": "Ouvrir dans le hub Messages"
+      },
+      "massEmail": {
+        "button": "Écrire aux parents",
+        "title": "Écrire aux parents",
+        "subtitle": "Envoyez un message aux parents ayant une adresse e-mail valide.",
+        "recipients": "Destinataires",
+        "scopeAll": "Tous les parents avec e-mail ({count})",
+        "scopeSelected": "Parents sélectionnés",
+        "scopeClass": "Parents d'un cours",
+        "selectedCount": "{count, plural, one {# selected} other {# selected}}",
+        "selectAll": "Tout sélectionner avec e-mail",
+        "noEmailable": "Aucun parent n'a encore d'e-mail utilisable.",
+        "classLabel": "Cours",
+        "classPlaceholder": "Choisir un cours…",
+        "noClasses": "Aucun cours pour le moment.",
+        "subject": "Objet",
+        "subjectPlaceholder": "ex. Mise à jour des dates du trimestre",
+        "body": "Message",
+        "bodyPlaceholder": "Écrivez votre message aux parents…",
+        "bodyHint": "Les parents sont salués par leur prénom. Le nom du studio est ajouté à la fin.",
+        "confirmTitle": "Envoyer cet e-mail ?",
+        "confirmCount": "Ceci enverra un e-mail à {count, plural, one {# parent} other {# parents}}.",
+        "confirmClass": "Ceci enverra un e-mail aux parents des élèves actuellement inscrits au cours sélectionné.",
+        "send": "Envoyer",
+        "sending": "Envoi…",
+        "result": "E-mails envoyés : {sent}. Ignorés : {skipped}.{failed, plural, =0 {} other { Échecs : {failed}.}}"
       }
     },
     "billing": {

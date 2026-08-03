@@ -10,6 +10,7 @@ import { familyDiscountInfo } from "@/lib/discounts";
 import { isUuid } from "@/lib/validation/uuid";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveTransferData } from "@/lib/stripe/connect";
+import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 interface OrderItem { productId: string; qty: number }
 
@@ -19,6 +20,10 @@ export async function POST(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!checkRateLimit(rateLimitKey("shop-checkout", user.id), { limit: 20, windowMs: 60_000 })) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
 
   const body = await req.json();
   const { items } = body as { items: OrderItem[] };

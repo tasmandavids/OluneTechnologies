@@ -6,6 +6,9 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import AddFamilyPanel from "@/components/admin/parents/AddFamilyPanel";
+import MassEmailParentsPanel, {
+  type ClassOption,
+} from "@/components/admin/parents/MassEmailParentsPanel";
 import { bulkInviteMembers } from "@/app/portal/admin/parents/actions";
 import type { ParentRow, StudentOption } from "@/lib/parents/types";
 
@@ -75,15 +78,18 @@ function ParentCard({ parent }: { parent: ParentRow }) {
 export default function ParentsManager({
   parents,
   students,
+  classes = [],
+  canMassEmail = false,
 }: {
   parents: ParentRow[];
   students: StudentOption[];
+  classes?: ClassOption[];
+  canMassEmail?: boolean;
 }) {
   const t = useTranslations("admin.parents");
-  const tShared = useTranslations("admin.shared");
-  const tCommon = useTranslations("common");
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
+  const [showMassEmail, setShowMassEmail] = useState(false);
   const [inviting, startInvite] = useTransition();
   const [inviteResult, setInviteResult] = useState<string | null>(null);
 
@@ -124,6 +130,15 @@ export default function ParentsManager({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {canMassEmail && (
+            <button
+              type="button"
+              onClick={() => setShowMassEmail(true)}
+              className="rounded-xl border border-[--hair] bg-surface px-4 py-2 text-sm font-semibold text-ink hover:bg-canvas"
+            >
+              {t("massEmail.button")}
+            </button>
+          )}
           <button
             type="button"
             onClick={handleBulkInvite}
@@ -183,6 +198,17 @@ export default function ParentsManager({
       <AnimatePresence>
         {showAdd && (
           <AddFamilyPanel students={students} onClose={() => setShowAdd(false)} />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showMassEmail && (
+          <MassEmailParentsPanel
+            parents={parents}
+            classes={classes}
+            onClose={() => setShowMassEmail(false)}
+            onResult={setInviteResult}
+          />
         )}
       </AnimatePresence>
     </motion.div>

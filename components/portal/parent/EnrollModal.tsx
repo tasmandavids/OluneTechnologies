@@ -148,7 +148,6 @@ export function EnrollModal({
                       }
                       const quote = await getEnrollmentBillingQuote(
                         enrollData.childId!,
-                        cls.priceCents,
                         cls.classId,
                       );
                       const billable = quote.ok ? quote.data.billableCents : cls.priceCents;

@@ -494,6 +494,32 @@
       "messages": {
         "description": "Invia un messaggio interno a {name}. Riceveranno una notifica.",
         "openInHub": "Apri nell'hub Messaggi"
+      },
+      "massEmail": {
+        "button": "Email ai genitori",
+        "title": "Email ai genitori",
+        "subtitle": "Invia un messaggio ai genitori con un'email valida.",
+        "recipients": "Destinatari",
+        "scopeAll": "Tutti i genitori con email ({count})",
+        "scopeSelected": "Genitori selezionati",
+        "scopeClass": "Genitori di una classe",
+        "selectedCount": "{count, plural, one {# selected} other {# selected}}",
+        "selectAll": "Seleziona tutti con email",
+        "noEmailable": "Nessun genitore ha ancora un'email inviabile.",
+        "classLabel": "Classe",
+        "classPlaceholder": "Scegli una classe…",
+        "noClasses": "Nessuna classe ancora.",
+        "subject": "Oggetto",
+        "subjectPlaceholder": "es. Aggiornamento date del trimestre",
+        "body": "Messaggio",
+        "bodyPlaceholder": "Scrivi il messaggio ai genitori…",
+        "bodyHint": "I genitori vengono salutati per nome. Il nome dello studio viene aggiunto in fondo.",
+        "confirmTitle": "Inviare questa email?",
+        "confirmCount": "Questo invierà un'email a {count, plural, one {# genitore} other {# genitori}}.",
+        "confirmClass": "Questo invierà un'email ai genitori degli studenti attualmente iscritti alla classe selezionata.",
+        "send": "Invia email",
+        "sending": "Invio…",
+        "result": "Email inviate: {sent}. Saltate: {skipped}.{failed, plural, =0 {} other { Non riuscite: {failed}.}}"
       }
     },
     "billing": {

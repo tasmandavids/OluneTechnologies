@@ -15,6 +15,7 @@ import { CURRENCY } from "@/lib/currency";
 import { isUuid } from "@/lib/validation/uuid";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveTransferData } from "@/lib/stripe/connect";
+import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,6 +26,10 @@ export async function POST(req: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
+    }
+
+    if (!checkRateLimit(rateLimitKey("pay-intent", user.id), { limit: 20, windowMs: 60_000 })) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
 
     const body = await req.json();

@@ -9,13 +9,15 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
 import { CURRENCY } from "@/lib/currency";
 import { siblingDiscountInfo } from "@/lib/discounts";
 import { monthlyFromTermFeeCents } from "@/lib/term-payments";
 import { getOrCreateClassStripePrice } from "@/lib/stripe/class-price";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveTransferData } from "@/lib/stripe/connect";
+import { loadStudioClassPrice } from "@/lib/enrollment-class-price";
+import { getParentStudio } from "@/lib/portal/access";
+import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 import type Stripe from "stripe";
 
 const uuidField = z.string().uuid();
@@ -25,23 +27,21 @@ export type ActionResult<T = null> =
   | { ok: false; error: string };
 
 async function getParentContext() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not signed in.", supabase, userId: null, studioId: null };
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("studio_id, role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "parent") {
-    return { error: "Parent access required.", supabase, userId: null, studioId: null };
+  const ctx = await getParentStudio();
+  if (ctx.error || !ctx.userId || !ctx.studioId || ctx.mode !== "parent") {
+    return {
+      error: ctx.error ?? "Parent access required.",
+      supabase: ctx.supabase,
+      userId: null as string | null,
+      studioId: null as string | null,
+    };
   }
-
-  return { error: null, supabase, userId: user.id, studioId: profile.studio_id as string };
+  return {
+    error: null as string | null,
+    supabase: ctx.supabase,
+    userId: ctx.userId,
+    studioId: ctx.studioId,
+  };
 }
 
 // Robustly pull a PaymentElement client secret from a freshly-created
@@ -95,15 +95,20 @@ async function getOrCreatePercentCoupon(stripe: Stripe, pct: number): Promise<st
 export async function createEnrollmentSubscription(
   studentId: string,
   classId: string,
-  className: string,
-  priceCents: number,
+  /** @deprecated Ignored — class name/price are loaded from the database. */
+  _className?: string,
+  /** @deprecated Ignored — price is always loaded from the database. */
+  _priceCents?: number,
 ): Promise<ActionResult<{ clientSecret: string; subscriptionId: string }>> {
   const { error, supabase, userId, studioId } = await getParentContext();
   if (error || !userId || !studioId) return { ok: false, error: error ?? "Unknown" };
   if (!uuidField.safeParse(studentId).success || !uuidField.safeParse(classId).success) {
     return { ok: false, error: "Invalid student or class." };
   }
-  if (priceCents <= 0) return { ok: false, error: "Class has no recurring fee." };
+
+  if (!checkRateLimit(rateLimitKey("sub-create", userId), { limit: 10, windowMs: 60_000 })) {
+    return { ok: false, error: "Too many requests. Please wait a moment." };
+  }
 
   // Verify guardian relationship.
   const { data: guardianship } = await supabase
@@ -113,6 +118,13 @@ export async function createEnrollmentSubscription(
     .eq("student_id", studentId)
     .single();
   if (!guardianship) return { ok: false, error: "You are not a guardian of this student." };
+
+  // Server-authoritative price — never trust client-supplied cents.
+  const cls = await loadStudioClassPrice(supabase, studioId, classId);
+  if (!cls) return { ok: false, error: "Class not found." };
+  if (cls.priceCents <= 0) return { ok: false, error: "Class has no recurring fee." };
+  const className = cls.name;
+  const priceCents = cls.priceCents;
 
   // A programme (e.g. "Intermediate") can run on multiple days as separate
   // class rows, but the family only pays once per programme — mirrors the

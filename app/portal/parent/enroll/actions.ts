@@ -11,11 +11,14 @@ import { createClient } from "@/lib/supabase/server";
 import { CURRENCY, gstComponentCents } from "@/lib/currency";
 import { siblingDiscountedCents } from "@/lib/discounts";
 import { enrollmentBillableCents, batchEnrollmentBillableCents } from "@/lib/enrollment-billing";
+import { loadStudioClassPrice, loadStudioClassPrices } from "@/lib/enrollment-class-price";
 import { xeroSyncOutstandingInvoice } from "@/lib/xero/webhook-sync";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { studioLocalYmdOffset } from "@/lib/date/studio-date";
 import { resolveTransferData } from "@/lib/stripe/connect";
 import { getTranslations } from "@/lib/i18n/server";
+import { getParentStudio } from "@/lib/portal/access";
+import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -52,39 +55,26 @@ const uuidField = z.string().uuid();
 
 async function getEnrollmentContext() {
   const t = await getTranslations("errors.actions");
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: t("notSignedIn"), supabase, userId: null, studioId: null, mode: null as null };
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("studio_id, role, self_managed")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role === "parent") {
+  const ctx = await getParentStudio();
+  if (ctx.error || !ctx.userId || !ctx.studioId || !ctx.mode) {
     return {
-      error: null,
-      supabase,
-      userId: user.id,
-      studioId: profile.studio_id as string,
-      mode: "parent" as const,
+      error: ctx.error === "Not signed in." ? t("notSignedIn")
+        : ctx.error === "Parent access required." ? t("parentAccessRequired")
+        : ctx.error === "No studio found." ? t("noStudioFound")
+        : (ctx.error ?? t("unknown")),
+      supabase: ctx.supabase,
+      userId: null as string | null,
+      studioId: null as string | null,
+      mode: null as null,
     };
   }
-
-  if (profile?.role === "student" && profile.self_managed) {
-    return {
-      error: null,
-      supabase,
-      userId: user.id,
-      studioId: profile.studio_id as string,
-      mode: "self" as const,
-    };
-  }
-
-  return { error: t("parentAccessRequired"), supabase, userId: null, studioId: null, mode: null };
+  return {
+    error: null as string | null,
+    supabase: ctx.supabase,
+    userId: ctx.userId,
+    studioId: ctx.studioId,
+    mode: ctx.mode,
+  };
 }
 
 async function assertStudentAccess(
@@ -220,19 +210,50 @@ export async function enrollChildInClass(
   const accessErr = await assertStudentAccess(ctx, studentId, t);
   if (accessErr) return { ok: false, error: accessErr };
 
-  // Check for existing enrollment
+  if (!checkRateLimit(rateLimitKey("enroll", userId), { limit: 30, windowMs: 60_000 })) {
+    return { ok: false, error: t("unknown") };
+  }
+
+  // Atomic capacity check + insert (migration 0095). Falls back to legacy
+  // path if the RPC is not yet applied on this environment.
+  const { data: atomicRows, error: rpcErr } = await supabase.rpc("enroll_student_atomic", {
+    p_studio_id: studioId,
+    p_student_id: studentId,
+    p_class_id: classId,
+  });
+
+  if (!rpcErr && atomicRows?.[0]) {
+    const row = atomicRows[0] as { enrollment_id: string; waitlisted: boolean };
+    revalidatePath("/portal/parent");
+    revalidatePath("/portal/student");
+    return {
+      ok: true,
+      data: {
+        enrollmentId: row.enrollment_id,
+        waitlisted: Boolean(row.waitlisted),
+      },
+    };
+  }
+
+  if (rpcErr && !/function .*enroll_student_atomic/i.test(rpcErr.message)) {
+    if (/already enrolled/i.test(rpcErr.message)) {
+      return { ok: false, error: t("alreadyEnrolled") };
+    }
+    return { ok: false, error: rpcErr.message };
+  }
+
+  // Legacy fallback (pre-0095): check-then-act — prefer applying the migration.
   const { data: existing } = await supabase
     .from("enrollments")
     .select("id, status")
     .eq("student_id", studentId)
     .eq("class_id", classId)
-    .single();
+    .maybeSingle();
 
   if (existing?.status === "active") {
     return { ok: false, error: t("alreadyEnrolled") };
   }
 
-  // Check capacity
   const { data: cap } = await supabase
     .from("class_capacity")
     .select("capacity, enrolled")
@@ -244,12 +265,15 @@ export async function enrollChildInClass(
 
   const { data: enrollment, error: dbErr } = await supabase
     .from("enrollments")
-    .insert({
-      studio_id: studioId,
-      student_id: studentId,
-      class_id: classId,
-      status,
-    })
+    .upsert(
+      {
+        studio_id: studioId,
+        student_id: studentId,
+        class_id: classId,
+        status,
+      },
+      { onConflict: "student_id,class_id" },
+    )
     .select("id")
     .single();
 
@@ -285,8 +309,9 @@ async function enrollmentChargeCents(
 
 export async function getEnrollmentBillingQuote(
   studentId: string,
-  priceCents: number,
   classId: string,
+  /** @deprecated Ignored — price is always loaded from the database. */
+  _priceCents?: number,
 ): Promise<ActionResult<{ billableCents: number; includedInProgramme: boolean }>> {
   const t = await getTranslations("errors.actions");
   const ctx = await getEnrollmentContext();
@@ -299,12 +324,15 @@ export async function getEnrollmentBillingQuote(
   const accessErr = await assertStudentAccess(ctx, studentId, t);
   if (accessErr) return { ok: false, error: accessErr };
 
+  const cls = await loadStudioClassPrice(supabase, studioId, classId);
+  if (!cls) return { ok: false, error: t("invalidStudentOrClass") };
+
   const billableCents = await enrollmentChargeCents(
     supabase,
     studioId,
     userId,
     studentId,
-    priceCents,
+    cls.priceCents,
     mode,
     classId,
   );
@@ -313,7 +341,7 @@ export async function getEnrollmentBillingQuote(
     ok: true,
     data: {
       billableCents,
-      includedInProgramme: priceCents > 0 && billableCents === 0,
+      includedInProgramme: cls.priceCents > 0 && billableCents === 0,
     },
   };
 }
@@ -417,7 +445,7 @@ async function insertEnrollmentInvoice(
 
 export async function createEnrollmentPayLaterInvoice(
   studentId: string,
-  classes: { classId: string; className: string; priceCents: number }[],
+  classes: { classId: string; className?: string; priceCents?: number }[],
   sendNow: boolean,
 ): Promise<ActionResult<{ invoiceId?: string; billingSkipped?: boolean }>> {
   const t = await getTranslations("errors.actions");
@@ -435,23 +463,43 @@ export async function createEnrollmentPayLaterInvoice(
   const accessErr = await assertStudentAccess(ctx, studentId, t);
   if (accessErr) return { ok: false, error: accessErr };
 
+  if (!checkRateLimit(rateLimitKey("enroll-bill", userId), { limit: 20, windowMs: 60_000 })) {
+    return { ok: false, error: t("unknown") };
+  }
+
+  const priced = await loadStudioClassPrices(
+    supabase,
+    studioId,
+    classes.map((c) => c.classId),
+  );
+  if (priced.size !== classes.length) {
+    return { ok: false, error: t("invalidStudentOrClass") };
+  }
+
   // Batch-aware: all of `classes` are enrolled (as active rows) before this
   // billing step runs, so a per-class check would find every linked-series
   // sibling already active and zero all of them out. See
   // batchEnrollmentBillableCents for why this can't reuse enrollmentChargeCents.
+  // Prices always come from the DB — never from the client payload.
   const baseCentsByClassId = await batchEnrollmentBillableCents(
     supabase,
     studentId,
-    classes.map((c) => ({ classId: c.classId, priceCents: c.priceCents })),
+    classes.map((c) => {
+      const row = priced.get(c.classId)!;
+      return { classId: c.classId, priceCents: row.priceCents };
+    }),
   );
 
   const charges: { classId: string; className: string; chargeCents: number }[] = [];
   for (const cls of classes) {
+    const row = priced.get(cls.classId)!;
     const baseCents = baseCentsByClassId.get(cls.classId) ?? 0;
     if (baseCents <= 0) continue;
     const chargeCents =
       mode === "self" ? baseCents : await siblingDiscountedCents(supabase, studioId, userId, studentId, baseCents);
-    if (chargeCents > 0) charges.push({ classId: cls.classId, className: cls.className, chargeCents });
+    if (chargeCents > 0) {
+      charges.push({ classId: cls.classId, className: row.name, chargeCents });
+    }
   }
 
   if (!charges.length) {
@@ -478,8 +526,10 @@ export async function createEnrollmentPayLaterInvoice(
 export async function createEnrollmentIntent(
   studentId: string,
   classId: string,
-  className: string,
-  priceCents: number,
+  /** @deprecated Ignored — class name/price are loaded from the database. */
+  _className?: string,
+  /** @deprecated Ignored — price is always loaded from the database. */
+  _priceCents?: number,
 ): Promise<
   ActionResult<
     { clientSecret: string; invoiceId: string } | { billingSkipped: true }
@@ -492,17 +542,24 @@ export async function createEnrollmentIntent(
   if (!uuidField.safeParse(studentId).success || !uuidField.safeParse(classId).success) {
     return { ok: false, error: t("invalidStudentOrClass") };
   }
-  if (priceCents <= 0) return { ok: false, error: t("classNoFee") };
 
   const accessErr = await assertStudentAccess(ctx, studentId, t);
   if (accessErr) return { ok: false, error: accessErr };
+
+  if (!checkRateLimit(rateLimitKey("enroll-pay", userId), { limit: 15, windowMs: 60_000 })) {
+    return { ok: false, error: t("unknown") };
+  }
+
+  const cls = await loadStudioClassPrice(supabase, studioId, classId);
+  if (!cls) return { ok: false, error: t("invalidStudentOrClass") };
+  if (cls.priceCents <= 0) return { ok: false, error: t("classNoFee") };
 
   const chargeCents = await enrollmentChargeCents(
     supabase,
     studioId,
     userId,
     studentId,
-    priceCents,
+    cls.priceCents,
     mode,
     classId,
   );
@@ -519,7 +576,7 @@ export async function createEnrollmentIntent(
     studioId,
     userId,
     studentId,
-    [{ classId, className, chargeCents }],
+    [{ classId, className: cls.name, chargeCents }],
     true,
     t,
   );
@@ -533,7 +590,7 @@ export async function createEnrollmentIntent(
     amount: chargeCents,
     currency: CURRENCY,
     customer: customerId,
-    description: `Enrollment — ${className}`,
+    description: `Enrollment — ${cls.name}`,
     metadata: {
       invoice_id: invoiceRes.invoiceId,
       studio_id: studioId,
@@ -555,4 +612,42 @@ export async function createEnrollmentIntent(
     ok: true,
     data: { clientSecret: intent.client_secret, invoiceId: invoiceRes.invoiceId },
   };
+}
+
+/** Poll until the webhook has marked the invoice paid (or timeout). */
+export async function waitForInvoicePaid(
+  invoiceId: string,
+  opts?: { timeoutMs?: number },
+): Promise<ActionResult<{ status: string }>> {
+  const t = await getTranslations("errors.actions");
+  const ctx = await getEnrollmentContext();
+  const { error, supabase, userId } = ctx;
+  if (error || !userId) return { ok: false, error: error ?? t("unknown") };
+  if (!uuidField.safeParse(invoiceId).success) {
+    return { ok: false, error: t("invalidStudentOrClass") };
+  }
+
+  const timeoutMs = opts?.timeoutMs ?? 8_000;
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    const { data } = await supabase
+      .from("invoices")
+      .select("id, status, payer_id")
+      .eq("id", invoiceId)
+      .maybeSingle();
+    if (!data || data.payer_id !== userId) {
+      return { ok: false, error: t("unknown") };
+    }
+    if (data.status === "paid") {
+      return { ok: true, data: { status: "paid" } };
+    }
+    await new Promise((r) => setTimeout(r, 400));
+  }
+
+  const { data: last } = await supabase
+    .from("invoices")
+    .select("status")
+    .eq("id", invoiceId)
+    .maybeSingle();
+  return { ok: true, data: { status: (last?.status as string) ?? "sent" } };
 }
