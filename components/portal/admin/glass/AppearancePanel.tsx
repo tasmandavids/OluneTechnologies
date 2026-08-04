@@ -1,10 +1,10 @@
 "use client";
 
 // ============================================================================
-//  AppearancePanel — personal glass-intensity tuning (tint / glass clarity /
-//  blur depth / ambience). See lib/portal/admin/appearance.ts for why this
-//  deliberately has no accent-colour picker: --brand already comes from the
-//  studio's branding settings.
+//  AppearancePanel — personal workspace tuning: studio tint (accent colour)
+//  plus glass clarity / blur depth / ambience. The accent picker overrides
+//  --brand only within .admin-glass (see lib/portal/admin/appearance.ts) —
+//  it's a personal preference, not a change to the studio's actual branding.
 // ============================================================================
 
 import { useEffect, useState } from "react";
@@ -16,10 +16,13 @@ import {
   loadAppearance,
   saveAppearance,
   DEFAULT_APPEARANCE,
+  ACCENT_SWATCHES,
   type AppearanceState,
 } from "@/lib/portal/admin/appearance";
 
-const SLIDERS: { key: keyof AppearanceState; min: number; max: number; step: number; unit: string }[] = [
+type SliderKey = "tint" | "glass" | "blur" | "ambience";
+
+const SLIDERS: { key: SliderKey; min: number; max: number; step: number; unit: string }[] = [
   { key: "tint", min: 0, max: 180, step: 5, unit: "%" },
   { key: "glass", min: 12, max: 92, step: 2, unit: "%" },
   { key: "blur", min: 6, max: 70, step: 2, unit: "px" },
@@ -53,8 +56,12 @@ export function AppearancePanel({
     if (root) applyAppearance(root, state);
   }, [state, portalTheme]);
 
-  function update(key: keyof AppearanceState, value: number) {
+  function update(key: SliderKey, value: number) {
     setState((s) => ({ ...s, [key]: value }));
+  }
+
+  function setAccent(hex: string | null) {
+    setState((s) => ({ ...s, accent: hex }));
   }
 
   function persist() {
@@ -96,6 +103,48 @@ export function AppearancePanel({
           >
             <h2 className="font-display text-xl font-medium text-ink">{t("title")}</h2>
             <p className="mt-1.5 text-[12.5px] leading-[1.5] text-muted">{t("subtitle")}</p>
+
+            <div className="mt-6">
+              <p className="mb-1.5 text-[12.5px] font-semibold text-ink">{t("accent.label")}</p>
+              <p className="mb-2.5 text-[11px] leading-[1.4] text-muted">{t("accent.hint")}</p>
+              <div className="flex flex-wrap gap-2">
+                {ACCENT_SWATCHES.map((s) => (
+                  <button
+                    key={s.hex}
+                    type="button"
+                    title={s.name}
+                    aria-label={s.name}
+                    onClick={() => setAccent(s.hex)}
+                    className="h-7 w-7 shrink-0 rounded-full transition-transform hover:scale-110"
+                    style={{
+                      background: s.hex,
+                      boxShadow: state.accent === s.hex ? "0 0 0 2px var(--surface), 0 0 0 3.5px var(--brand)" : "0 0 0 1px var(--hair)",
+                    }}
+                  />
+                ))}
+                <label
+                  title={t("accent.custom")}
+                  className="relative grid h-7 w-7 shrink-0 cursor-pointer place-items-center rounded-full text-[10px]"
+                  style={{
+                    background: "conic-gradient(from 200deg, var(--brand), var(--t2), var(--t3), var(--brand))",
+                    boxShadow: state.accent && !ACCENT_SWATCHES.some((s) => s.hex === state.accent) ? "0 0 0 2px var(--surface), 0 0 0 3.5px var(--brand)" : "0 0 0 1px var(--hair)",
+                  }}
+                >
+                  <input
+                    type="color"
+                    value={state.accent ?? "#b9b5ee"}
+                    onChange={(e) => setAccent(e.target.value)}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    aria-label={t("accent.custom")}
+                  />
+                </label>
+              </div>
+              {state.accent && (
+                <button type="button" onClick={() => setAccent(null)} className="mt-2 text-[11px] font-medium text-muted underline">
+                  {t("accent.useStudioColor")}
+                </button>
+              )}
+            </div>
 
             <div className="mt-6 flex flex-col gap-5">
               {SLIDERS.map(({ key, min, max, step, unit }) => (

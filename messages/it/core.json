@@ -100,6 +100,12 @@
     "appearance": {
       "title": "Aspetto",
       "subtitle": "Regola quanto vetro e colore si vedono nell'area di lavoro. È solo per te: non cambia ciò che vede il tuo team.",
+      "accent": {
+        "label": "Tinta dello studio",
+        "hint": "Personale — non cambia l'identità visiva reale del tuo studio.",
+        "custom": "Colore personalizzato",
+        "useStudioColor": "Usa il colore dello studio"
+      },
       "reset": "Reimposta",
       "apply": "Applica",
       "sliders": {

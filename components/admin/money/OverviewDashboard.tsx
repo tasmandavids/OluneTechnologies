@@ -24,13 +24,13 @@ type Range = "7d" | "30d" | "12m";
 
 function StatCard({ label, value, sub, warn }: { label: string; value: string; sub?: string; warn?: boolean }) {
   return (
-    <div className="rounded-[16px] border border-[--hair] bg-surface p-4">
+    <GlassPanel className="!p-4">
       <p className="text-[10.5px] font-semibold uppercase tracking-wider text-muted">{label}</p>
       <p className="mt-1 font-display text-[26px] font-medium tabular-nums tracking-tight" style={{ color: warn ? "#b91c1c" : "var(--text)" }}>
         {value}
       </p>
       {sub && <p className="mt-0.5 text-xs text-muted">{sub}</p>}
-    </div>
+    </GlassPanel>
   );
 }
 
@@ -273,14 +273,15 @@ export function OverviewDashboard({
       </motion.div>
 
       {attention.length > 0 && (
-        <motion.section variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }} className="rounded-2xl border border-[--hair] bg-surface">
-          <div className="border-b border-[--hair] px-6 py-4">
+        <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
+          <GlassPanel className="!p-0 overflow-hidden">
+          <div className="border-b px-6 py-4" style={{ borderColor: "var(--hair)" }}>
             <h2 className="text-sm font-bold text-ink">{t("attention.title")}</h2>
           </div>
-          <ul className="divide-y divide-[--hair]">
-            {attention.map((a) => (
-              <li key={a.key}>
-                <Link href={a.href} className="flex items-center gap-3 px-6 py-4 transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)]">
+          <ul>
+            {attention.map((a, i) => (
+              <li key={a.key} style={i > 0 ? { borderTop: "1px solid var(--hair)" } : undefined}>
+                <Link href={a.href} className="flex items-center gap-3 px-6 py-4 transition-colors hover:bg-[--t1]">
                   <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: a.warn ? "#dc2626" : "var(--brand)" }} />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-ink">{a.title}</p>
@@ -291,7 +292,8 @@ export function OverviewDashboard({
               </li>
             ))}
           </ul>
-        </motion.section>
+          </GlassPanel>
+        </motion.div>
       )}
 
       <motion.div variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

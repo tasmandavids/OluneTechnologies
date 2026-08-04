@@ -100,6 +100,12 @@
     "appearance": {
       "title": "Appearance",
       "subtitle": "Tune how much glass and colour show through the workspace. This is just for you — it doesn't change what your team sees.",
+      "accent": {
+        "label": "Studio tint",
+        "hint": "Personal — doesn't change your studio's actual branding.",
+        "custom": "Custom colour",
+        "useStudioColor": "Use studio colour"
+      },
       "reset": "Reset",
       "apply": "Apply",
       "sliders": {

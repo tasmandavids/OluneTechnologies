@@ -94,7 +94,7 @@ export function StaffToday({
                 </p>
               </div>
               <span
-                className="h-2 w-2 shrink-0 rounded-full"
+                className={`h-2 w-2 shrink-0 rounded-full ${live ? "animate-[admin-breathe_2.6s_ease-in-out_infinite]" : ""}`}
                 style={{
                   background: live ? "var(--brand)" : "var(--hair)",
                   boxShadow: live ? "0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent)" : "none",

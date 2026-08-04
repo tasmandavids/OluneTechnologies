@@ -1,14 +1,14 @@
 // ============================================================================
-//  Admin "Appearance" panel state — personal, cosmetic glass-intensity
-//  preferences (tint / glass clarity / blur depth / ambience). Deliberately
-//  does NOT include an accent-colour picker: the studio's brand colour
-//  (--brand) already comes from the studio's branding settings and flows
-//  through the whole portal, not just admin — a second accent control here
-//  would fight it. These sliders instead scale --brand's existing presence
-//  in the glass tokens defined in app/globals.css (.admin-glass).
+//  Admin "Appearance" panel state — personal, cosmetic workspace preferences
+//  (studio tint, glass clarity, blur depth, ambience). `accent` is a
+//  *personal* override of --brand scoped to .admin-glass only — it doesn't
+//  touch the studio's actual branding settings (used on the public site and
+//  the rest of the portal), it just lets this one person re-tint their own
+//  admin workspace. `null` means "use the studio's brand colour as-is".
 // ============================================================================
 
 export type AppearanceState = {
+  accent: string | null; // hex, e.g. "#b9b5ee" — null = inherit studio --brand
   tint: number; // 0–180, %, default 100
   glass: number; // 12–92, %, default 56
   blur: number; // 6–70, px, default 32
@@ -18,11 +18,24 @@ export type AppearanceState = {
 export const APPEARANCE_STORAGE_KEY = "olune.admin.appearance";
 
 export const DEFAULT_APPEARANCE: AppearanceState = {
+  accent: null,
   tint: 100,
   glass: 56,
   blur: 32,
   ambience: 100,
 };
+
+export const ACCENT_SWATCHES = [
+  { name: "Lumen", hex: "#b9b5ee" },
+  { name: "Iris", hex: "#6b66c9" },
+  { name: "Seafoam", hex: "#9fd8c8" },
+  { name: "Apricot", hex: "#f2b788" },
+  { name: "Blush", hex: "#eec4d8" },
+  { name: "Sky", hex: "#bcd8f0" },
+  { name: "Sand", hex: "#e3d6bf" },
+  { name: "Sage", hex: "#c8d6bd" },
+  { name: "Slate", hex: "#b6b8c4" },
+] as const;
 
 const TINT_BASE_PERCENTS = { t1: 13, t2: 22, t3: 34, tb: 46, tg: 62 } as const;
 
@@ -56,6 +69,16 @@ export function applyAppearance(root: HTMLElement, state: AppearanceState) {
   const isDark = (root.closest("[data-base]") as HTMLElement | null)?.dataset.base === "dark";
   const darkTintFactor = isDark ? 0.78 : 1;
   const tintFactor = (state.tint / 100) * darkTintFactor;
+
+  if (state.accent) {
+    root.style.setProperty("--brand", state.accent);
+    root.style.setProperty("--brand-hot", `color-mix(in srgb, white 22%, ${state.accent})`);
+    root.style.setProperty("--brand-deep", `color-mix(in srgb, black 28%, ${state.accent})`);
+  } else {
+    root.style.removeProperty("--brand");
+    root.style.removeProperty("--brand-hot");
+    root.style.removeProperty("--brand-deep");
+  }
 
   for (const [key, basePercent] of Object.entries(TINT_BASE_PERCENTS)) {
     root.style.setProperty(`--${key}`, `color-mix(in srgb, var(--brand) ${clampPct(basePercent * tintFactor)}%, transparent)`);

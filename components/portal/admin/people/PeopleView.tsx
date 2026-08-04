@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
-import { onGlowMove } from "@/components/portal/admin/glass/useMicroInteractions";
+import { onGlowMove, onGlowLeave } from "@/components/portal/admin/glass/useMicroInteractions";
 import type { PeopleStudentRow, PeopleFamilyRow, PeopleLeadRow } from "./types";
 
 type Tab = "students" | "families" | "leads";
@@ -140,11 +140,18 @@ function StudentsTable({
             <button
               type="button"
               onMouseMove={onGlowMove}
+              onMouseLeave={onGlowLeave}
               onClick={() => setOpenId(open ? null : s.id)}
               className="relative grid w-full grid-cols-[26px_2.1fr_1.3fr_92px_108px_28px] items-center gap-3.5 overflow-hidden px-[18px] py-[9px] text-left transition-colors"
               style={{ background: open ? "var(--glass2)" : "transparent" }}
             >
-              <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(260px circle at var(--mx, -300px) var(--my, -300px), var(--t2), transparent 70%)" }} />
+              <div
+                className="pointer-events-none absolute inset-0 transition-opacity duration-[1300ms] ease-out"
+                style={{
+                  opacity: "var(--glow-o, 0)",
+                  background: "radial-gradient(260px circle at var(--mx, -300px) var(--my, -300px), var(--t2), transparent 70%)",
+                }}
+              />
               <span
                 className="relative grid h-[26px] w-[26px] place-items-center rounded-[9px] text-[9.5px] font-bold text-white"
                 style={{ background: "linear-gradient(150deg, var(--tg), var(--brand))" }}

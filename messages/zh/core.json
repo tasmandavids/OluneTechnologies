@@ -100,6 +100,12 @@
     "appearance": {
       "title": "外观",
       "subtitle": "调整工作区中玻璃感与色彩的呈现程度。这只影响你自己看到的效果，不会改变团队看到的内容。",
+      "accent": {
+        "label": "工作室色调",
+        "hint": "仅个人可见——不会改变工作室实际的品牌设置。",
+        "custom": "自定义颜色",
+        "useStudioColor": "使用工作室颜色"
+      },
       "reset": "重置",
       "apply": "应用",
       "sliders": {

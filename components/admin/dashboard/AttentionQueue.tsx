@@ -9,7 +9,7 @@
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { useMemo } from "react";
-import { onGlowMove } from "@/components/portal/admin/glass/useMicroInteractions";
+import { onGlowMove, onGlowLeave } from "@/components/portal/admin/glass/useMicroInteractions";
 import type { AttentionData } from "./types";
 import { IconAlertCircle, IconUserPlus, IconCheckCircle, IconCalendarDays } from "./icons";
 
@@ -108,12 +108,16 @@ export function AttentionQueue({ attention }: { attention: AttentionData }) {
             <div
               key={item.key}
               onMouseMove={onGlowMove}
+              onMouseLeave={onGlowLeave}
               className="relative flex items-start gap-2.5 overflow-hidden rounded-[15px] border bg-surface p-3 transition-shadow duration-300"
               style={{ borderColor: item.warn ? "color-mix(in srgb, #dc2626 30%, var(--hair))" : "var(--hair)" }}
             >
               <div
-                className="pointer-events-none absolute inset-0"
-                style={{ background: "radial-gradient(220px circle at var(--mx, -200px) var(--my, -200px), var(--t3), transparent 72%)" }}
+                className="pointer-events-none absolute inset-0 transition-opacity duration-[1300ms] ease-out"
+                style={{
+                  opacity: "var(--glow-o, 0)",
+                  background: "radial-gradient(220px circle at var(--mx, -200px) var(--my, -200px), var(--t3), transparent 72%)",
+                }}
               />
               <span className="relative mt-0.5 shrink-0">{item.icon}</span>
               <div className="relative min-w-0 flex-1">

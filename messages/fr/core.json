@@ -100,6 +100,12 @@
     "appearance": {
       "title": "Apparence",
       "subtitle": "Réglez la part de verre et de couleur dans l'espace de travail. C'est personnel — cela ne change pas ce que votre équipe voit.",
+      "accent": {
+        "label": "Teinte du studio",
+        "hint": "Personnel — ne change pas l'identité visuelle réelle de votre studio.",
+        "custom": "Couleur personnalisée",
+        "useStudioColor": "Utiliser la couleur du studio"
+      },
       "reset": "Réinitialiser",
       "apply": "Appliquer",
       "sliders": {

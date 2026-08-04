@@ -26,12 +26,20 @@ export function onMagnetLeave(e: MouseEvent<HTMLElement>) {
   e.currentTarget.style.transform = "translate3d(0,0,0)";
 }
 
-/** Drives a radial-gradient spotlight via --mx/--my custom properties. */
+/** Drives a radial-gradient spotlight via --mx/--my/--glow-o custom
+ *  properties. Pair with onGlowLeave — the spotlight (an `opacity: var(--glow-o)`
+ *  overlay with a long `transition: opacity`, see GlassPanel/AttentionQueue/
+ *  PeopleView row markup) fades out gradually instead of snapping off. */
 export function onGlowMove(e: MouseEvent<HTMLElement>) {
   const el = e.currentTarget;
   const rect = el.getBoundingClientRect();
   el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
   el.style.setProperty("--my", `${e.clientY - rect.top}px`);
+  el.style.setProperty("--glow-o", "1");
+}
+
+export function onGlowLeave(e: MouseEvent<HTMLElement>) {
+  e.currentTarget.style.setProperty("--glow-o", "0");
 }
 
 /** Spawns a short-lived expanding circle from the click point. Requires the
