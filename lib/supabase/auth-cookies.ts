@@ -8,6 +8,7 @@ import {
 import type { CookieOptions } from "@supabase/ssr";
 import type { Session } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
+import { withAuthCookieDomain } from "@/lib/auth/cookie-domain";
 
 const BASE64_PREFIX = "base64-";
 
@@ -17,14 +18,27 @@ export function supabaseAuthStorageKey(): string {
   return `sb-${ref}-auth-token`;
 }
 
+/**
+ * Must apply the same `Domain` the cookie was originally set with (see
+ * lib/auth/cookie-domain.ts) — otherwise a clear/rewrite here (Max-Age=0 or a
+ * fresh value) creates a SEPARATE host-only cookie of the same name instead of
+ * touching the original domain-scoped one. The browser then keeps sending the
+ * untouched original on every request: purgeAuthCookies looks like it worked
+ * (a 200/302 with Set-Cookie headers) but the poisoned session cookie survives,
+ * so every subsequent request re-fails the same way — an infinite redirect
+ * loop between /login and the page that required auth. Only reproduces when
+ * NEXT_PUBLIC_ROOT_DOMAIN is set (i.e. whenever the studio-subdomain cookie
+ * sharing this env var exists for is actually configured — prod/ttest, and any
+ * local env that mirrors it).
+ */
 export function authCookieOptions(request: NextRequest, maxAge: number): CookieOptions {
-  return {
+  return withAuthCookieDomain({
     path: "/",
     sameSite: "lax",
     httpOnly: false,
     maxAge,
     ...(request.nextUrl.protocol === "https:" ? { secure: true } : {}),
-  };
+  });
 }
 
 /** Max chunked session cookies @supabase/ssr may write (0 = `.0`). */
