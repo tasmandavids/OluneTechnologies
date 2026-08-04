@@ -2,15 +2,17 @@
 
 // ============================================================================
 //  AppearancePanel — personal workspace tuning: studio tint (accent colour)
-//  plus glass clarity / blur depth / ambience. The accent picker overrides
-//  --brand only within .admin-glass (see lib/portal/admin/appearance.ts) —
-//  it's a personal preference, not a change to the studio's actual branding.
+//  plus glass clarity / blur depth / ambience. The accent picker writes --n
+//  (the ambient glass tint) only within .admin-glass, never --brand (see
+//  lib/portal/admin/appearance.ts) — it's a personal preference, not a
+//  change to the studio's actual branding.
 // ============================================================================
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEscToClose } from "@/lib/useEscToClose";
+import { RippleButton } from "./RippleButton";
 import {
   applyAppearance,
   loadAppearance,
@@ -118,7 +120,7 @@ export function AppearancePanel({
                     className="h-7 w-7 shrink-0 rounded-full transition-transform hover:scale-110"
                     style={{
                       background: s.hex,
-                      boxShadow: state.accent === s.hex ? "0 0 0 2px var(--surface), 0 0 0 3.5px var(--brand)" : "0 0 0 1px var(--hair)",
+                      boxShadow: state.accent === s.hex ? "0 0 0 2px var(--surface), 0 0 0 3.5px var(--n)" : "0 0 0 1px var(--hair)",
                     }}
                   />
                 ))}
@@ -126,8 +128,8 @@ export function AppearancePanel({
                   title={t("accent.custom")}
                   className="relative grid h-7 w-7 shrink-0 cursor-pointer place-items-center rounded-full text-[10px]"
                   style={{
-                    background: "conic-gradient(from 200deg, var(--brand), var(--t2), var(--t3), var(--brand))",
-                    boxShadow: state.accent && !ACCENT_SWATCHES.some((s) => s.hex === state.accent) ? "0 0 0 2px var(--surface), 0 0 0 3.5px var(--brand)" : "0 0 0 1px var(--hair)",
+                    background: "conic-gradient(from 200deg, var(--n), var(--t2), var(--t3), var(--n))",
+                    boxShadow: state.accent && !ACCENT_SWATCHES.some((s) => s.hex === state.accent) ? "0 0 0 2px var(--surface), 0 0 0 3.5px var(--n)" : "0 0 0 1px var(--hair)",
                   }}
                 >
                   <input
@@ -174,22 +176,17 @@ export function AppearancePanel({
             </div>
 
             <div className="mt-6 flex gap-2 border-t pt-4" style={{ borderColor: "var(--hair)" }}>
-              <button
-                type="button"
+              <RippleButton
+                variant="quiet"
                 onClick={reset}
-                className="flex-1 rounded-[10px] border px-3 py-2 text-[12.5px] font-semibold text-ink transition hover:bg-[--glass2]"
-                style={{ borderColor: "var(--ring)" }}
+                className="flex-1 !text-ink"
+                style={{ border: "1px solid var(--ring)" }}
               >
                 {t("reset")}
-              </button>
-              <button
-                type="button"
-                onClick={persist}
-                className="flex-1 rounded-[10px] px-3 py-2 text-[12.5px] font-semibold"
-                style={{ background: "var(--ink, var(--text))", color: "var(--base)" }}
-              >
+              </RippleButton>
+              <RippleButton variant="solid" onClick={persist} className="flex-1">
                 {t("apply")}
-              </button>
+              </RippleButton>
             </div>
           </motion.div>
         </>

@@ -119,16 +119,21 @@ body {
   --glass2: rgba(255, 255, 255, 0.32);
   --edge: rgba(255, 255, 255, 0.78);
   --ring: rgba(20, 19, 26, 0.13);
-  --t1: color-mix(in srgb, var(--brand) 13%, transparent);
-  --t2: color-mix(in srgb, var(--brand) 22%, transparent);
-  --t3: color-mix(in srgb, var(--brand) 34%, transparent);
-  --tb: color-mix(in srgb, var(--brand) 46%, transparent);
-  --tg: color-mix(in srgb, var(--brand) 62%, transparent);
-  /* Ambient background blob hues — deliberately NOT brand-derived, matching
-     the source design's fixed lavender/seafoam/apricot palette. This is what
-     gives the workspace its "alive" background glow independent of whatever
-     accent the tint slider or studio branding is set to. */
-  --a1: rgba(166, 162, 232, 0.34);
+  /* Studio tint — Aurora Glass V2. --n is the ambient glow colour (default
+     Lumen), deliberately independent of --brand: --brand keeps driving
+     buttons/links/type (needs text contrast), --n needs a lighter base so
+     glass reads correctly even when a studio's real brand colour is dark or
+     saturated. The Appearance panel's swatch picker writes --n only. */
+  --n: #b9b5ee;
+  --t1: color-mix(in srgb, var(--n) 13%, transparent);
+  --t2: color-mix(in srgb, var(--n) 22%, transparent);
+  --t3: color-mix(in srgb, var(--n) 34%, transparent);
+  --tb: color-mix(in srgb, var(--n) 46%, transparent);
+  --tg: color-mix(in srgb, var(--n) 62%, transparent);
+  /* Ambient background blob hues. a1 follows the studio tint (--n); a2/a3
+     are deliberately fixed seafoam/apricot, matching the source design's
+     ambience palette, so the background stays "alive" independent of tint. */
+  --a1: color-mix(in srgb, var(--n) 34%, transparent);
   --a2: rgba(159, 216, 200, 0.3);
   --a3: rgba(242, 183, 136, 0.22);
   --blur: 32px;
@@ -145,11 +150,11 @@ html[data-base="dark"] .admin-glass {
   --glass2: rgba(255, 255, 255, 0.03);
   --edge: rgba(255, 255, 255, 0.12);
   --ring: rgba(255, 255, 255, 0.17);
-  --t1: color-mix(in srgb, var(--brand) 10%, transparent);
-  --t2: color-mix(in srgb, var(--brand) 17%, transparent);
-  --t3: color-mix(in srgb, var(--brand) 26%, transparent);
-  --tb: color-mix(in srgb, var(--brand) 36%, transparent);
-  --tg: color-mix(in srgb, var(--brand) 50%, transparent);
+  --t1: color-mix(in srgb, var(--n) 10%, transparent);
+  --t2: color-mix(in srgb, var(--n) 17%, transparent);
+  --t3: color-mix(in srgb, var(--n) 26%, transparent);
+  --tb: color-mix(in srgb, var(--n) 36%, transparent);
+  --tg: color-mix(in srgb, var(--n) 50%, transparent);
   --a1: rgba(140, 132, 255, 0.4);
   --a2: rgba(110, 200, 190, 0.3);
   --a3: rgba(242, 183, 136, 0.18);

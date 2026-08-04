@@ -8,7 +8,7 @@
 // ============================================================================
 
 export type AppearanceState = {
-  accent: string | null; // hex, e.g. "#b9b5ee" — null = inherit studio --brand
+  accent: string | null; // hex, e.g. "#b9b5ee" — the ambient tint (--n). null = default Lumen
   tint: number; // 0–180, %, default 100
   glass: number; // 12–92, %, default 56
   blur: number; // 6–70, px, default 32
@@ -30,6 +30,7 @@ export const ACCENT_SWATCHES = [
   { name: "Iris", hex: "#6b66c9" },
   { name: "Seafoam", hex: "#9fd8c8" },
   { name: "Apricot", hex: "#f2b788" },
+  { name: "Mist", hex: "#e7e5f1" },
   { name: "Blush", hex: "#eec4d8" },
   { name: "Sky", hex: "#bcd8f0" },
   { name: "Sand", hex: "#e3d6bf" },
@@ -70,19 +71,17 @@ export function applyAppearance(root: HTMLElement, state: AppearanceState) {
   const darkTintFactor = isDark ? 0.78 : 1;
   const tintFactor = (state.tint / 100) * darkTintFactor;
 
-  if (state.accent) {
-    root.style.setProperty("--brand", state.accent);
-    root.style.setProperty("--brand-hot", `color-mix(in srgb, white 22%, ${state.accent})`);
-    root.style.setProperty("--brand-deep", `color-mix(in srgb, black 28%, ${state.accent})`);
-  } else {
-    root.style.removeProperty("--brand");
-    root.style.removeProperty("--brand-hot");
-    root.style.removeProperty("--brand-deep");
-  }
+  // --n is the ambient glass tint, independent of --brand (which stays the
+  // studio's real, text-contrast colour for buttons/links/type). null means
+  // "default Lumen", matching the design system's --n default.
+  root.style.setProperty("--n", state.accent ?? "#b9b5ee");
 
   for (const [key, basePercent] of Object.entries(TINT_BASE_PERCENTS)) {
-    root.style.setProperty(`--${key}`, `color-mix(in srgb, var(--brand) ${clampPct(basePercent * tintFactor)}%, transparent)`);
+    root.style.setProperty(`--${key}`, `color-mix(in srgb, var(--n) ${clampPct(basePercent * tintFactor)}%, transparent)`);
   }
+  // a1 (the first ambience orb) follows the studio tint too — a2/a3 stay the
+  // fixed seafoam/apricot ambience colours set in app/globals.css.
+  root.style.setProperty("--a1", `color-mix(in srgb, var(--n) ${clampPct(TINT_BASE_PERCENTS.t3 * tintFactor)}%, transparent)`);
 
   const glassFactor = (state.glass / 100) * (isDark ? 0.14 : 1);
   root.style.setProperty("--glass", `rgba(255, 255, 255, ${Math.max(0, glassFactor).toFixed(3)})`);

@@ -11,7 +11,8 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { NotificationBell } from "@/components/admin/notifications/NotificationBell";
-import { onMagnetMove, onMagnetLeave, onRipple } from "./useMicroInteractions";
+import { onMagnetMove, onMagnetLeave } from "./useMicroInteractions";
+import { RippleButton } from "./RippleButton";
 import { IconSearch, IconPlus, IconCalendarPlus, IconReceipt, IconMegaphone, IconUserPlus } from "@/components/admin/dashboard/icons";
 
 const NEW_MENU_ITEMS = [
@@ -80,19 +81,10 @@ export function StudioTopBar({ studioName, onOpenPalette }: { studioName: string
         <NotificationBell />
         <div className="h-5 w-px" style={{ background: "var(--hair)" }} />
         <div className="relative" ref={newRef}>
-          <button
-            type="button"
-            onClick={(e) => {
-              onRipple(e);
-              setNewOpen((o) => !o);
-            }}
-            className="relative flex items-center gap-1.5 overflow-hidden rounded-[10px] px-3.5 py-2 text-[12.5px] font-semibold transition-transform hover:-translate-y-px active:translate-y-0 active:scale-[.97]"
-            style={{ background: "var(--ink, var(--text))", color: "var(--base)" }}
-          >
-            <span className="pointer-events-none absolute inset-0 -translate-x-[130%] bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)] animate-[admin-sweep_4.6s_ease-in-out_infinite]" />
+          <RippleButton variant="solid" sweep onClick={() => setNewOpen((o) => !o)} className="!gap-1.5">
             <IconPlus className="h-4 w-4" />
             {tShell("palette.new")}
-          </button>
+          </RippleButton>
           <AnimatePresence>
             {newOpen && (
               <motion.div
