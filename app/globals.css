@@ -103,6 +103,118 @@ body {
   100% { background-position: 200% 50%; }
 }
 
+/* ============================================================================
+   Admin "glass" shell tokens — scoped to .admin-glass (the admin portal shell
+   root), never :root, so this never bleeds into marketing pages, tenant
+   studio sites, or the teacher/parent/student portals. Reuses the existing
+   tenant tokens (--brand/--base/--surface/--text/--muted/--hair) as the
+   source of truth; only adds the glass-specific surface tokens the design
+   needs. --t1..--tg/--glass/--glass2/--blur/--blur-lg/--amb are recomputed
+   at runtime by the Appearance panel (lib/portal/admin/appearance.ts) from
+   its tint/glass/blur/ambience sliders — the values below are just the
+   zero-flash SSR defaults (tint 100%, glass 56%, blur 32px, ambience 100%).
+   ============================================================================ */
+.admin-glass {
+  --glass: rgba(255, 255, 255, 0.56);
+  --glass2: rgba(255, 255, 255, 0.32);
+  --edge: rgba(255, 255, 255, 0.78);
+  --ring: rgba(20, 19, 26, 0.13);
+  --t1: color-mix(in srgb, var(--brand) 13%, transparent);
+  --t2: color-mix(in srgb, var(--brand) 22%, transparent);
+  --t3: color-mix(in srgb, var(--brand) 34%, transparent);
+  --tb: color-mix(in srgb, var(--brand) 46%, transparent);
+  --tg: color-mix(in srgb, var(--brand) 62%, transparent);
+  --blur: 32px;
+  --blur-lg: 46px;
+  --sheen: rgba(255, 255, 255, 0.85);
+  --sheen2: rgba(255, 255, 255, 0.35);
+  --refract: rgba(255, 255, 255, 0.5);
+  --shadow: 0 26px 64px -30px rgba(24, 22, 40, 0.34);
+  --shadow-s: 0 12px 34px -20px rgba(24, 22, 40, 0.26);
+  --amb: 1;
+}
+html[data-base="dark"] .admin-glass {
+  --glass: rgba(255, 255, 255, 0.055);
+  --glass2: rgba(255, 255, 255, 0.03);
+  --edge: rgba(255, 255, 255, 0.12);
+  --ring: rgba(255, 255, 255, 0.17);
+  --t1: color-mix(in srgb, var(--brand) 10%, transparent);
+  --t2: color-mix(in srgb, var(--brand) 17%, transparent);
+  --t3: color-mix(in srgb, var(--brand) 26%, transparent);
+  --tb: color-mix(in srgb, var(--brand) 36%, transparent);
+  --tg: color-mix(in srgb, var(--brand) 50%, transparent);
+  --sheen: rgba(255, 255, 255, 0.3);
+  --sheen2: rgba(255, 255, 255, 0.06);
+  --refract: rgba(255, 255, 255, 0.07);
+  --shadow: 0 32px 74px -32px rgba(0, 0, 0, 0.85);
+  --shadow-s: 0 16px 38px -22px rgba(0, 0, 0, 0.75);
+}
+
+@keyframes admin-drift1 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(9vw, 5vh, 0) scale(1.14); }
+  66% { transform: translate3d(-5vw, 9vh, 0) scale(0.92); }
+}
+@keyframes admin-drift2 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+  50% { transform: translate3d(-11vw, -7vh, 0) scale(0.9); }
+}
+@keyframes admin-drift3 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(0.95); }
+  40% { transform: translate3d(7vw, -9vh, 0) scale(1.2); }
+  75% { transform: translate3d(-8vw, 3vh, 0) scale(1); }
+}
+@keyframes admin-rip {
+  from { transform: scale(0); opacity: 0.55; }
+  to { transform: scale(2.8); opacity: 0; }
+}
+@keyframes admin-rise {
+  from { opacity: 0; translate: 0 12px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes admin-lift {
+  from { opacity: 0; transform: translateY(16px) scale(0.988); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes admin-sheet {
+  from { opacity: 0; transform: translateY(24px) scale(0.965); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes admin-draw {
+  from { stroke-dashoffset: 1400; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes admin-fill {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes admin-grow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes admin-breathe {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.35); }
+}
+@keyframes admin-sweep {
+  0% { transform: translateX(-120%) skewX(-18deg); }
+  100% { transform: translateX(320%) skewX(-18deg); }
+}
+@keyframes admin-halo {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-glass *,
+  .admin-glass *::before,
+  .admin-glass *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-\[bobY_7s_ease-in-out_infinite\],
   [class*="animate-[twinkle"],

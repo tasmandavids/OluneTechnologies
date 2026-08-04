@@ -3,12 +3,17 @@
 //  Fetches live stats + weekly schedule (capacity + timetable) for this studio.
 // ============================================================================
 
-import { getTranslations } from "@/lib/i18n/server";
 import { getPortalSession } from "@/lib/portal/session";
-import { type StatData, type ScheduleClass, type AttentionData } from "@/components/admin/dashboard/types";
-import type { ActivityItem } from "@/components/admin/dashboard/MoneyPanel";
+import {
+  type ScheduleClass,
+  type AttentionData,
+  type PulseStat,
+  type CashInDay,
+} from "@/components/admin/dashboard/types";
 import type { TeacherOption } from "@/app/portal/admin/classes/page";
 import { AdminDashboard } from "@/components/admin/dashboard/AdminDashboard";
+
+const DOW_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export const dynamic = "force-dynamic";
 
@@ -16,24 +21,20 @@ export default async function AdminDashboardPage() {
   const session = await getPortalSession();
   if (!session) throw new Error("Not signed in");
 
-  const tCommon = await getTranslations("common");
-
   const { supabase, studioId } = session;
 
   const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-  const startOfLastMonth = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString();
   const todayDow = new Date().getDay();
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
   const [
     studentsRes,
     paidRes,
-    todayRes,
     capacityRes,
     teachersRes,
     overdueRes,
     leadsRes,
-    lastMonthPaidRes,
-    recentPaidRes,
+    cashInRes,
   ] = await Promise.all([
       supabase
         .from("profiles")
@@ -47,12 +48,6 @@ export default async function AdminDashboardPage() {
         .eq("studio_id", studioId)
         .eq("status", "paid")
         .gte("created_at", startOfMonth),
-
-      supabase
-        .from("classes")
-        .select("id", { count: "exact", head: true })
-        .eq("studio_id", studioId)
-        .eq("day_of_week", todayDow),
 
       supabase
         .from("class_capacity")
@@ -83,30 +78,12 @@ export default async function AdminDashboardPage() {
         .order("created_at", { ascending: true }),
 
       supabase
-        .from("invoices")
-        .select("amount_cents")
+        .from("payments")
+        .select("amount_cents, created_at")
         .eq("studio_id", studioId)
-        .eq("status", "paid")
-        .gte("created_at", startOfLastMonth)
-        .lt("created_at", startOfMonth),
-
-      supabase
-        .from("invoices")
-        .select("id, invoice_number, payer_id, created_at")
-        .eq("studio_id", studioId)
-        .eq("status", "paid")
-        .order("created_at", { ascending: false })
-        .limit(5),
+        .eq("status", "succeeded")
+        .gte("created_at", sevenDaysAgo),
     ]);
-
-  const revenue =
-    (paidRes.data ?? []).reduce((sum, r) => sum + (r.amount_cents ?? 0), 0) / 100;
-
-  const stats: StatData[] = [
-    { id: "students", value: studentsRes.count ?? 0, format: "number" },
-    { id: "revenue", value: revenue, format: "currency" },
-    { id: "today", value: todayRes.count ?? 0, format: "number" },
-  ];
 
   const classRows = capacityRes.data ?? [];
   const classIds = classRows.map((r) => r.id as string);
@@ -176,6 +153,48 @@ export default async function AdminDashboardPage() {
     email: t.email,
   }));
 
+  // Two cheap, real "needs you" checks derived from this week's schedule —
+  // no new query, just a pass over scheduleClasses already fetched above.
+  const unassigned = scheduleClasses
+    .filter((c) => !c.teacherId && c.dayOfWeek !== null)
+    .sort((a, b) => (a.dayOfWeek! - b.dayOfWeek!) || (a.startTime ?? "").localeCompare(b.startTime ?? ""));
+  const unassignedNext = unassigned[0];
+  const unassignedNextLabel = unassignedNext
+    ? `${unassignedNext.name} · ${DOW_LABELS[unassignedNext.dayOfWeek!]}${unassignedNext.startTime ? " " + unassignedNext.startTime : ""}`
+    : null;
+
+  const byRoomDay = new Map<string, ScheduleClass[]>();
+  for (const c of scheduleClasses) {
+    if (!c.room || c.dayOfWeek === null || !c.startTime) continue;
+    const key = `${c.dayOfWeek}:${c.room}`;
+    (byRoomDay.get(key) ?? byRoomDay.set(key, []).get(key)!).push(c);
+  }
+  const toMinutes = (t: string) => {
+    const [h, m] = t.split(":").map(Number);
+    return h * 60 + m;
+  };
+  let conflictCount = 0;
+  let conflictLabel: string | null = null;
+  for (const [key, group] of byRoomDay) {
+    const sorted = [...group].sort((a, b) => toMinutes(a.startTime!) - toMinutes(b.startTime!));
+    for (let i = 0; i < sorted.length - 1; i++) {
+      const a = sorted[i];
+      const b = sorted[i + 1];
+      const aEnd = toMinutes(a.startTime!) + a.durationMin;
+      if (toMinutes(b.startTime!) < aEnd) {
+        conflictCount++;
+        if (!conflictLabel) {
+          const [dow, room] = key.split(":");
+          conflictLabel = `${room} · ${DOW_LABELS[Number(dow)]} — ${a.name} vs ${b.name}`;
+        }
+      }
+    }
+  }
+
+  const totalEnrolled = scheduleClasses.reduce((s, c) => s + c.enrolled, 0);
+  const totalCapacity = scheduleClasses.reduce((s, c) => s + c.capacity, 0);
+  const occupancyPercent = totalCapacity > 0 ? Math.round((totalEnrolled / totalCapacity) * 100) : 0;
+
   const overdueRows = overdueRes.data ?? [];
   const overdueDueDates = overdueRows
     .map((r) => (r.due_date ? new Date(r.due_date as string).getTime() : null))
@@ -196,57 +215,46 @@ export default async function AdminDashboardPage() {
     leadsOldestDays: leadsRows.length
       ? Math.max(0, Math.floor((now - new Date(leadsRows[0].created_at as string).getTime()) / oneDayMs))
       : 0,
+    unassignedCount: unassigned.length,
+    unassignedNextLabel,
+    conflictCount,
+    conflictLabel,
   };
 
-  const lastMonthRevenueCents = (lastMonthPaidRes.data ?? []).reduce(
-    (sum, r) => sum + (r.amount_cents ?? 0),
-    0,
-  );
+  const paidCentsThisMonth = (paidRes.data ?? []).reduce((sum, r) => sum + (r.amount_cents ?? 0), 0);
+  const collectedDenomCents = paidCentsThisMonth + attention.overdueAmountCents;
+  const collectedPercent = collectedDenomCents > 0 ? Math.round((paidCentsThisMonth / collectedDenomCents) * 100) : 100;
 
-  const recentPaidRows = recentPaidRes.data ?? [];
-  const payerIds = [...new Set(recentPaidRows.map((r) => r.payer_id).filter(Boolean) as string[])];
-  const payerMap = new Map<string, string>();
-  if (payerIds.length) {
-    const { data: payerRows } = await supabase
-      .from("profiles")
-      .select("id, full_name")
-      .in("id", payerIds);
-    (payerRows ?? []).forEach((p) => {
-      if (p.full_name) payerMap.set(p.id, p.full_name);
-    });
+  const pulse: PulseStat[] = [
+    { id: "occupancy", value: occupancyPercent, format: "percent" },
+    { id: "enrolled", value: studentsRes.count ?? 0, format: "number" },
+    { id: "collected", value: collectedPercent, format: "percent" },
+  ];
+
+  const cashInRows = cashInRes.data ?? [];
+  const cashInTotalCents = cashInRows.reduce((sum, r) => sum + (r.amount_cents ?? 0), 0);
+  const dayBuckets = new Map<string, number>();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dayBuckets.set(d.toISOString().slice(0, 10), 0);
   }
-
-  const paymentActivity: ActivityItem[] = recentPaidRows.map((r) => ({
-    id: `payment-${r.id}`,
-    kind: "payment",
-    name: payerMap.get(r.payer_id as string) ?? tCommon("unknown"),
-    invoiceNumber: (r.invoice_number as number | null) ?? null,
-    createdAt: r.created_at as string,
-  }));
-
-  const leadActivity: ActivityItem[] = [...leadsRows]
-    .reverse()
-    .slice(0, 5)
-    .map((l) => ({
-      id: `lead-${l.id}`,
-      kind: "lead",
-      name: [l.first_name, l.last_name].filter(Boolean).join(" ") || tCommon("unknown"),
-      createdAt: l.created_at as string,
-    }));
-
-  const activity: ActivityItem[] = [...paymentActivity, ...leadActivity]
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 5);
+  for (const row of cashInRows) {
+    const key = (row.created_at as string).slice(0, 10);
+    if (dayBuckets.has(key)) dayBuckets.set(key, (dayBuckets.get(key) ?? 0) + (row.amount_cents ?? 0));
+  }
+  const cashInDays: CashInDay[] = [...dayBuckets.entries()].map(([date, amountCents]) => ({ date, amountCents }));
 
   return (
     <AdminDashboard
-      stats={stats}
       scheduleClasses={scheduleClasses}
       teachers={teachers}
       todayDow={todayDow}
       attention={attention}
-      lastMonthRevenueCents={lastMonthRevenueCents}
-      activity={activity}
+      pulse={pulse}
+      cashInTotalCents={cashInTotalCents}
+      cashInPaymentCount={cashInRows.length}
+      cashInDays={cashInDays}
     />
   );
 }

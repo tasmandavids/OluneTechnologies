@@ -86,12 +86,40 @@
       "inbox": "Boîte de réception",
       "studio": "Studio",
       "settings": "Paramètres",
-      "account": "Compte"
+      "account": "Compte",
+      "appearance": "Apparence",
+      "toggleTheme": "Clair ou sombre",
+      "workspace": "Espace de travail",
+      "everythingByTyping": "Tout est accessible en tapant."
     },
     "palette": {
       "placeholder": "Rechercher n'importe quoi…",
       "empty": "Aucun résultat",
       "new": "Nouveau"
+    },
+    "appearance": {
+      "title": "Apparence",
+      "subtitle": "Réglez la part de verre et de couleur dans l'espace de travail. C'est personnel — cela ne change pas ce que votre équipe voit.",
+      "reset": "Réinitialiser",
+      "apply": "Appliquer",
+      "sliders": {
+        "tint": {
+          "label": "Intensité de la teinte",
+          "hint": "La part de la couleur de votre studio qui imprègne les surfaces."
+        },
+        "glass": {
+          "label": "Clarté du verre",
+          "hint": "Givré et opaque, ou presque invisible."
+        },
+        "blur": {
+          "label": "Profondeur du flou",
+          "hint": "À quel point les panneaux diffusent ce qui se trouve derrière eux."
+        },
+        "ambience": {
+          "label": "Ambiance",
+          "hint": "Lumière flottante derrière l'espace de travail."
+        }
+      }
     }
   },
   "nav": {
@@ -108,6 +136,7 @@
       "classes": "Cours",
       "events": "Événements",
       "staff": "Personnel",
+      "people": "Personnes",
       "parents": "Parents",
       "students": "Élèves",
       "leads": "Prospects",

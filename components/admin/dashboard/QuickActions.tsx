@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { onMagnetMove, onMagnetLeave } from "@/components/portal/admin/glass/useMicroInteractions";
 import { IconCalendarPlus, IconReceipt, IconMegaphone, IconUserPlus, IconQrCode } from "./icons";
 
 const ACTIONS = [
@@ -28,7 +29,9 @@ export function QuickActions() {
           <Link
             key={key}
             href={href}
-            className="flex items-center gap-2 rounded-xl border border-[--hair] bg-surface px-3 py-2.5 text-[13px] font-medium text-ink transition-all hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--brand)_8%,var(--surface))]"
+            onMouseMove={onMagnetMove}
+            onMouseLeave={onMagnetLeave}
+            className="flex items-center gap-2 rounded-xl border border-[--hair] bg-surface px-3 py-2.5 text-[13px] font-medium text-ink transition-transform duration-300 hover:bg-[color-mix(in_srgb,var(--brand)_8%,var(--surface))]"
           >
             <Icon className="h-4 w-4 shrink-0" style={{ color: "var(--brand-deep)" }} />
             {t(key)}

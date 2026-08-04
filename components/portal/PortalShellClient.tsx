@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { signOut } from "@/app/portal/actions";
 import type { Role } from "@/lib/types";
@@ -16,109 +16,10 @@ import { ThemeSwitcher } from "@/components/portal/ThemeSwitcher";
 import { PortalThemeSync } from "@/components/portal/PortalThemeSync";
 import type { ThemeBase } from "@/lib/types";
 import { NotificationBell } from "@/components/admin/notifications/NotificationBell";
-import { AdminRail } from "@/components/portal/admin/AdminRail";
+import { StudioRail } from "@/components/portal/admin/glass/StudioRail";
+import { StudioTopBar } from "@/components/portal/admin/glass/StudioTopBar";
+import { AmbientBackground } from "@/components/portal/admin/glass/AmbientBackground";
 import { CommandPalette } from "@/components/portal/admin/CommandPalette";
-import { IconSearch, IconPlus, IconCalendarPlus, IconReceipt, IconMegaphone, IconUserPlus } from "@/components/admin/dashboard/icons";
-
-const NEW_MENU_ITEMS = [
-  { key: "addClass", href: "/portal/admin/classes", icon: IconCalendarPlus },
-  { key: "newInvoice", href: "/portal/admin/money?tab=invoices", icon: IconReceipt },
-  { key: "message", href: "/portal/admin/messages", icon: IconMegaphone },
-  { key: "addLead", href: "/portal/admin/leads", icon: IconUserPlus },
-] as const;
-
-function AdminTopBar({ studioName, onOpenPalette }: { studioName: string; onOpenPalette: () => void }) {
-  const t = useTranslations();
-  const tShell = useTranslations("shell");
-  const tGreeting = useTranslations("common.greeting");
-  const locale = useLocale();
-  const [newOpen, setNewOpen] = useState(false);
-  const newRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (newOpen && newRef.current && !newRef.current.contains(e.target as Node)) setNewOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [newOpen]);
-
-  const greeting = (() => {
-    const h = new Date().getHours();
-    return h < 12 ? tGreeting("morning") : h < 18 ? tGreeting("afternoon") : tGreeting("evening");
-  })();
-
-  return (
-    <div className="flex items-center gap-5 border-b border-[--hair] bg-surface px-7 pb-3.5 pt-5">
-      <div className="shrink-0">
-        <p className="font-display text-[26px] font-medium leading-tight tracking-tight text-ink">
-          {greeting}, {studioName}
-        </p>
-        <p className="mt-0.5 text-[12.5px] text-muted">
-          {new Date().toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
-        </p>
-      </div>
-      <button
-        type="button"
-        onClick={onOpenPalette}
-        className="ml-auto flex max-w-[460px] flex-1 items-center gap-2.5 rounded-xl border border-[--hair] px-3 py-[9px] text-[13px] text-muted backdrop-blur-[10px] transition-colors hover:border-[color-mix(in_srgb,var(--brand)_35%,var(--hair))]"
-        style={{
-          background: "color-mix(in srgb, 72% var(--surface), transparent)",
-          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25)",
-        }}
-      >
-        <IconSearch className="h-4 w-4 shrink-0" />
-        <span className="flex-1 truncate text-left">{tShell("palette.placeholder")}</span>
-        <kbd className="rounded-md border border-[--hair] px-1.5 py-0.5 text-[11px]">⌘K</kbd>
-      </button>
-      <div className="relative" ref={newRef}>
-        <button
-          type="button"
-          onClick={() => setNewOpen((o) => !o)}
-          className="group relative flex items-center gap-1.5 overflow-hidden rounded-xl px-4 py-[10px] text-[13.5px] font-semibold text-white transition-transform hover:-translate-y-px active:translate-y-0 active:scale-[.97]"
-          style={{
-            background: "linear-gradient(180deg, color-mix(in srgb, 24% #fff, var(--brand)), var(--brand))",
-            border: "1px solid color-mix(in srgb, 40% #fff, var(--brand))",
-            boxShadow:
-              "inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 1px rgba(0,0,0,0.08), 0 10px 22px -10px color-mix(in srgb, 55% var(--brand-deep), transparent)",
-          }}
-        >
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-0 -translate-x-[130%] bg-[linear-gradient(115deg,transparent_30%,rgba(255,255,255,0.55)_48%,transparent_66%)] transition-transform duration-700 ease-out group-hover:translate-x-[130%]"
-          />
-          <IconPlus className="h-4 w-4" />
-          {tShell("palette.new")}
-        </button>
-        <AnimatePresence>
-          {newOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: 6, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 6, scale: 0.98 }}
-              transition={{ duration: 0.15 }}
-              className="absolute right-0 top-full z-40 mt-1.5 w-48 rounded-xl border border-[--hair] bg-surface p-1.5 shadow-2xl"
-            >
-              {NEW_MENU_ITEMS.map(({ key, href, icon: Icon }) => (
-                <Link
-                  key={key}
-                  href={href}
-                  prefetch={false}
-                  onClick={() => setNewOpen(false)}
-                  className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-ink transition-colors hover:bg-base"
-                >
-                  <Icon className="h-4 w-4" style={{ color: "var(--brand-deep)" }} />
-                  {t(`admin.dashboard.quickActions.${key}` as Parameters<typeof t>[0])}
-                </Link>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-      <NotificationBell />
-    </div>
-  );
-}
 
 function StudioAvatar({
   studioName,
@@ -469,10 +370,11 @@ export function PortalShellClient({
   const sidebarOpen = !collapsed || hoverPeek;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-base">
+    <div className={`flex h-screen overflow-hidden bg-base ${isAdminRail ? "admin-glass" : ""}`}>
       <PortalThemeSync theme={portalTheme} />
+      {isAdminRail && <AmbientBackground />}
       {isAdminRail ? (
-        <AdminRail studioName={studioName} userName={userName} portalTheme={portalTheme} nav={adminNav} />
+        <StudioRail studioName={studioName} userName={userName} portalTheme={portalTheme} nav={adminNav} />
       ) : (
       <div
         className="relative hidden shrink-0 md:block"
@@ -562,10 +464,10 @@ export function PortalShellClient({
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className={`flex flex-1 flex-col overflow-hidden ${isAdminRail ? "md:pl-[98px]" : ""}`}>
         {isAdminRail ? (
-          <div className="hidden md:block">
-            <AdminTopBar studioName={studioName} onOpenPalette={() => setPaletteOpen(true)} />
+          <div className="hidden px-[26px] md:block">
+            <StudioTopBar studioName={studioName} onOpenPalette={() => setPaletteOpen(true)} />
           </div>
         ) : (
           showBell && (
@@ -575,7 +477,13 @@ export function PortalShellClient({
             </div>
           )
         )}
-        <main className={`flex-1 overflow-auto ${showBell && !isAdminRail ? "" : "md:pt-0 pt-[53px]"}`}>{children}</main>
+        <main
+          className={`flex-1 overflow-auto ${isAdminRail ? "px-[18px] pb-[70px] md:px-[26px]" : ""} ${
+            showBell && !isAdminRail ? "" : "md:pt-0 pt-[53px]"
+          }`}
+        >
+          {children}
+        </main>
       </div>
       {isAdminRail && (
         <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} nav={adminNav} />

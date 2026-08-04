@@ -63,7 +63,8 @@ export function CommandPalette({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.12 }}
-          className="fixed inset-0 z-[100] flex items-start justify-center bg-[color-mix(in_srgb,var(--text)_35%,transparent)] pt-[14vh]"
+          className="fixed inset-0 z-[100] flex items-start justify-center pt-[14vh] backdrop-blur-[8px]"
+          style={{ background: "color-mix(in srgb, var(--text) 25%, transparent)" }}
           onClick={onClose}
         >
           <motion.div
@@ -72,9 +73,16 @@ export function CommandPalette({
             exit={{ opacity: 0, y: -8, scale: 0.98 }}
             transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg overflow-hidden rounded-2xl border border-[--hair] bg-surface shadow-2xl"
+            className="w-full max-w-lg overflow-hidden rounded-2xl border"
+            style={{
+              background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass)",
+              borderColor: "var(--edge)",
+              backdropFilter: "blur(var(--blur-lg)) saturate(1.9)",
+              WebkitBackdropFilter: "blur(var(--blur-lg)) saturate(1.9)",
+              boxShadow: "var(--shadow), inset 0 1px 0 var(--sheen), inset 0 -1px 0 var(--sheen2)",
+            }}
           >
-            <div className="flex items-center gap-2.5 border-b border-[--hair] px-4 py-3">
+            <div className="flex items-center gap-2.5 border-b px-4 py-3" style={{ borderColor: "var(--hair)" }}>
               <IconSearch className="h-[18px] w-[18px] shrink-0 text-muted" />
               <input
                 ref={inputRef}
@@ -90,7 +98,7 @@ export function CommandPalette({
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
-                className="grid h-6 w-6 shrink-0 place-items-center rounded-md text-muted transition hover:bg-base hover:text-ink"
+                className="grid h-6 w-6 shrink-0 place-items-center rounded-md text-muted transition hover:bg-[--glass2] hover:text-ink"
               >
                 <IconX className="h-3.5 w-3.5" />
               </button>
@@ -104,7 +112,7 @@ export function CommandPalette({
                     key={item.href}
                     type="button"
                     onClick={() => go(item.href)}
-                    className="flex w-full items-center rounded-lg px-3 py-2.5 text-left text-sm font-medium text-ink transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_8%,transparent)]"
+                    className="flex w-full items-center rounded-lg px-3 py-2.5 text-left text-sm font-medium text-ink transition-colors hover:bg-[--t2]"
                   >
                     {label}
                   </button>

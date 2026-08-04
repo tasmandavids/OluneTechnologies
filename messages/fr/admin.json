@@ -170,13 +170,17 @@
       }
     },
     "dashboard": {
-      "stats": {
-        "activeStudents": "Étudiants actifs",
-        "activeStudentsHint": "inscrit ce trimestre",
-        "revenueThisMonth": "Revenus ce mois-ci",
-        "revenueHint": "NZD, factures payées",
-        "classesToday": "Cours aujourd'hui",
-        "classesTodayHint": "dans vos studios"
+      "header": {
+        "subhead": "{count, plural, =0 {Rien ne nécessite votre attention pour l'instant — tout tourne tout seul.} one {Une chose a besoin de vous aujourd'hui. Le reste tourne tout seul.} other {# choses ont besoin de vous aujourd'hui. Le reste tourne tout seul.}}"
+      },
+      "pulse": {
+        "occupancy": { "label": "Occupation" },
+        "enrolled": { "label": "Inscrits" },
+        "collected": { "label": "Encaissé" }
+      },
+      "cashIn": {
+        "title": "Encaissé, 7 jours",
+        "fromPayments": "sur {count, plural, one {# paiement} other {# paiements}}"
       },
       "attention": {
         "title": "Nécessite votre attention",
@@ -187,7 +191,11 @@
         "overdueAction": "Relancer",
         "leadsTitle": "{count, plural, one {# nouvelle demande} other {# nouvelles demandes}}",
         "leadsSubtitle": "La plus ancienne depuis {days, plural, =0 {aujourd'hui} one {# jour} other {# jours}}",
-        "leadsAction": "Voir"
+        "leadsAction": "Voir",
+        "unassignedTitle": "{count, plural, one {# cours sans professeur} other {# cours sans professeur}}",
+        "unassignedAction": "Assigner",
+        "conflictTitle": "{count, plural, one {# double réservation de salle} other {# doubles réservations de salle}}",
+        "conflictAction": "Résoudre"
       },
       "quickActions": {
         "title": "Actions rapides",
@@ -215,19 +223,6 @@
           "live": "En cours"
         }
       },
-      "money": {
-        "title": "Ce mois-ci",
-        "collected": "Encaissé",
-        "trendUp": "+{percent}% par rapport au mois dernier",
-        "trendDown": "{percent}% par rapport au mois dernier",
-        "trendFlat": "Comme le mois dernier",
-        "activeStudents": "élèves actifs",
-        "classesToday": "cours aujourd'hui",
-        "activityTitle": "Activité récente",
-        "activityEmpty": "Aucune activité récente.",
-        "activityPaid": "{name} a payé la facture n°{number}",
-        "activityLead": "Nouvelle demande de {name}"
-      },
       "capacity": {
         "title": "Capacité de classe",
         "subtitle": "Cette semaine, par plage horaire du studio.",
@@ -248,6 +243,59 @@
           "slot1830": "18h30",
           "slot1930": "19h30"
         }
+      }
+    },
+    "people": {
+      "eyebrow": "Personnes · {count, plural, one {# fiche} other {# fiches}}",
+      "title": "Une seule base, aucune porte.",
+      "tabs": { "students": "Élèves", "families": "Familles", "leads": "Prospects" },
+      "columns": { "name": "Nom", "programme": "Programme", "attendance": "Présence", "balance": "Solde" },
+      "unnamed": "Sans nom",
+      "noProgramme": "Non inscrit",
+      "noAttendance": "Non suivi",
+      "flag": { "overdue": "En retard", "new": "Nouveau" },
+      "empty": {
+        "students": "Aucun élève pour l'instant.",
+        "families": "Aucune famille pour l'instant.",
+        "leads": "Aucun prospect pour l'instant."
+      },
+      "expand": {
+        "profile": "Profil",
+        "guardian": "Responsable",
+        "joined": "Inscrit le",
+        "nextClass": "Prochain cours",
+        "noneScheduled": "Rien de prévu",
+        "attendance12": "Présence, 12 semaines",
+        "attendanceNotTracked": "Ce studio n'a pas encore enregistré de présence.",
+        "noRecentAttendance": "Aucune présence enregistrée ces 12 dernières semaines.",
+        "actions": "Actions"
+      },
+      "actions": {
+        "messageGuardian": "Contacter le responsable",
+        "message": "Message",
+        "viewProfile": "Voir le profil",
+        "chasePayment": "Relancer le paiement"
+      },
+      "families": {
+        "children": "{count, plural, =0 {Aucun enfant lié} one {# enfant} other {# enfants}}",
+        "childrenList": "Enfants"
+      },
+      "leads": {
+        "unknownSource": "Source inconnue",
+        "openBoard": "Ouvrir le pipeline",
+        "status": {
+          "new": "Nouveau",
+          "contacted": "Contacté",
+          "trial": "Essai",
+          "converted": "Converti",
+          "lost": "Perdu"
+        }
+      },
+      "openManagerHint": "Besoin d'actions groupées, d'inscriptions ou du tableau de pipeline ?",
+      "openManager": {
+        "students": "Ouvrir la gestion des élèves",
+        "families": "Ouvrir la gestion des familles",
+        "leads": "Ouvrir le tableau des prospects"
       }
     },
     "classes": {
@@ -685,7 +733,27 @@
       },
       "overview": {
         "title": "Aperçu",
+        "liveTitle": "Argent en entrée et en sortie, en direct.",
         "subtitle": "Où en est l'argent en ce moment.",
+        "balance": {
+          "available": "Solde disponible",
+          "pending": "+ {amount} en attente",
+          "notConnectedTitle": "Pas encore connecté",
+          "connectCta": "Connectez Stripe pour un solde en direct",
+          "range": { "7d": "7j", "30d": "30j", "12m": "12m" }
+        },
+        "overdueQueue": {
+          "title": "File des retards",
+          "empty": "Rien en retard.",
+          "daysOverdue": "{days, plural, =0 {échu aujourd'hui} one {# jour de retard} other {# jours de retard}}",
+          "seeAll": "Voir les {count} en retard"
+        },
+        "sources": {
+          "title": "D'où vient l'argent",
+          "empty": "Aucun revenu enregistré ce mois-ci.",
+          "classes": "Cours et frais",
+          "shop": "Boutique"
+        },
         "stats": {
           "outstanding": "En attente",
           "outstandingSub": "{count} factures impayées",
@@ -709,6 +777,8 @@
           "title": "Revenu mensuel de scolarité",
           "noData": "Aucun revenu payé enregistré pour l'instant.",
           "revenue": "Revenu",
+          "moneyIn": "Argent reçu",
+          "moneyOut": "Virements sortants",
           "footnote": "Factures de scolarité et de frais marquées payées, 12 derniers mois. Le revenu de la boutique et des événements se trouve dans Factures → Analyses."
         }
       },

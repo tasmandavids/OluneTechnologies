@@ -86,12 +86,40 @@
       "inbox": "Posta in arrivo",
       "studio": "Studio",
       "settings": "Impostazioni",
-      "account": "Account"
+      "account": "Account",
+      "appearance": "Aspetto",
+      "toggleTheme": "Chiaro o scuro",
+      "workspace": "Area di lavoro",
+      "everythingByTyping": "Tutto è raggiungibile digitando."
     },
     "palette": {
       "placeholder": "Cerca qualsiasi cosa…",
       "empty": "Nessun risultato",
       "new": "Nuovo"
+    },
+    "appearance": {
+      "title": "Aspetto",
+      "subtitle": "Regola quanto vetro e colore si vedono nell'area di lavoro. È solo per te: non cambia ciò che vede il tuo team.",
+      "reset": "Reimposta",
+      "apply": "Applica",
+      "sliders": {
+        "tint": {
+          "label": "Intensità della tinta",
+          "hint": "Quanto il colore del tuo studio si diffonde sulle superfici."
+        },
+        "glass": {
+          "label": "Chiarezza del vetro",
+          "hint": "Smerigliato e opaco, oppure quasi invisibile."
+        },
+        "blur": {
+          "label": "Profondità sfocatura",
+          "hint": "Quanto i pannelli diffondono ciò che sta dietro di loro."
+        },
+        "ambience": {
+          "label": "Atmosfera",
+          "hint": "Luce fluttuante dietro l'area di lavoro."
+        }
+      }
     }
   },
   "nav": {
@@ -108,6 +136,7 @@
       "classes": "Corsi",
       "events": "Eventi",
       "staff": "Staff",
+      "people": "Persone",
       "parents": "Genitori",
       "students": "Studenti",
       "leads": "Lead",

@@ -9,8 +9,9 @@
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { useMemo } from "react";
+import { onGlowMove } from "@/components/portal/admin/glass/useMicroInteractions";
 import type { AttentionData } from "./types";
-import { IconAlertCircle, IconUserPlus, IconCheckCircle } from "./icons";
+import { IconAlertCircle, IconUserPlus, IconCheckCircle, IconCalendarDays } from "./icons";
 
 export function AttentionQueue({ attention }: { attention: AttentionData }) {
   const t = useTranslations("admin.dashboard.attention");
@@ -58,6 +59,30 @@ export function AttentionQueue({ attention }: { attention: AttentionData }) {
     });
   }
 
+  if (attention.unassignedCount > 0) {
+    items.push({
+      key: "unassigned",
+      icon: <IconCalendarDays className="h-[18px] w-[18px]" style={{ color: "#dc2626" }} />,
+      warn: true,
+      title: t("unassignedTitle", { count: attention.unassignedCount }),
+      subtitle: attention.unassignedNextLabel ?? "",
+      action: t("unassignedAction"),
+      href: "/portal/admin/classes",
+    });
+  }
+
+  if (attention.conflictCount > 0) {
+    items.push({
+      key: "conflict",
+      icon: <IconAlertCircle className="h-[18px] w-[18px]" style={{ color: "#dc2626" }} />,
+      warn: true,
+      title: t("conflictTitle", { count: attention.conflictCount }),
+      subtitle: attention.conflictLabel ?? "",
+      action: t("conflictAction"),
+      href: "/portal/admin/classes",
+    });
+  }
+
   return (
     <div>
       <div className="mb-2.5 flex items-baseline gap-2">
@@ -82,17 +107,22 @@ export function AttentionQueue({ attention }: { attention: AttentionData }) {
           {items.map((item) => (
             <div
               key={item.key}
-              className="flex items-start gap-2.5 rounded-xl border bg-surface p-3"
+              onMouseMove={onGlowMove}
+              className="relative flex items-start gap-2.5 overflow-hidden rounded-[15px] border bg-surface p-3 transition-shadow duration-300"
               style={{ borderColor: item.warn ? "color-mix(in srgb, #dc2626 30%, var(--hair))" : "var(--hair)" }}
             >
-              <span className="mt-0.5 shrink-0">{item.icon}</span>
-              <div className="min-w-0 flex-1">
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{ background: "radial-gradient(220px circle at var(--mx, -200px) var(--my, -200px), var(--t3), transparent 72%)" }}
+              />
+              <span className="relative mt-0.5 shrink-0">{item.icon}</span>
+              <div className="relative min-w-0 flex-1">
                 <p className="text-[13.5px] font-semibold text-ink">{item.title}</p>
                 <p className="mt-0.5 text-xs text-muted">{item.subtitle}</p>
               </div>
               <Link
                 href={item.href}
-                className="shrink-0 rounded-[9px] border border-[--hair] px-2.5 py-[5px] text-xs font-semibold text-ink transition-colors hover:border-transparent hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]"
+                className="relative shrink-0 rounded-[9px] border border-[--hair] px-2.5 py-[5px] text-xs font-semibold text-ink transition-colors hover:border-transparent hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]"
               >
                 {item.action}
               </Link>

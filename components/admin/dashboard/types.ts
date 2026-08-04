@@ -59,7 +59,11 @@ export interface ScheduleClass {
 /** @deprecated Use ScheduleClass */
 export type ClassBlock = ScheduleClass;
 
-/** "Needs your attention" panel data — real counts from invoices + leads. */
+/** "Needs your attention" panel data — real counts from invoices + leads,
+ *  plus two cheap checks derived from this week's already-fetched schedule
+ *  (class_capacity): classes with no teacher assigned, and same-room time
+ *  overlaps. No attendance-drop or sign-off style cards — this app has no
+ *  real data to back either. */
 export interface AttentionData {
   overdueCount: number;
   overdueAmountCents: number;
@@ -67,6 +71,26 @@ export interface AttentionData {
   overdueOldestDays: number;
   leadsCount: number;
   leadsOldestDays: number;
+  unassignedCount: number;
+  unassignedNextLabel: string | null;
+  conflictCount: number;
+  conflictLabel: string | null;
+}
+
+/** "Today" pulse pills — kept delta-free. There's no reliable prior-period
+ *  baseline for occupancy/collected without new historical snapshots, and
+ *  this dashboard's convention (see MoneyPanel/AttentionQueue) is to never
+ *  fabricate a trend it can't compute. */
+export interface PulseStat {
+  id: "occupancy" | "enrolled" | "collected";
+  value: number;
+  format: "percent" | "number";
+}
+
+/** One day's succeeded-payment total, for the 7-day cash-in sparkline. */
+export interface CashInDay {
+  date: string;
+  amountCents: number;
 }
 
 export function normalizeTime(t: string | null | undefined): string | null {

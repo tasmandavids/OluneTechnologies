@@ -86,12 +86,40 @@
       "inbox": "Inbox",
       "studio": "Studio",
       "settings": "Settings",
-      "account": "Account"
+      "account": "Account",
+      "appearance": "Appearance",
+      "toggleTheme": "Light or dark",
+      "workspace": "Workspace",
+      "everythingByTyping": "Everything is reachable by typing."
     },
     "palette": {
       "placeholder": "Find anything…",
       "empty": "No matches",
       "new": "New"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "subtitle": "Tune how much glass and colour show through the workspace. This is just for you — it doesn't change what your team sees.",
+      "reset": "Reset",
+      "apply": "Apply",
+      "sliders": {
+        "tint": {
+          "label": "Tint strength",
+          "hint": "How much of your studio colour bleeds into surfaces."
+        },
+        "glass": {
+          "label": "Glass clarity",
+          "hint": "Frosted and opaque, or barely there."
+        },
+        "blur": {
+          "label": "Blur depth",
+          "hint": "How far the panels diffuse what sits behind them."
+        },
+        "ambience": {
+          "label": "Ambience",
+          "hint": "Drifting light behind the workspace."
+        }
+      }
     }
   },
   "nav": {
@@ -108,6 +136,7 @@
       "classes": "Classes",
       "events": "Events",
       "staff": "Staff",
+      "people": "People",
       "parents": "Parents",
       "students": "Students",
       "leads": "Leads",

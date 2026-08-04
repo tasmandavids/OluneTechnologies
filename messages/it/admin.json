@@ -170,13 +170,17 @@
       }
     },
     "dashboard": {
-      "stats": {
-        "activeStudents": "Studenti attivi",
-        "activeStudentsHint": "iscritto questo termine",
-        "revenueThisMonth": "Entrate questo mese",
-        "revenueHint": "NZD, fatture pagate",
-        "classesToday": "Lezioni oggi",
-        "classesTodayHint": "nei tuoi studi"
+      "header": {
+        "subhead": "{count, plural, =0 {Al momento nulla richiede la tua attenzione — va tutto avanti da solo.} one {Una cosa ha bisogno di te oggi. Il resto va avanti da solo.} other {# cose hanno bisogno di te oggi. Il resto va avanti da solo.}}"
+      },
+      "pulse": {
+        "occupancy": { "label": "Occupazione" },
+        "enrolled": { "label": "Iscritti" },
+        "collected": { "label": "Incassato" }
+      },
+      "cashIn": {
+        "title": "Incassato, 7 giorni",
+        "fromPayments": "da {count, plural, one {# pagamento} other {# pagamenti}}"
       },
       "attention": {
         "title": "Richiede attenzione",
@@ -187,7 +191,11 @@
         "overdueAction": "Sollecita",
         "leadsTitle": "{count, plural, one {# nuova richiesta} other {# nuove richieste}}",
         "leadsSubtitle": "La più vecchia da {days, plural, =0 {oggi} one {# giorno} other {# giorni}}",
-        "leadsAction": "Rivedi"
+        "leadsAction": "Rivedi",
+        "unassignedTitle": "{count, plural, one {# corso senza insegnante} other {# corsi senza insegnante}}",
+        "unassignedAction": "Assegna",
+        "conflictTitle": "{count, plural, one {# sovrapposizione di sala} other {# sovrapposizioni di sala}}",
+        "conflictAction": "Risolvi"
       },
       "quickActions": {
         "title": "Azioni rapide",
@@ -215,19 +223,6 @@
           "live": "In corso"
         }
       },
-      "money": {
-        "title": "Questo mese",
-        "collected": "Incassato",
-        "trendUp": "+{percent}% rispetto al mese scorso",
-        "trendDown": "{percent}% rispetto al mese scorso",
-        "trendFlat": "Come il mese scorso",
-        "activeStudents": "studenti attivi",
-        "classesToday": "lezioni oggi",
-        "activityTitle": "Attività recente",
-        "activityEmpty": "Nessuna attività recente.",
-        "activityPaid": "{name} ha pagato la fattura n.{number}",
-        "activityLead": "Nuova richiesta da {name}"
-      },
       "capacity": {
         "title": "Capacità della classe",
         "subtitle": "Questa settimana, secondo la fascia oraria dello studio.",
@@ -248,6 +243,59 @@
           "slot1830": "18:30",
           "slot1930": "19:30"
         }
+      }
+    },
+    "people": {
+      "eyebrow": "Persone · {count, plural, one {# scheda} other {# schede}}",
+      "title": "Un solo database, nessuna porta.",
+      "tabs": { "students": "Studenti", "families": "Famiglie", "leads": "Contatti" },
+      "columns": { "name": "Nome", "programme": "Corso", "attendance": "Presenza", "balance": "Saldo" },
+      "unnamed": "Senza nome",
+      "noProgramme": "Non iscritto",
+      "noAttendance": "Non monitorata",
+      "flag": { "overdue": "Scaduto", "new": "Nuovo" },
+      "empty": {
+        "students": "Ancora nessuno studente.",
+        "families": "Ancora nessuna famiglia.",
+        "leads": "Ancora nessun contatto."
+      },
+      "expand": {
+        "profile": "Profilo",
+        "guardian": "Tutore",
+        "joined": "Iscritto il",
+        "nextClass": "Prossima lezione",
+        "noneScheduled": "Niente in programma",
+        "attendance12": "Presenza, 12 settimane",
+        "attendanceNotTracked": "Questo studio non ha ancora registrato le presenze.",
+        "noRecentAttendance": "Nessuna presenza registrata nelle ultime 12 settimane.",
+        "actions": "Azioni"
+      },
+      "actions": {
+        "messageGuardian": "Contatta il tutore",
+        "message": "Messaggio",
+        "viewProfile": "Vedi profilo",
+        "chasePayment": "Sollecita pagamento"
+      },
+      "families": {
+        "children": "{count, plural, =0 {Nessun figlio collegato} one {# figlio} other {# figli}}",
+        "childrenList": "Figli"
+      },
+      "leads": {
+        "unknownSource": "Fonte sconosciuta",
+        "openBoard": "Apri la pipeline",
+        "status": {
+          "new": "Nuovo",
+          "contacted": "Contattato",
+          "trial": "Prova",
+          "converted": "Convertito",
+          "lost": "Perso"
+        }
+      },
+      "openManagerHint": "Serve gestione di massa, iscrizioni o la bacheca pipeline?",
+      "openManager": {
+        "students": "Apri gestione studenti",
+        "families": "Apri gestione famiglie",
+        "leads": "Apri bacheca contatti"
       }
     },
     "classes": {
@@ -685,7 +733,27 @@
       },
       "overview": {
         "title": "Panoramica",
+        "liveTitle": "Entrate e uscite, in tempo reale.",
         "subtitle": "Come si muovono i soldi in questo momento.",
+        "balance": {
+          "available": "Saldo disponibile",
+          "pending": "+ {amount} in sospeso",
+          "notConnectedTitle": "Non ancora connesso",
+          "connectCta": "Connetti Stripe per un saldo in tempo reale",
+          "range": { "7d": "7g", "30d": "30g", "12m": "12m" }
+        },
+        "overdueQueue": {
+          "title": "Coda scaduti",
+          "empty": "Niente di scaduto.",
+          "daysOverdue": "{days, plural, =0 {scaduto oggi} one {# giorno di ritardo} other {# giorni di ritardo}}",
+          "seeAll": "Vedi tutti i {count} scaduti"
+        },
+        "sources": {
+          "title": "Da dove arrivano",
+          "empty": "Nessun ricavo registrato questo mese.",
+          "classes": "Corsi e quote",
+          "shop": "Negozio"
+        },
         "stats": {
           "outstanding": "In sospeso",
           "outstandingSub": "{count} fatture non pagate",
@@ -709,6 +777,8 @@
           "title": "Ricavi mensili da retta",
           "noData": "Nessun ricavo pagato ancora registrato.",
           "revenue": "Ricavi",
+          "moneyIn": "Entrate",
+          "moneyOut": "Bonifici in uscita",
           "footnote": "Fatture di retta e quote contrassegnate come pagate, ultimi 12 mesi. I ricavi di negozio ed eventi sono in Fatture → Approfondimenti."
         }
       },

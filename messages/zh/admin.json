@@ -171,13 +171,17 @@
       }
     },
     "dashboard": {
-      "stats": {
-        "activeStudents": "活跃学员",
-        "activeStudentsHint": "本学期已报名",
-        "revenueThisMonth": "本月收入",
-        "revenueHint": "新西兰元，已付账单",
-        "classesToday": "今日课程",
-        "classesTodayHint": "覆盖您的各工作室"
+      "header": {
+        "subhead": "{count, plural, =0 {现在没有需要你处理的事——一切正常运转。} other {今天有 # 件事需要你处理，其余的都在自动运转。}}"
+      },
+      "pulse": {
+        "occupancy": { "label": "满员率" },
+        "enrolled": { "label": "已报名" },
+        "collected": { "label": "已收款" }
+      },
+      "cashIn": {
+        "title": "近7天进账",
+        "fromPayments": "来自 {count} 笔付款"
       },
       "attention": {
         "title": "需要关注",
@@ -188,7 +192,11 @@
         "overdueAction": "催缴",
         "leadsTitle": "{count} 条新咨询",
         "leadsSubtitle": "最早于 {days} 天前",
-        "leadsAction": "查看"
+        "leadsAction": "查看",
+        "unassignedTitle": "{count} 节课尚未安排教师",
+        "unassignedAction": "分配",
+        "conflictTitle": "{count} 处教室时间冲突",
+        "conflictAction": "解决"
       },
       "quickActions": {
         "title": "快捷操作",
@@ -216,19 +224,6 @@
           "live": "上课中"
         }
       },
-      "money": {
-        "title": "本月",
-        "collected": "已收款",
-        "trendUp": "较上月 +{percent}%",
-        "trendDown": "较上月 {percent}%",
-        "trendFlat": "与上月持平",
-        "activeStudents": "活跃学员",
-        "classesToday": "今日课程",
-        "activityTitle": "近期动态",
-        "activityEmpty": "暂无近期动态。",
-        "activityPaid": "{name} 支付了发票 #{number}",
-        "activityLead": "{name} 提交了新咨询"
-      },
       "capacity": {
         "title": "课程容量",
         "subtitle": "本周，按工作室时段。",
@@ -250,6 +245,59 @@
           "slot1830": "下午 6:30",
           "slot1930": "下午 7:30"
         }
+      }
+    },
+    "people": {
+      "eyebrow": "学员 · 共 {count} 条记录",
+      "title": "一个数据库，没有门槛。",
+      "tabs": { "students": "学员", "families": "家庭", "leads": "线索" },
+      "columns": { "name": "姓名", "programme": "课程", "attendance": "出勤", "balance": "余额" },
+      "unnamed": "未命名",
+      "noProgramme": "未报名",
+      "noAttendance": "未记录",
+      "flag": { "overdue": "逾期", "new": "新" },
+      "empty": {
+        "students": "暂无学员。",
+        "families": "暂无家庭。",
+        "leads": "暂无线索。"
+      },
+      "expand": {
+        "profile": "资料",
+        "guardian": "监护人",
+        "joined": "加入时间",
+        "nextClass": "下一节课",
+        "noneScheduled": "暂无安排",
+        "attendance12": "近12周出勤",
+        "attendanceNotTracked": "该工作室尚未记录出勤情况。",
+        "noRecentAttendance": "近12周没有出勤记录。",
+        "actions": "操作"
+      },
+      "actions": {
+        "messageGuardian": "联系监护人",
+        "message": "发消息",
+        "viewProfile": "查看资料",
+        "chasePayment": "催缴款项"
+      },
+      "families": {
+        "children": "{count, plural, =0 {未关联孩子} other {# 个孩子}}",
+        "childrenList": "孩子"
+      },
+      "leads": {
+        "unknownSource": "未知来源",
+        "openBoard": "打开线索看板",
+        "status": {
+          "new": "新",
+          "contacted": "已联系",
+          "trial": "试听",
+          "converted": "已转化",
+          "lost": "已流失"
+        }
+      },
+      "openManagerHint": "需要批量操作、报名或线索看板？",
+      "openManager": {
+        "students": "打开学员管理",
+        "families": "打开家庭管理",
+        "leads": "打开线索看板"
       }
     },
     "classes": {
@@ -721,7 +769,27 @@
       },
       "overview": {
         "title": "概览",
+        "liveTitle": "实时资金进出。",
         "subtitle": "资金的实时动态。",
+        "balance": {
+          "available": "可用余额",
+          "pending": "另有 {amount} 待入账",
+          "notConnectedTitle": "尚未连接",
+          "connectCta": "连接 Stripe 以查看实时余额",
+          "range": { "7d": "7天", "30d": "30天", "12m": "12月" }
+        },
+        "overdueQueue": {
+          "title": "逾期队列",
+          "empty": "没有逾期项目。",
+          "daysOverdue": "{days, plural, =0 {今日到期} other {逾期 # 天}}",
+          "seeAll": "查看全部 {count} 项逾期"
+        },
+        "sources": {
+          "title": "收入来源",
+          "empty": "本月暂无收入记录。",
+          "classes": "课程与学费",
+          "shop": "商店"
+        },
         "stats": {
           "outstanding": "未结清",
           "outstandingSub": "{count} 张未付发票",
@@ -745,6 +813,8 @@
           "title": "月度学费收入",
           "noData": "暂无已支付收入记录。",
           "revenue": "收入",
+          "moneyIn": "进账",
+          "moneyOut": "出账（打款）",
           "footnote": "过去 12 个月内标记为已支付的学费及费用发票。商店和活动收入见发票 → 洞察。"
         }
       },

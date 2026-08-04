@@ -72,15 +72,26 @@ export default async function MoneyPage({
   return (
     <div>
       <div className="mx-auto max-w-6xl px-6 pt-6">
-        <div className="flex w-fit flex-wrap gap-1 rounded-xl border border-[--hair] bg-surface p-1">
+        <div
+          className="flex w-fit flex-wrap gap-1 rounded-[14px] border p-1.5"
+          style={{
+            background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass)",
+            borderColor: "var(--edge)",
+            backdropFilter: "blur(var(--blur)) saturate(1.85)",
+            WebkitBackdropFilter: "blur(var(--blur))",
+          }}
+        >
           {tabs.map(({ id, href, label }) => (
             <Link
               key={id}
               href={href}
               scroll={false}
-              className={`rounded-lg px-4 py-1.5 text-xs font-semibold transition ${
-                tab === id ? "bg-ink text-paper" : "text-muted hover:text-ink"
-              }`}
+              className="rounded-[10px] px-4 py-1.5 text-xs font-semibold transition-all"
+              style={{
+                color: tab === id ? "var(--ink, var(--text))" : "var(--muted)",
+                background: tab === id ? "var(--t3)" : "transparent",
+                border: tab === id ? "1px solid var(--tb)" : "1px solid transparent",
+              }}
             >
               {label}
             </Link>

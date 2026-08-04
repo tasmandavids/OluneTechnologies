@@ -171,13 +171,17 @@
       }
     },
     "dashboard": {
-      "stats": {
-        "activeStudents": "Active students",
-        "activeStudentsHint": "enrolled this term",
-        "revenueThisMonth": "Revenue this month",
-        "revenueHint": "NZD, paid invoices",
-        "classesToday": "Classes today",
-        "classesTodayHint": "across your studios"
+      "header": {
+        "subhead": "{count, plural, =0 {Nothing needs you right now — everything is running itself.} one {One thing wants you today. Everything else is running itself.} other {# things want you today. Everything else is running itself.}}"
+      },
+      "pulse": {
+        "occupancy": { "label": "Occupancy" },
+        "enrolled": { "label": "Enrolled" },
+        "collected": { "label": "Collected" }
+      },
+      "cashIn": {
+        "title": "Cash in, 7 days",
+        "fromPayments": "from {count, plural, one {# payment} other {# payments}}"
       },
       "attention": {
         "title": "Needs your attention",
@@ -188,7 +192,11 @@
         "overdueAction": "Chase",
         "leadsTitle": "{count, plural, one {# new enquiry} other {# new enquiries}}",
         "leadsSubtitle": "Oldest from {days, plural, =0 {today} one {# day ago} other {# days ago}}",
-        "leadsAction": "Review"
+        "leadsAction": "Review",
+        "unassignedTitle": "{count, plural, one {# class has no teacher} other {# classes have no teacher}}",
+        "unassignedAction": "Assign",
+        "conflictTitle": "{count, plural, one {# room double-booking} other {# room double-bookings}}",
+        "conflictAction": "Resolve"
       },
       "quickActions": {
         "title": "Quick actions",
@@ -216,19 +224,6 @@
           "live": "In session"
         }
       },
-      "money": {
-        "title": "This month",
-        "collected": "Collected",
-        "trendUp": "+{percent}% vs last month",
-        "trendDown": "{percent}% vs last month",
-        "trendFlat": "Same as last month",
-        "activeStudents": "active students",
-        "classesToday": "classes today",
-        "activityTitle": "Recent activity",
-        "activityEmpty": "No recent activity.",
-        "activityPaid": "{name} paid invoice #{number}",
-        "activityLead": "New enquiry from {name}"
-      },
       "capacity": {
         "title": "Class capacity",
         "subtitle": "This week, by studio time slot.",
@@ -250,6 +245,59 @@
           "slot1830": "6:30 pm",
           "slot1930": "7:30 pm"
         }
+      }
+    },
+    "people": {
+      "eyebrow": "People · {count, plural, one {# record} other {# records}}",
+      "title": "One database, no doors.",
+      "tabs": { "students": "Students", "families": "Families", "leads": "Leads" },
+      "columns": { "name": "Name", "programme": "Programme", "attendance": "Attendance", "balance": "Balance" },
+      "unnamed": "Unnamed",
+      "noProgramme": "Not enrolled",
+      "noAttendance": "Not tracked",
+      "flag": { "overdue": "Overdue", "new": "New" },
+      "empty": {
+        "students": "No students yet.",
+        "families": "No families yet.",
+        "leads": "No leads yet."
+      },
+      "expand": {
+        "profile": "Profile",
+        "guardian": "Guardian",
+        "joined": "Joined",
+        "nextClass": "Next",
+        "noneScheduled": "Nothing scheduled",
+        "attendance12": "Attendance, 12 weeks",
+        "attendanceNotTracked": "This studio hasn't recorded attendance yet.",
+        "noRecentAttendance": "No attendance recorded in the last 12 weeks.",
+        "actions": "Actions"
+      },
+      "actions": {
+        "messageGuardian": "Message guardian",
+        "message": "Message",
+        "viewProfile": "View profile",
+        "chasePayment": "Chase payment"
+      },
+      "families": {
+        "children": "{count, plural, =0 {No children linked} one {# child} other {# children}}",
+        "childrenList": "Children"
+      },
+      "leads": {
+        "unknownSource": "Unknown source",
+        "openBoard": "Open pipeline",
+        "status": {
+          "new": "New",
+          "contacted": "Contacted",
+          "trial": "Trial",
+          "converted": "Converted",
+          "lost": "Lost"
+        }
+      },
+      "openManagerHint": "Need bulk actions, enrollment, or the pipeline board?",
+      "openManager": {
+        "students": "Open student manager",
+        "families": "Open family manager",
+        "leads": "Open leads board"
       }
     },
     "classes": {
@@ -721,7 +769,27 @@
       },
       "overview": {
         "title": "Overview",
+        "liveTitle": "Money in and out, live.",
         "subtitle": "How the money's moving right now.",
+        "balance": {
+          "available": "Available balance",
+          "pending": "+ {amount} pending",
+          "notConnectedTitle": "Not connected yet",
+          "connectCta": "Connect Stripe for a live balance",
+          "range": { "7d": "7d", "30d": "30d", "12m": "12m" }
+        },
+        "overdueQueue": {
+          "title": "Overdue queue",
+          "empty": "Nothing overdue.",
+          "daysOverdue": "{days, plural, =0 {due today} one {# day overdue} other {# days overdue}}",
+          "seeAll": "See all {count} overdue"
+        },
+        "sources": {
+          "title": "Where it comes from",
+          "empty": "No revenue recorded this month yet.",
+          "classes": "Classes & fees",
+          "shop": "Shop"
+        },
         "stats": {
           "outstanding": "Outstanding",
           "outstandingSub": "{count} unpaid invoices",
@@ -745,6 +813,8 @@
           "title": "Monthly tuition revenue",
           "noData": "No paid revenue recorded yet.",
           "revenue": "Revenue",
+          "moneyIn": "Money in",
+          "moneyOut": "Payouts out",
           "footnote": "Tuition and fee invoices marked paid, last 12 months. Shop and event revenue live in Invoices → Insights."
         }
       },
