@@ -10,6 +10,7 @@ import {
   OBJECTIVES,
 } from "@/app/portal/admin/advertising/actions";
 import { PLATFORM_META, PRIMARY_PLATFORMS } from "@/lib/advertising/config";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import type {
   AdObjective,
   GeneratedAdCopy,
@@ -117,7 +118,7 @@ export function AdComposer({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-[--hair] bg-surface p-6">
+      <GlassPanel className="!p-6">
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
             <p className="text-[0.62rem] font-semibold uppercase tracking-widest text-brand">{t("adCreator.badge")}</p>
@@ -281,10 +282,10 @@ export function AdComposer({
           {success && <p className="text-sm text-green-600">{success}</p>}
           {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
-      </div>
+      </GlassPanel>
 
       {showPreview && platforms.length > 0 && (previewHeadline || previewBody) && (
-        <div className="rounded-2xl border border-[--hair] bg-surface p-6">
+        <GlassPanel className="!p-6">
           <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-muted">{t("adCreator.livePreview")}</h3>
           <PlatformPreviewGrid
             platforms={platforms}
@@ -294,7 +295,7 @@ export function AdComposer({
             imageUrl={imageUrl || undefined}
             connections={connections}
           />
-        </div>
+        </GlassPanel>
       )}
     </div>
   );

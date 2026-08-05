@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { InquiryThread } from "@/components/network/InquiryThread";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 export default async function InquiryDetailPage({
   params,
@@ -58,42 +59,45 @@ export default async function InquiryDetailPage({
       )}
 
       {/* Back */}
-      <Link href="/portal/admin/network/inquiries" className="text-xs text-gray-400 hover:text-gray-600">
+      <Link href="/portal/admin/network/inquiries" className="text-xs text-muted hover:text-ink">
         ← All inquiries
       </Link>
 
       {/* Inquiry summary */}
-      <div className="bg-white border border-gray-200 rounded-xl p-5 space-y-3">
+      <GlassPanel className="!p-5 space-y-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             {instructor?.avatar_url ? (
               <Image src={instructor.avatar_url} alt="" className="h-10 w-10 rounded-full object-cover" width={40} height={40} />
             ) : (
-              <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                <span className="text-sm font-bold text-indigo-600">
+              <div
+                className="h-10 w-10 rounded-full flex items-center justify-center"
+                style={{ background: "color-mix(in srgb, var(--brand) 14%, transparent)" }}
+              >
+                <span className="text-sm font-bold text-[--brand]">
                   {(instructor?.full_name ?? "?").charAt(0).toUpperCase()}
                 </span>
               </div>
             )}
             <div>
-              <p className="text-sm font-semibold text-gray-900">{instructor?.full_name ?? "Unknown"}</p>
+              <p className="text-sm font-semibold text-ink">{instructor?.full_name ?? "Unknown"}</p>
               {instructor?.headline && (
-                <p className="text-xs text-gray-500">{instructor.headline}</p>
+                <p className="text-xs text-muted">{instructor.headline}</p>
               )}
             </div>
           </div>
           {instructorSlug && (
             <Link
               href={`/instructor/${instructorSlug}`}
-              className="text-xs text-indigo-600 hover:underline shrink-0"
+              className="text-xs text-[--brand] hover:underline shrink-0"
             >
               View profile
             </Link>
           )}
         </div>
 
-        <div className="border-t border-gray-100 pt-3 space-y-1.5">
-          <p className="text-sm font-medium text-gray-900">{inquiry.subject}</p>
+        <div className="border-t border-[--hair] pt-3 space-y-1.5">
+          <p className="text-sm font-medium text-ink">{inquiry.subject}</p>
           {inquiry.engagement_type && (
             <Detail label="Type" value={inquiry.engagement_type} />
           )}
@@ -108,11 +112,11 @@ export default async function InquiryDetailPage({
           )}
         </div>
 
-        <div className="border-t border-gray-100 pt-3">
-          <p className="text-xs font-medium text-gray-500 mb-1">Opening message</p>
-          <p className="text-sm text-gray-700 whitespace-pre-line">{inquiry.message}</p>
+        <div className="border-t border-[--hair] pt-3">
+          <p className="text-xs font-medium text-muted mb-1">Opening message</p>
+          <p className="text-sm text-ink whitespace-pre-line">{inquiry.message}</p>
         </div>
-      </div>
+      </GlassPanel>
 
       {/* Thread */}
       <InquiryThread
@@ -134,8 +138,8 @@ export default async function InquiryDetailPage({
 function Detail({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex gap-2 text-xs">
-      <span className="text-gray-400 w-20 shrink-0">{label}</span>
-      <span className="text-gray-700">{value}</span>
+      <span className="text-muted w-20 shrink-0">{label}</span>
+      <span className="text-ink">{value}</span>
     </div>
   );
 }

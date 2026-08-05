@@ -280,8 +280,16 @@ export function ScheduleBoard({
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-2xl border border-[--hair] bg-surface p-6"
-          style={{ ["--heat-empty" as string]: "color-mix(in srgb, var(--text) 7%, var(--surface))" }}
+          className="rounded-[22px] border p-6"
+          style={{
+            ["--heat-empty" as string]: "color-mix(in srgb, var(--text) 7%, var(--surface))",
+            background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass)",
+            borderColor: "var(--edge)",
+            backdropFilter: "blur(var(--blur)) saturate(1.85)",
+            WebkitBackdropFilter: "blur(var(--blur)) saturate(1.85)",
+            boxShadow:
+              "var(--shadow-s), inset 0 1px 0 var(--sheen), inset 0 -1px 0 var(--sheen2), inset 1px 0 0 var(--sheen2)",
+          }}
         >
           <header className="mb-5 flex flex-wrap items-center justify-between gap-4">
             <div>

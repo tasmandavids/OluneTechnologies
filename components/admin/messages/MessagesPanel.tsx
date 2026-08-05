@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, type CSSProperties } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { IconSearch } from "@/components/admin/dashboard/icons";
 import { MessageThread, type ThreadMessage } from "@/components/admin/messages/MessageThread";
@@ -14,6 +14,15 @@ import {
   normalizeMessageTopic,
   type MessageTopic,
 } from "@/lib/portal/message-topics";
+
+const GLASS_PANEL_STYLE: CSSProperties = {
+  background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass)",
+  borderColor: "var(--edge)",
+  backdropFilter: "blur(var(--blur)) saturate(1.85)",
+  WebkitBackdropFilter: "blur(var(--blur)) saturate(1.85)",
+  boxShadow:
+    "var(--shadow-s), inset 0 1px 0 var(--sheen), inset 0 -1px 0 var(--sheen2), inset 1px 0 0 var(--sheen2)",
+};
 
 interface Contact {
   id: string;
@@ -339,8 +348,11 @@ function MessagesPanelContent({
   }
 
   return (
-    <div className="flex h-full overflow-hidden bg-base">
-      <aside className="flex w-80 shrink-0 flex-col border-r border-[--hair] bg-surface">
+    <div className="flex h-full gap-4 overflow-hidden">
+      <aside
+        className="flex w-80 shrink-0 flex-col overflow-hidden rounded-[22px] border"
+        style={GLASS_PANEL_STYLE}
+      >
         <div className="border-b border-[--hair] px-5 py-4">
           <h1 className="font-display text-xl font-bold text-ink">{t("title")}</h1>
           <p className="mb-3 mt-0.5 text-xs text-muted">{t("contacts", { count: contacts.length })}</p>
@@ -546,7 +558,10 @@ function MessagesPanelContent({
         </div>
       </aside>
 
-      <div className="flex flex-1 flex-col">
+      <div
+        className="flex flex-1 flex-col overflow-hidden rounded-[22px] border"
+        style={GLASS_PANEL_STYLE}
+      >
         {selection && threadContact ? (
           <MessageThread
             currentUserId={currentUserId}

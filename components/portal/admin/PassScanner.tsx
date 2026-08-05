@@ -13,6 +13,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import ClassOccurrencePicker, { type PickableClass } from "./ClassOccurrencePicker";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 type DecodedPass = { passId: string; qrToken: string };
 
@@ -152,7 +153,7 @@ export default function PassScanner() {
 
   if (result) {
     return (
-      <div className="rounded-2xl border border-[--hair] bg-surface p-6 text-center">
+      <GlassPanel className="text-center">
         {result.ok ? (
           <>
             <p className="mb-1 text-2xl">✅</p>
@@ -170,13 +171,13 @@ export default function PassScanner() {
         >
           {t("scanAnother")}
         </button>
-      </div>
+      </GlassPanel>
     );
   }
 
   if (decoded) {
     return (
-      <div className="rounded-2xl border border-[--hair] bg-surface p-6">
+      <GlassPanel>
         <h3 className="mb-4 font-semibold text-ink">{t("pickOccurrence")}</h3>
         {classesError ? (
           <p className="text-sm text-red-500">{classesError}</p>
@@ -186,12 +187,12 @@ export default function PassScanner() {
         <button onClick={reset} className="mt-3 text-xs text-muted hover:text-ink">
           {t("cancel")}
         </button>
-      </div>
+      </GlassPanel>
     );
   }
 
   return (
-    <div className="rounded-2xl border border-[--hair] bg-surface p-6">
+    <GlassPanel>
       <h2 className="mb-1 text-lg font-black text-ink">{t("scanTitle")}</h2>
       <p className="mb-4 text-sm text-muted">{t("scanSubtitle")}</p>
 
@@ -236,6 +237,6 @@ export default function PassScanner() {
           {t("useManualEntry")}
         </button>
       </div>
-    </div>
+    </GlassPanel>
   );
 }

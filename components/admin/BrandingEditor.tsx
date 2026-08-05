@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import type { Branding, ThemeBase } from "@/lib/types";
 import { brandingToCssVars } from "@/lib/branding";
 import { saveBranding } from "@/app/portal/admin/branding/actions";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 import { TYPOGRAPHY_PAIRS } from "@/lib/website/typography";
 
@@ -75,7 +76,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
           </button>
         </header>
 
-        <section className="space-y-3">
+        <GlassPanel className="space-y-3">
           <h2 className="text-xs uppercase tracking-widest text-muted">{t("identity")}</h2>
           <label className="block text-sm">
             <span className="mb-1 block text-muted">{t("tagline")}</span>
@@ -97,9 +98,9 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
               className="w-full rounded-lg border border-[--hair] bg-base/40 px-3 py-2"
             />
           </label>
-        </section>
+        </GlassPanel>
 
-        <section className="space-y-3">
+        <GlassPanel className="space-y-3">
           <h2 className="text-xs uppercase tracking-widest text-muted">{t("brandColor")}</h2>
           <div className="flex items-center gap-3">
             <input
@@ -128,9 +129,9 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
               </button>
             ))}
           </div>
-        </section>
+        </GlassPanel>
 
-        <section className="grid grid-cols-2 gap-4">
+        <GlassPanel className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <h2 className="text-xs uppercase tracking-widest text-muted">{t("base")}</h2>
             <div className="inline-flex rounded-full border border-[--hair] p-1">
@@ -167,9 +168,9 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
               {FONT_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
             </select>
           </div>
-        </section>
+        </GlassPanel>
 
-        <section className="space-y-3">
+        <GlassPanel className="space-y-3">
           <h2 className="text-xs uppercase tracking-widest text-muted">{t("websiteChrome")}</h2>
           <label className="block text-sm">
             <span className="mb-1 block text-muted">{t("footerTagline")}</span>
@@ -253,7 +254,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
             />
             <span className="text-ink">{t("showPoweredBy")}</span>
           </label>
-        </section>
+        </GlassPanel>
 
         {savedOk === true && (
           <p className="text-sm text-brand-hot">{t("saved")}</p>

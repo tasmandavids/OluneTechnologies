@@ -25,6 +25,7 @@ import {
   type DomainKind,
   type DomainWizardStep,
 } from "@/lib/domain-setup";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 type Props = {
   studioName: string;
@@ -419,13 +420,13 @@ function StepCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="space-y-5 rounded-2xl border border-[--hair] bg-surface p-6">
+    <GlassPanel className="space-y-5 !p-6">
       <div>
         <h2 className="text-lg font-semibold text-ink">{title}</h2>
         <p className="mt-1 text-sm text-muted">{subtitle}</p>
       </div>
       {children}
-    </section>
+    </GlassPanel>
   );
 }
 

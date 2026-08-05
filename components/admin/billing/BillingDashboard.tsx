@@ -48,6 +48,7 @@ import { openInXeroUrl } from "@/lib/xero/links";
 import { formatMoney } from "@/lib/currency";
 import { formatMonthKey, formatShortDate } from "@/lib/xero/format";
 import { formatInvoiceNumber } from "@/lib/invoices/format-invoice-number";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const NZD = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD", maximumFractionDigits: 0 });
 const NZD2 = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD" });
@@ -88,11 +89,11 @@ function StatusBadge({ status }: { status: string }) {
 
 function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-2xl border border-[--hair] bg-surface p-5">
+    <GlassPanel className="!p-5">
       <p className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</p>
       <p className="mt-1 text-2xl font-black text-ink">{value}</p>
       {sub && <p className="mt-0.5 text-xs text-muted">{sub}</p>}
-    </div>
+    </GlassPanel>
   );
 }
 
@@ -873,10 +874,8 @@ export function BillingDashboard({
           />
         </motion.div>
 
-        <motion.section
-          variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
-          className="rounded-2xl border border-[--hair] bg-surface"
-        >
+        <motion.section variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
+          <GlassPanel className="!p-0 overflow-hidden">
           <div className="flex flex-wrap items-center gap-3 border-b border-[--hair] px-6 py-4">
             <div className="mr-auto">
               <h2 className="text-sm font-bold text-ink">{t("reminders.title")}</h2>
@@ -951,13 +950,12 @@ export function BillingDashboard({
               </table>
             </div>
           )}
+          </GlassPanel>
         </motion.section>
 
         {unpaidAccounts.length > 0 && (
-          <motion.section
-            variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
-            className="rounded-2xl border border-[--hair] bg-surface p-6"
-          >
+          <motion.section variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
+            <GlassPanel className="!p-6">
             <h2 className="text-sm font-bold text-ink">{t("accounts.title")}</h2>
             <p className="mt-1 text-xs text-muted">{t("accounts.subtitle")}</p>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -986,13 +984,12 @@ export function BillingDashboard({
                 </li>
               ))}
             </ul>
+            </GlassPanel>
           </motion.section>
         )}
 
-        <motion.div
-          variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
-          className="rounded-2xl border border-[--hair] bg-surface"
-        >
+        <motion.div variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}>
+          <GlassPanel className="!p-0 overflow-hidden">
           <div className="flex flex-wrap items-center gap-3 border-b border-[--hair] px-6 py-4">
             <h2 className="mr-auto text-sm font-bold text-ink">
               {t("allInvoices.title")}
@@ -1160,13 +1157,15 @@ export function BillingDashboard({
               </tbody>
             </table>
           </div>
+          </GlassPanel>
         </motion.div>
 
         <motion.section variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
+          <GlassPanel className="!p-0 overflow-hidden">
           <button
             type="button"
             onClick={() => setShowInsights((v) => !v)}
-            className="flex w-full items-center justify-between rounded-2xl border border-[--hair] bg-surface px-6 py-4 text-left"
+            className="flex w-full items-center justify-between px-6 py-4 text-left"
           >
             <div>
               <h2 className="text-sm font-bold text-ink">{t("insights.title")}</h2>
@@ -1174,10 +1173,11 @@ export function BillingDashboard({
             </div>
             <span className="text-muted">{showInsights ? "▲" : "▼"}</span>
           </button>
+          </GlassPanel>
 
           {showInsights && (
             <div className="mt-4 space-y-4">
-              <div className="rounded-2xl border border-[--hair] bg-surface p-6">
+              <GlassPanel className="!p-6">
                 <div className="mb-4 flex items-baseline justify-between">
                   <h3 className="text-sm font-bold text-ink">{t("insights.bySource")}</h3>
                   <span className="text-xs text-muted">
@@ -1200,9 +1200,9 @@ export function BillingDashboard({
                     ))}
                   </ul>
                 )}
-              </div>
+              </GlassPanel>
 
-              <div className="rounded-2xl border border-[--hair] bg-surface p-6">
+              <GlassPanel className="!p-6">
                 <h3 className="mb-5 text-sm font-bold text-ink">{t("insights.monthlyTuition")}</h3>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
@@ -1227,7 +1227,7 @@ export function BillingDashboard({
                     <Bar dataKey="revenue" fill="var(--brand)" radius={[4, 4, 0, 0]} maxBarSize={48} />
                   </BarChart>
                 </ResponsiveContainer>
-              </div>
+              </GlassPanel>
             </div>
           )}
         </motion.section>

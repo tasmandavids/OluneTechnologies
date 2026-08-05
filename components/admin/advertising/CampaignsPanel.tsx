@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { deleteCampaign, publishCampaign } from "@/app/portal/admin/advertising/actions";
 import { PLATFORM_META } from "@/lib/advertising/config";
 import type { AdCampaign } from "@/lib/advertising/types";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 function StatusBadge({ status }: { status: AdCampaign["status"] }) {
   const colors: Record<AdCampaign["status"], string> = {
@@ -54,11 +55,11 @@ export function CampaignsPanel({
 
   if (campaigns.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-[--hair] bg-surface/50 px-6 py-16 text-center">
+      <GlassPanel className="!py-16 text-center">
         <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-brand/10 text-2xl">📣</div>
         <p className="text-sm font-semibold text-ink">{t("campaigns.emptyTitle")}</p>
         <p className="mt-1 text-sm text-muted">{t("campaigns.empty")}</p>
-      </div>
+      </GlassPanel>
     );
   }
 
@@ -66,7 +67,7 @@ export function CampaignsPanel({
     <div className="space-y-3">
       {error && <p className="text-sm text-red-600">{error}</p>}
       {campaigns.map((c) => (
-        <div key={c.id} className="rounded-2xl border border-[--hair] bg-surface p-5 transition hover:border-brand/20">
+        <GlassPanel key={c.id} className="!p-5 transition hover:border-brand/20">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
@@ -112,7 +113,7 @@ export function CampaignsPanel({
               </button>
             </div>
           </div>
-        </div>
+        </GlassPanel>
       ))}
     </div>
   );

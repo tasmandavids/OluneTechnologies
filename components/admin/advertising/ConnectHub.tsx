@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { PLATFORM_META } from "@/lib/advertising/config";
 import type { SocialConnection, SocialPlatform } from "@/lib/advertising/types";
 import { TelegramWizard } from "./TelegramWizard";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const PLATFORM_ICONS: Record<SocialPlatform, ReactNode> = {
   facebook: (
@@ -57,7 +58,7 @@ function MetaConnectCard({
   const connected = Boolean(fbConn || igConn);
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-[--hair] bg-surface p-6">
+    <GlassPanel className="relative overflow-hidden !p-6">
       <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gradient-to-br from-[#1877F2]/10 to-[#E4405F]/10" />
       <div className="relative">
         <div className="mb-4 flex items-start justify-between gap-3">
@@ -112,7 +113,7 @@ function MetaConnectCard({
           <p className="mt-4 text-xs text-muted">{t("social.oauthNotConfigured")}</p>
         )}
       </div>
-    </div>
+    </GlassPanel>
   );
 }
 
@@ -129,7 +130,7 @@ function TelegramConnectCard({
   const connected = Boolean(conn);
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-[--hair] bg-surface p-6">
+    <GlassPanel className="relative overflow-hidden !p-6">
       <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[#26A5E4]/10" />
       <div className="relative">
         <div className="mb-4 flex items-start justify-between gap-3">
@@ -161,7 +162,7 @@ function TelegramConnectCard({
           </button>
         )}
       </div>
-    </div>
+    </GlassPanel>
   );
 }
 
@@ -178,7 +179,7 @@ function TiktokConnectCard({
   const connected = Boolean(conn);
 
   return (
-    <div className="rounded-3xl border border-[--hair] bg-surface p-6 opacity-90">
+    <GlassPanel className="!p-6 opacity-90">
       <div className="mb-4 flex items-start justify-between gap-3">
         <span className="grid h-11 w-11 place-items-center rounded-xl bg-black text-white shadow-md">
           {PLATFORM_ICONS.tiktok}
@@ -201,7 +202,7 @@ function TiktokConnectCard({
       ) : (
         <p className="mt-4 text-xs text-muted">{t("social.oauthNotConfigured")}</p>
       )}
-    </div>
+    </GlassPanel>
   );
 }
 
@@ -248,7 +249,16 @@ export function ConnectHub({
         />
       </div>
 
-      <details className="group rounded-2xl border border-[--hair] bg-surface">
+      <details
+        className="group rounded-[22px] border"
+        style={{
+          background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass)",
+          borderColor: "var(--edge)",
+          backdropFilter: "blur(var(--blur)) saturate(1.85)",
+          WebkitBackdropFilter: "blur(var(--blur)) saturate(1.85)",
+          boxShadow: "var(--shadow-s), inset 0 1px 0 var(--sheen), inset 0 -1px 0 var(--sheen2), inset 1px 0 0 var(--sheen2)",
+        }}
+      >
         <summary className="cursor-pointer list-none px-5 py-4 text-sm font-semibold text-muted marker:content-none group-open:text-ink">
           {t("connect.morePlatforms")}
         </summary>

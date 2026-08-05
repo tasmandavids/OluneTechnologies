@@ -7,6 +7,7 @@
 import { useState, useTransition } from "react";
 import { ProductionWizard } from "./ProductionWizard";
 import { deleteEvent, getFullEvent, type WizardFormState } from "@/app/portal/admin/events/actions";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 // ─── Types (mirrors page.tsx selects) ────────────────────────────────────────
 
@@ -112,7 +113,7 @@ function EventCard({
   const pct  = cap > 0 ? Math.round((sold / cap) * 100) : 0;
 
   return (
-    <div className="group relative rounded-2xl border border-[--hair] bg-surface hover:border-brand/30 hover:shadow-sm transition-all overflow-hidden">
+    <GlassPanel className="group relative !p-0 overflow-hidden transition-all">
       {/* Colour strip by type */}
       <div className="h-1 w-full bg-gradient-to-r from-brand/60 to-brand/20" />
 
@@ -205,7 +206,7 @@ function EventCard({
           </div>
         </div>
       )}
-    </div>
+    </GlassPanel>
   );
 }
 

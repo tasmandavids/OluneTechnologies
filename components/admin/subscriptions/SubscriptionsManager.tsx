@@ -15,6 +15,7 @@ import { formatMoney } from "@/lib/currency";
 import { intervalLabel, type BillingInterval } from "@/lib/subscriptions/pricing";
 import { useLocale } from "next-intl";
 import { formatDateMedium } from "@/lib/i18n/format";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const SUBSCRIPTION_STATUS_KEYS = [
   "active",
@@ -131,24 +132,24 @@ export default function SubscriptionsManager({
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-[--hair] bg-surface p-4">
+        <GlassPanel className="!p-4">
           <p className="text-[0.62rem] font-semibold uppercase tracking-wider text-muted">
             {t("stats.activePlans")}
           </p>
           <p className="mt-1 text-2xl font-black tabular-nums text-ink">{activeCount}</p>
-        </div>
-        <div className="rounded-2xl border border-[--hair] bg-surface p-4">
+        </GlassPanel>
+        <GlassPanel className="!p-4">
           <p className="text-[0.62rem] font-semibold uppercase tracking-wider text-muted">
             {t("stats.monthlyRecurring")}
           </p>
           <p className="mt-1 text-2xl font-black tabular-nums text-ink">
             {formatMoney(activeMrrCents)}
           </p>
-        </div>
-        <div className="rounded-2xl border border-[--hair] bg-surface p-4">
+        </GlassPanel>
+        <GlassPanel className="!p-4">
           <p className="text-[0.62rem] font-semibold uppercase tracking-wider text-muted">{t("stats.total")}</p>
           <p className="mt-1 text-2xl font-black tabular-nums text-ink">{rows.length}</p>
-        </div>
+        </GlassPanel>
       </div>
 
       <div className="flex gap-1.5">
@@ -172,7 +173,7 @@ export default function SubscriptionsManager({
         </p>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+      <GlassPanel className="!p-0 overflow-hidden">
         {filtered.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <p className="text-sm text-muted">{t("empty")}</p>
@@ -278,7 +279,7 @@ export default function SubscriptionsManager({
             </table>
           </div>
         )}
-      </div>
+      </GlassPanel>
 
       {showCreate && (
         <CreateSubscriptionModal

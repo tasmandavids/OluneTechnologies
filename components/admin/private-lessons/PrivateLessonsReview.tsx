@@ -6,6 +6,7 @@ import {
   type AdminBooking,
   type PrivateLessonStatus,
 } from "@/lib/private-lessons/types";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const STATUS_STYLES: Record<PrivateLessonStatus, string> = {
   requested: "bg-amber-100 text-amber-700",
@@ -100,30 +101,32 @@ export default function PrivateLessonsReview({ bookings }: { bookings: AdminBook
         </p>
       </div>
 
-      <div className="flex w-fit gap-1 rounded-xl border border-base-300 bg-surface p-1">
-        {FILTERS.map((f) => (
-          <button
-            key={f.id}
-            onClick={() => setFilter(f.id)}
-            className={`rounded-lg px-4 py-1.5 text-xs font-semibold transition ${
-              filter === f.id ? "bg-ink text-paper" : "text-base-content/60 hover:text-base-content"
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
+      <GlassPanel className="w-fit !p-1">
+        <div className="flex gap-1">
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className={`rounded-lg px-4 py-1.5 text-xs font-semibold transition ${
+                filter === f.id ? "bg-ink text-paper" : "text-base-content/60 hover:text-base-content"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </GlassPanel>
 
       {filtered.length === 0 ? (
-        <div className="border-2 border-dashed border-base-300 rounded-xl p-12 text-center">
+        <GlassPanel className="text-center !p-12">
           <p className="text-base-content/50 text-sm">Nothing here.</p>
-        </div>
+        </GlassPanel>
       ) : (
         <div className="space-y-2">
           {filtered.map((b) => (
-            <div
+            <GlassPanel
               key={b.id}
-              className="bg-surface rounded-xl px-4 py-3 shadow-sm flex items-start justify-between gap-3"
+              className="flex items-start justify-between gap-3"
             >
               <div>
                 <p className="text-sm font-medium text-base-content">
@@ -158,7 +161,7 @@ export default function PrivateLessonsReview({ bookings }: { bookings: AdminBook
                   </button>
                 ) : null}
               </div>
-            </div>
+            </GlassPanel>
           ))}
         </div>
       )}

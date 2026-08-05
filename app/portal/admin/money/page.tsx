@@ -12,6 +12,7 @@
 
 import Link from "next/link";
 import { getTranslations } from "@/lib/i18n/server";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import { OverviewTab } from "./overview-tab";
 import { InvoicesTab } from "./invoices-tab";
 import { CollectionsTab } from "./collections-tab";
@@ -39,11 +40,11 @@ function resolveTab(tab: string | undefined): MoneyTabId {
 function ComingSoonTab({ title, body, note }: { title: string; body: string; note?: string }) {
   return (
     <div className="mx-auto max-w-6xl p-6">
-      <div className="rounded-2xl border border-dashed border-[--hair] bg-base/50 p-14 text-center">
+      <GlassPanel className="!p-14 text-center">
         <p className="text-sm font-semibold text-ink">{title}</p>
         <p className="mx-auto mt-1 max-w-sm text-sm text-muted">{body}</p>
         {note && <p className="mx-auto mt-4 max-w-md text-xs text-muted">{note}</p>}
-      </div>
+      </GlassPanel>
     </div>
   );
 }

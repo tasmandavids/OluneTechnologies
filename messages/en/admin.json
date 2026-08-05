@@ -1286,7 +1286,39 @@
       "connectedSyncing": "Connected — syncing your inbox in the background…",
       "loadError": "Could not load conversation",
       "sendFailed": "Failed to send",
-      "syncFailed": "Sync failed"
+      "syncFailed": "Sync failed",
+      "about": "About",
+      "allCaughtUp": "All caught up",
+      "composeBodyPlaceholder": "Write your message…",
+      "composeButton": "Compose",
+      "composeFailed": "Failed to send",
+      "composeSend": "Send",
+      "composeSubjectPlaceholder": "Subject",
+      "composeSuccess": "Message sent",
+      "composeTitle": "New message",
+      "composeTo": "To",
+      "composeToPlaceholder": "name@example.com",
+      "filterAll": "All",
+      "filterUnread": "Unread",
+      "inboxesSection": "Inboxes",
+      "lastActive": "Last active {time}",
+      "markRead": "Mark read",
+      "markingRead": "Marking read…",
+      "messageCount": "{count} messages",
+      "noContactMatch": "Not linked to a studio contact",
+      "participants": "Participants",
+      "quickReplies": "Quick replies",
+      "quickReplyCall": "Give us a call",
+      "quickReplyCallText": "Feel free to give the studio a call if that's easier — we're happy to help.",
+      "quickReplyFollowUp": "I'll follow up",
+      "quickReplyFollowUpText": "Thanks for letting me know — I'll follow up on this shortly.",
+      "quickReplyThanks": "Thanks!",
+      "quickReplyThanksText": "Thanks so much — really appreciate it!",
+      "selectedCount": "{count} selected",
+      "sendsFrom": "Sends from {email}",
+      "threadInfo": "Thread",
+      "unreadCount": "{count} unread",
+      "viewProfile": "View profile"
     },
     "messages": {
       "title": "Messages",
@@ -1408,7 +1440,18 @@
       },
       "brandingTitle": "Branding",
       "brandingDescription": "Logo, colours, and how your studio looks across the portal and website.",
-      "openBranding": "Open branding"
+      "openBranding": "Open branding",
+      "nav": {
+        "profile": "Profile",
+        "billing": "Billing",
+        "registration": "Registration",
+        "domains": "Domains",
+        "account": "Account"
+      },
+      "account": {
+        "title": "Account",
+        "description": "Sign out of Olune on this device."
+      }
     },
     "branding": {
       "title": "Appearance",

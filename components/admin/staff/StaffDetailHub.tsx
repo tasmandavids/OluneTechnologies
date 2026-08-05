@@ -25,6 +25,7 @@ import type {
 import { EMPLOYMENT_TYPES, STAFF_PORTAL_ROLES, WORK_LOCATIONS } from "@/lib/staff/types";
 import { formatTimeShort } from "@/lib/i18n/format";
 import { useLocale } from "next-intl";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 type Tab = "profile" | "employment" | "contract" | "shifts";
 
@@ -232,7 +233,7 @@ export default function StaffDetailHub({
       </div>
 
       {tab === "profile" && (
-        <div className="space-y-4 rounded-2xl border border-[--hair] bg-surface p-5">
+        <GlassPanel className="space-y-4 !p-5">
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase text-muted">
               {tCommon("name")}
@@ -292,11 +293,11 @@ export default function StaffDetailHub({
           >
             {pending ? tShared("saving") : tCommon("save")}
           </button>
-        </div>
+        </GlassPanel>
       )}
 
       {tab === "employment" && (
-        <div className="space-y-4 rounded-2xl border border-[--hair] bg-surface p-5">
+        <GlassPanel className="space-y-4 !p-5">
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-semibold uppercase text-muted">
@@ -443,11 +444,11 @@ export default function StaffDetailHub({
               {employmentForm.active ? t("deactivate") : t("reactivate")}
             </button>
           </div>
-        </div>
+        </GlassPanel>
       )}
 
       {tab === "contract" && (
-        <div className="space-y-4 rounded-2xl border border-[--hair] bg-surface p-5">
+        <GlassPanel className="space-y-4 !p-5">
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase text-muted">
               {t("contractNotes")}
@@ -481,12 +482,12 @@ export default function StaffDetailHub({
           >
             {pending ? tShared("saving") : tCommon("save")}
           </button>
-        </div>
+        </GlassPanel>
       )}
 
       {tab === "shifts" && (
         <div className="space-y-4">
-          <div className="rounded-2xl border border-[--hair] bg-surface p-5">
+          <GlassPanel className="!p-5">
             <h3 className="mb-3 font-semibold text-ink">{t("addShift")}</h3>
             <div className="grid gap-3 sm:grid-cols-2">
               <input
@@ -532,12 +533,13 @@ export default function StaffDetailHub({
             >
               {t("addShift")}
             </button>
-          </div>
-          <ul className="divide-y divide-[--hair] rounded-2xl border border-[--hair] bg-surface">
-            {shifts.length === 0 ? (
-              <li className="px-5 py-8 text-center text-sm text-muted">{t("noShifts")}</li>
-            ) : (
-              shifts.map((shift) => (
+          </GlassPanel>
+          <GlassPanel className="!p-0 overflow-hidden">
+            <ul className="divide-y divide-[--hair]">
+              {shifts.length === 0 ? (
+                <li className="px-5 py-8 text-center text-sm text-muted">{t("noShifts")}</li>
+              ) : (
+                shifts.map((shift) => (
                 <li
                   key={shift.id}
                   className="flex items-center justify-between gap-3 px-5 py-3 text-sm"
@@ -560,9 +562,10 @@ export default function StaffDetailHub({
                     {tCommon("delete")}
                   </button>
                 </li>
-              ))
-            )}
-          </ul>
+                ))
+              )}
+            </ul>
+          </GlassPanel>
         </div>
       )}
 

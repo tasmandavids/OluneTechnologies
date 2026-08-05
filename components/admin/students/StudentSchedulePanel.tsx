@@ -17,6 +17,7 @@ import {
 } from "@/lib/students/schedule-types";
 import { addWeeks, getWeekRange } from "@/lib/staff/week";
 import { formatTimeShort } from "@/lib/i18n/format";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 
@@ -177,7 +178,8 @@ export default function StudentSchedulePanel({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-[--hair] bg-surface">
+      <GlassPanel className="!p-0 overflow-hidden">
+        <div className="overflow-x-auto">
         <div className="min-w-[720px]">
           <div className="grid grid-cols-7 border-b border-[--hair]">
             {weekDates.map((date, i) => (
@@ -237,14 +239,15 @@ export default function StudentSchedulePanel({
             })}
           </div>
         </div>
-      </div>
+        </div>
+      </GlassPanel>
 
       {form && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border border-[--hair] bg-surface p-5"
         >
+        <GlassPanel className="!p-5">
           <h3 className="text-sm font-black text-ink">
             {form.id ? t("editEntry") : t("newEntry")}
           </h3>
@@ -342,6 +345,7 @@ export default function StudentSchedulePanel({
               </button>
             )}
           </div>
+        </GlassPanel>
         </motion.div>
       )}
     </section>

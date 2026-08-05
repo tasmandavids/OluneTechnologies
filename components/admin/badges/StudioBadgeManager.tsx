@@ -15,6 +15,7 @@ import {
 } from "@/app/actions/badges";
 import { CATEGORY_ORDER, TIER_STYLES } from "@/lib/portal/badge-style";
 import type { BadgeTier, BadgeRecipientType } from "@/lib/portal/badges-data";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 export type ManagedBadge = {
   id: string;
@@ -104,7 +105,7 @@ export default function StudioBadgeManager({ badges }: { badges: ManagedBadge[] 
 
       <div className="space-y-6">
         {grouped.map(([cat, list]) => (
-          <section key={cat} className="rounded-2xl border border-[--hair] bg-surface p-5">
+          <GlassPanel key={cat} className="!p-5">
             <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-ink/70">
               {tCat(cat)}
             </h2>
@@ -157,7 +158,7 @@ export default function StudioBadgeManager({ badges }: { badges: ManagedBadge[] 
                 );
               })}
             </ul>
-          </section>
+          </GlassPanel>
         ))}
       </div>
     </div>
@@ -203,7 +204,7 @@ function CustomBadgeForm({
   }
 
   return (
-    <div className="space-y-3 rounded-2xl border border-[--hair] bg-surface p-5">
+    <GlassPanel className="space-y-3 !p-5">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-6">
         <input
           value={icon}
@@ -274,6 +275,6 @@ function CustomBadgeForm({
       >
         {t("create")}
       </button>
-    </div>
+    </GlassPanel>
   );
 }

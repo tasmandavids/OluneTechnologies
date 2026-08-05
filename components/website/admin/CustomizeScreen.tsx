@@ -97,7 +97,12 @@ export function CustomizeScreen({
     <div>
       <div
         className="sticky top-0 z-30 flex items-center justify-between gap-5 px-8 py-3.5"
-        style={{ borderBottom: "1px solid rgba(255,255,255,.6)", background: "rgba(255,255,255,.6)", backdropFilter: "blur(24px) saturate(160%)" }}
+        style={{
+          borderBottom: "1px solid var(--edge)",
+          background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass)",
+          backdropFilter: "blur(var(--blur)) saturate(1.85)",
+          WebkitBackdropFilter: "blur(var(--blur)) saturate(1.85)",
+        }}
       >
         <div className="flex items-center gap-2.5 text-[13px] text-muted">
           <button type="button" onClick={onBackToGallery} className="cursor-pointer">
@@ -143,7 +148,13 @@ export function CustomizeScreen({
       <div className="flex items-stretch" style={{ minHeight: "calc(100vh - 63px)" }}>
         <div
           className="flex flex-none flex-col gap-5 p-5"
-          style={{ width: 330, borderRight: "1px solid rgba(255,255,255,.6)", background: "rgba(255,255,255,.52)", backdropFilter: "blur(24px) saturate(150%)" }}
+          style={{
+            width: 330,
+            borderRight: "1px solid var(--edge)",
+            background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass)",
+            backdropFilter: "blur(var(--blur)) saturate(1.85)",
+            WebkitBackdropFilter: "blur(var(--blur)) saturate(1.85)",
+          }}
         >
           <div>
             <button type="button" onClick={onBackToGallery} className="flex items-center gap-1 text-[13px] text-muted">
@@ -172,7 +183,7 @@ export function CustomizeScreen({
                 />
               ))}
             </div>
-            <div className="mt-3 flex items-center gap-2 rounded-xl border px-2.5 py-2" style={{ borderColor: "var(--hair)", background: "rgba(255,255,255,.66)" }}>
+            <div className="mt-3 flex items-center gap-2 rounded-xl border px-2.5 py-2" style={{ borderColor: "var(--hair)", background: "var(--surface)" }}>
               <div className="h-[18px] w-[18px] rounded-md" style={{ background: draft.accentColor }} />
               <span className="text-[13px] uppercase tabular-nums">{draft.accentColor}</span>
               <span className="ml-auto text-[12px] text-muted">Everything derives</span>
@@ -288,7 +299,7 @@ export function CustomizeScreen({
               type="button"
               onClick={() => setSwitchOpen(true)}
               className="flex-1 rounded-xl border py-2.5 text-[13px]"
-              style={{ borderColor: "var(--hair)", background: "rgba(255,255,255,.7)" }}
+              style={{ borderColor: "var(--hair)", background: "var(--surface)" }}
             >
               Change template
             </button>

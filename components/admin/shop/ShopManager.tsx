@@ -16,6 +16,7 @@ import {
 } from "@/app/portal/admin/shop/actions";
 import { refundSale } from "@/app/portal/admin/billing/refund-actions";
 import { OptimizableImage } from "@/components/ui/OptimizableImage";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 interface Product {
   id:          string;
@@ -227,7 +228,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
           </button>
         </div>
 
-        <div className="mb-6 flex gap-1 rounded-xl border border-[--hair] bg-base p-1 w-fit">
+        <GlassPanel className="mb-6 flex gap-1 !p-1 w-fit">
           {(["products", "orders"] as const).map((tab) => (
             <button
               key={tab}
@@ -241,7 +242,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
                 : t("tabs.orders", { count: orders.length })}
             </button>
           ))}
-        </div>
+        </GlassPanel>
 
         {activeTab === "products" && (
           <>
@@ -341,7 +342,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
         )}
 
         {activeTab === "orders" && (
-          <div className="rounded-2xl border border-[--hair] bg-surface overflow-hidden">
+          <GlassPanel className="!p-0 overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[--hair] bg-base">
@@ -386,7 +387,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
                 )}
               </tbody>
             </table>
-          </div>
+          </GlassPanel>
         )}
       </div>
 

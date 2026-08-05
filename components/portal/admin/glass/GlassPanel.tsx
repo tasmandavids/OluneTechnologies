@@ -11,16 +11,19 @@ export function GlassPanel({
   children,
   className = "",
   dark = false,
+  id,
 }: {
   children: ReactNode;
   className?: string;
   /** The Today screen's "Cash in" card uses an inverted, solid --ink panel
    *  instead of glass — this flag reproduces that without a second component. */
   dark?: boolean;
+  id?: string;
 }) {
   if (dark) {
     return (
       <div
+        id={id}
         className={`relative overflow-hidden rounded-[22px] p-[18px] ${className}`}
         style={{ background: "var(--ink, var(--text))", color: "var(--base)", boxShadow: "var(--shadow)" }}
       >
@@ -35,6 +38,7 @@ export function GlassPanel({
 
   return (
     <div
+      id={id}
       className={`rounded-[22px] border p-[18px] ${className}`}
       style={{
         background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass)",

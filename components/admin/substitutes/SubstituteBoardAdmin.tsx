@@ -7,6 +7,7 @@ import {
   cancelSubstituteRequest,
   reopenSubstituteRequest,
 } from "@/app/portal/admin/substitutes/actions";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const STATUS_STYLE: Record<string, string> = {
   open: "bg-blue-100 text-blue-700",
@@ -110,14 +111,14 @@ export function SubstituteBoardAdmin({
 
       {/* Summary */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-surface rounded-xl p-4 shadow-sm text-center">
+        <GlassPanel className="text-center">
           <p className="text-xs text-base-content/50 uppercase tracking-wide">Open</p>
           <p className="text-2xl font-bold text-blue-600 mt-1">{openCount}</p>
-        </div>
-        <div className="bg-surface rounded-xl p-4 shadow-sm text-center">
+        </GlassPanel>
+        <GlassPanel className="text-center">
           <p className="text-xs text-base-content/50 uppercase tracking-wide">Filled</p>
           <p className="text-2xl font-bold text-green-600 mt-1">{filledCount}</p>
-        </div>
+        </GlassPanel>
       </div>
 
       {/* Filters */}
@@ -139,13 +140,13 @@ export function SubstituteBoardAdmin({
 
       {/* List */}
       {visible.length === 0 ? (
-        <div className="border-2 border-dashed border-base-300 rounded-xl p-12 text-center">
+        <GlassPanel className="text-center !p-12">
           <p className="text-sm text-base-content/40">No requests here.</p>
-        </div>
+        </GlassPanel>
       ) : (
         <div className="space-y-3">
           {visible.map((r) => (
-            <div key={r.id} className="bg-surface rounded-xl p-4 shadow-sm flex items-center gap-4">
+            <GlassPanel key={r.id} className="flex items-center gap-4">
               <div className="min-w-0 flex-1 space-y-0.5">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[r.status]}`}>{r.status}</span>
@@ -168,7 +169,7 @@ export function SubstituteBoardAdmin({
                   <button onClick={() => handleReopen(r.id)} disabled={pending} className="text-xs text-brand hover:underline">Re-open</button>
                 )}
               </div>
-            </div>
+            </GlassPanel>
           ))}
         </div>
       )}

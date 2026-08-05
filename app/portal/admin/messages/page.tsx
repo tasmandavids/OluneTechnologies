@@ -48,7 +48,7 @@ export default async function InboxPage({
   return (
     <div className="flex h-full min-h-0 flex-col">
       {canEmail && (
-        <div className="flex shrink-0 items-center gap-2 border-b border-[--hair] bg-surface px-5 py-3">
+        <div className="mb-3 flex w-fit shrink-0 items-center gap-1.5 rounded-2xl border bg-surface p-1.5" style={{ borderColor: "var(--hair)" }}>
           {(
             [
               { id: "messages", href: "/portal/admin/messages", label: t("tabs.messages") },

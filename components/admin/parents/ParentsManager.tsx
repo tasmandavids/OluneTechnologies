@@ -11,6 +11,7 @@ import MassEmailParentsPanel, {
 } from "@/components/admin/parents/MassEmailParentsPanel";
 import { bulkInviteMembers } from "@/app/portal/admin/parents/actions";
 import type { ParentRow, StudentOption } from "@/lib/parents/types";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 function initials(name: string | null) {
   if (!name) return "?";
@@ -25,53 +26,52 @@ function ParentCard({ parent }: { parent: ParentRow }) {
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");
   return (
-    <Link
-      href={`/portal/admin/parents/${parent.id}`}
-      className="block rounded-2xl border border-[--hair] bg-surface p-4 text-left transition-shadow hover:shadow-md"
-    >
-      <div className="mb-3 flex items-center gap-3">
-        <span
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-black text-white"
-          style={{ background: "var(--brand)" }}
-        >
-          {initials(parent.name)}
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <p className="truncate font-semibold text-ink">{parent.name ?? tShared("unknown")}</p>
-            {parent.isPrimaryContact && (
-              <span className="shrink-0 rounded-full bg-brand/15 px-1.5 py-0.5 text-[0.55rem] font-semibold uppercase tracking-wider text-brand">
-                {t("primary")}
-              </span>
-            )}
+    <GlassPanel className="!p-0 overflow-hidden transition-shadow hover:shadow-md">
+      <Link href={`/portal/admin/parents/${parent.id}`} className="block p-4 text-left">
+        <div className="mb-3 flex items-center gap-3">
+          <span
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-black text-white"
+            style={{ background: "var(--brand)" }}
+          >
+            {initials(parent.name)}
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <p className="truncate font-semibold text-ink">{parent.name ?? tShared("unknown")}</p>
+              {parent.isPrimaryContact && (
+                <span className="shrink-0 rounded-full bg-brand/15 px-1.5 py-0.5 text-[0.55rem] font-semibold uppercase tracking-wider text-brand">
+                  {t("primary")}
+                </span>
+              )}
+            </div>
+            <p className="truncate text-xs text-muted">
+              {parent.email ?? parent.phone ?? tShared("noContact")}
+            </p>
           </div>
-          <p className="truncate text-xs text-muted">
-            {parent.email ?? parent.phone ?? tShared("noContact")}
-          </p>
         </div>
-      </div>
-      <div className="flex flex-wrap gap-1.5">
-        {parent.children.length === 0 ? (
-          <span className="text-xs italic text-muted">{t("noLinkedStudents")}</span>
-        ) : (
-          parent.children.map((child) => (
-            <span
-              key={child.id}
-              className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.62rem] font-medium text-ink"
-            >
-              {child.name ?? tCommon("student")}
-            </span>
-          ))
+        <div className="flex flex-wrap gap-1.5">
+          {parent.children.length === 0 ? (
+            <span className="text-xs italic text-muted">{t("noLinkedStudents")}</span>
+          ) : (
+            parent.children.map((child) => (
+              <span
+                key={child.id}
+                className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.62rem] font-medium text-ink"
+              >
+                {child.name ?? tCommon("student")}
+              </span>
+            ))
+          )}
+        </div>
+        {parent.coParents.length > 0 && (
+          <p className="mt-2 text-[0.62rem] text-muted">
+            {tShared("withCoParents", {
+              names: parent.coParents.map((c) => c.name ?? tShared("coParentFallback")).join(", "),
+            })}
+          </p>
         )}
-      </div>
-      {parent.coParents.length > 0 && (
-        <p className="mt-2 text-[0.62rem] text-muted">
-          {tShared("withCoParents", {
-            names: parent.coParents.map((c) => c.name ?? tShared("coParentFallback")).join(", "),
-          })}
-        </p>
-      )}
-    </Link>
+      </Link>
+    </GlassPanel>
   );
 }
 
@@ -157,9 +157,9 @@ export default function ParentsManager({
         </div>
       </div>
       {inviteResult && (
-        <p className="rounded-xl border border-[--hair] bg-surface px-4 py-2.5 text-sm text-ink">
-          {inviteResult}
-        </p>
+        <GlassPanel className="!p-0">
+          <p className="px-4 py-2.5 text-sm text-ink">{inviteResult}</p>
+        </GlassPanel>
       )}
 
       <input
@@ -171,22 +171,24 @@ export default function ParentsManager({
       />
 
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-12 text-center">
-          <p className="text-sm text-muted">
-            {search
-              ? t("emptySearch")
-              : t("empty")}
-          </p>
-          {!search && (
-            <button
-              type="button"
-              onClick={() => setShowAdd(true)}
-              className="mt-3 text-sm font-semibold text-ink underline"
-            >
-              {t("addFirstFamily")}
-            </button>
-          )}
-        </div>
+        <GlassPanel className="!p-0">
+          <div className="px-6 py-12 text-center">
+            <p className="text-sm text-muted">
+              {search
+                ? t("emptySearch")
+                : t("empty")}
+            </p>
+            {!search && (
+              <button
+                type="button"
+                onClick={() => setShowAdd(true)}
+                className="mt-3 text-sm font-semibold text-ink underline"
+              >
+                {t("addFirstFamily")}
+              </button>
+            )}
+          </div>
+        </GlassPanel>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((parent) => (

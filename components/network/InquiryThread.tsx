@@ -4,6 +4,7 @@ import { confirmDialog } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import { sendMessage as adminSend, withdrawInquiry } from "@/app/portal/admin/network/inquiries/[id]/actions";
 import { sendMessage as teacherSend, respondToInquiry } from "@/app/portal/teacher/network/[id]/actions";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 export type ThreadMessage = {
   id:         string;
@@ -66,15 +67,15 @@ export function InquiryThread({
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-      <div className="px-5 py-3 border-b border-gray-100">
-        <p className="text-sm font-medium text-gray-700">Conversation</p>
+    <GlassPanel className="!p-0 overflow-hidden">
+      <div className="px-5 py-3 border-b border-[--hair]">
+        <p className="text-sm font-medium text-ink">Conversation</p>
       </div>
 
       {/* Messages */}
       <div className="p-4 space-y-3 min-h-[80px]">
         {messages.length === 0 && (
-          <p className="text-xs text-gray-400 text-center py-4">No messages yet.</p>
+          <p className="text-xs text-muted text-center py-4">No messages yet.</p>
         )}
         {messages.map((m) => {
           const isMe = m.senderId === currentUserId;
@@ -83,13 +84,14 @@ export function InquiryThread({
               <div
                 className={`max-w-[85%] rounded-xl px-4 py-2.5 text-sm ${
                   isMe
-                    ? "bg-indigo-600 text-white rounded-br-sm"
-                    : "bg-gray-100 text-gray-800 rounded-bl-sm"
+                    ? "text-white rounded-br-sm"
+                    : "bg-surface text-ink rounded-bl-sm"
                 }`}
+                style={isMe ? { background: "var(--brand)" } : undefined}
               >
                 <p className="whitespace-pre-line">{m.body}</p>
               </div>
-              <p className="text-xs text-gray-400 mt-1 px-1">
+              <p className="text-xs text-muted mt-1 px-1">
                 {isMe ? "You" : m.senderName} ·{" "}
                 {new Date(m.createdAt).toLocaleString("en-NZ", {
                   day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
@@ -102,7 +104,7 @@ export function InquiryThread({
 
       {/* Accept / Decline for instructor */}
       {isInstructor && !isClosed && status !== "accepted" && (
-        <div className="px-4 pb-3 flex gap-2 border-t border-gray-100 pt-3">
+        <div className="px-4 pb-3 flex gap-2 border-t border-[--hair] pt-3">
           <button
             disabled={pending}
             onClick={handleAccept}
@@ -129,7 +131,7 @@ export function InquiryThread({
 
       {/* Input area */}
       {!isClosed && (
-        <div className="border-t border-gray-100 p-4 space-y-2">
+        <div className="border-t border-[--hair] p-4 space-y-2">
           {error && <p className="text-xs text-red-600">{error}</p>}
           <div className="flex gap-2">
             <textarea
@@ -143,12 +145,13 @@ export function InquiryThread({
               }}
               rows={2}
               placeholder="Write a message… (Enter to send)"
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="flex-1 border border-[--hair] bg-surface rounded-lg px-3 py-2 text-sm text-ink resize-none focus:outline-none focus:ring-2 focus:ring-[--brand]"
             />
             <button
               disabled={pending || !body.trim()}
               onClick={handleSend}
-              className="self-end px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
+              className="self-end px-4 py-2 text-white rounded-lg text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
+              style={{ background: "var(--brand)" }}
             >
               Send
             </button>
@@ -158,7 +161,7 @@ export function InquiryThread({
             <button
               onClick={handleWithdraw}
               disabled={pending}
-              className="text-xs text-gray-400 hover:text-red-500"
+              className="text-xs text-muted hover:text-red-500"
             >
               Withdraw inquiry
             </button>
@@ -167,10 +170,10 @@ export function InquiryThread({
       )}
 
       {isClosed && (
-        <div className="px-5 py-3 bg-gray-50 border-t border-gray-100">
-          <p className="text-xs text-gray-400 capitalize">{status} — this inquiry is closed.</p>
+        <div className="px-5 py-3 bg-surface border-t border-[--hair]">
+          <p className="text-xs text-muted capitalize">{status} — this inquiry is closed.</p>
         </div>
       )}
-    </div>
+    </GlassPanel>
   );
 }

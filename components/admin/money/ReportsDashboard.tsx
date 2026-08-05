@@ -21,6 +21,7 @@ import { openInXeroUrl } from "@/lib/xero/links";
 import { formatMonthKey, formatShortDate, formatSyncTime } from "@/lib/xero/format";
 import { disconnectXero, refreshAccountingData } from "@/app/portal/admin/accounting/actions";
 import { formatMoney } from "@/lib/currency";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const NZD = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD", maximumFractionDigits: 0 });
 const NZD2 = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD" });
@@ -35,7 +36,7 @@ export type AgedReceivables = {
 
 function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-2xl border border-[--hair] bg-surface p-5">
+    <GlassPanel className="!p-5">
       <p className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</p>
       <p
         className="mt-1 tabular-nums tracking-tight text-ink"
@@ -44,16 +45,16 @@ function StatCard({ label, value, sub }: { label: string; value: string; sub?: s
         {value}
       </p>
       {sub && <p className="mt-0.5 text-xs text-muted">{sub}</p>}
-    </div>
+    </GlassPanel>
   );
 }
 
 function ComingSoonCard({ title, body }: { title: string; body: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-[--hair] bg-base/50 p-6">
+    <GlassPanel className="!p-6">
       <p className="text-xs font-semibold uppercase tracking-wider text-muted">{title}</p>
       <p className="mt-2 text-sm text-muted">{body}</p>
-    </div>
+    </GlassPanel>
   );
 }
 
@@ -182,10 +183,8 @@ export function ReportsDashboard({
         </motion.div>
       )}
 
-      <motion.div
-        variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
-        className="rounded-2xl border border-[--hair] bg-surface p-5"
-      >
+      <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
+        <GlassPanel className="!p-5">
         {!snapshot.configured ? (
           <p className="text-sm text-muted">{t("notConfigured")}</p>
         ) : snapshot.connected ? (
@@ -221,6 +220,7 @@ export function ReportsDashboard({
             </Link>
           </div>
         )}
+        </GlassPanel>
       </motion.div>
 
       {snapshot.connected && summary && (
@@ -235,10 +235,8 @@ export function ReportsDashboard({
             <StatCard label={t("stats.netYtd")} value={NZD.format(summary.netYtdCents / 100)} />
           </motion.div>
 
-          <motion.div
-            variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
-            className="rounded-2xl border border-[--hair] bg-surface p-6"
-          >
+          <motion.div variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}>
+            <GlassPanel className="!p-6">
             <h2 className="mb-5 text-sm font-bold text-ink">{t("chart.title")}</h2>
             {chartData.length === 0 ? (
               <p className="text-sm text-muted">{t("chart.noData")}</p>
@@ -267,6 +265,7 @@ export function ReportsDashboard({
                 </BarChart>
               </ResponsiveContainer>
             )}
+            </GlassPanel>
           </motion.div>
         </>
       )}
@@ -287,10 +286,8 @@ export function ReportsDashboard({
         />
       </motion.div>
 
-      <motion.div
-        variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
-        className="overflow-hidden rounded-2xl border border-[--hair] bg-surface"
-      >
+      <motion.div variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}>
+        <GlassPanel className="!p-0 overflow-hidden">
         <div className="border-b border-[--hair] px-6 py-4">
           <h2 className="text-sm font-bold text-ink">{tReports("aged.title")}</h2>
           <p className="text-xs text-muted">
@@ -313,6 +310,7 @@ export function ReportsDashboard({
             </div>
           ))}
         </div>
+        </GlassPanel>
       </motion.div>
 
       <motion.div

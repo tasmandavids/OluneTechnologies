@@ -15,6 +15,7 @@ import {
   deleteProgress,
 } from "@/app/portal/admin/students/[id]/actions";
 import { useFormatDateMedium } from "@/lib/i18n/client";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 export type ProgressEntry = {
   id: string;
@@ -116,7 +117,7 @@ export default function ProgressTracker({
     <div className="space-y-8">
       {/* ── Log a new entry ─────────────────────────────────────────────── */}
       {!readOnly && (
-      <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+      <GlassPanel className="!p-5">
         <h2 className="mb-4 text-sm font-black text-ink">{t("logProgress")}</h2>
 
         <label className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-wider text-muted">
@@ -211,7 +212,7 @@ export default function ProgressTracker({
         >
           {pending ? tShared("saving") : t("saveEntry")}
         </button>
-      </section>
+      </GlassPanel>
       )}
 
       {/* ── Timeline ────────────────────────────────────────────────────── */}
@@ -221,9 +222,11 @@ export default function ProgressTracker({
         </h2>
 
         {entries.length === 0 ? (
-          <p className="rounded-2xl border border-[--hair] bg-surface px-6 py-10 text-center text-sm text-muted">
-            {emptyMessage ?? t("empty")}
-          </p>
+          <GlassPanel className="!py-10 !px-6">
+            <p className="text-center text-sm text-muted">
+              {emptyMessage ?? t("empty")}
+            </p>
+          </GlassPanel>
         ) : (
           <ol className="relative space-y-5 border-l border-[--hair] pl-6">
             <AnimatePresence initial={false}>

@@ -10,6 +10,7 @@ import { TEMPLATES, VIBES, sortTemplates, getTemplate, allTemplateFontFamilies, 
 import { useGoogleFontsPreview } from "@/lib/website/useGoogleFonts";
 import { TemplateCard } from "./TemplateCard";
 import { PreviewModal } from "./PreviewModal";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 export function GalleryScreen({
   templates = TEMPLATES,
@@ -54,10 +55,7 @@ export function GalleryScreen({
         </div>
 
         {currentTemplate && (
-          <div
-            className="flex-none rounded-2xl p-4"
-            style={{ width: 300, background: "rgba(255,255,255,.58)", backdropFilter: "blur(22px) saturate(150%)", border: "1px solid rgba(255,255,255,.7)" }}
-          >
+          <GlassPanel className="flex-none w-[300px] !p-4">
             <div className="text-[0.62rem] uppercase tracking-[0.1em] text-muted">
               {status === "published" ? "Currently live" : "Draft"}
             </div>
@@ -78,14 +76,11 @@ export function GalleryScreen({
                 Edit content
               </button>
             )}
-          </div>
+          </GlassPanel>
         )}
       </div>
 
-      <div
-        className="sticky top-[62px] z-20 mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5"
-        style={{ background: "rgba(255,255,255,.55)", backdropFilter: "blur(22px) saturate(150%)", border: "1px solid rgba(255,255,255,.7)" }}
-      >
+      <GlassPanel className="sticky top-[62px] z-20 mb-5 flex flex-wrap items-center justify-between gap-3 !px-3.5 !py-2.5">
         <div className="flex flex-wrap items-center gap-2">
           {(["All", ...VIBES] as const).map((v) => {
             const active = filter === v;
@@ -110,7 +105,7 @@ export function GalleryScreen({
           })}
         </div>
         <div className="flex flex-none items-center gap-2.5">
-          <div className="flex flex-none overflow-hidden rounded-full border" style={{ borderColor: "var(--hair)", background: "rgba(255,255,255,.7)" }}>
+          <div className="flex flex-none overflow-hidden rounded-full border" style={{ borderColor: "var(--hair)", background: "var(--surface)" }}>
             {(
               [
                 { key: "popular", label: "Most popular" },
@@ -129,7 +124,7 @@ export function GalleryScreen({
             ))}
           </div>
         </div>
-      </div>
+      </GlassPanel>
 
       <div className="grid gap-[26px]" style={{ gridTemplateColumns: "repeat(auto-fill, 320px)", justifyContent: "start" }}>
         {list.map((t) => (

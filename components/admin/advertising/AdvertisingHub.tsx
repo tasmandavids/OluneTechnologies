@@ -12,6 +12,7 @@ import { AdComposer } from "./AdComposer";
 import { AdvertisingOverview } from "./AdvertisingOverview";
 import { CampaignsPanel } from "./CampaignsPanel";
 import { ConnectHub } from "./ConnectHub";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 type Tab = "connect" | "create" | "campaigns";
 
@@ -95,22 +96,21 @@ export function AdvertisingHub({
         </motion.div>
       )}
 
-      <motion.div
-        variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
-        className="flex gap-1 overflow-x-auto rounded-xl border border-[--hair] bg-surface p-1"
-      >
-        {tabs.map((tabItem) => (
-          <button
-            key={tabItem.id}
-            type="button"
-            onClick={() => setTab(tabItem.id)}
-            className={`shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
-              tab === tabItem.id ? "bg-brand text-white shadow-sm" : "text-muted hover:text-ink"
-            }`}
-          >
-            {tabItem.label}
-          </button>
-        ))}
+      <motion.div variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}>
+        <GlassPanel className="flex gap-1 overflow-x-auto !p-1">
+          {tabs.map((tabItem) => (
+            <button
+              key={tabItem.id}
+              type="button"
+              onClick={() => setTab(tabItem.id)}
+              className={`shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
+                tab === tabItem.id ? "bg-brand text-white shadow-sm" : "text-muted hover:text-ink"
+              }`}
+            >
+              {tabItem.label}
+            </button>
+          ))}
+        </GlassPanel>
       </motion.div>
 
       <AnimatePresence mode="wait">

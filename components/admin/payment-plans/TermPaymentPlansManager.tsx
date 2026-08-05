@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { TermPlan, PayerOption, UnpaidInvoice } from "@/app/portal/admin/payment-plans/page";
 import { createTermPaymentPlan, cancelTermPaymentPlan, recordInstallmentPayment } from "@/app/portal/admin/payment-plans/actions";
 import { formatMoney } from "@/lib/currency";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const STATUS_STYLES: Record<TermPlan["status"], { bg: string; text: string }> = {
   active: { bg: "rgba(107,102,201,.12)", text: "#3d3a8a" },
@@ -38,7 +39,7 @@ function ProgressBar({ paid, total }: { paid: number; total: number }) {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[--hair] bg-surface p-5">
+    <GlassPanel className="!p-5">
       <p className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</p>
       <p
         className="mt-1 tabular-nums tracking-tight text-ink"
@@ -46,7 +47,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
       >
         {value}
       </p>
-    </div>
+    </GlassPanel>
   );
 }
 
@@ -184,7 +185,7 @@ export function TermPaymentPlansManager({
 
       {/* Active plans */}
       {active.length > 0 && (
-        <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+        <GlassPanel className="!p-0 overflow-hidden">
           <div className="border-b border-[--hair] px-6 py-4">
             <h2 className="text-sm font-bold text-ink">Active plans</h2>
           </div>
@@ -227,12 +228,12 @@ export function TermPaymentPlansManager({
               );
             })}
           </ul>
-        </div>
+        </GlassPanel>
       )}
 
       {/* Historical plans */}
       {historical.length > 0 && (
-        <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+        <GlassPanel className="!p-0 overflow-hidden">
           <div className="border-b border-[--hair] px-6 py-4">
             <h2 className="text-sm font-bold text-ink">Completed &amp; cancelled</h2>
           </div>
@@ -251,13 +252,13 @@ export function TermPaymentPlansManager({
               </li>
             ))}
           </ul>
-        </div>
+        </GlassPanel>
       )}
 
       {plans.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-[--hair] bg-base/50 py-14 text-center text-sm text-muted">
+        <GlassPanel className="!p-14 text-center text-sm text-muted">
           No payment plans yet. Create one to split a family&apos;s balance into installments.
-        </div>
+        </GlassPanel>
       )}
 
       {/* Create slide-over */}

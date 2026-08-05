@@ -1,11 +1,14 @@
 "use client";
 
 import { confirmDialog, toast } from "@/lib/feedback";
-import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition, type CSSProperties, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
-import { IconSearch } from "@/components/admin/dashboard/icons";
+import { IconSearch, IconPlus, IconX } from "@/components/admin/dashboard/icons";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
+import { RippleButton } from "@/components/portal/admin/glass/RippleButton";
+import { onGlowMove, onGlowLeave } from "@/components/portal/admin/glass/useMicroInteractions";
 import type { EmailAccountRow, EmailMessageRow, EmailThreadRow } from "@/lib/email/types";
 import { PROVIDER_META } from "@/lib/email/types";
 import {
@@ -48,11 +51,6 @@ function formatWhen(iso: string | null, locale: string) {
 
 function providerLabel(provider: Account["provider"]) {
   return PROVIDER_META[provider].label;
-}
-
-const AVATAR_TINTS = ["var(--brand)", "var(--brand-hot)", "var(--brand-deep)"];
-function avatarTint(index: number) {
-  return AVATAR_TINTS[index % AVATAR_TINTS.length];
 }
 
 function initialsFromLabel(label: string) {
@@ -127,6 +125,16 @@ function threadPrimaryLabel(
   const key = (external ?? thread.participant_addresses?.[0])?.toLowerCase();
   if (key && contacts[key]) return contacts[key].label;
   return external ?? thread.participant_addresses?.[0] ?? unknownSenderLabel;
+}
+
+function avatarStyle(size: number): CSSProperties {
+  return {
+    background: "linear-gradient(150deg, color-mix(in srgb, var(--n) 32%, var(--surface)), color-mix(in srgb, var(--n) 12%, var(--surface)))",
+    color: "var(--brand-deep)",
+    width: size,
+    height: size,
+    fontSize: size > 34 ? 13 : 11.5,
+  };
 }
 
 function EmailBody({ message }: { message: EmailMessageRow }) {
@@ -261,6 +269,35 @@ function ConnectPanel({ onConnected }: { onConnected: () => void }) {
   );
 }
 
+const GLASS_ROW = {
+  background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass2)",
+  backdropFilter: "blur(var(--blur)) saturate(1.85)",
+  WebkitBackdropFilter: "blur(var(--blur)) saturate(1.85)",
+  boxShadow: "inset 0 1px 0 var(--sheen), inset 0 -1px 0 var(--sheen2)",
+} as const;
+
+function QuietPill({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <RippleButton
+      type="button"
+      size="sm"
+      variant={active ? "solid" : "glass"}
+      onClick={onClick}
+      style={{ borderRadius: 999 }}
+    >
+      {children}
+    </RippleButton>
+  );
+}
+
 export function EmailInbox({
   accounts: initialAccounts,
   threads: initialThreads,
@@ -276,15 +313,16 @@ export function EmailInbox({
 }) {
   const t = useTranslations("admin.email");
   const tShared = useTranslations("admin.shared");
-  const tAdvertising = useTranslations("admin.advertising");
   const locale = useLocale();
   const [accounts, setAccounts] = useState(initialAccounts);
   const [threads, setThreads] = useState(initialThreads);
   const [contacts, setContacts] = useState(initialContacts);
   const [selectedAccountId, setSelectedAccountId] = useState<string | "all">("all");
+  const [filter, setFilter] = useState<"all" | "unread">("all");
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<EmailMessageRow[]>([]);
   const [activeThread, setActiveThread] = useState<Thread | null>(null);
+  const [checked, setChecked] = useState<string[]>([]);
   const [draft, setDraft] = useState("");
   const [search, setSearch] = useState("");
   const [loadingThread, setLoadingThread] = useState(false);
@@ -293,6 +331,14 @@ export function EmailInbox({
   const [showConnect, setShowConnect] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [initialSyncDone, setInitialSyncDone] = useState(!bannerConnected);
+
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [composeAccountId, setComposeAccountId] = useState<string | null>(null);
+  const [composeTo, setComposeTo] = useState("");
+  const [composeSubject, setComposeSubject] = useState("");
+  const [composeBody, setComposeBody] = useState("");
+  const [composeSending, setComposeSending] = useState(false);
+  const [composeError, setComposeError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!bannerConnected || initialSyncDone) return;
@@ -322,9 +368,21 @@ export function EmailInbox({
     [accounts],
   );
 
+  const unreadByAccount = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const thread of threads) {
+      if (thread.is_read) continue;
+      map.set(thread.account_id, (map.get(thread.account_id) ?? 0) + 1);
+    }
+    return map;
+  }, [threads]);
+
+  const totalUnread = useMemo(() => threads.filter((t2) => !t2.is_read).length, [threads]);
+
   const filteredThreads = useMemo(() => {
     return threads
       .filter((thread) => selectedAccountId === "all" || thread.account_id === selectedAccountId)
+      .filter((thread) => filter !== "unread" || !thread.is_read)
       .filter((thread) => {
         if (!search) return true;
         const q = search.toLowerCase();
@@ -334,7 +392,7 @@ export function EmailInbox({
           thread.participant_addresses.some((p) => p.includes(q))
         );
       });
-  }, [threads, selectedAccountId, search]);
+  }, [threads, selectedAccountId, filter, search]);
 
   const loadThread = useCallback(
     async (threadId: string) => {
@@ -425,6 +483,62 @@ export function EmailInbox({
     });
   };
 
+  const toggleChecked = (threadId: string) => {
+    setChecked((prev) => (prev.includes(threadId) ? prev.filter((id) => id !== threadId) : prev.concat(threadId)));
+  };
+
+  const bulkMarkRead = () => {
+    const ids = [...checked];
+    if (!ids.length) return;
+    startTransition(async () => {
+      await Promise.all(ids.map((id) => markThreadReadAction(id)));
+      setThreads((prev) => prev.map((thread) => (ids.includes(thread.id) ? { ...thread, is_read: true } : thread)));
+      setChecked([]);
+    });
+  };
+
+  const openCompose = () => {
+    setComposeError(null);
+    setComposeAccountId((selectedAccountId !== "all" ? selectedAccountId : accounts[0]?.id) ?? null);
+    setComposeTo("");
+    setComposeSubject("");
+    setComposeBody("");
+    setComposeOpen(true);
+  };
+
+  const sendCompose = async () => {
+    const account = accounts.find((a) => a.id === composeAccountId);
+    const to = composeTo
+      .split(/[,\s]+/)
+      .map((v) => v.trim())
+      .filter(Boolean);
+    if (!account || !to.length || !composeSubject.trim() || !composeBody.trim()) return;
+
+    setComposeError(null);
+    setComposeSending(true);
+    try {
+      const res = await fetch("/api/email/compose", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          accountId: account.id,
+          to,
+          subject: composeSubject.trim(),
+          bodyText: composeBody.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? t("composeFailed"));
+      toast.success(t("composeSuccess"));
+      setComposeOpen(false);
+      window.location.reload();
+    } catch (err) {
+      setComposeError(err instanceof Error ? err.message : t("composeFailed"));
+    } finally {
+      setComposeSending(false);
+    }
+  };
+
   if (accounts.length === 0) {
     return (
       <>
@@ -436,11 +550,21 @@ export function EmailInbox({
     );
   }
 
+  const activeAccount = accounts.find((a) => a.id === activeThread?.account_id) ?? null;
+  const activeExternal = (activeThread?.participant_addresses ?? []).filter((p) => !accountEmails.has(p.toLowerCase()));
+  const activePrimaryContact = activeExternal.map((e) => resolveContact(e, contacts)).find(Boolean) ?? null;
+
+  const QUICK_REPLIES = [
+    { label: t("quickReplyThanks"), text: t("quickReplyThanksText") },
+    { label: t("quickReplyFollowUp"), text: t("quickReplyFollowUpText") },
+    { label: t("quickReplyCall"), text: t("quickReplyCallText") },
+  ];
+
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="flex h-full min-h-0 flex-col gap-3">
       {(bannerError || syncError || (bannerConnected && !initialSyncDone)) && (
         <div
-          className={`border-b px-6 py-3 text-sm ${
+          className={`shrink-0 rounded-2xl border px-5 py-3 text-sm ${
             bannerError || syncError
               ? "border-red-200 bg-red-50 text-red-700"
               : "border-green-200 bg-green-50 text-green-800"
@@ -452,270 +576,450 @@ export function EmailInbox({
         </div>
       )}
 
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        <aside className="flex w-[17.5rem] shrink-0 flex-col border-r border-[--hair] bg-surface lg:w-80">
-          <div className="border-b border-[--hair] px-5 py-4">
-            <div className="flex items-center justify-between gap-2">
-              <div>
-                <h1 className="font-display text-xl font-bold text-ink">{t("title")}</h1>
-                <p className="mt-0.5 text-xs text-muted">{t("realMail")}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowConnect(true)}
-                title={t("connectMore")}
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-white transition hover:opacity-90"
-                style={{ background: "var(--brand)" }}
-              >
-                +
-              </button>
+      <div className="flex min-h-0 flex-1 gap-3">
+        {/* Nav column — which inbox */}
+        <div className="hidden w-[204px] shrink-0 lg:flex">
+          <GlassPanel className="flex h-full w-full min-h-0 flex-col !p-0 overflow-hidden">
+            <div className="shrink-0 border-b border-[--hair] px-4 py-4">
+              <p className="font-display text-lg font-semibold tracking-tight text-ink">{t("title")}</p>
+              <p className="mt-0.5 text-[11px] uppercase tracking-widest text-muted">
+                {totalUnread > 0 ? t("unreadCount", { count: totalUnread }) : t("allCaughtUp")}
+              </p>
             </div>
 
-            <div className="mt-3 flex items-center gap-2">
-              <select
-                value={selectedAccountId}
-                onChange={(e) => setSelectedAccountId(e.target.value)}
-                className="min-w-0 flex-1 rounded-lg border border-[--hair] bg-base px-2.5 py-1.5 text-xs text-ink"
-              >
-                <option value="all">{t("allInboxes")}</option>
-                {accounts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {t("accountOption", { email: a.email_address, provider: providerLabel(a.provider) })}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={refresh}
-                disabled={pending}
-                className="shrink-0 rounded-lg border border-[--hair] px-2.5 py-1.5 text-xs font-medium text-ink hover:bg-base"
-              >
-                {pending ? tShared("syncing") : t("syncNow")}
-              </button>
+            <div className="shrink-0 px-3 pb-2 pt-3">
+              <RippleButton variant="solid" sweep className="w-full !justify-center" onClick={openCompose}>
+                <IconPlus className="h-4 w-4" />
+                {t("composeButton")}
+              </RippleButton>
             </div>
 
-            <div className="mt-3 flex items-center gap-2 rounded-xl border border-[--hair] bg-base px-3 py-2.5">
-              <IconSearch className="h-4 w-4 shrink-0 text-muted" />
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t("searchPlaceholder")}
-                className="w-full border-none bg-transparent text-sm text-ink outline-none placeholder:text-muted"
-              />
-            </div>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            {filteredThreads.length === 0 ? (
-              <p className="p-5 text-sm leading-relaxed text-muted">{t("noConversations")}</p>
-            ) : (
-              filteredThreads.map((thread, idx) => {
-                const primary = threadPrimaryLabel(thread, accountEmails, contacts, tShared("unknownSender"));
-                const external = thread.participant_addresses?.find((p) => !accountEmails.has(p.toLowerCase()));
-                const contact = resolveContact(external, contacts);
-
-                return (
+            <nav className="min-h-0 flex-1 overflow-y-auto px-2.5 pb-3">
+              <p className="mb-1.5 px-2 pt-2 text-[10.5px] font-semibold uppercase tracking-widest text-muted">
+                {t("inboxesSection")}
+              </p>
+              <div className="flex flex-col gap-0.5">
+                {accounts.length > 1 && (
                   <button
-                    key={thread.id}
                     type="button"
-                    onClick={() => selectThread(thread.id)}
-                    className={`flex w-full items-start gap-3 border-b border-[--hair]/60 px-4 py-3.5 text-left transition ${
-                      selectedThreadId === thread.id ? "bg-brand/10" : "hover:bg-base"
-                    }`}
+                    onClick={() => setSelectedAccountId("all")}
+                    className="flex items-center justify-between gap-2 rounded-2xl px-2.5 py-2 text-left text-[13px] font-medium transition-colors"
+                    style={{
+                      color: selectedAccountId === "all" ? "var(--ink, var(--text))" : "var(--muted)",
+                      background: selectedAccountId === "all" ? "var(--t3)" : "transparent",
+                    }}
                   >
-                    <span
-                      className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-xs font-bold text-white"
-                      style={{ background: avatarTint(idx) }}
-                    >
-                      {initialsFromLabel(contact?.label ?? primary)}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className={`truncate text-sm ${thread.is_read ? "font-medium text-ink" : "font-bold text-ink"}`}>
-                          {primary}
-                        </p>
-                        <span className="shrink-0 text-xs text-muted">{formatWhen(thread.last_message_at, locale)}</span>
-                      </div>
-                      <p
-                        className={`mt-0.5 truncate text-sm ${
-                          thread.is_read ? "text-muted" : "font-semibold text-ink"
-                        }`}
-                      >
-                        {thread.subject ?? tShared("noSubject")}
-                      </p>
-                      <p className="mt-1 line-clamp-1 text-xs text-muted">
-                        {thread.snippet ?? thread.participant_addresses.join(", ")}
-                      </p>
-                      {(contact || thread.summary) && (
-                        <div className="mt-2 flex flex-wrap items-center gap-2">
-                          {contact && <ContactBadge contact={contact} />}
-                          {thread.summary && (
-                            <span className="line-clamp-1 text-xs text-brand">{thread.summary.split("\n")[0]}</span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    {!thread.is_read && (
-                      <span
-                        className="mt-2 h-2 w-2 shrink-0 rounded-full"
-                        style={{ background: "var(--brand)" }}
-                        aria-hidden
-                      />
+                    <span className="truncate">{t("allInboxes")}</span>
+                    {totalUnread > 0 && (
+                      <span className="shrink-0 text-[11px] font-semibold" style={{ color: "var(--brand-deep)" }}>
+                        {totalUnread}
+                      </span>
                     )}
                   </button>
-                );
-              })
-            )}
-          </div>
-          <div className="border-t border-[--hair] p-4 text-xs text-muted">
-            {accounts.map((a) => (
-              <div key={a.id} className="py-1">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="truncate">{a.email_address}</span>
-                  <button type="button" onClick={() => disconnect(a.id)} className="shrink-0 text-red-500 hover:underline">
-                    {tAdvertising("social.disconnect")}
-                  </button>
-                </div>
-                {a.sync_error && <p className="mt-1 text-red-500">{a.sync_error}</p>}
-                {a.last_sync_at && !a.sync_error && (
-                  <p className="mt-0.5 text-muted">{t("lastSync", { time: formatWhen(a.last_sync_at, locale) })}</p>
                 )}
+                {accounts.map((a) => {
+                  const active = selectedAccountId === a.id;
+                  const unread = unreadByAccount.get(a.id) ?? 0;
+                  return (
+                    <div key={a.id} className="group relative">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedAccountId(a.id)}
+                        title={a.email_address}
+                        className="flex w-full items-center gap-2 rounded-2xl px-2.5 py-2 text-left text-[13px] font-medium transition-colors"
+                        style={{
+                          color: active ? "var(--ink, var(--text))" : "var(--muted)",
+                          background: active ? "var(--t3)" : "transparent",
+                        }}
+                      >
+                        <span
+                          className="h-1.5 w-1.5 shrink-0 rounded-full"
+                          style={{ background: a.sync_error ? "var(--error)" : "var(--success)" }}
+                        />
+                        <span className="min-w-0 flex-1 truncate pr-4">{a.email_address}</span>
+                        {unread > 0 && (
+                          <span className="shrink-0 text-[11px] font-semibold" style={{ color: "var(--brand-deep)" }}>
+                            {unread}
+                          </span>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => disconnect(a.id)}
+                        title={t("disconnectConfirm")}
+                        className="absolute right-1.5 top-1/2 hidden h-5 w-5 -translate-y-1/2 place-items-center rounded-full text-muted hover:text-red-500 group-hover:grid"
+                      >
+                        <IconX className="h-3 w-3" />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-        </aside>
 
-        <section className="flex min-w-0 flex-1 flex-col bg-base/30">
-          {!selectedThreadId ? (
-            <div className="grid flex-1 place-items-center px-8 text-center">
-              <div>
-                <p className="text-lg font-semibold text-ink">{t("selectConversation")}</p>
-                <p className="mt-2 max-w-md text-sm leading-relaxed text-muted">{t("selectDescription")}</p>
+              <div className="mt-3 border-t border-[--hair] pt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowConnect(true)}
+                  className="flex w-full items-center gap-2 rounded-2xl px-2.5 py-2 text-left text-[12.5px] font-medium text-muted transition-colors hover:text-ink"
+                >
+                  <IconPlus className="h-3.5 w-3.5" />
+                  {t("connectMore")}
+                </button>
+              </div>
+            </nav>
+          </GlassPanel>
+        </div>
+
+        {/* List column — which thread */}
+        <div className="flex w-full min-w-[300px] shrink-0 lg:w-[360px]">
+          <GlassPanel className="flex h-full w-full min-h-0 flex-col !p-0 overflow-hidden">
+            <div className="shrink-0 space-y-2.5 border-b border-[--hair] px-3.5 py-3">
+              <div className="flex items-center gap-2">
+                <label
+                  className="flex flex-1 items-center gap-2 rounded-2xl px-3 py-2"
+                  style={GLASS_ROW}
+                >
+                  <IconSearch className="h-3.5 w-3.5 shrink-0 text-muted" />
+                  <input
+                    type="search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder={t("searchPlaceholder")}
+                    className="w-full min-w-0 border-none bg-transparent text-[13px] text-ink outline-none placeholder:text-muted"
+                  />
+                </label>
+                <RippleButton variant="glass" size="sm" onClick={refresh} disabled={pending}>
+                  {pending ? tShared("syncing") : t("syncNow")}
+                </RippleButton>
+              </div>
+              <div className="flex items-center gap-1.5 lg:hidden">
+                <select
+                  value={selectedAccountId}
+                  onChange={(e) => setSelectedAccountId(e.target.value)}
+                  className="min-w-0 flex-1 rounded-lg border border-[--hair] bg-base px-2.5 py-1.5 text-xs text-ink"
+                >
+                  <option value="all">{t("allInboxes")}</option>
+                  {accounts.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {t("accountOption", { email: a.email_address, provider: providerLabel(a.provider) })}
+                    </option>
+                  ))}
+                </select>
+                <RippleButton variant="solid" size="sm" onClick={openCompose}>
+                  {t("composeButton")}
+                </RippleButton>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                <QuietPill active={filter === "all"} onClick={() => setFilter("all")}>
+                  {t("filterAll")}
+                </QuietPill>
+                <QuietPill active={filter === "unread"} onClick={() => setFilter("unread")}>
+                  {t("filterUnread")}
+                </QuietPill>
               </div>
             </div>
-          ) : loadingThread && !messages.length ? (
-            <div className="grid flex-1 place-items-center text-sm text-muted">{tShared("loadingConversation")}</div>
-          ) : (
-            <>
-              <div className="shrink-0 border-b border-[--hair] bg-surface px-6 py-5 lg:px-8">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div className="min-w-0 flex-1 space-y-2.5">
-                    <h2 className="font-display text-2xl font-bold text-ink">
-                      {activeThread?.subject ?? tShared("conversation")}
-                    </h2>
-                    <div className="flex flex-wrap gap-2">
-                      {(activeThread?.participant_addresses ?? [])
-                        .filter((p) => !accountEmails.has(p.toLowerCase()))
-                        .map((email) => {
+
+            {checked.length > 0 && (
+              <div
+                className="flex shrink-0 items-center gap-2 border-b border-[--hair] px-3.5 py-2"
+                style={{ background: "var(--t2)" }}
+              >
+                <span className="text-[12px] text-muted">{t("selectedCount", { count: checked.length })}</span>
+                <div className="ml-auto flex items-center gap-1.5">
+                  <RippleButton variant="glass" size="sm" onClick={bulkMarkRead} disabled={pending}>
+                    {pending ? t("markingRead") : t("markRead")}
+                  </RippleButton>
+                  <RippleButton variant="quiet" size="sm" onClick={() => setChecked([])}>
+                    <IconX className="h-3.5 w-3.5" />
+                  </RippleButton>
+                </div>
+              </div>
+            )}
+
+            <div className="min-h-0 flex-1 overflow-y-auto p-2">
+              {filteredThreads.length === 0 ? (
+                <p className="p-4 text-sm leading-relaxed text-muted">{t("noConversations")}</p>
+              ) : (
+                filteredThreads.map((thread) => {
+                  const primary = threadPrimaryLabel(thread, accountEmails, contacts, tShared("unknownSender"));
+                  const external = thread.participant_addresses?.find((p) => !accountEmails.has(p.toLowerCase()));
+                  const contact = resolveContact(external, contacts);
+                  const open = selectedThreadId === thread.id;
+                  const isChecked = checked.includes(thread.id);
+
+                  return (
+                    <div
+                      key={thread.id}
+                      onClick={() => selectThread(thread.id)}
+                      onMouseMove={onGlowMove}
+                      onMouseLeave={onGlowLeave}
+                      className="relative mb-1 flex cursor-pointer items-start gap-2.5 overflow-hidden rounded-2xl px-2.5 py-2.5 transition-shadow duration-300"
+                      style={{
+                        background: open ? "var(--glass2)" : isChecked ? "var(--t1)" : "transparent",
+                        backdropFilter: open ? "blur(var(--blur))" : "none",
+                        boxShadow: open ? "inset 0 1px 0 var(--sheen), 0 14px 30px -22px var(--tg)" : "none",
+                      }}
+                    >
+                      <div
+                        className="pointer-events-none absolute inset-0 transition-opacity duration-[1300ms] ease-out"
+                        style={{
+                          opacity: "var(--glow-o, 0)",
+                          background: "radial-gradient(220px circle at var(--mx, -200px) var(--my, -200px), var(--t2), transparent 72%)",
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleChecked(thread.id);
+                        }}
+                        className="relative mt-[7px] grid h-4 w-4 shrink-0 place-items-center rounded-[6px] text-[9px]"
+                        style={{
+                          border: `1px solid ${isChecked ? "var(--brand)" : "var(--hair)"}`,
+                          background: isChecked ? "var(--brand)" : "transparent",
+                          color: "#fff",
+                        }}
+                      >
+                        {isChecked ? "✓" : ""}
+                      </button>
+                      <span
+                        className="relative grid shrink-0 place-items-center rounded-xl font-bold"
+                        style={avatarStyle(32)}
+                      >
+                        {initialsFromLabel(contact?.label ?? primary)}
+                      </span>
+                      <div className="relative min-w-0 flex-1">
+                        <div className="flex items-baseline gap-2">
+                          <p className={`min-w-0 truncate text-[13px] ${thread.is_read ? "font-medium text-ink" : "font-bold text-ink"}`}>
+                            {primary}
+                          </p>
+                          <span className="ml-auto shrink-0 text-[10.5px] text-muted">{formatWhen(thread.last_message_at, locale)}</span>
+                        </div>
+                        <p className={`truncate text-[13px] ${thread.is_read ? "text-muted" : "font-semibold text-ink"}`}>
+                          {thread.subject ?? tShared("noSubject")}
+                        </p>
+                        <p className="mt-0.5 line-clamp-1 text-[12px] text-muted">
+                          {thread.snippet ?? thread.participant_addresses.join(", ")}
+                        </p>
+                        {(contact || thread.summary) && (
+                          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                            {contact && <ContactBadge contact={contact} />}
+                            {thread.summary && (
+                              <span className="line-clamp-1 text-[11px] text-brand">{thread.summary.split("\n")[0]}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {!thread.is_read && (
+                        <span
+                          className="relative mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full"
+                          style={{ background: "var(--brand)", boxShadow: "0 0 0 3px var(--t2)" }}
+                          aria-hidden
+                        />
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </GlassPanel>
+        </div>
+
+        {/* Thread column */}
+        <div className="hidden min-w-0 flex-1 md:flex">
+          <GlassPanel className="flex h-full w-full min-h-0 flex-col !p-0 overflow-hidden">
+            {!selectedThreadId ? (
+              <div className="grid flex-1 place-items-center px-8 text-center">
+                <div>
+                  <p className="text-lg font-semibold text-ink">{t("selectConversation")}</p>
+                  <p className="mt-2 max-w-md text-sm leading-relaxed text-muted">{t("selectDescription")}</p>
+                </div>
+              </div>
+            ) : loadingThread && !messages.length ? (
+              <div className="grid flex-1 place-items-center text-sm text-muted">{tShared("loadingConversation")}</div>
+            ) : (
+              <>
+                <div className="shrink-0 border-b border-[--hair] px-5 py-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <h2 className="font-display text-xl font-semibold tracking-tight text-ink">
+                        {activeThread?.subject ?? tShared("conversation")}
+                      </h2>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {activeAccount && (
+                          <span
+                            className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+                            style={{ background: "var(--t2)", color: "var(--brand-deep)" }}
+                          >
+                            {providerLabel(activeAccount.provider)}
+                          </span>
+                        )}
+                        {activeExternal.map((email) => {
                           const contact = resolveContact(email, contacts);
-                          if (contact) return <ContactBadge key={email} contact={contact} />;
-                          return (
-                            <span
-                              key={email}
-                              className="inline-flex rounded-full border border-[--hair] bg-base px-2.5 py-0.5 text-xs text-muted"
-                            >
+                          return contact ? (
+                            <ContactBadge key={email} contact={contact} />
+                          ) : (
+                            <span key={email} className="inline-flex rounded-full border border-[--hair] bg-base px-2.5 py-0.5 text-xs text-muted">
                               {email}
                             </span>
                           );
                         })}
+                        {activeThread && (
+                          <span className="text-[12px] text-muted">{t("messageCount", { count: activeThread.message_count })}</span>
+                        )}
+                      </div>
+                    </div>
+                    <RippleButton variant="glass" size="sm" onClick={summarize} disabled={pending}>
+                      {pending ? tShared("summarizing") : t("summarize")}
+                    </RippleButton>
+                  </div>
+                  {activeThread?.summary && (
+                    <div className="mt-3 rounded-2xl border border-brand/20 bg-brand/5 px-4 py-3">
+                      <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-widest text-brand">{tShared("summary")}</p>
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink">{activeThread.summary}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 overflow-y-auto px-4 py-6 lg:px-8">
+                  <div className="mx-auto flex max-w-3xl flex-col gap-6">
+                    {messages.map((msg) => {
+                      const contact = resolveContact(msg.from_address, contacts);
+                      return (
+                        <article
+                          key={msg.id}
+                          className="overflow-hidden rounded-[20px] border"
+                          style={{
+                            borderColor: msg.is_outbound ? "color-mix(in srgb, var(--brand) 30%, var(--hair))" : "var(--hair)",
+                            background: msg.is_outbound ? "color-mix(in srgb, var(--brand) 5%, var(--surface))" : "var(--surface)",
+                          }}
+                        >
+                          <header className="flex flex-wrap items-start justify-between gap-3 border-b border-[--hair]/70 px-5 py-3.5">
+                            <div className="flex items-center gap-2.5">
+                              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl text-xs font-bold" style={avatarStyle(32)}>
+                                {initialsFromLabel(contact?.label ?? msg.from_name ?? msg.from_address ?? "?")}
+                              </span>
+                              <div className="space-y-0.5">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <p className="text-sm font-semibold text-ink">
+                                    {contact?.label ?? msg.from_name ?? msg.from_address ?? tShared("unknown")}
+                                    {msg.is_outbound && <span className="ml-1.5 text-xs font-normal text-muted">({tShared("you")})</span>}
+                                  </p>
+                                  {contact && !msg.is_outbound && <ContactBadge contact={contact} />}
+                                </div>
+                                {msg.from_address && <p className="text-xs text-muted">{msg.from_address}</p>}
+                              </div>
+                            </div>
+                            <time className="text-xs text-muted">{formatFullWhen(msg.sent_at, locale)}</time>
+                          </header>
+                          <div className="px-4 py-4 sm:px-5">
+                            {msg.subject && msg.subject !== activeThread?.subject && (
+                              <p className="mb-3 text-sm font-medium text-muted">{msg.subject}</p>
+                            )}
+                            <EmailBody message={msg} />
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="shrink-0 border-t border-[--hair] px-4 py-3.5 lg:px-6">
+                  <div className="mx-auto flex max-w-3xl flex-col gap-2.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10.5px] font-semibold uppercase tracking-widest text-muted">{t("quickReplies")}</span>
+                      {QUICK_REPLIES.map((qr) => (
+                        <RippleButton key={qr.label} variant="glass" size="sm" onClick={() => setDraft(qr.text)}>
+                          {qr.label}
+                        </RippleButton>
+                      ))}
+                    </div>
+                    <div className="rounded-2xl px-3.5 py-3" style={GLASS_ROW}>
+                      <textarea
+                        value={draft}
+                        onChange={(e) => setDraft(e.target.value)}
+                        placeholder={t("replyPlaceholder")}
+                        rows={3}
+                        className="w-full resize-none border-none bg-transparent text-sm text-ink outline-none placeholder:text-muted"
+                      />
+                      <div className="flex items-center gap-2.5 border-t pt-2" style={{ borderColor: "var(--t2)" }}>
+                        <span className="flex items-center gap-1.5 text-[11px] text-muted">
+                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
+                          {activeAccount && t("sendsFrom", { email: activeAccount.email_address })}
+                        </span>
+                        <RippleButton
+                          variant="solid"
+                          size="sm"
+                          className="ml-auto"
+                          onClick={sendReply}
+                          disabled={sending || !draft.trim()}
+                        >
+                          {sending ? tShared("sending") : t("sendReply")}
+                        </RippleButton>
+                      </div>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={summarize}
-                    disabled={pending}
-                    className="shrink-0 rounded-full border border-[--hair] px-3.5 py-1.5 text-xs font-semibold text-muted transition hover:bg-base hover:text-ink"
-                  >
-                    {pending ? tShared("summarizing") : t("summarize")}
-                  </button>
                 </div>
-                {activeThread?.summary && (
-                  <div className="mt-4 rounded-2xl border border-brand/20 bg-brand/5 px-5 py-4">
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand">{tShared("summary")}</p>
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink">{activeThread.summary}</p>
+              </>
+            )}
+          </GlassPanel>
+        </div>
+
+        {/* Context column — about the person */}
+        {selectedThreadId && activeThread && (
+          <div className="hidden w-[236px] shrink-0 xl:flex">
+            <GlassPanel className="flex h-full w-full min-h-0 flex-col !p-0 overflow-hidden">
+              <div className="min-h-0 flex-1 overflow-y-auto p-4">
+                <p className="mb-2.5 text-[10.5px] font-semibold uppercase tracking-widest text-muted">{t("about")}</p>
+                {activePrimaryContact ? (
+                  <div className="mb-5 flex items-center gap-2.5">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl text-sm font-bold" style={avatarStyle(40)}>
+                      {initialsFromLabel(activePrimaryContact.label)}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate text-[13.5px] font-bold text-ink">{activePrimaryContact.label}</p>
+                      <p className="text-[11.5px] text-muted">{contactTypeLabel(activePrimaryContact.type)}</p>
+                    </div>
                   </div>
+                ) : (
+                  <p className="mb-5 text-[12.5px] leading-relaxed text-muted">{t("noContactMatch")}</p>
                 )}
-              </div>
 
-              <div className="flex-1 overflow-y-auto px-4 py-8 lg:px-10">
-                <div className="mx-auto flex max-w-3xl flex-col gap-8">
-                  {messages.map((msg) => {
-                    const contact = resolveContact(msg.from_address, contacts);
-                    return (
-                      <article
-                        key={msg.id}
-                        className={`rounded-2xl border shadow-sm ${
-                          msg.is_outbound
-                            ? "border-brand/25 bg-brand/[0.04]"
-                            : "border-[--hair] bg-surface"
-                        }`}
-                      >
-                        <header className="flex flex-wrap items-start justify-between gap-3 border-b border-[--hair]/70 px-6 py-4">
-                          <div className="space-y-2">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <p className="text-base font-semibold text-ink">
-                                {contact?.label ?? msg.from_name ?? msg.from_address ?? tShared("unknown")}
-                                {msg.is_outbound && (
-                                  <span className="ml-2 text-sm font-normal text-muted">({tShared("you")})</span>
-                                )}
-                              </p>
-                              {contact && !msg.is_outbound && (
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <ContactBadge contact={contact} />
-                                  {contact.type === "parent" && (
-                                    <span className="text-xs text-muted">{tShared("savedToParentPortal")}</span>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                            {msg.from_address && <p className="text-sm text-muted">{msg.from_address}</p>}
-                          </div>
-                          <time className="text-sm text-muted">{formatFullWhen(msg.sent_at, locale)}</time>
-                        </header>
-                        <div className="px-4 py-5 sm:px-6">
-                          {msg.subject && msg.subject !== activeThread?.subject && (
-                            <p className="mb-4 text-sm font-medium text-muted">{msg.subject}</p>
-                          )}
-                          <EmailBody message={msg} />
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              </div>
+                {activePrimaryContact?.href && (
+                  <Link href={activePrimaryContact.href} className="mb-5 block">
+                    <RippleButton variant="glass" size="sm" className="w-full !justify-center">
+                      {t("viewProfile")}
+                    </RippleButton>
+                  </Link>
+                )}
 
-              <div className="shrink-0 border-t border-[--hair] bg-surface px-4 py-4 lg:px-8">
-                <div className="mx-auto flex max-w-3xl items-end gap-3">
-                  <textarea
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    placeholder={t("replyPlaceholder")}
-                    rows={1}
-                    className="flex-1 resize-none rounded-2xl border border-[--hair] bg-base px-4 py-3 text-sm text-ink outline-none ring-brand/30 transition focus:ring-2"
-                    style={{ maxHeight: "140px", overflowY: "auto" }}
-                  />
-                  <button
-                    type="button"
-                    onClick={sendReply}
-                    disabled={sending || !draft.trim()}
-                    aria-label={t("sendReply")}
-                    className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white transition-opacity hover:opacity-90 disabled:opacity-40"
-                    style={{ background: "var(--brand)" }}
-                  >
-                    {sending ? (
-                      "…"
-                    ) : (
-                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="22" y1="2" x2="11" y2="13" />
-                        <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                      </svg>
+                <div className="mb-5">
+                  <p className="mb-2 text-[10.5px] font-semibold uppercase tracking-widest text-muted">{t("threadInfo")}</p>
+                  <div className="flex flex-col gap-1.5 rounded-2xl px-3 py-2.5" style={GLASS_ROW}>
+                    <p className="text-[12px] text-ink">{t("messageCount", { count: activeThread.message_count })}</p>
+                    {activeThread.last_message_at && (
+                      <p className="text-[12px] text-muted">{t("lastActive", { time: formatFullWhen(activeThread.last_message_at, locale) })}</p>
                     )}
-                  </button>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="mb-2 text-[10.5px] font-semibold uppercase tracking-widest text-muted">{t("participants")}</p>
+                  <div className="flex flex-col gap-1.5">
+                    {(activeThread.participant_addresses ?? []).map((email) => {
+                      const contact = resolveContact(email, contacts);
+                      return (
+                        <div key={email} className="rounded-2xl px-3 py-2" style={GLASS_ROW}>
+                          {contact ? <ContactBadge contact={contact} /> : <span className="text-[12px] text-muted">{email}</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </>
-          )}
-        </section>
+            </GlassPanel>
+          </div>
+        )}
       </div>
 
       <AnimatePresence>
@@ -740,6 +1044,96 @@ export function EmailInbox({
                   window.location.reload();
                 }}
               />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {composeOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+            onClick={() => setComposeOpen(false)}
+          >
+            <motion.div
+              initial={{ y: 16, opacity: 0, scale: 0.98 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 16, opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-xl overflow-hidden rounded-[24px] border"
+              style={{ background: "var(--surface)", borderColor: "var(--edge)", boxShadow: "var(--shadow)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-2.5 border-b border-[--hair] px-5 py-3.5">
+                <span className="font-display text-base font-semibold text-ink">{t("composeTitle")}</span>
+                {accounts.length > 1 ? (
+                  <select
+                    value={composeAccountId ?? ""}
+                    onChange={(e) => setComposeAccountId(e.target.value)}
+                    className="ml-2 rounded-full border border-[--hair] bg-base px-2.5 py-1 text-[11px] font-semibold text-ink"
+                  >
+                    {accounts.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.email_address}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className="rounded-full px-2.5 py-1 text-[11px] font-semibold" style={{ background: "var(--t2)", color: "var(--brand-deep)" }}>
+                    {accounts[0]?.email_address}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setComposeOpen(false)}
+                  className="ml-auto grid h-7 w-7 shrink-0 place-items-center rounded-full text-muted transition hover:bg-[--t2] hover:text-ink"
+                >
+                  <IconX className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="flex flex-col gap-3 px-5 py-4">
+                <div className="flex items-center gap-2.5 border-b border-[--hair] pb-3">
+                  <span className="w-14 shrink-0 text-xs text-muted">{t("composeTo")}</span>
+                  <input
+                    value={composeTo}
+                    onChange={(e) => setComposeTo(e.target.value)}
+                    placeholder={t("composeToPlaceholder")}
+                    className="flex-1 border-none bg-transparent text-sm text-ink outline-none placeholder:text-muted"
+                  />
+                </div>
+                <input
+                  value={composeSubject}
+                  onChange={(e) => setComposeSubject(e.target.value)}
+                  placeholder={t("composeSubjectPlaceholder")}
+                  className="border-b border-[--hair] bg-transparent pb-3 text-sm font-semibold text-ink outline-none placeholder:text-muted placeholder:font-normal"
+                />
+                <textarea
+                  value={composeBody}
+                  onChange={(e) => setComposeBody(e.target.value)}
+                  placeholder={t("composeBodyPlaceholder")}
+                  rows={7}
+                  className="resize-none border-none bg-transparent text-sm leading-relaxed text-ink outline-none placeholder:text-muted"
+                />
+                {composeError && <p className="text-sm text-red-500">{composeError}</p>}
+              </div>
+              <div className="flex items-center gap-2.5 border-t border-[--hair] px-5 py-3.5" style={{ background: "var(--glass2)" }}>
+                <span className="ml-auto flex gap-2">
+                  <RippleButton variant="glass" size="md" onClick={() => setComposeOpen(false)}>
+                    {tShared("close")}
+                  </RippleButton>
+                  <RippleButton
+                    variant="solid"
+                    size="md"
+                    onClick={sendCompose}
+                    disabled={composeSending || !composeTo.trim() || !composeSubject.trim() || !composeBody.trim()}
+                  >
+                    {composeSending ? tShared("sending") : t("composeSend")}
+                  </RippleButton>
+                </span>
+              </div>
             </motion.div>
           </motion.div>
         )}

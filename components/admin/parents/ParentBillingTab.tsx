@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import type { ParentInvoice, ParentOrder, ParentPayment } from "@/lib/parents/types";
 import { formatMoney } from "@/lib/currency";
 import { formatInvoiceNumber } from "@/lib/invoices/format-invoice-number";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const STATUS_KEYS = ["paid", "sent", "overdue", "draft", "void", "refunded"] as const;
 
@@ -63,18 +64,18 @@ export default function ParentBillingTab({
   return (
     <div className="space-y-8">
       <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-2xl border border-[--hair] bg-surface p-4">
+        <GlassPanel className="!p-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("outstanding")}</p>
           <p className="mt-1 text-xl font-black text-ink">{formatMoney(outstanding)}</p>
-        </div>
-        <div className="rounded-2xl border border-[--hair] bg-surface p-4">
+        </GlassPanel>
+        <GlassPanel className="!p-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("totalReceived")}</p>
           <p className="mt-1 text-xl font-black text-ink">{formatMoney(totalPaid)}</p>
-        </div>
-        <div className="rounded-2xl border border-[--hair] bg-surface p-4">
+        </GlassPanel>
+        <GlassPanel className="!p-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("invoices")}</p>
           <p className="mt-1 text-xl font-black text-ink">{invoices.length}</p>
-        </div>
+        </GlassPanel>
       </div>
 
       <section>

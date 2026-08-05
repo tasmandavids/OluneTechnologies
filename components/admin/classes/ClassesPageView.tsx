@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import ClassesManager from "./ClassesManager";
 import { ScheduleBoard } from "@/components/admin/dashboard/ScheduleBoard";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import type { ClassRow, TeacherOption } from "@/app/portal/admin/classes/page";
 import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-accounts";
 
@@ -36,7 +37,7 @@ export function ClassesPageView({
   return (
     <div>
       <div className="mx-auto flex max-w-5xl justify-end px-6 pt-6">
-        <div className="inline-flex rounded-xl border border-[--hair] bg-surface p-1">
+        <GlassPanel className="!inline-flex !w-auto !rounded-xl !p-1">
           {(["list", "schedule"] as const).map((v) => (
             <button
               key={v}
@@ -51,7 +52,7 @@ export function ClassesPageView({
               {v === "list" ? t("viewList") : t("viewSchedule")}
             </button>
           ))}
-        </div>
+        </GlassPanel>
       </div>
 
       {view === "list" ? (

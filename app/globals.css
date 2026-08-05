@@ -144,6 +144,11 @@ body {
   --shadow: 0 26px 64px -30px rgba(24, 22, 40, 0.34);
   --shadow-s: 0 12px 34px -20px rgba(24, 22, 40, 0.26);
   --amb: 1;
+  --success: #16a34a;
+  --error: #dc2626;
+  --dur-base: 180ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
 }
 html[data-base="dark"] .admin-glass {
   --glass: rgba(255, 255, 255, 0.055);
@@ -163,6 +168,8 @@ html[data-base="dark"] .admin-glass {
   --refract: rgba(255, 255, 255, 0.07);
   --shadow: 0 32px 74px -32px rgba(0, 0, 0, 0.85);
   --shadow-s: 0 16px 38px -22px rgba(0, 0, 0, 0.75);
+  --success: #22c55e;
+  --error: #f87171;
 }
 
 @keyframes admin-drift1 {

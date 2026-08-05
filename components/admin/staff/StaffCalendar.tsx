@@ -12,6 +12,7 @@ import {
 import type { StaffOption, StaffShift, TeachingBlock } from "@/lib/staff/types";
 import { addWeeks, getWeekRange } from "@/lib/staff/week";
 import { formatTimeShort } from "@/lib/i18n/format";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 
@@ -195,7 +196,7 @@ export default function StaffCalendar({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-[--hair] bg-surface">
+      <GlassPanel className="!p-0 overflow-x-auto">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead>
             <tr className="border-b border-[--hair]">
@@ -266,13 +267,20 @@ export default function StaffCalendar({
             ))}
           </tbody>
         </table>
-      </div>
+      </GlassPanel>
 
       {shiftForm && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border border-[--hair] bg-surface p-4"
+          className="rounded-[22px] border p-4"
+          style={{
+            background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass)",
+            borderColor: "var(--edge)",
+            backdropFilter: "blur(var(--blur)) saturate(1.85)",
+            WebkitBackdropFilter: "blur(var(--blur)) saturate(1.85)",
+            boxShadow: "var(--shadow-s), inset 0 1px 0 var(--sheen), inset 0 -1px 0 var(--sheen2), inset 1px 0 0 var(--sheen2)",
+          }}
         >
           <h3 className="mb-3 font-semibold text-ink">
             {shiftForm.id ? t("editShift") : t("addShift")}
