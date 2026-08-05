@@ -1,6 +1,7 @@
 "use client";
 
 import type { TeacherAvailabilityRow } from "@/app/portal/admin/availability/page";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]; // Mon–Sat–Sun
 
@@ -19,45 +20,46 @@ const DAY_ABBR: Record<number, string> = {
 export function AdminAvailabilityView({ rows }: { rows: TeacherAvailabilityRow[] }) {
   if (rows.length === 0) {
     return (
-      <div className="p-6 max-w-4xl mx-auto">
-        <h1 className="text-xl font-semibold text-gray-900">Teacher availability</h1>
-        <p className="text-sm text-gray-400 mt-6">No teachers or availability slots on record yet.</p>
+      <div className="mx-auto max-w-4xl p-6">
+        <h1 className="text-xl font-semibold text-ink">Teacher availability</h1>
+        <p className="mt-6 text-sm text-muted">No teachers or availability slots on record yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-4">
+    <div className="mx-auto max-w-5xl space-y-4 p-6">
       <div>
-        <h1 className="text-xl font-semibold text-gray-900">Teacher availability</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Read-only view of slots teachers have marked as available</p>
+        <h1 className="text-xl font-semibold text-ink">Teacher availability</h1>
+        <p className="mt-0.5 text-sm text-muted">Read-only view of slots teachers have marked as available</p>
       </div>
 
       <div className="space-y-3">
         {rows.map((teacher) => (
-          <div key={teacher.teacherId} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-900">{teacher.teacherName}</p>
+          <GlassPanel key={teacher.teacherId} className="!p-0 overflow-hidden">
+            <div className="flex items-center justify-between border-b px-4 py-3" style={{ borderColor: "var(--hair)" }}>
+              <p className="text-sm font-medium text-ink">{teacher.teacherName}</p>
               {teacher.slots.length === 0 && (
-                <span className="text-xs text-gray-400">No availability set</span>
+                <span className="text-xs text-muted">No availability set</span>
               )}
             </div>
             {teacher.slots.length > 0 && (
-              <div className="px-4 py-3 flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 px-4 py-3">
                 {DAY_ORDER.flatMap((day) =>
                   teacher.slots
                     .filter((s) => s.day === day)
                     .map((slot, i) => (
                       <div
                         key={`${day}-${i}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-100 rounded-lg"
+                        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5"
+                        style={{ background: "var(--t2)", border: "1px solid var(--tb)" }}
                       >
-                        <span className="text-xs font-semibold text-indigo-700">{DAY_ABBR[day]}</span>
-                        <span className="text-xs text-indigo-600">
+                        <span className="text-xs font-semibold text-ink">{DAY_ABBR[day]}</span>
+                        <span className="text-xs text-muted">
                           {formatTime(slot.startTime)} – {formatTime(slot.endTime)}
                         </span>
                         {slot.notes && (
-                          <span className="text-xs text-indigo-400 truncate max-w-[120px]" title={slot.notes}>
+                          <span className="max-w-[120px] truncate text-xs text-muted" title={slot.notes}>
                             · {slot.notes}
                           </span>
                         )}
@@ -66,7 +68,7 @@ export function AdminAvailabilityView({ rows }: { rows: TeacherAvailabilityRow[]
                 )}
               </div>
             )}
-          </div>
+          </GlassPanel>
         ))}
       </div>
     </div>

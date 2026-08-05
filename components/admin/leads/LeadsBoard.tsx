@@ -2,6 +2,7 @@
 import { useEscToClose } from "@/lib/useEscToClose";
 import { panelSlide } from "@/lib/motion";
 import { useTranslations } from "next-intl";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 // ============================================================================
 //  LeadsBoard — Kanban pipeline for the CRM.
@@ -358,7 +359,7 @@ export function LeadsBoard({ initialLeads }: { initialLeads: Lead[] }) {
             {COLUMNS.map((col) => {
               const items = columns[col.id];
               return (
-                <div key={col.id} className="flex w-60 shrink-0 flex-col">
+                <GlassPanel key={col.id} className="flex w-60 shrink-0 flex-col !p-3">
                   {/* Column header */}
                   <div className="mb-3 flex items-center gap-2">
                     <span
@@ -416,7 +417,7 @@ export function LeadsBoard({ initialLeads }: { initialLeads: Lead[] }) {
                       </div>
                     )}
                   </Droppable>
-                </div>
+                </GlassPanel>
               );
             })}
           </div>

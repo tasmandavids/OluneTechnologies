@@ -1405,7 +1405,18 @@
       },
       "brandingTitle": "品牌形象",
       "brandingDescription": "工作室在门户和网站上的标志、颜色和外观。",
-      "openBranding": "打开品牌设置"
+      "openBranding": "打开品牌设置",
+      "nav": {
+        "profile": "资料",
+        "billing": "账单",
+        "registration": "注册",
+        "domains": "域名",
+        "account": "账户"
+      },
+      "account": {
+        "title": "账户",
+        "description": "在此设备上退出 Olune 登录。"
+      }
     },
     "branding": {
       "title": "外观",

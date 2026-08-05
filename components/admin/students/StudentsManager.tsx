@@ -4,6 +4,7 @@ import { panelSlide } from "@/lib/motion";
 import { confirmDialog, toast } from "@/lib/feedback";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useTranslations } from "next-intl";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 // ============================================================================
 //  StudentsManager — searchable student roster + detail panel.
@@ -611,57 +612,56 @@ function StudentCard({
   const t = useTranslations("admin.students");
   const tShared = useTranslations("admin.shared");
   return (
-    <motion.div
-      whileHover={{ y: -2 }}
-      className="w-full rounded-2xl border border-[--hair] bg-surface p-4 transition-shadow hover:shadow-md"
-    >
-      <div className="mb-3 flex items-center gap-3">
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={onToggle}
-          onClick={(e) => e.stopPropagation()}
-          className="h-4 w-4 shrink-0 accent-[--brand]"
-          aria-label={student.name ?? tShared("unnamed")}
-        />
-        <button
-          type="button"
-          onClick={onClick}
-          className="flex min-w-0 flex-1 items-center gap-3 text-left"
-        >
-          <span
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-black text-white"
-            style={{ background: "var(--brand)" }}
+    <motion.div whileHover={{ y: -2 }} className="w-full">
+      <GlassPanel className="!p-4">
+        <div className="mb-3 flex items-center gap-3">
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={onToggle}
+            onClick={(e) => e.stopPropagation()}
+            className="h-4 w-4 shrink-0 accent-[--brand]"
+            aria-label={student.name ?? tShared("unnamed")}
+          />
+          <button
+            type="button"
+            onClick={onClick}
+            className="flex min-w-0 flex-1 items-center gap-3 text-left"
           >
-            {initials(student.name)}
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="font-bold text-ink truncate">{student.name ?? tShared("unnamed")}</p>
-            <p className="text-xs text-muted truncate">{student.email ?? student.phone ?? "—"}</p>
+            <span
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-black text-white"
+              style={{ background: "var(--brand)" }}
+            >
+              {initials(student.name)}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="font-bold text-ink truncate">{student.name ?? tShared("unnamed")}</p>
+              <p className="text-xs text-muted truncate">{student.email ?? student.phone ?? "—"}</p>
+            </div>
+          </button>
+        </div>
+        <button type="button" onClick={onClick} className="w-full text-left">
+          <div className="flex flex-wrap gap-1.5 pl-7">
+            {student.enrollments.length === 0 ? (
+              <span className="text-xs text-muted italic">{t("noClasses")}</span>
+            ) : (
+              student.enrollments.slice(0, 3).map((e) => (
+                <span
+                  key={e.classId}
+                  className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.62rem] font-medium text-ink"
+                >
+                  {e.className}
+                </span>
+              ))
+            )}
+            {student.enrollments.length > 3 && (
+              <span className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.62rem] text-muted">
+                {tShared("moreCount", { count: student.enrollments.length - 3 })}
+              </span>
+            )}
           </div>
         </button>
-      </div>
-      <button type="button" onClick={onClick} className="w-full text-left">
-        <div className="flex flex-wrap gap-1.5 pl-7">
-          {student.enrollments.length === 0 ? (
-            <span className="text-xs text-muted italic">{t("noClasses")}</span>
-          ) : (
-            student.enrollments.slice(0, 3).map((e) => (
-              <span
-                key={e.classId}
-                className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.62rem] font-medium text-ink"
-              >
-                {e.className}
-              </span>
-            ))
-          )}
-          {student.enrollments.length > 3 && (
-            <span className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.62rem] text-muted">
-              {tShared("moreCount", { count: student.enrollments.length - 3 })}
-            </span>
-          )}
-        </div>
-      </button>
+      </GlassPanel>
     </motion.div>
   );
 }
@@ -829,7 +829,7 @@ export default function StudentsManager({
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-[--hair] bg-surface">
+        <GlassPanel className="!p-0">
           <EmptyState
             title={search ? t("emptySearch") : t("empty")}
             action={
@@ -843,7 +843,7 @@ export default function StudentsManager({
               ) : null
             }
           />
-        </div>
+        </GlassPanel>
       ) : (
         <>
           {filtered.length > 0 && (

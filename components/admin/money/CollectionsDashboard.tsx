@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { sendBulkPaymentReminders } from "@/app/portal/admin/billing/actions";
 import { formatMoney } from "@/lib/currency";
 import { formatShortDate } from "@/lib/xero/format";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 export type CollectionsInvoice = {
   id: string;
@@ -124,12 +125,12 @@ export function CollectionsDashboard({ queue }: { queue: CollectionsFamily[] }) 
       )}
 
       {queue.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[--hair] bg-base/50 p-14 text-center">
+        <GlassPanel className="!p-14 text-center">
           <p className="text-sm font-semibold text-ink">{t("empty.title")}</p>
           <p className="mx-auto mt-1 max-w-sm text-sm text-muted">{t("empty.body")}</p>
-        </div>
+        </GlassPanel>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+        <GlassPanel className="!p-0 overflow-hidden">
           <div className="flex items-center gap-3 border-b border-[--hair] px-6 py-4">
             <h2 className="text-sm font-bold text-ink">{t("queueTitle")}</h2>
             <span className="text-xs text-muted">
@@ -171,7 +172,7 @@ export function CollectionsDashboard({ queue }: { queue: CollectionsFamily[] }) 
               </li>
             ))}
           </ul>
-        </div>
+        </GlassPanel>
       )}
     </motion.div>
   );

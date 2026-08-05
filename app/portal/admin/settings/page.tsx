@@ -61,6 +61,7 @@ export default async function SettingsPage() {
         endDate: t.end_date as string,
         invoiceLeadDays: t.invoice_lead_days as number,
       }))}
+      userEmail={user?.email ?? null}
     />
   );
 }

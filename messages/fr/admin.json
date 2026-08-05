@@ -1328,7 +1328,18 @@
       "openDomainWizard": "Ouvrir l'assistant de configuration du domaine →",
       "brandingTitle": "Image de marque",
       "brandingDescription": "Logo, couleurs et apparence de votre studio sur le portail et le site web.",
-      "openBranding": "Ouvrir l'image de marque"
+      "openBranding": "Ouvrir l'image de marque",
+      "nav": {
+        "profile": "Profil",
+        "billing": "Facturation",
+        "registration": "Inscription",
+        "domains": "Domaines",
+        "account": "Compte"
+      },
+      "account": {
+        "title": "Compte",
+        "description": "Déconnectez-vous d'Olune sur cet appareil."
+      }
     },
     "branding": {
       "title": "Apparence",

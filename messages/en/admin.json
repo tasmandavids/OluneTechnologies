@@ -1408,7 +1408,18 @@
       },
       "brandingTitle": "Branding",
       "brandingDescription": "Logo, colours, and how your studio looks across the portal and website.",
-      "openBranding": "Open branding"
+      "openBranding": "Open branding",
+      "nav": {
+        "profile": "Profile",
+        "billing": "Billing",
+        "registration": "Registration",
+        "domains": "Domains",
+        "account": "Account"
+      },
+      "account": {
+        "title": "Account",
+        "description": "Sign out of Olune on this device."
+      }
     },
     "branding": {
       "title": "Appearance",

@@ -7,6 +7,7 @@
 import { useState, useTransition } from "react";
 import { ProductionWizard } from "./ProductionWizard";
 import { deleteEvent, getFullEvent, type WizardFormState } from "@/app/portal/admin/events/actions";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 // ─── Types (mirrors page.tsx selects) ────────────────────────────────────────
 

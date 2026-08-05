@@ -1328,7 +1328,18 @@
       "openDomainWizard": "Apri la procedura guidata di configurazione del dominio →",
       "brandingTitle": "Immagine del brand",
       "brandingDescription": "Logo, colori e aspetto del tuo studio nel portale e nel sito web.",
-      "openBranding": "Apri il branding"
+      "openBranding": "Apri il branding",
+      "nav": {
+        "profile": "Profilo",
+        "billing": "Fatturazione",
+        "registration": "Iscrizione",
+        "domains": "Domini",
+        "account": "Account"
+      },
+      "account": {
+        "title": "Account",
+        "description": "Esci da Olune su questo dispositivo."
+      }
     },
     "branding": {
       "title": "Aspetto",

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import type { StripeBalanceSummary, StripeConnectAccountRow, StripePayoutRow } from "@/lib/stripe/connect";
 import { getStripeExpressLoginLink } from "@/app/portal/admin/payments/actions";
 import { formatMoney } from "@/lib/currency";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }> = {
   paid: { bg: "rgba(22,163,74,.12)", text: "#16803c", label: "Paid" },
@@ -16,7 +17,7 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }>
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[--hair] bg-surface p-5">
+    <GlassPanel className="!p-5">
       <p className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</p>
       <p
         className="mt-1 tabular-nums tracking-tight text-ink"
@@ -24,7 +25,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
       >
         {value}
       </p>
-    </div>
+    </GlassPanel>
   );
 }
 
@@ -111,7 +112,7 @@ export function PayoutsDashboard({
       )}
 
       {!account && (
-        <div className="rounded-2xl border border-dashed border-[--hair] bg-base/50 p-10 text-center">
+        <GlassPanel className="!p-10 text-center">
           <p className="text-sm font-semibold text-ink">Stripe isn&apos;t connected yet</p>
           <p className="mx-auto mt-1 max-w-sm text-sm text-muted">
             Connect this studio&apos;s own Stripe account to start receiving payments — and see
@@ -124,7 +125,7 @@ export function PayoutsDashboard({
           >
             Connect with Stripe
           </a>
-        </div>
+        </GlassPanel>
       )}
 
       {account && !chargeable && (
@@ -158,7 +159,7 @@ export function PayoutsDashboard({
             <StatCard label="Pending" value={formatMoney(balance.pendingCents)} />
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+          <GlassPanel className="!p-0 overflow-hidden">
             <div className="border-b border-[--hair] px-6 py-4">
               <h2 className="text-sm font-bold text-ink">Recent payouts</h2>
             </div>
@@ -209,7 +210,7 @@ export function PayoutsDashboard({
                 </table>
               </div>
             )}
-          </div>
+          </GlassPanel>
         </>
       )}
     </motion.div>

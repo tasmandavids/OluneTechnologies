@@ -1328,7 +1328,18 @@
       "openDomainWizard": "Открыть мастер настройки домена →",
       "brandingTitle": "Брендинг",
       "brandingDescription": "Логотип, цвета и внешний вид вашей студии на портале и сайте.",
-      "openBranding": "Открыть брендинг"
+      "openBranding": "Открыть брендинг",
+      "nav": {
+        "profile": "Профиль",
+        "billing": "Оплата",
+        "registration": "Регистрация",
+        "domains": "Домены",
+        "account": "Аккаунт"
+      },
+      "account": {
+        "title": "Аккаунт",
+        "description": "Выйти из Olune на этом устройстве."
+      }
     },
     "branding": {
       "title": "Появление",

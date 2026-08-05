@@ -15,6 +15,15 @@ import {
   type MessageTopic,
 } from "@/lib/portal/message-topics";
 
+const GLASS_PANEL_STYLE: React.CSSProperties = {
+  background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass)",
+  borderColor: "var(--edge)",
+  backdropFilter: "blur(var(--blur)) saturate(1.85)",
+  WebkitBackdropFilter: "blur(var(--blur)) saturate(1.85)",
+  boxShadow:
+    "var(--shadow-s), inset 0 1px 0 var(--sheen), inset 0 -1px 0 var(--sheen2), inset 1px 0 0 var(--sheen2)",
+};
+
 interface Contact {
   id: string;
   first_name: string | null;

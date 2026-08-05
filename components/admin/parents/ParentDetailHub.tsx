@@ -26,6 +26,7 @@ import type {
 import ParentBillingTab from "./ParentBillingTab";
 import ParentMessagesTab from "./ParentMessagesTab";
 import DeleteParentButton from "./DeleteParentButton";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 type Tab = "profile" | "children" | "billing" | "messages";
 
@@ -186,7 +187,7 @@ export default function ParentDetailHub({
 
       {tab === "profile" && (
         <div className="grid gap-6 lg:grid-cols-2">
-          <section className="rounded-2xl border border-[--hair] bg-surface p-5 space-y-4">
+          <GlassPanel className="space-y-4 !p-5">
             <h2 className="font-bold text-ink">{t("contactDetails")}</h2>
             <div>
               <label className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-wider text-muted">
@@ -239,11 +240,11 @@ export default function ParentDetailHub({
             </button>
 
             <DeleteParentButton parentId={parent.id} parentName={parent.name} />
-          </section>
+          </GlassPanel>
 
           <section className="space-y-4">
             {!parent.isPrimaryContact && parent.children.length > 0 && (
-              <div className="rounded-2xl border border-[--hair] bg-surface p-5">
+              <GlassPanel className="!p-5">
                 <h2 className="mb-2 font-bold text-ink">{t("makePrimaryTitle")}</h2>
                 <p className="mb-3 text-sm text-muted">{t("makePrimaryDescription")}</p>
                 <button
@@ -254,10 +255,10 @@ export default function ParentDetailHub({
                 >
                   {t("makePrimaryContact")}
                 </button>
-              </div>
+              </GlassPanel>
             )}
 
-            <div className="rounded-2xl border border-[--hair] bg-surface p-5">
+            <GlassPanel className="!p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="font-bold text-ink">{t("coParents")}</h2>
                 {!showCoParent && (

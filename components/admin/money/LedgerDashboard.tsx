@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { formatMoney } from "@/lib/currency";
 import { formatShortDate } from "@/lib/xero/format";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 export type LedgerRow = {
   id: string;
@@ -18,7 +19,7 @@ export type LedgerRow = {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[--hair] bg-surface p-5">
+    <GlassPanel className="!p-5">
       <p className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</p>
       <p
         className="mt-1 tabular-nums tracking-tight text-ink"
@@ -26,7 +27,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
       >
         {value}
       </p>
-    </div>
+    </GlassPanel>
   );
 }
 
@@ -58,12 +59,12 @@ export function LedgerDashboard({ rows }: { rows: LedgerRow[] }) {
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[--hair] bg-base/50 p-14 text-center">
+        <GlassPanel className="!p-14 text-center">
           <p className="text-sm font-semibold text-ink">{t("empty.title")}</p>
           <p className="mx-auto mt-1 max-w-sm text-sm text-muted">{t("empty.body")}</p>
-        </div>
+        </GlassPanel>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+        <GlassPanel className="!p-0 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-sm">
               <thead>
@@ -117,7 +118,7 @@ export function LedgerDashboard({ rows }: { rows: LedgerRow[] }) {
               </tbody>
             </table>
           </div>
-        </div>
+        </GlassPanel>
       )}
     </motion.div>
   );

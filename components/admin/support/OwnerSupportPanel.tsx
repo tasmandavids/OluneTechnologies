@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { createOwnerSupportThread, replyOwnerSupport } from "@/app/portal/admin/support/actions";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 type Thread = {
   id: string;
@@ -82,20 +83,20 @@ export function OwnerSupportPanel({
       {feedback && <p className="text-sm text-muted">{feedback}</p>}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-[--hair] bg-surface p-5 space-y-3">
+        <GlassPanel className="!p-5 space-y-3">
           <h2 className="text-xs font-bold uppercase tracking-widest text-muted">{t("newConversation")}</h2>
           <input
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder={t("subject")}
-            className="w-full rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm"
           />
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={4}
             placeholder={t("bodyPlaceholder")}
-            className="w-full rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm"
           />
           <button
             onClick={createThread}
@@ -104,16 +105,16 @@ export function OwnerSupportPanel({
           >
             {t("sendToOlune")}
           </button>
-        </div>
+        </GlassPanel>
 
-        <div className="rounded-2xl border border-[--hair] bg-surface p-5">
+        <GlassPanel className="!p-5">
           <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted">{t("yourThreads")}</h2>
           <ul className="space-y-2">
             {threads.map((thread) => (
               <li key={thread.id}>
                 <button
                   onClick={() => setSelectedId(thread.id)}
-                  className={`w-full rounded-xl border p-3 text-left text-sm ${
+                  className={`w-full rounded-xl border bg-surface p-3 text-left text-sm ${
                     selectedId === thread.id ? "border-brand" : "border-[--hair]"
                   }`}
                 >
@@ -124,18 +125,18 @@ export function OwnerSupportPanel({
             ))}
             {threads.length === 0 && <li className="text-sm text-muted">{t("noConversations")}</li>}
           </ul>
-        </div>
+        </GlassPanel>
       </div>
 
       {selected && (
-        <div className="rounded-2xl border border-[--hair] bg-surface p-5">
+        <GlassPanel className="!p-5">
           <h2 className="mb-4 font-bold text-ink">{selected.subject}</h2>
           <div className="mb-4 space-y-2 max-h-64 overflow-y-auto">
             {messages.map((m) => (
               <div
                 key={m.id}
                 className={`rounded-xl px-4 py-2 text-sm ${
-                  m.isFromOlune ? "mr-8 border border-[--hair] bg-base" : "ml-8 bg-brand text-white"
+                  m.isFromOlune ? "mr-8 border border-[--hair] bg-surface" : "ml-8 bg-brand text-white"
                 }`}
               >
                 {m.body}
@@ -146,7 +147,7 @@ export function OwnerSupportPanel({
             value={reply}
             onChange={(e) => setReply(e.target.value)}
             rows={2}
-            className="mb-2 w-full rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm"
+            className="mb-2 w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm"
             placeholder={t("replyPlaceholder")}
           />
           <button
@@ -156,7 +157,7 @@ export function OwnerSupportPanel({
           >
             {pending ? tShared("sending") : t("sendReply")}
           </button>
-        </div>
+        </GlassPanel>
       )}
     </div>
   );

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import AddStaffPanel from "@/components/admin/staff/AddStaffPanel";
 import StaffCalendar from "@/components/admin/staff/StaffCalendar";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import type { StaffOption, StaffRow, StaffShift, TeachingBlock } from "@/lib/staff/types";
 
 function initials(name: string | null) {
@@ -21,52 +22,51 @@ function StaffCard({ member }: { member: StaffRow }) {
   const tShared = useTranslations("admin.shared");
 
   return (
-    <Link
-      href={`/portal/admin/staff/${member.id}`}
-      className="block rounded-2xl border border-[--hair] bg-surface p-4 transition-shadow hover:shadow-md"
-    >
-      <div className="mb-3 flex items-center gap-3">
-        <span
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-black text-white"
-          style={{ background: "var(--brand)" }}
-        >
-          {initials(member.name)}
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <p className="truncate font-semibold text-ink">{member.name ?? tShared("unknown")}</p>
-            <span className="shrink-0 rounded-full bg-brand/15 px-1.5 py-0.5 text-[0.55rem] font-semibold uppercase tracking-wider text-brand">
-              {t(`roles.${member.role}`)}
-            </span>
-            {!member.active && (
-              <span className="shrink-0 rounded-full bg-red-500/10 px-1.5 py-0.5 text-[0.55rem] font-semibold uppercase text-red-600">
-                {t("inactive")}
+    <GlassPanel className="!p-0 overflow-hidden transition-shadow hover:shadow-md">
+      <Link href={`/portal/admin/staff/${member.id}`} className="block p-4">
+        <div className="mb-3 flex items-center gap-3">
+          <span
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-black text-white"
+            style={{ background: "var(--brand)" }}
+          >
+            {initials(member.name)}
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <p className="truncate font-semibold text-ink">{member.name ?? tShared("unknown")}</p>
+              <span className="shrink-0 rounded-full bg-brand/15 px-1.5 py-0.5 text-[0.55rem] font-semibold uppercase tracking-wider text-brand">
+                {t(`roles.${member.role}`)}
               </span>
-            )}
+              {!member.active && (
+                <span className="shrink-0 rounded-full bg-red-500/10 px-1.5 py-0.5 text-[0.55rem] font-semibold uppercase text-red-600">
+                  {t("inactive")}
+                </span>
+              )}
+            </div>
+            <p className="truncate text-xs text-muted">
+              {member.email ?? member.phone ?? tShared("noContact")}
+            </p>
           </div>
-          <p className="truncate text-xs text-muted">
-            {member.email ?? member.phone ?? tShared("noContact")}
-          </p>
         </div>
-      </div>
-      <div className="flex flex-wrap gap-1.5 text-[0.62rem] text-muted">
-        {member.employmentType && (
-          <span className="rounded-full border border-[--hair] px-2 py-0.5">
-            {t(`employment.${member.employmentType}`)}
-          </span>
-        )}
-        {member.workLocation && (
-          <span className="rounded-full border border-[--hair] px-2 py-0.5">
-            {t(`workLocationOptions.${member.workLocation}`)}
-          </span>
-        )}
-        {member.managerName && (
-          <span className="rounded-full border border-[--hair] px-2 py-0.5">
-            {t("reportsTo", { name: member.managerName })}
-          </span>
-        )}
-      </div>
-    </Link>
+        <div className="flex flex-wrap gap-1.5 text-[0.62rem] text-muted">
+          {member.employmentType && (
+            <span className="rounded-full border border-[--hair] px-2 py-0.5">
+              {t(`employment.${member.employmentType}`)}
+            </span>
+          )}
+          {member.workLocation && (
+            <span className="rounded-full border border-[--hair] px-2 py-0.5">
+              {t(`workLocationOptions.${member.workLocation}`)}
+            </span>
+          )}
+          {member.managerName && (
+            <span className="rounded-full border border-[--hair] px-2 py-0.5">
+              {t("reportsTo", { name: member.managerName })}
+            </span>
+          )}
+        </div>
+      </Link>
+    </GlassPanel>
   );
 }
 
@@ -154,7 +154,9 @@ export default function StaffManager({
             className="w-full max-w-sm rounded-xl border border-[--hair] bg-surface px-4 py-2.5 text-sm text-ink"
           />
           {filtered.length === 0 ? (
-            <p className="py-12 text-center text-sm text-muted">{t("empty")}</p>
+            <GlassPanel>
+              <p className="py-12 text-center text-sm text-muted">{t("empty")}</p>
+            </GlassPanel>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((member) => (

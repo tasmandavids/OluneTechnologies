@@ -10,6 +10,7 @@ import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-acco
 import { ClassDetailPanel } from "@/components/admin/classes/ClassDetailPanel";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ClassEditPanel } from "@/components/admin/classes/ClassEditPanel";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import { formatMoney } from "@/lib/currency";
 import { useFormatTimeShort } from "@/lib/i18n/client";
 
@@ -289,7 +290,7 @@ export default function ClassesManager({
         )}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+      <GlassPanel className="!p-0 overflow-hidden">
         {filtered.length === 0 ? (
           <EmptyState
             title={search ? t("emptySearch") : t("empty")}
@@ -337,7 +338,7 @@ export default function ClassesManager({
             </table>
           </div>
         )}
-      </div>
+      </GlassPanel>
 
       <AnimatePresence>
         {panel?.type === "view" && (
