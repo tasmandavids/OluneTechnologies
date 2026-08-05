@@ -1,31 +1,52 @@
 // ============================================================================
-//  AmbientBackground — the drifting colour blobs behind the admin shell's
-//  main content. Pure decoration (aria-hidden, pointer-events: none).
-//  Opacity is controlled by --amb (Appearance panel's "Ambience" slider).
+//  AmbientBackground — direct port of the design system's AuroraField
+//  (components/surfaces/AuroraField.jsx in the Claude Design "Studio
+//  Settings" bundle): same blob geometry/weighting, blur(70px), grain
+//  texture, and auroraDrift/auroraBreathe timing. Pure decoration
+//  (aria-hidden, pointer-events: none). Opacity is controlled by --amb
+//  (Appearance panel's "Ambience" slider); colour by --a1/--a2/--a3.
 // ============================================================================
+
+const BLOBS = [
+  { top: "2%", left: "-6%", w: "46%", h: "52%", color: "var(--a1)", delay: "0s", durMult: 1 },
+  { top: "24%", left: "52%", w: "54%", h: "60%", color: "var(--a2)", delay: "-8s", durMult: 1.25 },
+  { top: "58%", left: "12%", w: "44%", h: "48%", color: "var(--a3)", delay: "-16s", durMult: 0.85 },
+] as const;
 
 export function AmbientBackground() {
   return (
-    <div
-      aria-hidden
-      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
-      style={{ opacity: "var(--amb)" }}
-    >
+    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style={{ opacity: "var(--amb)" }}>
+      <div className="absolute -inset-[20%]" style={{ filter: "blur(70px)" }}>
+        {BLOBS.map((b, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              top: b.top,
+              left: b.left,
+              width: b.w,
+              height: b.h,
+              background: `radial-gradient(circle at 50% 50%, ${b.color}, transparent 70%)`,
+              animation: `auroraDrift calc(var(--dur-drift) * ${b.durMult}) ease-in-out infinite, auroraBreathe var(--dur-breathe) ease-in-out infinite`,
+              animationDelay: `${b.delay}, ${b.delay}`,
+            }}
+          />
+        ))}
+      </div>
       <div
-        className="absolute -top-[18%] left-[2%] h-[58vw] w-[58vw] rounded-full animate-[admin-drift1_44s_ease-in-out_infinite]"
-        style={{ background: "radial-gradient(circle at 50% 50%, var(--a1), transparent 68%)", filter: "blur(28px)" }}
-      />
-      <div
-        className="absolute -bottom-[26%] -right-[8%] h-[52vw] w-[52vw] rounded-full animate-[admin-drift2_58s_ease-in-out_infinite]"
-        style={{ background: "radial-gradient(circle at 50% 50%, var(--a2), transparent 66%)", filter: "blur(34px)" }}
-      />
-      <div
-        className="absolute right-[22%] top-[24%] h-[34vw] w-[34vw] rounded-full animate-[admin-drift3_66s_ease-in-out_infinite]"
-        style={{ background: "radial-gradient(circle at 50% 50%, var(--a3), transparent 68%)", filter: "blur(40px)" }}
+        className="absolute inset-0"
+        style={{
+          opacity: "var(--grain)",
+          backgroundImage: "radial-gradient(rgba(10,10,10,.5) .5px, transparent .5px)",
+          backgroundSize: "3px 3px",
+        }}
       />
       <div
         className="absolute inset-0"
-        style={{ background: "radial-gradient(130% 90% at 50% -14%, transparent 42%, rgba(0,0,0,.05))" }}
+        style={{
+          background: "radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(10,10,10,1) 160%)",
+          opacity: "var(--vignette)",
+        }}
       />
     </div>
   );

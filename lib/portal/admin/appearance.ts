@@ -79,9 +79,11 @@ export function applyAppearance(root: HTMLElement, state: AppearanceState) {
   for (const [key, basePercent] of Object.entries(TINT_BASE_PERCENTS)) {
     root.style.setProperty(`--${key}`, `color-mix(in srgb, var(--n) ${clampPct(basePercent * tintFactor)}%, transparent)`);
   }
-  // a1 (the first ambience orb) follows the studio tint too — a2/a3 stay the
-  // fixed seafoam/apricot ambience colours set in app/globals.css.
-  root.style.setProperty("--a1", `color-mix(in srgb, var(--n) ${clampPct(TINT_BASE_PERCENTS.t3 * tintFactor)}%, transparent)`);
+  // a1 (the first, strongest ambience orb) follows the studio tint too —
+  // a2/a3 stay the fixed seafoam/apricot ambience colours set in
+  // app/globals.css. 62% base matches the design system's AuroraField
+  // LAYOUT (front blob is the strongest of the three).
+  root.style.setProperty("--a1", `color-mix(in srgb, var(--n) ${clampPct(62 * tintFactor)}%, transparent)`);
 
   const glassFactor = (state.glass / 100) * (isDark ? 0.14 : 1);
   root.style.setProperty("--glass", `rgba(255, 255, 255, ${Math.max(0, glassFactor).toFixed(3)})`);
