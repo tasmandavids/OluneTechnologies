@@ -19,7 +19,7 @@ import "server-only";
 //  SUPABASE_PROJECT_REF to override.
 // ============================================================================
 
-import { normalizeDomainInput } from "@/lib/site/domain-setup";
+import { normalizeDomainInput } from "@/lib/domain-setup";
 
 const MGMT_API = "https://api.supabase.com/v1";
 

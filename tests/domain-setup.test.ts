@@ -4,7 +4,7 @@ import {
   normalizeDomainInput,
   publicSubdomainUrl,
   validateCustomDomain,
-} from "@/lib/site/domain-setup";
+} from "@/lib/domain-setup";
 
 describe("domain setup helpers", () => {
   it("normalizes domain input", () => {

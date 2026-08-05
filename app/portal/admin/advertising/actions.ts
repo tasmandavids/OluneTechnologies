@@ -4,7 +4,6 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { generateAdCopy } from "@/lib/advertising/ai-ads";
-import { modernizeSeoFields, runSeoAudit } from "@/lib/advertising/ai-seo";
 import { fetchMetaPageAccessToken, publishCampaignToPlatforms, validateCampaignForPlatforms } from "@/lib/advertising/publish";
 import {
   resolveTelegramChannel,
@@ -293,108 +292,6 @@ export async function verifyTelegramBot(
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Invalid token" };
   }
-}
-
-export async function runSeoAuditAction(
-  focusPageId?: string | null,
-): Promise<
-  ActionResultWith<{ auditId: string; score: number; summary: string; recommendationCount: number }>
-> {
-  const { error, supabase, studioId } = await getAdminStudio();
-  if (error || !studioId) return { ok: false, error: error ?? "Unknown" };
-
-  const [{ data: studio }, { data: pages }] = await Promise.all([
-    supabase.from("studios").select("name, slug, custom_domain").eq("id", studioId).single(),
-    supabase
-      .from("site_pages")
-      .select("id, title, slug, status, seo_title, seo_description, is_home")
-      .eq("studio_id", studioId)
-      .order("nav_order"),
-  ]);
-
-  const studioName = (studio?.name as string) ?? "Studio";
-  const siteUrl = studio?.custom_domain
-    ? `https://${studio.custom_domain}`
-    : studio?.slug
-      ? `https://${studio.slug}.olune.co.nz`
-      : null;
-
-  const pageSnapshots = (pages ?? []).map((p) => ({
-    id: p.id as string,
-    title: p.title as string,
-    slug: p.slug as string,
-    status: p.status as string,
-    seoTitle: p.seo_title as string | null,
-    seoDescription: p.seo_description as string | null,
-    isHome: p.is_home as boolean,
-  }));
-
-  const result = await runSeoAudit({
-    studioName,
-    siteUrl,
-    pages: pageSnapshots,
-    focusPageId,
-  });
-
-  const { data, error: dbErr } = await supabase
-    .from("seo_audits")
-    .insert({
-      studio_id: studioId,
-      page_id: focusPageId || null,
-      score: result.score,
-      recommendations: result.recommendations,
-      ai_summary: result.summary,
-    })
-    .select("id")
-    .single();
-
-  if (dbErr) return { ok: false, error: dbErr.message };
-  revalidatePath("/portal/admin/advertising");
-  return {
-    ok: true,
-    auditId: data.id as string,
-    score: result.score,
-    summary: result.summary,
-    recommendationCount: result.recommendations.length,
-  };
-}
-
-export async function applySeoModernization(pageId: string): Promise<ActionResultWith<{ seoTitle: string; seoDescription: string }>> {
-  const { error, supabase, studioId } = await getAdminStudio();
-  if (error || !studioId) return { ok: false, error: error ?? "Unknown" };
-
-  const [{ data: studio }, { data: page }] = await Promise.all([
-    supabase.from("studios").select("name").eq("id", studioId).single(),
-    supabase
-      .from("site_pages")
-      .select("id, title, seo_title, seo_description")
-      .eq("id", pageId)
-      .eq("studio_id", studioId)
-      .single(),
-  ]);
-
-  if (!page) return { ok: false, error: "Page not found" };
-
-  const modernized = await modernizeSeoFields({
-    studioName: (studio?.name as string) ?? "Studio",
-    pageTitle: page.title as string,
-    currentTitle: page.seo_title as string | null,
-    currentDescription: page.seo_description as string | null,
-  });
-
-  const { error: updateErr } = await supabase
-    .from("site_pages")
-    .update({
-      seo_title: modernized.seoTitle,
-      seo_description: modernized.seoDescription,
-    })
-    .eq("id", pageId)
-    .eq("studio_id", studioId);
-
-  if (updateErr) return { ok: false, error: updateErr.message };
-  revalidatePath("/portal/admin/advertising");
-  revalidatePath("/portal/admin/site");
-  return { ok: true, ...modernized };
 }
 
 export { PLATFORMS, OBJECTIVES, STATUSES };

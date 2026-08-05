@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { createClient } from "@/lib/supabase/server";
-import { DomainSetupWizard } from "@/components/admin/site/DomainSetupWizard";
+import { DomainSetupWizard } from "@/components/admin/domain/DomainSetupWizard";
 import { getTranslations } from "@/lib/i18n/server";
 
 const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";

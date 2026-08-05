@@ -1,14 +1,13 @@
 // ============================================================================
 //  app/sitemap.ts — dynamic per-host sitemap.xml.
 //  Root/marketing host → curated static marketing routes.
-//  Studio host (slug subdomain or custom domain) → that studio's published
-//  pages, read live so newly published pages appear without a deploy.
+//  Studio host (slug subdomain or custom domain) → that studio's single
+//  published website (one page, in-page sections — no more sub-page slugs).
 // ============================================================================
 
 import type { MetadataRoute } from "next";
 import { headers } from "next/headers";
 import { resolveStudio } from "@/lib/tenant";
-import { getSitemapPagesCached } from "@/lib/site/cached-queries";
 import { originForHost } from "@/lib/seo";
 
 const MARKETING_ROUTES: { path: string; priority: number }[] = [
@@ -34,16 +33,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
   }
 
-  const pages = await getSitemapPagesCached(studio.id);
-  const subPages = pages.filter((page) => !page.isHome);
-
-  return [
-    { url: origin, changeFrequency: "weekly", priority: 1 },
-    ...subPages.map((page) => ({
-      url: `${origin}/${page.slug}`,
-      lastModified: page.updatedAt,
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    })),
-  ];
+  return [{ url: origin, changeFrequency: "weekly", priority: 1 }];
 }

@@ -35,35 +35,6 @@ export type AdCampaign = {
   updatedAt: string;
 };
 
-export type SeoPageSnapshot = {
-  id: string;
-  title: string;
-  slug: string;
-  status: string;
-  seoTitle: string | null;
-  seoDescription: string | null;
-  isHome: boolean;
-};
-
-export type SeoRecommendation = {
-  id: string;
-  priority: "high" | "medium" | "low";
-  category: string;
-  title: string;
-  description: string;
-  suggestedFix?: string;
-};
-
-export type SeoAudit = {
-  id: string;
-  pageId: string | null;
-  pageTitle: string | null;
-  score: number | null;
-  recommendations: SeoRecommendation[];
-  aiSummary: string | null;
-  createdAt: string;
-};
-
 export type GeneratedAdCopy = {
   headline: string;
   bodyText: string;

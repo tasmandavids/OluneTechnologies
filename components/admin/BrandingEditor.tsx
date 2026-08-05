@@ -7,7 +7,7 @@ import type { Branding, ThemeBase } from "@/lib/types";
 import { brandingToCssVars } from "@/lib/branding";
 import { saveBranding } from "@/app/portal/admin/branding/actions";
 
-import { TYPOGRAPHY_PAIRS } from "@/lib/site/typography";
+import { TYPOGRAPHY_PAIRS } from "@/lib/website/typography";
 
 const PRESET_KEYS = ["iris", "crimson", "voltage", "aurum", "bloom", "jade"] as const;
 const PRESETS: { key: (typeof PRESET_KEYS)[number]; brandColor: string; base: ThemeBase }[] = [

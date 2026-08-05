@@ -5,7 +5,7 @@
 import { headers } from "next/headers";
 import { resolveStudio } from "@/lib/tenant";
 import { getBrandingCached, DEFAULT_BRANDING } from "@/lib/branding";
-import { getSiteScheduleClasses } from "@/lib/site/queries";
+import { getSiteScheduleClasses } from "@/lib/public-classes";
 import EnrolPage, { EnrolNoStudio, type EnrolClassOption } from "@/components/marketing/EnrolPage";
 
 export default async function EnrolRoute() {

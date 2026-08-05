@@ -7,26 +7,17 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { disconnectSocialPlatform } from "@/app/portal/admin/advertising/actions";
 import { PLATFORM_META } from "@/lib/advertising/config";
-import type {
-  AdCampaign,
-  SeoAudit,
-  SeoPageSnapshot,
-  SocialConnection,
-  SocialPlatform,
-} from "@/lib/advertising/types";
+import type { AdCampaign, SocialConnection, SocialPlatform } from "@/lib/advertising/types";
 import { AdComposer } from "./AdComposer";
 import { AdvertisingOverview } from "./AdvertisingOverview";
 import { CampaignsPanel } from "./CampaignsPanel";
 import { ConnectHub } from "./ConnectHub";
-import { SeoPanel } from "./SeoPanel";
 
-type Tab = "connect" | "create" | "campaigns" | "seo";
+type Tab = "connect" | "create" | "campaigns";
 
 export function AdvertisingHub({
   connections,
   campaigns,
-  pages,
-  audits,
   metaConfigured,
   tiktokConfigured,
   bannerError,
@@ -34,8 +25,6 @@ export function AdvertisingHub({
 }: {
   connections: SocialConnection[];
   campaigns: AdCampaign[];
-  pages: SeoPageSnapshot[];
-  audits: SeoAudit[];
   metaConfigured: boolean;
   tiktokConfigured: boolean;
   bannerError: string | null;
@@ -67,7 +56,6 @@ export function AdvertisingHub({
     { id: "connect", label: t("tabs.connect") },
     { id: "create", label: t("tabs.create") },
     { id: "campaigns", label: t("tabs.campaigns") },
-    { id: "seo", label: t("tabs.seo") },
   ];
 
   return (
@@ -147,12 +135,6 @@ export function AdvertisingHub({
         {tab === "campaigns" && (
           <motion.div key="campaigns" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
             <CampaignsPanel campaigns={campaigns} onRefresh={refresh} />
-          </motion.div>
-        )}
-
-        {tab === "seo" && (
-          <motion.div key="seo" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-            <SeoPanel pages={pages} audits={audits} onRefresh={refresh} />
           </motion.div>
         )}
       </AnimatePresence>

@@ -15,7 +15,7 @@ import {
   normalizeDomainInput,
   validateCustomDomain,
   type DomainKind,
-} from "@/lib/site/domain-setup";
+} from "@/lib/domain-setup";
 import { getAdminStudio as getAdminStudioAccess } from "@/lib/portal/access";
 
 export type DomainActionResult<T = null> =

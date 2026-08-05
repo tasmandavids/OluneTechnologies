@@ -1,0 +1,76 @@
+// ============================================================================
+//  lib/website/types.ts — shared types for the fixed-template website builder.
+//  One row per studio (website_configs); no multi-page / freeform-node model.
+// ============================================================================
+
+export type WebsiteTemplateKind =
+  | "split"
+  | "poster"
+  | "editorial"
+  | "stack"
+  | "sidebar"
+  | "band"
+  | "bold"
+  | "frame";
+
+export type SectionKey = "about" | "classes" | "timetable" | "gallery" | "fees" | "contact";
+
+export type WebsiteSection = {
+  key: SectionKey;
+  visible: boolean;
+  headline?: string;
+  body?: string;
+};
+
+export type WebsiteStatus = "draft" | "published";
+
+export type WebsiteConfig = {
+  studioId: string;
+  templateId: string;
+  kind: WebsiteTemplateKind;
+  accentColor: string;
+  paperColor: string;
+  inkColor: string;
+  fontDisplay: string;
+  fontBody: string;
+  density: number;
+  studioNameOverride: string | null;
+  headline: string;
+  tagline: string;
+  eyebrow: string;
+  logoUrl: string | null;
+  sections: WebsiteSection[];
+  status: WebsiteStatus;
+  publishedAt: string | null;
+  updatedAt: string;
+};
+
+/** Hero-only props a single template "kind" layout needs — SiteRenderer
+ *  handles fonts (as CSS vars), sections, and the footer band itself. */
+export type LayoutHeroProps = {
+  accent: string;
+  paper: string;
+  ink: string;
+  studioName: string;
+  headline: string;
+  tagline: string;
+  eyebrow: string;
+};
+
+/** Everything SiteRenderer needs to draw a page, independent of persistence. */
+export type SiteRenderProps = {
+  kind: WebsiteTemplateKind;
+  accent: string;
+  paper: string;
+  ink: string;
+  fontDisplay: string;
+  fontBody: string;
+  studioName: string;
+  headline: string;
+  tagline: string;
+  eyebrow: string;
+  sections: WebsiteSection[];
+  density: number;
+  /** Render scale (1 = full-size public page, <1 = thumbnail/preview). */
+  scale?: number;
+};

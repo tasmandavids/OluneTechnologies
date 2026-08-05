@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { getTranslations } from "@/lib/i18n/server";
 import { resolveStudio } from "@/lib/tenant";
-import { getSiteScheduleClasses } from "@/lib/site/queries";
+import { getSiteScheduleClasses } from "@/lib/public-classes";
 import { formatMoney } from "@/lib/currency";
 import { PoweredByOlune } from "@/components/brand/PoweredByOlune";
 
