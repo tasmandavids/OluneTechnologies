@@ -95,7 +95,14 @@
     "palette": {
       "placeholder": "搜索任意内容…",
       "empty": "无匹配结果",
-      "new": "新建"
+      "new": "新建",
+      "pages": "页面",
+      "students": "学员",
+      "staff": "员工",
+      "parents": "家长",
+      "classes": "课程",
+      "leads": "潜在客户",
+      "searching": "搜索中…"
     },
     "appearance": {
       "title": "外观",

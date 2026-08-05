@@ -95,7 +95,14 @@
     "palette": {
       "placeholder": "Find anything…",
       "empty": "No matches",
-      "new": "New"
+      "new": "New",
+      "pages": "Pages",
+      "students": "Students",
+      "staff": "Staff",
+      "parents": "Parents",
+      "classes": "Classes",
+      "leads": "Leads",
+      "searching": "Searching…"
     },
     "appearance": {
       "title": "Appearance",

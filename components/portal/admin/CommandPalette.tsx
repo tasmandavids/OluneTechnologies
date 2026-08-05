@@ -2,9 +2,10 @@
 
 // ============================================================================
 //  CommandPalette — ⌘K search over every ADMIN_NAV destination (13 items incl.
-//  children). Same data source as AdminRail's flyouts, so nothing drifts.
-//  "Every existing feature keeps a home (rail) and gains a second path via
-//  ⌘K" — Redesign Strategy §3.
+//  children) PLUS live studio data (students, staff, parents, classes, leads)
+//  via /api/portal/search. Nav results are instant/local; data results are
+//  debounced and fetched from the server. "Every existing feature keeps a
+//  home (rail) and gains a second path via ⌘K" — Redesign Strategy §3.
 // ============================================================================
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -13,7 +14,20 @@ import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEscToClose } from "@/lib/useEscToClose";
 import { ADMIN_NAV, flattenNav, type NavSection } from "@/lib/portal/nav-config";
-import { IconSearch, IconX } from "@/components/admin/dashboard/icons";
+import { IconSearch, IconX, IconUsers, IconCalendarDays, IconUserPlus } from "@/components/admin/dashboard/icons";
+import type { PortalSearchResult } from "@/app/api/portal/search/route";
+
+type Row =
+  | { kind: "nav"; key: string; href: string; label: string }
+  | { kind: "data"; key: string; href: string; label: string; sublabel: string | null; type: PortalSearchResult["type"] };
+
+const DATA_TYPE_ICON: Record<PortalSearchResult["type"], typeof IconUsers> = {
+  student: IconUsers,
+  staff: IconUsers,
+  parent: IconUsers,
+  class: IconCalendarDays,
+  lead: IconUserPlus,
+};
 
 export function CommandPalette({
   open,
@@ -29,6 +43,8 @@ export function CommandPalette({
   const tShell = useTranslations("shell");
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [dataResults, setDataResults] = useState<PortalSearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEscToClose(onClose, open);
@@ -36,11 +52,12 @@ export function CommandPalette({
   useEffect(() => {
     if (open) {
       setQuery("");
+      setDataResults([]);
       requestAnimationFrame(() => inputRef.current?.focus());
     }
   }, [open]);
 
-  const results = useMemo(() => {
+  const navResults = useMemo(() => {
     const q = query.trim().toLowerCase();
     const labeled = flattenNav(nav).map((item) => ({
       item,
@@ -50,10 +67,71 @@ export function CommandPalette({
     return labeled.filter((r) => r.label.toLowerCase().includes(q));
   }, [query, t, nav]);
 
+  useEffect(() => {
+    const term = query.trim();
+    if (term.length < 2) {
+      setDataResults([]);
+      setSearching(false);
+      return;
+    }
+    const controller = new AbortController();
+    setSearching(true);
+    const timer = setTimeout(() => {
+      fetch(`/api/portal/search?q=${encodeURIComponent(term)}`, { signal: controller.signal })
+        .then((res) => (res.ok ? res.json() : { results: [] }))
+        .then((body: { results?: PortalSearchResult[] }) => setDataResults(body.results ?? []))
+        .catch((err) => {
+          if (err?.name !== "AbortError") setDataResults([]);
+        })
+        .finally(() => setSearching(false));
+    }, 200);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query]);
+
+  const rows = useMemo<Row[]>(() => {
+    const navRows: Row[] = navResults.map((r) => ({
+      kind: "nav",
+      key: `nav:${r.item.href}`,
+      href: r.item.href,
+      label: r.label,
+    }));
+    const dataRows: Row[] = dataResults.map((r) => ({
+      kind: "data",
+      key: `${r.type}:${r.id}`,
+      href: r.href,
+      label: r.label,
+      sublabel: r.sublabel,
+      type: r.type,
+    }));
+    return [...navRows, ...dataRows];
+  }, [navResults, dataResults]);
+
+  const groups = useMemo(() => {
+    const byType = new Map<string, Row[]>();
+    for (const row of rows) {
+      const groupKey = row.kind === "nav" ? "pages" : row.type;
+      if (!byType.has(groupKey)) byType.set(groupKey, []);
+      byType.get(groupKey)!.push(row);
+    }
+    return byType;
+  }, [rows]);
+
   function go(href: string) {
     router.push(href);
     onClose();
   }
+
+  const groupOrder: { key: string; labelKey: Parameters<typeof tShell>[0] }[] = [
+    { key: "pages", labelKey: "palette.pages" },
+    { key: "student", labelKey: "palette.students" },
+    { key: "staff", labelKey: "palette.staff" },
+    { key: "parent", labelKey: "palette.parents" },
+    { key: "class", labelKey: "palette.classes" },
+    { key: "lead", labelKey: "palette.leads" },
+  ];
 
   return (
     <AnimatePresence>
@@ -89,7 +167,7 @@ export function CommandPalette({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && results[0]) go(results[0].item.href);
+                  if (e.key === "Enter" && rows[0]) go(rows[0].href);
                 }}
                 placeholder={tShell("palette.placeholder")}
                 className="flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-muted"
@@ -103,20 +181,40 @@ export function CommandPalette({
                 <IconX className="h-3.5 w-3.5" />
               </button>
             </div>
-            <div className="max-h-80 overflow-y-auto p-1.5">
-              {results.length === 0 ? (
-                <p className="px-3 py-6 text-center text-sm text-muted">{tShell("palette.empty")}</p>
+            <div className="max-h-96 overflow-y-auto p-1.5">
+              {rows.length === 0 ? (
+                <p className="px-3 py-6 text-center text-sm text-muted">
+                  {searching ? tShell("palette.searching") : tShell("palette.empty")}
+                </p>
               ) : (
-                results.map(({ item, label }) => (
-                  <button
-                    key={item.href}
-                    type="button"
-                    onClick={() => go(item.href)}
-                    className="flex w-full items-center rounded-lg px-3 py-2.5 text-left text-sm font-medium text-ink transition-colors hover:bg-[--t2]"
-                  >
-                    {label}
-                  </button>
-                ))
+                groupOrder.map(({ key, labelKey }) => {
+                  const groupRows = groups.get(key);
+                  if (!groupRows || groupRows.length === 0) return null;
+                  return (
+                    <div key={key} className="mb-1 last:mb-0">
+                      <p className="px-3 pb-1 pt-2 text-[10.5px] font-semibold uppercase tracking-wide text-muted">
+                        {tShell(labelKey)}
+                      </p>
+                      {groupRows.map((row) => {
+                        const Icon = row.kind === "data" ? DATA_TYPE_ICON[row.type] : null;
+                        return (
+                          <button
+                            key={row.key}
+                            type="button"
+                            onClick={() => go(row.href)}
+                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-ink transition-colors hover:bg-[--t2]"
+                          >
+                            {Icon && <Icon className="h-4 w-4 shrink-0 text-muted" />}
+                            <span className="flex-1 truncate">{row.label}</span>
+                            {row.kind === "data" && row.sublabel && (
+                              <span className="shrink-0 truncate text-xs font-normal text-muted">{row.sublabel}</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                })
               )}
             </div>
           </motion.div>

@@ -95,7 +95,14 @@
     "palette": {
       "placeholder": "Найти что угодно…",
       "empty": "Ничего не найдено",
-      "new": "Новое"
+      "new": "Новое",
+      "pages": "Страницы",
+      "students": "Ученики",
+      "staff": "Персонал",
+      "parents": "Родители",
+      "classes": "Занятия",
+      "leads": "Лиды",
+      "searching": "Поиск…"
     },
     "appearance": {
       "title": "Внешний вид",
