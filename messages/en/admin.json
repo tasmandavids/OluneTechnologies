@@ -315,11 +315,34 @@
           "lost": "Lost"
         }
       },
-      "openManagerHint": "Need bulk actions, enrollment, or the pipeline board?",
-      "openManager": {
-        "students": "Open student manager",
-        "families": "Open family manager",
-        "leads": "Open leads board"
+      "search": {
+        "students": "Search students by name, email, guardian, or class…",
+        "families": "Search families by name, email, phone, or child…",
+        "leads": "Search leads by name, email, phone, or source…"
+      },
+      "filters": {
+        "allClasses": "All classes",
+        "allStudents": "All students",
+        "overdue": "Overdue balance",
+        "recentlyJoined": "Recently joined",
+        "unenrolled": "Not enrolled",
+        "allFamilies": "All families",
+        "owing": "Owing money",
+        "noChildren": "No children linked",
+        "allLeads": "All statuses",
+        "clear": "Clear filters"
+      },
+      "showing": "Showing {shown} of {total}",
+      "noMatches": {
+        "students": "No students match your search.",
+        "families": "No families match your search.",
+        "leads": "No leads match your search."
+      },
+      "invite": {
+        "button": "Invite all",
+        "sending": "Sending invites…",
+        "confirm": "Send invite emails to all parents and students who have never logged in?",
+        "result": "Invites sent: {sent}. Already active: {skipped}. Failed: {failed}."
       }
     },
     "classes": {
@@ -453,7 +476,29 @@
       },
       "detail": {
         "back": "← Back to students",
+        "tabs": {
+          "progress": "Progress",
+          "schedule": "Schedule",
+          "badges": "Badges",
+          "information": "Information"
+        },
         "noContactOnFile": "No contact on file",
+        "badges": {
+          "empty": "No badge catalogue is set up for this studio yet."
+        },
+        "information": {
+          "contactDetails": "Contact details",
+          "classes": "Classes",
+          "guardians": "Guardians",
+          "noGuardians": "No guardians linked yet.",
+          "primaryContact": "Primary contact",
+          "viewProfile": "View profile",
+          "medical": "Medical & consent forms",
+          "noForms": "No forms have been completed for this student yet.",
+          "signedOn": "Signed {date}",
+          "notSigned": "Not signed",
+          "card": "Check-in card"
+        },
         "dangerZone": "Danger zone",
         "deleteDescription": "Permanently removes this student, their enrollments, and progress history. This cannot be undone.",
         "deleteStudent": "Delete student",

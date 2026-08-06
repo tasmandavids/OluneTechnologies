@@ -67,7 +67,7 @@ export type TourFeatureKey = (typeof TOUR_FEATURE_KEYS)[number];
 export const TOUR_FEATURES = [
   { id: "dashboard" as const, href: "/portal/admin", emoji: "📊" },
   { id: "classes" as const, href: "/portal/admin/classes", emoji: "🩰" },
-  { id: "students" as const, href: "/portal/admin/students", emoji: "👨‍👩‍👧" },
+  { id: "students" as const, href: "/portal/admin/people", emoji: "👨‍👩‍👧" },
   { id: "billing" as const, href: "/portal/admin/money", emoji: "💳" },
   { id: "website" as const, href: "/portal/admin/site", emoji: "🌐" },
   { id: "leads" as const, href: "/portal/admin/leads", emoji: "✉️" },

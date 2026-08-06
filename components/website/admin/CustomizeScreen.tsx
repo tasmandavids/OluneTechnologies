@@ -1,29 +1,35 @@
 "use client";
 
 // ============================================================================
-//  components/website/admin/CustomizeScreen.tsx — sidebar (colours, fonts,
-//  density, sections, logo) + live preview panel with zoom.
+//  components/website/admin/CustomizeScreen.tsx — the customizer shell: a
+//  two-tab sidebar (Design / Content) beside a live preview panel with zoom.
+//  Both tabs edit the same working draft, which the preview renders directly.
 // ============================================================================
 
 import { useMemo, useState } from "react";
 import { SiteRenderer, ARTBOARD_WIDTH } from "@/components/website/SiteRenderer";
-import { BRAND_SWATCHES, PAPER_SWATCHES, DENSITIES, type WebsiteTemplate } from "@/lib/website/templates";
-import { TYPOGRAPHY_PAIRS, allFontFamilies } from "@/lib/website/typography";
-import { SECTION_PICKER_LABELS } from "@/lib/website/sections";
+import { type WebsiteTemplate } from "@/lib/website/templates";
+import { allFontFamilies } from "@/lib/website/typography";
 import { useGoogleFontsPreview } from "@/lib/website/useGoogleFonts";
 import { publicSubdomainUrl } from "@/lib/domain-setup";
-import { IconArrowLeft, IconChevronUp, IconExternalLink, IconGripVertical } from "@/components/website/icons";
-import { IconChevronDown } from "@/components/admin/dashboard/icons";
-import type { SectionKey } from "@/lib/website/types";
+import { IconArrowLeft, IconExternalLink } from "@/components/website/icons";
 import type { WebsiteDraft } from "./WebsiteBuilderApp";
 import { SwitchTemplateDialog } from "./SwitchTemplateDialog";
-import { LogoDropzone } from "./LogoDropzone";
+import { DesignPanel } from "./DesignPanel";
+import { ContentPanel } from "./ContentPanel";
 
 const ZOOMS = [
   { label: "Fit", value: 0.45 },
   { label: "75%", value: 0.62 },
   { label: "100%", value: 0.78 },
 ];
+
+const TABS = [
+  { key: "content", label: "Content" },
+  { key: "design", label: "Design" },
+] as const;
+
+type Tab = (typeof TABS)[number]["key"];
 
 export function CustomizeScreen({
   draft,
@@ -32,6 +38,7 @@ export function CustomizeScreen({
   studioSlug,
   status,
   saving,
+  dirty,
   error,
   onChange,
   onSave,
@@ -45,6 +52,7 @@ export function CustomizeScreen({
   studioSlug: string;
   status: "draft" | "published";
   saving: boolean;
+  dirty: boolean;
   error: string | null;
   onChange: (patch: Partial<WebsiteDraft>) => void;
   onSave: () => Promise<void>;
@@ -53,25 +61,10 @@ export function CustomizeScreen({
   onBackToGallery: () => void;
 }) {
   const [zoom, setZoom] = useState(ZOOMS[1].value);
+  const [tab, setTab] = useState<Tab>("content");
   const [switchOpen, setSwitchOpen] = useState(false);
 
   useGoogleFontsPreview([...allFontFamilies(), draft.fontDisplay, draft.fontBody], "website-customize-fonts");
-
-  // draft.sections' array ORDER is the user-chosen section order (moveSection
-  // swaps positions in place) — SiteRenderer/SectionBlocks filters by
-  // `.visible` itself, so pass the array through as-is, unsorted.
-  const moveSection = (key: SectionKey, dir: -1 | 1) => {
-    const idx = draft.sections.findIndex((s) => s.key === key);
-    const j = idx + dir;
-    if (idx < 0 || j < 0 || j >= draft.sections.length) return;
-    const next = draft.sections.slice();
-    [next[idx], next[j]] = [next[j], next[idx]];
-    onChange({ sections: next });
-  };
-
-  const toggleSection = (key: SectionKey) => {
-    onChange({ sections: draft.sections.map((s) => (s.key === key ? { ...s, visible: !s.visible } : s)) });
-  };
 
   const publicUrl = studioSlug ? publicSubdomainUrl(studioSlug, process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "localhost", "3000") : null;
 
@@ -89,9 +82,13 @@ export function CustomizeScreen({
       eyebrow: draft.eyebrow,
       sections: draft.sections,
       density: draft.density,
+      logoUrl: draft.logoUrl,
+      heroImages: draft.heroImages,
     }),
     [draft, studioName],
   );
+
+  const saveState = saving ? "Saving…" : dirty ? "Unsaved changes" : "All changes saved";
 
   return (
     <div>
@@ -112,7 +109,7 @@ export function CustomizeScreen({
           <span className="font-semibold text-ink">{template.name}</span>
         </div>
         <div className="flex items-center gap-2.5">
-          {saving && <span className="text-[12px] text-muted">Saving…</span>}
+          <span className="text-[12px] text-muted">{saveState}</span>
           {error && <span className="text-[12px] text-[var(--error)]">{error}</span>}
           {publicUrl && (
             <a
@@ -167,131 +164,30 @@ export function CustomizeScreen({
             <div className="mt-1.5 text-[12.5px] leading-[1.5] text-muted">{template.blurb}</div>
           </div>
 
-          <div style={{ height: 1, background: "var(--hair)" }} />
-
-          <div>
-            <div className="text-[0.62rem] uppercase tracking-[0.1em] text-muted">Brand colour</div>
-            <div className="mt-2.5 flex flex-wrap gap-2">
-              {BRAND_SWATCHES.map((hex) => (
-                <button
-                  key={hex}
-                  type="button"
-                  onClick={() => onChange({ accentColor: hex })}
-                  className="h-[30px] w-[30px] rounded-[10px]"
-                  style={{ background: hex, boxShadow: draft.accentColor === hex ? "0 0 0 2px var(--surface), 0 0 0 4px var(--brand)" : "none" }}
-                  aria-label={hex}
-                />
-              ))}
-            </div>
-            <div className="mt-3 flex items-center gap-2 rounded-xl border px-2.5 py-2" style={{ borderColor: "var(--hair)", background: "var(--surface)" }}>
-              <div className="h-[18px] w-[18px] rounded-md" style={{ background: draft.accentColor }} />
-              <span className="text-[13px] uppercase tabular-nums">{draft.accentColor}</span>
-              <span className="ml-auto text-[12px] text-muted">Everything derives</span>
-            </div>
+          <div className="flex rounded-xl border p-1" style={{ borderColor: "var(--hair)", background: "var(--surface)" }}>
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                onClick={() => setTab(t.key)}
+                className="flex-1 rounded-lg py-1.5 text-[13px]"
+                style={{
+                  background: tab === t.key ? "var(--brand)" : "transparent",
+                  color: tab === t.key ? "#fff" : "var(--muted)",
+                  fontWeight: tab === t.key ? 600 : 400,
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
 
-          <div>
-            <div className="text-[0.62rem] uppercase tracking-[0.1em] text-muted">Page &amp; ink</div>
-            <div className="mt-2.5 flex gap-2">
-              {PAPER_SWATCHES.map((p) => (
-                <button
-                  key={p.paper}
-                  type="button"
-                  onClick={() => onChange({ paperColor: p.paper, inkColor: p.ink })}
-                  className="flex h-[38px] flex-1 items-center justify-center rounded-[11px] border text-[11px]"
-                  style={{
-                    background: p.paper,
-                    color: p.ink,
-                    borderColor: draft.paperColor === p.paper ? "var(--brand)" : "var(--hair)",
-                  }}
-                >
-                  Aa
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="text-[0.62rem] uppercase tracking-[0.1em] text-muted">Font pairing</div>
-            <div className="mt-2.5 flex max-h-[220px] flex-col gap-1.5 overflow-y-auto pr-1">
-              {TYPOGRAPHY_PAIRS.map((p) => {
-                const active = p.display === draft.fontDisplay && p.body === draft.fontBody;
-                return (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => onChange({ fontDisplay: p.display, fontBody: p.body })}
-                    className="flex items-baseline justify-between gap-2.5 rounded-xl border px-3 py-2.5 text-left"
-                    style={{ background: active ? "color-mix(in srgb, var(--brand) 10%, var(--surface))" : "transparent", borderColor: active ? "var(--brand)" : "var(--hair)" }}
-                  >
-                    <span className="text-[17px]" style={{ fontFamily: `'${p.display}'` }}>{p.display}</span>
-                    <span className="text-[12px] text-muted" style={{ fontFamily: `'${p.body}'` }}>{p.body}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div>
-            <div className="text-[0.62rem] uppercase tracking-[0.1em] text-muted">Density</div>
-            <div className="mt-2.5 flex gap-1.5">
-              {DENSITIES.map((d) => (
-                <button
-                  key={d.label}
-                  type="button"
-                  onClick={() => onChange({ density: d.value })}
-                  className="flex-1 rounded-[11px] border py-2 text-[12.5px]"
-                  style={{
-                    background: draft.density === d.value ? "var(--brand)" : "transparent",
-                    color: draft.density === d.value ? "#fff" : "var(--muted)",
-                    borderColor: draft.density === d.value ? "transparent" : "var(--hair)",
-                    fontWeight: draft.density === d.value ? 600 : 400,
-                  }}
-                >
-                  {d.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-baseline justify-between">
-              <div className="text-[0.62rem] uppercase tracking-[0.1em] text-muted">Sections</div>
-              <div className="text-[12px] text-muted">Use ↑↓</div>
-            </div>
-            <div className="mt-2.5 flex flex-col gap-1.5">
-              {draft.sections.map((s) => (
-                <div key={s.key} className="flex items-center gap-2 rounded-xl border px-2.5 py-2" style={{ borderColor: "var(--hair)" }}>
-                  <IconGripVertical className="h-3.5 w-3.5 text-muted" />
-                  <span className="flex-1 text-[13px]" style={{ color: s.visible ? "var(--text)" : "var(--muted)" }}>
-                    {SECTION_PICKER_LABELS[s.key]}
-                  </span>
-                  <button type="button" onClick={() => moveSection(s.key, -1)} className="px-0.5 text-muted">
-                    <IconChevronUp className="h-3.5 w-3.5" />
-                  </button>
-                  <button type="button" onClick={() => moveSection(s.key, 1)} className="px-0.5 text-muted">
-                    <IconChevronDown className="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => toggleSection(s.key)}
-                    className="relative h-[18px] w-8 rounded-full"
-                    style={{ background: s.visible ? "var(--brand)" : "var(--hair)" }}
-                    aria-label={s.visible ? "Hide section" : "Show section"}
-                  >
-                    <span
-                      className="absolute top-0.5 h-3.5 w-3.5 rounded-full bg-white"
-                      style={{ left: s.visible ? 16 : 2, transition: "left .18s ease" }}
-                    />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="text-[0.62rem] uppercase tracking-[0.1em] text-muted">Logo</div>
-            <LogoDropzone logoUrl={draft.logoUrl} onChange={(url) => onChange({ logoUrl: url })} />
+          <div className="flex flex-col gap-5">
+            {tab === "design" ? (
+              <DesignPanel draft={draft} onChange={onChange} />
+            ) : (
+              <ContentPanel draft={draft} studioName={studioName} onChange={onChange} />
+            )}
           </div>
 
           <div className="mt-auto flex gap-2 pt-1.5">

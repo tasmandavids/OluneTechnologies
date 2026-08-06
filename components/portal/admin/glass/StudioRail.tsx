@@ -52,6 +52,8 @@ const SPACES: Space[] = [
     icon: IconUsers,
     primaryHref: "/portal/admin/people",
     subHrefs: [
+      // /students and /parents keep only their [id] profile pages; the list
+      // routes redirect here, but the rail should still light up on a profile.
       "/portal/admin/students",
       "/portal/admin/parents",
       "/portal/admin/leads",

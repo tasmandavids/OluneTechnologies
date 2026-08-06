@@ -122,7 +122,7 @@ export default function ParentDetailHub({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <Link
-            href="/portal/admin/parents"
+            href="/portal/admin/people?tab=families"
             className="mb-2 inline-block text-xs font-semibold text-muted hover:text-ink"
           >
             {t("back")}

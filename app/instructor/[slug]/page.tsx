@@ -1,7 +1,73 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import Link from "next/link";
 import Image from "next/image";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { originForHost, personJsonLd } from "@/lib/seo";
+
+// Both generateMetadata and the page body need the same two rows; cache()
+// collapses them into one round trip per request.
+const getInstructor = cache(async (slug: string) => {
+  const supabase = await createClient();
+
+  const { data: studio } = await supabase
+    .from("studios")
+    .select("id, name, kind")
+    .eq("slug", slug)
+    .eq("kind", "instructor")
+    .single();
+
+  if (!studio) return null;
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select(
+      `full_name, headline, bio, disciplines, syllabus_certs, training_institutions,
+       age_groups, engagement_types, availability_type, location_city, website_url,
+       avatar_url, profile_public, teaching_video_url, rate_min_nzd, rate_max_nzd,
+       network_verified`
+    )
+    .eq("active_studio_id", studio.id)
+    .eq("profile_public", true)
+    .single();
+
+  return profile ? { studio, profile } : null;
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const data = await getInstructor(slug);
+  if (!data) return { robots: { index: false, follow: false } };
+
+  const { profile } = data;
+  const name = profile.full_name ?? "Instructor";
+  const where = profile.location_city ? ` · ${profile.location_city}` : "";
+  const title = `${name}${profile.headline ? ` — ${profile.headline}` : ""}${where}`;
+  const description =
+    profile.bio?.slice(0, 180) ??
+    `${name} is available for cover classes and guest teaching through the Olune Network.`;
+  const url = `${originForHost((await headers()).get("host"))}/instructor/${slug}`;
+
+  return {
+    title: { absolute: `${title} | Olune Network` },
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "profile",
+      ...(profile.avatar_url ? { images: [profile.avatar_url] } : {}),
+    },
+  };
+}
 
 function youtubeEmbedUrl(url: string): string | null {
   try {
@@ -29,30 +95,10 @@ export default async function PublicInstructorPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const supabase = await createClient();
+  const data = await getInstructor(slug);
+  if (!data) notFound();
 
-  const { data: studio } = await supabase
-    .from("studios")
-    .select("id, name, kind")
-    .eq("slug", slug)
-    .eq("kind", "instructor")
-    .single();
-
-  if (!studio) notFound();
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select(
-      `full_name, headline, bio, disciplines, syllabus_certs, training_institutions,
-       age_groups, engagement_types, availability_type, location_city, website_url,
-       avatar_url, profile_public, teaching_video_url, rate_min_nzd, rate_max_nzd,
-       network_verified`
-    )
-    .eq("active_studio_id", studio.id)
-    .eq("profile_public", true)
-    .single();
-
-  if (!profile) notFound();
+  const { studio, profile } = data;
 
   const disciplines         = (profile.disciplines as string[] | null) ?? [];
   const syllabusСerts       = (profile.syllabus_certs as string[] | null) ?? [];
@@ -71,8 +117,22 @@ export default async function PublicInstructorPage({
       ? `From NZD $${profile.rate_min_nzd} per day`
       : null;
 
+  const origin = originForHost((await headers()).get("host"));
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <JsonLd
+        data={personJsonLd({
+          url: `${origin}/instructor/${slug}`,
+          name: profile.full_name ?? studio.name,
+          jobTitle: profile.headline,
+          description: profile.bio,
+          image: profile.avatar_url,
+          areaServed: profile.location_city,
+          knowsAbout: [...disciplines, ...syllabusСerts],
+          worksFor: { name: "Olune Network", url: `${origin}/instructors` },
+        })}
+      />
       <div className="max-w-2xl mx-auto py-10 px-4 sm:px-6 space-y-4">
         {/* Header card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">

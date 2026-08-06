@@ -179,9 +179,15 @@
         "done": "完成"
       },
       "pulse": {
-        "occupancy": { "label": "满员率" },
-        "enrolled": { "label": "已报名" },
-        "collected": { "label": "已收款" }
+        "occupancy": {
+          "label": "满员率"
+        },
+        "enrolled": {
+          "label": "已报名"
+        },
+        "collected": {
+          "label": "已收款"
+        }
       },
       "cashIn": {
         "title": "近7天进账",
@@ -254,12 +260,24 @@
     "people": {
       "eyebrow": "学员 · 共 {count} 条记录",
       "title": "一个数据库，没有门槛。",
-      "tabs": { "students": "学员", "families": "家庭", "leads": "线索" },
-      "columns": { "name": "姓名", "programme": "课程", "attendance": "出勤", "balance": "余额" },
+      "tabs": {
+        "students": "学员",
+        "families": "家庭",
+        "leads": "线索"
+      },
+      "columns": {
+        "name": "姓名",
+        "programme": "课程",
+        "attendance": "出勤",
+        "balance": "余额"
+      },
       "unnamed": "未命名",
       "noProgramme": "未报名",
       "noAttendance": "未记录",
-      "flag": { "overdue": "逾期", "new": "新" },
+      "flag": {
+        "overdue": "逾期",
+        "new": "新"
+      },
       "empty": {
         "students": "暂无学员。",
         "families": "暂无家庭。",
@@ -297,11 +315,34 @@
           "lost": "已流失"
         }
       },
-      "openManagerHint": "需要批量操作、报名或线索看板？",
-      "openManager": {
-        "students": "打开学员管理",
-        "families": "打开家庭管理",
-        "leads": "打开线索看板"
+      "search": {
+        "students": "按姓名、邮箱、监护人或班级搜索学员…",
+        "families": "按姓名、邮箱、电话或孩子搜索家庭…",
+        "leads": "按姓名、邮箱、电话或来源搜索线索…"
+      },
+      "filters": {
+        "allClasses": "全部班级",
+        "allStudents": "全部学员",
+        "overdue": "有逾期欠款",
+        "recentlyJoined": "近期加入",
+        "unenrolled": "未报名",
+        "allFamilies": "全部家庭",
+        "owing": "有欠款",
+        "noChildren": "未关联孩子",
+        "allLeads": "全部状态",
+        "clear": "清除筛选"
+      },
+      "showing": "显示 {shown} / {total}",
+      "noMatches": {
+        "students": "没有符合搜索条件的学员。",
+        "families": "没有符合搜索条件的家庭。",
+        "leads": "没有符合搜索条件的线索。"
+      },
+      "invite": {
+        "button": "邀请全部",
+        "sending": "正在发送邀请…",
+        "confirm": "向所有从未登录过的家长和学员发送邀请邮件？",
+        "result": "已发送邀请：{sent}。已激活：{skipped}。失败：{failed}。"
       }
     },
     "classes": {
@@ -435,7 +476,29 @@
       },
       "detail": {
         "back": "← 返回学员",
+        "tabs": {
+          "progress": "进度",
+          "schedule": "日程",
+          "badges": "徽章",
+          "information": "信息"
+        },
         "noContactOnFile": "无存档联系方式",
+        "badges": {
+          "empty": "此工作室尚未设置徽章目录。"
+        },
+        "information": {
+          "contactDetails": "联系方式",
+          "classes": "课程",
+          "guardians": "监护人",
+          "noGuardians": "尚未关联监护人。",
+          "primaryContact": "主要联系人",
+          "viewProfile": "查看资料",
+          "medical": "医疗与同意书",
+          "noForms": "尚未为此学员填写任何表单。",
+          "signedOn": "签署于 {date}",
+          "notSigned": "未签署",
+          "card": "签到卡"
+        },
         "dangerZone": "危险区",
         "deleteDescription": "永久移除此学员、其报名及进度历史。此操作无法撤销。",
         "deleteStudent": "删除学员",
@@ -780,7 +843,11 @@
           "pending": "另有 {amount} 待入账",
           "notConnectedTitle": "尚未连接",
           "connectCta": "连接 Stripe 以查看实时余额",
-          "range": { "7d": "7天", "30d": "30天", "12m": "12月" }
+          "range": {
+            "7d": "7天",
+            "30d": "30天",
+            "12m": "12月"
+          }
         },
         "overdueQueue": {
           "title": "逾期队列",
@@ -865,7 +932,10 @@
       "ledger": {
         "title": "总账",
         "subtitle": "Olune 中记录的每一笔真实付款和退款，按时间顺序排列 — 不是可手动编辑的账本。",
-        "stats": { "net": "净额", "count": "交易笔数" },
+        "stats": {
+          "net": "净额",
+          "count": "交易笔数"
+        },
         "empty": {
           "title": "暂无交易记录",
           "body": "付款和退款发生后会显示在这里。"

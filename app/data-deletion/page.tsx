@@ -8,10 +8,12 @@
 
 import type { Metadata } from "next";
 import { DataDeletionPageClient } from "@/components/marketing/landing/DataDeletionPageClient";
+import { rootUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Data Deletion Instructions",
   description: "How to request deletion of your personal information from Olune, for both studios/clubs and their students or members.",
+  alternates: { canonical: rootUrl("/data-deletion") },
 };
 
 export default function DataDeletionPage() {

@@ -1,10 +1,11 @@
 import type { LayoutHeroProps } from "@/lib/website/types";
+import { Art, Wordmark } from "../Art";
 
-export function EditorialLayout({ accent, studioName, headline, tagline, eyebrow }: LayoutHeroProps) {
+export function EditorialLayout({ accent, studioName, headline, tagline, eyebrow, logoUrl, images }: LayoutHeroProps) {
   return (
     <div style={{ padding: "44px 56px 60px", minHeight: 900, boxSizing: "border-box" }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", paddingBottom: 26, borderBottom: "1px solid rgba(0,0,0,.14)" }}>
-        <div style={{ fontSize: 17, letterSpacing: ".26em", textTransform: "uppercase", fontFamily: "var(--font-body)" }}>{studioName}</div>
+        <Wordmark logoUrl={logoUrl} studioName={studioName} height={28} style={{ fontSize: 17, letterSpacing: ".26em", textTransform: "uppercase", fontFamily: "var(--font-body)" }} />
         <div style={{ display: "flex", gap: 28, fontSize: 17, letterSpacing: ".12em", textTransform: "uppercase", opacity: 0.6, fontFamily: "var(--font-body)" }}>
           <span>Classes</span><span>Timetable</span><span>About</span><span>Contact</span>
         </div>
@@ -18,7 +19,12 @@ export function EditorialLayout({ accent, studioName, headline, tagline, eyebrow
           </div>
         </div>
         <div>
-          <div style={{ height: 430, background: `linear-gradient(150deg, color-mix(in srgb, ${accent} 34%, #e7e3db), color-mix(in srgb, ${accent} 10%, #f4f1ea))` }} />
+          <Art
+            src={images[0]}
+            alt={`${studioName} hero`}
+            fallback={`linear-gradient(150deg, color-mix(in srgb, ${accent} 34%, #e7e3db), color-mix(in srgb, ${accent} 10%, #f4f1ea))`}
+            style={{ height: 430 }}
+          />
           <div style={{ marginTop: 22, fontSize: 16, letterSpacing: ".2em", textTransform: "uppercase", fontFamily: "var(--font-body)", color: accent }}>{eyebrow}</div>
           <div style={{ marginTop: 14, fontSize: 21, lineHeight: 1.5, opacity: 0.66, fontFamily: "var(--font-body)" }}>Term two enrolments are open. Twelve programmes, ages three to adult.</div>
         </div>

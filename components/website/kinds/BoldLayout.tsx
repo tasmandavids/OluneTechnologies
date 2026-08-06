@@ -1,10 +1,11 @@
 import type { LayoutHeroProps } from "@/lib/website/types";
+import { Art, Wordmark } from "../Art";
 
-export function BoldLayout({ accent, ink, studioName, headline, tagline }: LayoutHeroProps) {
+export function BoldLayout({ accent, ink, studioName, headline, tagline, logoUrl, images }: LayoutHeroProps) {
   return (
     <div style={{ minHeight: 900, background: ink, color: "#fff", padding: "44px 52px 56px", boxSizing: "border-box" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ fontSize: 22, letterSpacing: ".14em", textTransform: "uppercase", fontWeight: 800, fontFamily: "var(--font-body)" }}>{studioName}</div>
+        <Wordmark logoUrl={logoUrl} studioName={studioName} height={30} style={{ fontSize: 22, letterSpacing: ".14em", textTransform: "uppercase", fontWeight: 800, fontFamily: "var(--font-body)" }} />
         <div style={{ display: "flex", gap: 12, fontSize: 17, fontFamily: "var(--font-body)" }}>
           <span style={{ padding: "11px 20px", borderRadius: 999, border: "1px solid rgba(255,255,255,.22)" }}>Classes</span>
           <span style={{ padding: "11px 20px", borderRadius: 999, border: "1px solid rgba(255,255,255,.22)" }}>Timetable</span>
@@ -13,8 +14,13 @@ export function BoldLayout({ accent, ink, studioName, headline, tagline }: Layou
       </div>
       <div style={{ fontSize: 168, lineHeight: 0.86, letterSpacing: "-0.05em", fontWeight: 800, marginTop: 56, fontFamily: "var(--font-display)" }}>{headline}</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginTop: 52 }}>
-        <div style={{ height: 250, background: accent }} />
-        <div style={{ height: 250, background: `linear-gradient(140deg, color-mix(in srgb, ${accent} 62%, #000), color-mix(in srgb, ${accent} 18%, #000))` }} />
+        <Art src={images[0]} alt={`${studioName} photo 1`} fallback={accent} style={{ height: 250 }} />
+        <Art
+          src={images[1]}
+          alt={`${studioName} photo 2`}
+          fallback={`linear-gradient(140deg, color-mix(in srgb, ${accent} 62%, #000), color-mix(in srgb, ${accent} 18%, #000))`}
+          style={{ height: 250 }}
+        />
         <div style={{ height: 250, padding: 30, boxSizing: "border-box", border: "1px solid rgba(255,255,255,.2)", fontSize: 24, lineHeight: 1.45, opacity: 0.8, fontFamily: "var(--font-body)" }}>{tagline}</div>
       </div>
       <div style={{ display: "flex", gap: 56, marginTop: 46, fontFamily: "var(--font-body)" }}>

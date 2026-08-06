@@ -48,10 +48,22 @@ export function SiteRenderer({
   eyebrow,
   sections,
   density,
+  logoUrl = null,
+  heroImages,
   scale = 1,
 }: SiteRenderProps) {
   const Layout = LAYOUTS[kind] ?? SplitLayout;
-  const heroProps = { accent, paper, ink, studioName, headline, tagline, eyebrow };
+  const heroProps = {
+    accent,
+    paper,
+    ink,
+    studioName,
+    headline,
+    tagline,
+    eyebrow,
+    logoUrl,
+    images: heroImages ?? [],
+  };
 
   const vars = {
     "--font-display": `'${fontDisplay}'`,

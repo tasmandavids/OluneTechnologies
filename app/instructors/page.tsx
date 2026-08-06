@@ -1,12 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { InstructorDirectory } from "@/components/network/InstructorDirectory";
+import { rootUrl } from "@/lib/seo";
+import type { Metadata } from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
   // Already carries "Olune" in the string — bypass the root layout's
   // "· Olune" title template so it isn't appended twice.
   title: { absolute: "Find an Instructor — Olune Network" },
   description:
     "Browse dance and fitness instructors available for cover classes and guest teaching through the Olune Network.",
+  alternates: { canonical: rootUrl("/instructors") },
 };
 
 export type DirectoryInstructor = {

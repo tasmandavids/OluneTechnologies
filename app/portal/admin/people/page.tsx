@@ -1,16 +1,18 @@
 // ============================================================================
-//  /portal/admin/people — unified Students/Families/Leads directory. The
-//  People rail item's new landing page. Fast "browse everyone, glance at
-//  balance/status, act on one row" surface — bulk actions, enrollment, and
-//  the leads Kanban still live on /students, /parents, /leads (linked from
-//  each tab), not duplicated here.
+//  /portal/admin/people — unified Students/Families/Leads directory. The one
+//  door to every person in the studio: browse, search, filter, and act on a
+//  row. It replaced the separate /students and /parents rosters (both now
+//  redirect here), so it also owns the roster-level actions those screens had:
+//  add student, add family, invite all, mass email, bulk edit/delete. Per-class
+//  enrollment lives on the class detail panel; the leads Kanban on /leads.
 // ============================================================================
 
 import { requirePortalSession } from "@/lib/portal/session";
 import { listStudioMemberProfileIds } from "@/lib/portal/studio-members";
 import { fetchBadgeCatalogue } from "@/lib/portal/badges-data";
-import { PeopleView } from "@/components/portal/admin/people/PeopleView";
+import { PeopleView, type PeopleTab } from "@/components/portal/admin/people/PeopleView";
 import type { PeopleStudentRow, PeopleFamilyRow, PeopleLeadRow, PeopleBadge } from "@/components/portal/admin/people/types";
+import type { ParentRow, StudentOption } from "@/lib/parents/types";
 
 export const dynamic = "force-dynamic";
 
@@ -43,8 +45,18 @@ function nextClassLabel(
   return `${DOW_LABELS[best.dayOfWeek]}${label ? " " + label : ""}`;
 }
 
-export default async function PeoplePage() {
-  const { supabase, studioId } = await requirePortalSession();
+const TABS = ["students", "families", "leads"] as const;
+
+export default async function PeoplePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const { tab } = await searchParams;
+  const initialTab = (TABS as readonly string[]).includes(tab ?? "") ? (tab as PeopleTab) : "students";
+
+  const { supabase, studioId, role } = await requirePortalSession();
+  const canMassEmail = role === "admin";
 
   const [studentIds, parentIds] = await Promise.all([
     listStudioMemberProfileIds(supabase, studioId, "student"),
@@ -62,13 +74,14 @@ export default async function PeoplePage() {
     attendanceRes,
     profileBadgesRes,
     catalogue,
+    classesRes,
   ] = await Promise.all([
     studentIds.length === 0
       ? Promise.resolve({ data: [] as never[] })
       : supabase
           .from("profiles")
           .select(`
-            id, full_name, email, created_at,
+            id, full_name, email, phone, created_at,
             enrollments!student_id ( status, classes ( id, name, day_of_week, start_time ) )
           `)
           .in("id", studentIds)
@@ -92,7 +105,7 @@ export default async function PeoplePage() {
 
     supabase
       .from("guardianships")
-      .select("guardian_id, student_id, is_primary, profiles!guardian_id ( full_name )")
+      .select("guardian_id, student_id, is_primary, profiles!guardian_id ( id, full_name, email, phone )")
       .eq("studio_id", studioId),
 
     supabase
@@ -114,14 +127,20 @@ export default async function PeoplePage() {
       : supabase.from("profile_badges").select("recipient_id, badge_id, awarded_at").in("recipient_id", studentIds),
 
     fetchBadgeCatalogue(supabase, studioId, "student"),
+
+    // Class list for the mass-email "one class" scope. Admin-only feature.
+    canMassEmail
+      ? supabase.from("classes").select("id, name").eq("studio_id", studioId).order("name")
+      : Promise.resolve({ data: [] as { id: string; name: string }[] }),
   ]);
 
   // ── shared lookups ─────────────────────────────────────────────────────
+  type GuardianProfile = { id: string; full_name: string | null; email: string | null; phone: string | null };
   const guardianshipRows = guardianshipsRes.data ?? [];
   const primaryGuardianByStudent = new Map<string, string | null>();
   for (const g of guardianshipRows) {
     const studentId = g.student_id as string;
-    const prof = g.profiles as unknown as { full_name: string | null } | null;
+    const prof = g.profiles as unknown as GuardianProfile | null;
     if (!primaryGuardianByStudent.has(studentId) || g.is_primary) {
       primaryGuardianByStudent.set(studentId, prof?.full_name ?? null);
     }
@@ -204,6 +223,9 @@ export default async function PeoplePage() {
       id: p.id,
       name: p.full_name,
       initials: initials(p.full_name),
+      email: p.email,
+      phone: p.phone,
+      classNames,
       programme,
       attendancePercent,
       balanceCents: balanceByStudent.get(p.id) ?? 0,
@@ -229,6 +251,43 @@ export default async function PeoplePage() {
     joinedAt: p.created_at as string,
   }));
 
+  // Richer parent shape the mass-email panel needs (children + co-parents),
+  // built from the same guardianship rows the family cards already use.
+  const parentRows: ParentRow[] = (parentsRes.data ?? []).map((p) => {
+    const mine = guardianshipRows.filter((g) => g.guardian_id === p.id);
+    const myStudentIds = new Set(mine.map((g) => g.student_id as string));
+
+    const coParentMap = new Map<string, GuardianProfile>();
+    for (const g of guardianshipRows) {
+      if (g.guardian_id === p.id) continue;
+      if (!myStudentIds.has(g.student_id as string)) continue;
+      const prof = g.profiles as unknown as GuardianProfile | null;
+      if (prof) coParentMap.set(prof.id, prof);
+    }
+
+    return {
+      id: p.id,
+      name: p.full_name,
+      email: p.email,
+      phone: p.phone,
+      createdAt: p.created_at as string,
+      children: [...myStudentIds].map((sid) => ({ id: sid, name: studentNameById.get(sid) ?? null })),
+      isPrimaryContact: mine.some((g) => g.is_primary),
+      coParents: [...coParentMap.values()].map((c) => ({
+        id: c.id,
+        name: c.full_name,
+        email: c.email,
+        phone: c.phone,
+      })),
+    };
+  });
+
+  const studentOptions: StudentOption[] = students.map((s) => ({ id: s.id, name: s.name }));
+  const classOptions = (classesRes.data ?? []).map((c) => ({
+    id: c.id as string,
+    name: (c.name as string) || "Untitled class",
+  }));
+
   // ── leads ───────────────────────────────────────────────────────────────
   const leads: PeopleLeadRow[] = (leadsRes.data ?? []).map((l) => ({
     id: l.id,
@@ -241,5 +300,17 @@ export default async function PeoplePage() {
     createdAt: l.created_at,
   }));
 
-  return <PeopleView students={students} families={families} leads={leads} studioTracksAttendance={studioTracksAttendance} />;
+  return (
+    <PeopleView
+      students={students}
+      families={families}
+      leads={leads}
+      studioTracksAttendance={studioTracksAttendance}
+      parentRows={parentRows}
+      studentOptions={studentOptions}
+      classOptions={classOptions}
+      canMassEmail={canMassEmail}
+      initialTab={initialTab}
+    />
+  );
 }

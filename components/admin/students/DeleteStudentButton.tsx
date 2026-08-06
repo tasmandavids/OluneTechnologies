@@ -29,7 +29,7 @@ export default function DeleteStudentButton({
         return;
       }
       toast.success(tShared("deleted"));
-      router.push("/portal/admin/students");
+      router.push("/portal/admin/people?tab=students");
       router.refresh();
     });
   };

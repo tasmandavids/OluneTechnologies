@@ -7,13 +7,14 @@
 import type { Metadata } from "next";
 import { TeamPageClient } from "@/components/marketing/landing/TeamPageClient";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { organizationJsonLd, originForHost } from "@/lib/seo";
+import { organizationJsonLd, originForHost, rootUrl } from "@/lib/seo";
 import { headers } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Meet the team",
   description:
     "Olune is built hands-on by a small team who lived the studio-admin problem it solves — the story behind the product.",
+  alternates: { canonical: rootUrl("/team") },
 };
 
 export default async function TeamPage() {
