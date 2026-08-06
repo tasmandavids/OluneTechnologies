@@ -125,7 +125,7 @@ export function DashboardGrid({
                       <IconGrip className="h-4 w-4" />
                     </div>
                   )}
-                  <div className="h-full overflow-y-auto">{widgets[id]}</div>
+                  <div className="h-full">{widgets[id]}</div>
                 </div>
               ))}
             </GridLayout>
