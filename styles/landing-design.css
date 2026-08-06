@@ -76,6 +76,7 @@ html:has(#olune-landing-root) {
 .dcl-navlink:hover { color: #8b7cf0 !important; }
 .dcl-cta-primary:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 28px 56px -18px #8b7cf0 !important; }
 .dcl-cta-ghost:hover { color: #8b7cf0 !important; border-bottom-color: #8b7cf0 !important; }
+.dcl-cta-glass:hover { transform: translateY(-3px); border-color: rgba(139,124,240,.55) !important; box-shadow: 0 20px 50px -20px rgba(139,124,240,.5) !important; }
 .dcl-cta-dark:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 30px 80px -14px #8b7cf0 !important; }
 .dcl-footer-link:hover { color: #ffffff !important; }
 .dcl-chip:hover { transform: translateY(-4px) rotate(0deg); border-color: #8b7cf066 !important; color: #1a1535 !important; }
@@ -96,6 +97,7 @@ html:has(#olune-landing-root) {
   .dcl-section { padding-left: 20px !important; padding-right: 20px !important; }
   .dcl-nav { padding-left: 20px !important; padding-right: 20px !important; }
   .dcl-nav-links { display: none !important; }
+  .dcl-hero-chip { display: none !important; }
   .dcl-grid-human,
   .dcl-grid-about,
   .dcl-grid-why,

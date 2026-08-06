@@ -28,6 +28,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { setLocale } from "@/app/actions/locale";
+import { OluneLogo } from "@/components/brand/OluneLogo";
 import { localeLabels, locales, type Locale } from "@/lib/i18n/config";
 import { landingFontVars } from "./landing/fonts";
 import { NEXT_UP, RELEASES } from "./landing/releases-data";
@@ -88,12 +89,16 @@ const mkOrb = (t: string, l: string, s: number, bg: string, bl: number, an: stri
   filter: `blur(${bl}px)`, opacity: 1, animation: `${an} ${du}s ease-in-out ${de}s infinite`, pointerEvents: "none",
 });
 
+// Aurora Glass ambience (tokens/aurora.css --a1/--a2/--a3, ported verbatim) —
+// three distinct hues rather than one accent tint, independent of studio
+// branding, so the hero reads as "aurora" rather than "purple orb".
+const AURORA_LAVENDER = "rgba(166,162,232,.34)";
+const AURORA_SEAFOAM = "rgba(159,216,200,.30)";
+const AURORA_APRICOT = "rgba(242,183,136,.22)";
 const HERO_ORBS = [
-  mkOrb("10%", "8%", 300, `${ACCENT}1e`, 60, "floatA", 20, 0),
-  mkOrb("60%", "82%", 340, `${ACCENT}18`, 70, "floatB", 24, 2),
-  mkOrb("76%", "14%", 180, "rgba(214,204,255,0.4)", 48, "floatC", 17, 1),
-  mkOrb("44%", "50%", 400, `${ACCENT}10`, 90, "floatB", 28, 1.5),
-  mkOrb("20%", "74%", 140, `${ACCENT}2c`, 34, "floatA", 15, 0.5),
+  mkOrb("10%", "8%", 320, AURORA_LAVENDER, 62, "floatA", 22, 0),
+  mkOrb("58%", "80%", 360, AURORA_SEAFOAM, 70, "floatB", 27, 2),
+  mkOrb("74%", "16%", 220, AURORA_APRICOT, 54, "floatC", 20, 1),
 ];
 const DECOR_A = [
   mkOrb("12%", "8%", 240, `${ACCENT}12`, 60, "floatA", 21, 0),
@@ -200,6 +205,26 @@ const sectionStyle = (bg: string): CSSProperties => ({
 const ctaPrimaryStyle: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 10, padding: "18px 36px", borderRadius: 999, background: NAVY, color: "#ffffff", fontWeight: 700, fontSize: 16.5, boxShadow: "0 18px 40px -18px rgba(26,21,53,0.7)", transition: "transform 0.35s cubic-bezier(.16,1,.3,1), box-shadow 0.35s ease" };
 const ctaGhostStyle: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 8, padding: "4px 0", color: NAVY, fontWeight: 600, fontSize: 15.5, borderBottom: "1px solid rgba(26,21,53,0.3)", transition: "border-color 0.3s ease, color 0.3s ease" };
 const ctaOnDarkStyle: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 10, padding: "18px 36px", borderRadius: 999, background: "#ffffff", color: NAVY, fontWeight: 700, fontSize: 16.5, boxShadow: `0 20px 60px -16px ${ACCENT}`, transition: "transform 0.35s cubic-bezier(.16,1,.3,1), box-shadow 0.35s ease" };
+
+// Aurora Glass panel recipe (tokens/aurora.css) — 148° refraction sheen over
+// a translucent fill, blur+saturate, one edge border, sheen on the inside
+// top/bottom. Colourless (white-based), so it layers over the landing's own
+// ACCENT/NAVY palette instead of the tenant --brand tokens.
+const GLASS_EDGE = "rgba(255,255,255,.78)";
+const GLASS_PANEL: CSSProperties = {
+  background: "linear-gradient(148deg, rgba(255,255,255,.5), transparent 42%), rgba(255,255,255,.4)",
+  backdropFilter: "blur(28px) saturate(1.7)",
+  WebkitBackdropFilter: "blur(28px) saturate(1.7)",
+  border: `1px solid ${GLASS_EDGE}`,
+  boxShadow: "inset 0 1px 0 rgba(255,255,255,.8), inset 0 -1px 0 rgba(255,255,255,.3)",
+};
+const ctaGlassStyle: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 8, padding: "16px 30px", borderRadius: 999, color: NAVY, fontWeight: 700, fontSize: 15.5, transition: "transform 0.35s cubic-bezier(.16,1,.3,1), box-shadow 0.35s ease, border-color 0.3s ease", ...GLASS_PANEL };
+const heroChipStyle: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 10, padding: "9px 16px", borderRadius: 999, fontSize: 12, color: "rgba(26,21,53,0.66)", ...GLASS_PANEL };
+const grainStyle: CSSProperties = {
+  position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.05, mixBlendMode: "overlay",
+  backgroundImage:
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E\")",
+};
 
 const liveBadgeStyle: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 7, fontSize: 11.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: ACCENT, padding: "5px 12px", borderRadius: 999, background: `${ACCENT}16`, border: `1px solid ${ACCENT}44` };
 const liveDotStyle: CSSProperties = { width: 7, height: 7, borderRadius: "50%", background: ACCENT, animation: "livePulse 2s ease-in-out infinite" };
@@ -558,6 +583,7 @@ export default function OluneLanding() {
 
       {/* HERO */}
       <section id="hero" className="dcl-section" style={{ position: "relative", background: "linear-gradient(180deg, #efeafb 0%, #f7f6fb 60%)", padding: "148px 48px 0", overflow: "hidden" }}>
+        <div aria-hidden style={grainStyle} />
         <div aria-hidden style={{ position: "absolute", width: 1000, height: 1000, borderRadius: "50%", background: `radial-gradient(circle, ${ACCENT}24 0%, ${ACCENT}00 66%)`, top: -300, left: "50%", transform: "translateX(-50%)", pointerEvents: "none", animation: "pulseGlow 10s ease-in-out infinite" }} />
         <div ref={heroLayer} aria-hidden style={{ position: "absolute", inset: "-8%", pointerEvents: "none", zIndex: 0 }}>
           <div style={{ position: "absolute", top: "12%", left: "22%", width: 720, height: 720, borderRadius: "50%", background: `radial-gradient(circle, ${ACCENT}22 0%, rgba(214,204,255,0.16) 42%, transparent 70%)`, filter: "blur(34px)", animation: "floatB 26s ease-in-out infinite" }} />
@@ -565,11 +591,8 @@ export default function OluneLanding() {
         </div>
 
         <div style={{ maxWidth: 1120, margin: "0 auto", position: "relative", zIndex: 2, textAlign: "center" }}>
-          <div style={heroReveal(0, "scale")}>
-            <div style={{ position: "relative", width: "clamp(120px, 15vw, 176px)", height: "clamp(120px, 15vw, 176px)", margin: "0 auto 44px", animation: "bobY 7s ease-in-out infinite" }}>
-              <div style={{ position: "absolute", top: "16%", left: "17%", width: "76%", height: "76%", borderRadius: "50%", background: PURPLE_GRAD, boxShadow: `0 0 70px ${ACCENT}66`, animation: "pulseGlow 8s ease-in-out infinite" }} />
-              <div style={{ position: "absolute", top: "6%", left: "6%", width: "76%", height: "76%", borderRadius: "50%", background: NAVY }} />
-            </div>
+          <div style={{ margin: "0 auto 44px", width: "clamp(120px, 15vw, 176px)", ...heroReveal(0, "scale") }}>
+            <OluneLogo variant="mark" theme="dark" size="hero" animated />
           </div>
           <h1 style={{ margin: "0 0 32px" }}>
             <span style={{ display: "block", fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(46px, 7.4vw, 118px)", lineHeight: 1.02, color: NAVY, letterSpacing: "-0.02em" }}>
@@ -586,12 +609,20 @@ export default function OluneLanding() {
           <p style={{ fontSize: 20, lineHeight: 1.7, color: "rgba(26,21,53,0.62)", maxWidth: 640, margin: "0 auto 44px", ...heroReveal(heroWords1.length + heroWords2.length + 1, "up") }}>{t("hero.subtitle")}</p>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 36, flexWrap: "wrap", marginBottom: 56, ...heroReveal(heroWords1.length + heroWords2.length + 2, "up") }}>
             <Link href="/onboarding" className="dcl-cta-primary" style={ctaPrimaryStyle}>{t("startFree")} <span aria-hidden>→</span></Link>
-            <a href="#features" className="dcl-cta-ghost" style={ctaGhostStyle}>{t("hero.seeInAction")}</a>
+            <a href="#features" className="dcl-cta-glass" style={ctaGlassStyle}>{t("hero.seeInAction")}</a>
           </div>
           <p style={{ fontFamily: DISPLAY, fontStyle: "italic", fontSize: "clamp(17px, 1.6vw, 21px)", color: "rgba(26,21,53,0.4)", maxWidth: 620, margin: "0 auto", lineHeight: 1.5, ...heroReveal(heroWords1.length + heroWords2.length + 3, "up") }}>&quot;{t("hero.quote")}&quot;</p>
         </div>
 
-        <div style={{ marginTop: 68, borderTop: "1px solid rgba(26,21,53,0.1)", overflow: "hidden", position: "relative", zIndex: 2 }}>
+        <div
+          className="dcl-hero-chip"
+          style={{ position: "absolute", right: 48, bottom: 24, zIndex: 3, ...heroChipStyle, ...heroReveal(heroWords1.length + heroWords2.length + 4, "up") }}
+        >
+          <span aria-hidden style={{ width: 7, height: 7, borderRadius: "50%", background: ACCENT, animation: "livePulse 2s ease-in-out infinite", flexShrink: 0 }} />
+          <span><b style={{ color: NAVY, fontWeight: 700 }}>{t("problem.eyebrow")}</b> — {t.rich("problem.sceneCaption", italic)}</span>
+        </div>
+
+        <div style={{ marginTop: 68, overflow: "hidden", position: "relative", zIndex: 2, maskImage: "linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)", WebkitMaskImage: "linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)", ...GLASS_PANEL }}>
           <div style={{ display: "flex", width: "max-content", animation: "oluneMarquee 28s linear infinite", padding: "30px 0" }}>
             {tickerLoop.map((word, i) => (
               <span key={i} style={{ display: "flex", alignItems: "center", gap: 28, padding: "0 28px", fontFamily: DISPLAY, fontStyle: "italic", fontSize: 22, color: "rgba(26,21,53,0.34)", whiteSpace: "nowrap" }}>
