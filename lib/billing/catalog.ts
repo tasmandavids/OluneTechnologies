@@ -13,6 +13,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
   BillingProduct,
+  HourBandRow,
   LedgerCodeOverride,
   LedgerProvider,
   PackageComponent,
@@ -28,8 +29,9 @@ const PRODUCT_COLUMNS = `
   unit_amount_cents, unit_label, min_units, increment_units,
   credit_count, credit_expiry_days, recurring_interval, recurring_interval_count,
   term_id, tax_treatment, tax_rate_bp, account_code, item_code,
-  active, sort_order,
+  overflow_rate_cents, auto_apply, active, sort_order,
   billing_price_tiers ( id, min_quantity, unit_amount_cents, discount_bp, sort_order ),
+  billing_hour_bands ( id, min_hours, total_cents, sort_order ),
   billing_product_components ( id, component_product_id, quantity, sort_order ),
   billing_product_ledger_codes ( provider, account_code, item_code, tax_code, tracking_option )
 `;
@@ -57,6 +59,17 @@ function mapTiers(raw: unknown): PriceTier[] {
       sortOrder: num(t.sort_order, 0),
     }))
     .sort((a, b) => a.minQuantity - b.minQuantity);
+}
+
+function mapHourBands(raw: unknown): HourBandRow[] {
+  return ((raw ?? []) as RawProduct[])
+    .map((b) => ({
+      id: String(b.id),
+      minHours: num(b.min_hours, 0),
+      totalCents: num(b.total_cents, 0),
+      sortOrder: num(b.sort_order, 0),
+    }))
+    .sort((a, b) => a.minHours - b.minHours);
 }
 
 function mapComponents(raw: unknown): PackageComponent[] {
@@ -103,9 +116,12 @@ export function mapProduct(row: RawProduct): BillingProduct {
     taxRateBp: num(row.tax_rate_bp, 1500),
     accountCode: (row.account_code as string | null) ?? null,
     itemCode: (row.item_code as string | null) ?? null,
+    overflowRateCents: nullableNum(row.overflow_rate_cents),
+    autoApply: row.auto_apply === true,
     active: row.active !== false,
     sortOrder: num(row.sort_order, 0),
     tiers: mapTiers(row.billing_price_tiers),
+    hourBands: mapHourBands(row.billing_hour_bands),
     components: mapComponents(row.billing_product_components),
     ledgerCodes: mapLedgerCodes(row.billing_product_ledger_codes),
   };

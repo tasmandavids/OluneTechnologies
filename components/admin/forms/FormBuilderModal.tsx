@@ -410,19 +410,19 @@ export function FormBuilderModal({
             </div>
 
             <div className="rounded-xl border p-3" style={{ borderColor: "var(--hair)", background: "var(--surface)" }}>
-              <p className="mb-2 text-xs font-semibold text-muted">Who signs it?</p>
+              <p className="mb-2 text-xs font-semibold text-muted">One response per…</p>
               <div className="space-y-2">
                 {(
                   [
                     {
                       value: "student" as const,
-                      label: "One per student",
-                      hint: "A guardian signs for each of their dancers. Adult students sign their own.",
+                      label: "Student",
+                      hint: "Guardians sign for each of their dancers. “Everyone” means every student.",
                     },
                     {
                       value: "person" as const,
-                      label: "One per person",
-                      hint: "Everyone it reaches signs once for themselves — staff policies, for example.",
+                      label: "Person",
+                      hint: "Each person signs for themselves. “Everyone” means every member, staff included.",
                     },
                   ]
                 ).map((option) => (

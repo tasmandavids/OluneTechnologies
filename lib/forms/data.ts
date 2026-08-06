@@ -18,6 +18,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Role } from "@/lib/types";
+import { audienceCoversSubject } from "./audience";
 import {
   parseFormFields,
   type AssignedForm,
@@ -180,7 +181,13 @@ async function loadAudienceContext(
   return { profiles, rosterByClass, guardiansBySubject };
 }
 
-/** Expand one form's audience into the concrete subjects it is about. */
+/**
+ * Expand one form's audience into the concrete subjects it is about.
+ *
+ * Class and person targets are walked directly (cheaper than scanning every
+ * profile), and the role/all targets fall through to the same predicate the
+ * signing side uses, so the two views agree by construction.
+ */
 function expandAudience(
   audience: FormAudienceTarget[],
   subjectScope: FormSubjectScope,
@@ -189,20 +196,24 @@ function expandAudience(
   if (audience.length === 0) return [];
 
   const subjectIds = new Set<string>();
+  const broad = audience.filter((t) => t.kind === "all" || t.kind === "role");
 
   for (const target of audience) {
-    if (target.kind === "person") {
-      subjectIds.add(target.profileId);
-    } else if (target.kind === "class") {
+    if (target.kind === "person") subjectIds.add(target.profileId);
+    else if (target.kind === "class") {
       for (const id of ctx.rosterByClass.get(target.classId) ?? []) subjectIds.add(id);
-    } else if (target.kind === "role") {
-      for (const [id, p] of ctx.profiles) if (p.role === target.role) subjectIds.add(id);
-    } else {
-      // "Everyone" is every student for a student-scope form, and every member
-      // of the studio for a person-scope one.
-      for (const [id, p] of ctx.profiles) {
-        if (subjectScope === "person" || p.role === "student") subjectIds.add(id);
-      }
+    }
+  }
+
+  if (broad.length > 0) {
+    for (const [id, profile] of ctx.profiles) {
+      if (subjectIds.has(id)) continue;
+      const covered = audienceCoversSubject(
+        broad,
+        { profileId: id, role: profile.role, classIds: new Set() },
+        subjectScope,
+      );
+      if (covered) subjectIds.add(id);
     }
   }
 
@@ -451,32 +462,22 @@ export async function loadAssignedForms(
     const audience = assignments.map(toTarget).filter((t): t is FormAudienceTarget => t !== null);
     const form = toForm(row, audience);
 
-    // Candidate subjects: for a person-scope form only me; for a student-scope
-    // form my children, plus me when I'm the student (self-managed accounts).
-    const candidates: FormSubject[] =
-      form.subjectScope === "person"
-        ? [self]
-        : role === "student"
-          ? [self, ...childSubjects]
-          : childSubjects;
+    // The audience names subjects directly, so matching mirrors expandAudience
+    // exactly: whoever the audience picks out, I answer for if they are me or
+    // one of my children. Guardianship rows only ever point at students, so a
+    // child's effective role is always "student".
+    const candidates: FormSubject[] = [self, ...childSubjects];
 
     const subjects = candidates.filter((subject) =>
-      assignments.some((a) => {
-        if (a.kind === "all") {
-          // Everyone: a student-scope form is about students only.
-          if (form.subjectScope === "person") return subject.isSelf;
-          return subject.isSelf ? role === "student" : true;
-        }
-        if (a.kind === "role") {
-          if (subject.isSelf) return a.role === role;
-          return a.role === "student";
-        }
-        if (a.kind === "person") return a.profile_id === subject.profileId;
-        if (a.kind === "class") {
-          return a.class_id ? (classesBySubject.get(subject.profileId)?.has(a.class_id) ?? false) : false;
-        }
-        return false;
-      }),
+      audienceCoversSubject(
+        audience,
+        {
+          profileId: subject.profileId,
+          role: subject.isSelf ? role : "student",
+          classIds: classesBySubject.get(subject.profileId) ?? new Set<string>(),
+        },
+        form.subjectScope,
+      ),
     );
 
     if (subjects.length > 0) forms.push({ form, subjects });

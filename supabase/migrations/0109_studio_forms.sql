@@ -146,6 +146,12 @@ returns boolean language sql stable security definer set search_path = public as
       and (
         a.kind = 'all'
         or (a.kind = 'role' and a.role = private.current_user_role())
+        -- A form aimed at students has to reach the guardians who sign for
+        -- them, not just students with their own login.
+        or (a.kind = 'role' and a.role = 'student' and exists (
+              select 1 from public.guardianships g
+              where g.guardian_id = (select auth.uid())
+            ))
         or (a.kind = 'person' and (
               a.profile_id = (select auth.uid())
               or private.is_my_child(a.profile_id)
@@ -191,9 +197,12 @@ create policy "forms_assigned_read" on public.student_forms
     and private.form_is_for_me(id)
   );
 
--- Responses: the subject signing for themselves (adult student, teacher,
--- office staff) and guardians of the subject, alongside the existing
--- parent_id-based policy.
+-- Responses. The policy this replaces was `parent_id = auth.uid()` with no
+-- check on the student, so any signed-in user could write a response against
+-- any student in any studio by naming themselves as the parent. The
+-- replacement below requires the subject to be the caller or one of their
+-- children, and the row to be in the caller's studio.
+drop policy if exists "form_responses_parent_rw" on public.form_responses;
 drop policy if exists "form_responses_self_rw" on public.form_responses;
 create policy "form_responses_self_rw" on public.form_responses
   for all using (

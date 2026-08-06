@@ -144,12 +144,15 @@ export function SignaturePad({
     };
   }, [repaint]);
 
-  // Re-hydrate an already-signed drawn signature so "update" shows what was
-  // signed rather than a blank pad.
+  // An already-signed drawn signature is shown as-is rather than as a blank
+  // pad. It is kept in a ref so editing the name doesn't quietly discard it —
+  // only drawing over it or clearing does.
+  const existingDrawn = useRef<string | null>(value?.type === "drawn" ? value.value : null);
   const hydratedFor = useRef<string | null>(null);
   useEffect(() => {
     if (value?.type === "drawn" && value.value && hydratedFor.current !== value.value) {
       hydratedFor.current = value.value;
+      existingDrawn.current = value.value;
       setHasInk(true);
     }
   }, [value]);
@@ -167,7 +170,7 @@ export function SignaturePad({
         onChangeRef.current(text ? { value: text, type: "typed", name: activeName } : null);
         return;
       }
-      const png = exportStrokes(strokesRef.current);
+      const png = exportStrokes(strokesRef.current) ?? existingDrawn.current;
       onChangeRef.current(png ? { value: png, type: "drawn", name: activeName } : null);
     },
     [mode, name, typed],
@@ -222,6 +225,7 @@ export function SignaturePad({
     strokesRef.current = [];
     activeRef.current = null;
     hydratedFor.current = null;
+    existingDrawn.current = null;
     setHasInk(false);
     repaint();
     emit({});

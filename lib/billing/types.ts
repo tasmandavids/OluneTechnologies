@@ -15,6 +15,7 @@ export const PRICING_MODELS = [
   "recurring",
   "term",
   "package",
+  "hours_ladder",
 ] as const;
 export type PricingModel = (typeof PRICING_MODELS)[number];
 
@@ -36,6 +37,14 @@ export type PriceTier = {
   minQuantity: number;
   unitAmountCents: number | null;
   discountBp: number | null;
+  sortOrder: number;
+};
+
+/** One row of an `hours_ladder` rate card: from this many hours, this total. */
+export type HourBandRow = {
+  id: string;
+  minHours: number;
+  totalCents: number;
   sortOrder: number;
 };
 
@@ -78,9 +87,14 @@ export type BillingProduct = {
   taxRateBp: number;
   accountCode: string | null;
   itemCode: string | null;
+  /** hours_ladder: cost of each hour past the last band. Null caps at it. */
+  overflowRateCents: number | null;
+  /** package: fire automatically when a basket satisfies it. */
+  autoApply: boolean;
   active: boolean;
   sortOrder: number;
   tiers: PriceTier[];
+  hourBands: HourBandRow[];
   components: PackageComponent[];
   ledgerCodes: LedgerCodeOverride[];
 };
@@ -102,7 +116,14 @@ export type PricedLine = {
 /** Which extra fields a pricing model actually uses — drives the editor form. */
 export const MODEL_FIELDS: Record<
   PricingModel,
-  { units?: boolean; credits?: boolean; recurrence?: boolean; term?: boolean; components?: boolean }
+  {
+    units?: boolean;
+    credits?: boolean;
+    recurrence?: boolean;
+    term?: boolean;
+    components?: boolean;
+    hourBands?: boolean;
+  }
 > = {
   one_off: {},
   hourly: { units: true },
@@ -111,4 +132,7 @@ export const MODEL_FIELDS: Record<
   recurring: { recurrence: true },
   term: { term: true },
   package: { components: true },
+  // The rate card has its own editor on the Products tab rather than living in
+  // the product slide-over — it's the studio's whole pricing model, not a field.
+  hours_ladder: { hourBands: true },
 };
