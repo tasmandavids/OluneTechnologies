@@ -20,6 +20,7 @@ import type { CurrentCard, CardStatus } from "@/components/portal/admin/checkin/
 import type { ScheduleEntry } from "@/lib/students/schedule-types";
 import { getWeekRange } from "@/lib/staff/week";
 import { fetchBadgeCatalogue, fetchProfileBadges } from "@/lib/portal/badges-data";
+import { isAppleWalletConfigured } from "@/lib/apple-wallet/config";
 
 export default async function StudentDetailPage({
   params,
@@ -200,6 +201,7 @@ export default async function StudentDetailPage({
       familyCatalogue={studioId ? familyCatalogue : []}
       familyEarnedIds={familyEarned.map((e) => e.badgeId)}
       currentCard={currentCard}
+      appleWalletEnabled={isAppleWalletConfigured()}
       forms={forms}
     />
   );

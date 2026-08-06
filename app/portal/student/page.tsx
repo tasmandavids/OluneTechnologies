@@ -10,6 +10,9 @@ import { ParentShop } from "@/components/portal/parent/ParentShop";
 import EventsTickets, { type ParentEvent } from "@/components/portal/parent/EventsTickets";
 import { type StudentPass } from "@/components/portal/student/BuyClassPass";
 import { CLASS_PASS_PRICE_CENTS } from "@/lib/passes/constants";
+import CheckinCardPanel from "@/components/portal/checkin/CheckinCardPanel";
+import { fetchPortalCheckinCards } from "@/lib/portal/checkin-card-data";
+import { isAppleWalletConfigured } from "@/lib/apple-wallet/config";
 import type { Child, Invoice, ShopProduct } from "@/app/portal/parent/page";
 
 export type EnrolledClass = {
@@ -84,13 +87,25 @@ export default async function StudentPortal() {
 
   const todayDow = new Date().getDay();
 
+  // The student's own check-in card, if the front desk has issued one. Shown to
+  // minors and adults alike — 0108 widened the self-read policy for exactly this.
+  const checkinCards = await fetchPortalCheckinCards(
+    supabase,
+    [user!.id],
+    new Map([[user!.id, profile?.full_name ?? null]]),
+  );
+  const appleWalletEnabled = isAppleWalletConfigured();
+
   if (!profile?.self_managed) {
     return (
-      <StudentTimetable
-        classes={classes}
-        studentName={profile?.full_name ?? null}
-        todayDow={todayDow}
-      />
+      <>
+        <CheckinCardPanel cards={checkinCards} appleWalletEnabled={appleWalletEnabled} />
+        <StudentTimetable
+          classes={classes}
+          studentName={profile?.full_name ?? null}
+          todayDow={todayDow}
+        />
+      </>
     );
   }
 
@@ -186,6 +201,8 @@ export default async function StudentPortal() {
 
   return (
     <>
+      <CheckinCardPanel cards={checkinCards} appleWalletEnabled={appleWalletEnabled} />
+
       <AdultStudentHub
         studentName={profile.full_name}
         selfChild={selfChild}

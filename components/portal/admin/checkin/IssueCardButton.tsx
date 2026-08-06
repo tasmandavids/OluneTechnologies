@@ -11,6 +11,12 @@
 //  "hold a blank card to your phone" → NDEFReader.scan() + .write(token) →
 //  success calls issueCardConfirm (flips pending → active); failure/cancel
 //  calls issueCardCancel (deletes the never-written pending row) with retry.
+//
+//  Once active, staff can also pull the family's Apple Wallet pass — the same
+//  file the parent/student portals offer, downloadable here so the front desk
+//  can hand it over directly (AirDrop, email) instead of talking someone
+//  through finding it themselves. 0103's nfc_cards_ops_all policy is what
+//  authorises the download route for staff.
 // ============================================================================
 
 import { useState, useTransition } from "react";
@@ -63,9 +69,12 @@ const STATUS_COLOR: Record<CardStatus, string> = {
 export function IssueCardButton({
   studentId,
   currentCard,
+  appleWalletEnabled = false,
 }: {
   studentId: string;
   currentCard: CurrentCard;
+  /** False when the deployment has no Pass Type ID certificate — see docs/APPLE_WALLET.md. */
+  appleWalletEnabled?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -172,7 +181,36 @@ export function IssueCardButton({
         </p>
       )}
 
+      {currentCard?.status === "active" && appleWalletEnabled && (
+        <p className="mb-3 text-xs text-muted">
+          The family can add this to Apple Wallet from their own portal — download it here to hand
+          it over directly. It carries a QR of the same token; the plastic card is what taps the
+          reader.
+        </p>
+      )}
+
       <div className="flex flex-wrap gap-2">
+        {currentCard?.status === "active" && appleWalletEnabled && (
+          <a
+            href={`/api/apple-wallet/checkin-card/${currentCard.id}`}
+            className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[--t2]"
+            style={{ borderColor: "var(--ring)" }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            >
+              <rect x="2.5" y="5.5" width="19" height="13" rx="3" />
+              <path d="M2.5 10.5h19" />
+              <path d="M16.5 14.5h2" strokeLinecap="round" />
+            </svg>
+            Wallet pass
+          </a>
+        )}
         {!currentCard && supportsWebNfc && (
           <button
             type="button"

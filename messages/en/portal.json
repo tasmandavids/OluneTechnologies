@@ -57,6 +57,20 @@
           "noResults": "No badges match your search."
         }
       }
+    },
+    "checkinCard": {
+      "title": "Check-in card",
+      "unnamedDancer": "Dancer",
+      "statusActive": "Active",
+      "statusFrozen": "Frozen",
+      "issued": "issued {date}",
+      "qrHint": "Tap in and out at the studio door. Left the card at home? Show this code to the reader instead.",
+      "frozenHint": "This card is paused, so it won't check anyone in. Ask the front desk to unfreeze it.",
+      "qrAlt": "Check-in QR code for {name}",
+      "enlarge": "Enlarge QR code",
+      "shrink": "Shrink QR code",
+      "addToWallet": "Add to Apple Wallet",
+      "walletHint": "Keeps a scannable copy on your iPhone. The physical card still taps the reader."
     }
   }
 }

@@ -17,6 +17,9 @@ import {
 import EventsTickets, {
   type ParentEvent,
 } from "@/components/portal/parent/EventsTickets";
+import CheckinCardPanel from "@/components/portal/checkin/CheckinCardPanel";
+import { fetchPortalCheckinCards } from "@/lib/portal/checkin-card-data";
+import { isAppleWalletConfigured } from "@/lib/apple-wallet/config";
 
 export type ShopProduct = {
   id: string;
@@ -250,6 +253,13 @@ export default async function ParentPortal() {
     };
   });
 
+  // Issued check-in cards for this family — one panel per child that has one.
+  const checkinCards = await fetchPortalCheckinCards(
+    supabase,
+    children.map((c) => c.studentId),
+    new Map(children.map((c) => [c.studentId, c.name])),
+  );
+
   // Parent's own "family" badges (read-only display).
   const familyShowcase = studioId
     ? buildShowcase(
@@ -273,6 +283,8 @@ export default async function ParentPortal() {
 
   return (
     <>
+      <CheckinCardPanel cards={checkinCards} appleWalletEnabled={isAppleWalletConfigured()} />
+
       <ParentHub
         parentName={profileRes.data?.full_name ?? null}
         familyChildren={children}

@@ -90,6 +90,7 @@ export default function StudentDetailHub({
   familyCatalogue,
   familyEarnedIds,
   currentCard,
+  appleWalletEnabled,
   forms,
 }: {
   student: StudentSummary;
@@ -102,6 +103,7 @@ export default function StudentDetailHub({
   familyCatalogue: BadgeDefinition[];
   familyEarnedIds: string[];
   currentCard: CurrentCard;
+  appleWalletEnabled: boolean;
   forms: StudentFormAnswer[];
 }) {
   const t = useTranslations("admin.students.detail");
@@ -286,7 +288,11 @@ export default function StudentDetailHub({
 
           <GlassPanel className="space-y-3 !p-5">
             <h2 className="font-bold text-ink">{t("information.card")}</h2>
-            <IssueCardButton studentId={student.id} currentCard={currentCard} />
+            <IssueCardButton
+              studentId={student.id}
+              currentCard={currentCard}
+              appleWalletEnabled={appleWalletEnabled}
+            />
           </GlassPanel>
 
           <DeleteStudentButton studentId={student.id} studentName={student.name} />

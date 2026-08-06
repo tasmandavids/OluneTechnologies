@@ -57,6 +57,20 @@
           "noResults": "Aucun badge ne correspond à votre recherche."
         }
       }
+    },
+    "checkinCard": {
+      "title": "Carte d'accès",
+      "unnamedDancer": "Danseur",
+      "statusActive": "Active",
+      "statusFrozen": "Suspendue",
+      "issued": "émise le {date}",
+      "qrHint": "Enregistrez les entrées et sorties à la porte du studio. Carte oubliée ? Présentez ce code au lecteur.",
+      "frozenHint": "Cette carte est suspendue et n'enregistre plus les passages. Demandez à l'accueil de la réactiver.",
+      "qrAlt": "QR code d'accès de {name}",
+      "enlarge": "Agrandir le QR code",
+      "shrink": "Réduire le QR code",
+      "addToWallet": "Ajouter à Apple Wallet",
+      "walletHint": "Garde une copie scannable sur votre iPhone. La carte physique fonctionne toujours au lecteur."
     }
   }
 }

@@ -57,6 +57,20 @@
           "noResults": "没有找到匹配的徽章。"
         }
       }
+    },
+    "checkinCard": {
+      "title": "签到卡",
+      "unnamedDancer": "学员",
+      "statusActive": "已启用",
+      "statusFrozen": "已冻结",
+      "issued": "{date} 发放",
+      "qrHint": "在工作室门口刷卡签到和签退。忘记带卡？向读卡器出示此二维码即可。",
+      "frozenHint": "此卡已冻结，无法签到。请联系前台解冻。",
+      "qrAlt": "{name} 的签到二维码",
+      "enlarge": "放大二维码",
+      "shrink": "缩小二维码",
+      "addToWallet": "添加到 Apple 钱包",
+      "walletHint": "在 iPhone 上保留一份可扫描的副本。实体卡仍可直接刷读卡器。"
     }
   }
 }

@@ -57,6 +57,20 @@
           "noResults": "Nessun distintivo corrisponde alla ricerca."
         }
       }
+    },
+    "checkinCard": {
+      "title": "Tessera d'ingresso",
+      "unnamedDancer": "Allievo",
+      "statusActive": "Attiva",
+      "statusFrozen": "Sospesa",
+      "issued": "emessa il {date}",
+      "qrHint": "Registra entrata e uscita alla porta dello studio. Hai dimenticato la tessera? Mostra questo codice al lettore.",
+      "frozenHint": "Questa tessera è sospesa e non registra gli ingressi. Chiedi alla reception di riattivarla.",
+      "qrAlt": "QR code d'ingresso di {name}",
+      "enlarge": "Ingrandisci il QR code",
+      "shrink": "Riduci il QR code",
+      "addToWallet": "Aggiungi ad Apple Wallet",
+      "walletHint": "Tiene una copia scansionabile sull'iPhone. La tessera fisica funziona ancora al lettore."
     }
   }
 }
