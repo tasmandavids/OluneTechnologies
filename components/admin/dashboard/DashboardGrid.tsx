@@ -11,6 +11,12 @@
 //  WidthProvider HOC — v2's WidthProvider has a generic-inference bug against
 //  the legacy component's plain function type (infers `{width:number}` only,
 //  dropping every other prop), so a small ResizeObserver does the same job.
+//
+//  Widget heights are content-driven, not user-set: each widget is measured
+//  (ResizeObserver) and its layout item is sized to exactly that height, so a
+//  box can never clip or leave dead space when its content changes. Rows are
+//  1px for that reason, and resizing is horizontal-only — width and position
+//  are the user's, height belongs to the content.
 // ============================================================================
 
 import { useCallback, useEffect, useRef, useState, useTransition, type ReactNode } from "react";
@@ -27,6 +33,45 @@ import {
 import { IconLayoutGrid, IconGrip, IconCheck } from "./icons";
 
 const WIDGET_ORDER: WidgetId[] = ["attention", "staff", "timeline", "cashin", "quickactions"];
+
+/** Column gutter between widgets. */
+const GRID_GUTTER = 16;
+/** Vertical gap, baked into each item's height (rows carry no margin). */
+const GRID_ROW_GAP = 16;
+
+/** Rows (= px) an item needs to hold `height` px of content plus the gap. */
+function rowsForHeight(height: number) {
+  return Math.max(1, Math.ceil(height) + GRID_ROW_GAP);
+}
+
+/** One grid cell: reports its own natural height so the slot can size to it. */
+function MeasuredWidget({
+  id,
+  onMeasure,
+  children,
+}: {
+  id: WidgetId;
+  onMeasure: (id: WidgetId, height: number) => void;
+  children: ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    onMeasure(id, el.offsetHeight);
+    const ro = new ResizeObserver((entries) => {
+      const h = entries[0]?.borderBoxSize?.[0]?.blockSize ?? entries[0]?.contentRect.height;
+      if (h) onMeasure(id, h);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [id, onMeasure]);
+
+  // No h-full here: the wrapper stays at its natural height so what we measure
+  // is the content, not the slot we're about to size from it.
+  return <div ref={ref}>{children}</div>;
+}
 
 function useContainerWidth() {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -59,8 +104,21 @@ export function DashboardGrid({
 }) {
   const [layout, setLayout] = useState<WidgetLayoutItem[]>(() => normalizeLayout(savedLayout));
   const [editing, setEditing] = useState(false);
+  const [contentRows, setContentRows] = useState<Partial<Record<WidgetId, number>>>({});
   const [, startTransition] = useTransition();
   const { ref: gridRef, width: gridWidth } = useContainerWidth();
+
+  const handleMeasure = useCallback((id: WidgetId, height: number) => {
+    const rows = rowsForHeight(height);
+    setContentRows((prev) => (prev[id] === rows ? prev : { ...prev, [id]: rows }));
+  }, []);
+
+  /** Saved/dragged positions, with every item sized to its measured content
+   *  (the saved `h` is only the first-paint estimate). */
+  const sizedLayout = layout.map((item) => {
+    const rows = contentRows[item.i];
+    return rows ? { ...item, h: rows, minH: rows, maxH: rows } : item;
+  });
 
   const commitLayout = useCallback((next: Layout) => {
     const normalized: WidgetLayoutItem[] = next.map((l) => ({
@@ -103,13 +161,14 @@ export function DashboardGrid({
             <GridLayout
               width={gridWidth}
               className="layout"
-              layout={layout}
+              layout={sizedLayout}
               cols={DASHBOARD_GRID_COLS}
               rowHeight={DASHBOARD_ROW_HEIGHT}
-              margin={[16, 16]}
+              margin={[GRID_GUTTER, 0]}
               containerPadding={[0, 0]}
               isDraggable={editing}
               isResizable={editing}
+              resizeHandles={["e"]}
               draggableHandle=".widget-drag-handle"
               onDragStop={commitLayout}
               onResizeStop={commitLayout}
@@ -125,7 +184,9 @@ export function DashboardGrid({
                       <IconGrip className="h-4 w-4" />
                     </div>
                   )}
-                  <div className="h-full">{widgets[id]}</div>
+                  <MeasuredWidget id={id} onMeasure={handleMeasure}>
+                    {widgets[id]}
+                  </MeasuredWidget>
                 </div>
               ))}
             </GridLayout>

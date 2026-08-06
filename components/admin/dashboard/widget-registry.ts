@@ -16,17 +16,24 @@ export interface WidgetLayoutItem {
   h: number;
 }
 
-/** Mirrors the original static 3-column layout (left/centre/right). */
+/** Mirrors the original static 3-column layout (left/centre/right).
+ *  `h` is only a first-paint estimate: DashboardGrid measures each widget and
+ *  sets the real height from its content. `y` only has to order the column —
+ *  vertical compaction packs the items once heights are known. */
 export const DEFAULT_DASHBOARD_LAYOUT: WidgetLayoutItem[] = [
-  { i: "attention", x: 0, y: 0, w: 4, h: 5 },
-  { i: "staff", x: 0, y: 5, w: 4, h: 6 },
-  { i: "timeline", x: 4, y: 0, w: 4, h: 11 },
-  { i: "cashin", x: 8, y: 0, w: 4, h: 5 },
-  { i: "quickactions", x: 8, y: 5, w: 4, h: 6 },
+  { i: "attention", x: 0, y: 0, w: 4, h: 240 },
+  { i: "staff", x: 0, y: 1, w: 4, h: 280 },
+  { i: "timeline", x: 4, y: 0, w: 4, h: 520 },
+  { i: "cashin", x: 8, y: 0, w: 4, h: 240 },
+  { i: "quickactions", x: 8, y: 1, w: 4, h: 280 },
 ];
 
 export const DASHBOARD_GRID_COLS = 12;
-export const DASHBOARD_ROW_HEIGHT = 28;
+/** 1px rows: widget heights come from measured content, so the row unit has to
+ *  be fine enough to fit it exactly instead of rounding up to a coarse step.
+ *  The gap between stacked widgets is baked into each item's height instead of
+ *  react-grid-layout's vertical margin. */
+export const DASHBOARD_ROW_HEIGHT = 1;
 
 /** Merge a saved layout with the defaults: keep saved positions for known
  *  widgets, fall back to the default slot for anything missing/unknown
