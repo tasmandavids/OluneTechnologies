@@ -16,7 +16,51 @@ import { PoweredByOlune } from "@/components/brand/PoweredByOlune";
 import Hero from "@/components/marketing/Hero";
 import { ClientParticleBackground } from "@/components/landing/ClientParticleBackground";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { originForHost, organizationJsonLd, studioLocalBusinessJsonLd } from "@/lib/seo";
+import {
+  originForHost,
+  organizationJsonLd,
+  organizationEntityJsonLd,
+  websiteJsonLd,
+  siteNavigationJsonLd,
+  studioLocalBusinessJsonLd,
+} from "@/lib/seo";
+
+// The pages Olune wants Google to treat as its top-level sections. Kept in
+// sync with the footer nav in OluneLanding and with MARKETING_ROUTES in
+// app/sitemap.ts — a page Google can't reach from the homepage is a page it
+// won't consider a sitelink candidate.
+const PRIMARY_NAV = [
+  {
+    name: "Olune Mobile",
+    path: "/mobile",
+    description: "The studio in your pocket — offline registers and the whole day at a glance.",
+  },
+  {
+    name: "Check-in card",
+    path: "/card",
+    description: "One tap at the door: arrivals logged, parents notified, attendance done.",
+  },
+  {
+    name: "Find an instructor",
+    path: "/instructors",
+    description: "Browse instructors available for cover classes through the Olune Network.",
+  },
+  {
+    name: "Meet the team",
+    path: "/team",
+    description: "The small team who lived the studio-admin problem Olune solves.",
+  },
+  {
+    name: "FAQ",
+    path: "/faq",
+    description: "What Olune does, what it costs, and how the pieces connect.",
+  },
+  {
+    name: "Privacy",
+    path: "/privacy",
+    description: "What Olune stores, who can see it, and how to have it deleted.",
+  },
+];
 
 const OluneLanding = dynamic(() => import("@/components/marketing/OluneLanding"));
 
@@ -77,7 +121,10 @@ export default async function HomePage({
     // Root / apex domain — show the Olune platform page.
     return (
       <>
+        <JsonLd data={websiteJsonLd(origin)} />
+        <JsonLd data={organizationEntityJsonLd(origin)} />
         <JsonLd data={organizationJsonLd(origin)} />
+        <JsonLd data={siteNavigationJsonLd(origin, PRIMARY_NAV)} />
         <OluneLanding />
       </>
     );
