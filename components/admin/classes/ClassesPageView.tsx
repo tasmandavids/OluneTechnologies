@@ -13,7 +13,8 @@ import { ScheduleBoard } from "@/components/admin/dashboard/ScheduleBoard";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import type { ClassRow, TeacherOption } from "@/app/portal/admin/classes/page";
 import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-accounts";
-import type { ClassProductOption } from "./ClassEditPanel";
+import type { ClassProductOption } from "./ClassFormModal";
+import type { ClassPricingModel } from "@/lib/billing/class-product";
 
 type View = "list" | "schedule";
 
@@ -24,6 +25,8 @@ export function ClassesPageView({
   xeroAccounts,
   xeroItems,
   products,
+  defaultPricingModel,
+  pricesIncludeTax,
   readOnly = false,
 }: {
   studioId: string;
@@ -32,6 +35,8 @@ export function ClassesPageView({
   xeroAccounts: XeroAccountOption[];
   xeroItems: XeroItemOption[];
   products: ClassProductOption[];
+  defaultPricingModel: ClassPricingModel;
+  pricesIncludeTax: boolean;
   readOnly?: boolean;
 }) {
   const t = useTranslations("admin.classes");
@@ -65,11 +70,18 @@ export function ClassesPageView({
           xeroAccounts={xeroAccounts}
           xeroItems={xeroItems}
           products={products}
+          defaultPricingModel={defaultPricingModel}
+          pricesIncludeTax={pricesIncludeTax}
           readOnly={readOnly}
         />
       ) : (
         <div className="mx-auto max-w-5xl px-6 pb-6 pt-4">
-          <ScheduleBoard studioId={studioId} classes={classes} teachers={teachers} />
+          <ScheduleBoard
+            studioId={studioId}
+            classes={classes}
+            teachers={teachers}
+            products={products}
+          />
         </div>
       )}
     </div>

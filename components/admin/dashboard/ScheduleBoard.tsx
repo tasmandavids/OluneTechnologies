@@ -19,7 +19,10 @@ import { useFormatTimeShort } from "@/lib/i18n/client";
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { rescheduleClass } from "@/app/portal/admin/classes/schedule-actions";
 import { ClassDetailPanel } from "@/components/admin/classes/ClassDetailPanel";
-import { ClassEditPanel } from "@/components/admin/classes/ClassEditPanel";
+import {
+  ClassFormModal,
+  type ClassProductOption,
+} from "@/components/admin/classes/ClassFormModal";
 import type { ClassRow, TeacherOption } from "@/app/portal/admin/classes/page";
 import {
   slotKey,
@@ -163,10 +166,14 @@ export function ScheduleBoard({
   studioId,
   classes: classRows,
   teachers,
+  products = [],
 }: {
   studioId: string;
   classes: ClassRow[];
   teachers: TeacherOption[];
+  /** Passed through to the edit dialog so its billing link reads the same
+   *  catalogue the list view uses. Empty is fine — billing is then left as-is. */
+  products?: ClassProductOption[];
 }) {
   const classRowMap = useMemo(() => new Map(classRows.map((c) => [c.id, c])), [classRows]);
   const classes = useMemo(() => classRows.map(toScheduleClass), [classRows]);
@@ -465,10 +472,11 @@ export function ScheduleBoard({
           />
         )}
         {panel?.type === "edit" && (
-          <ClassEditPanel
+          <ClassFormModal
             mode="edit"
             editing={panel.cls}
             teachers={teachers}
+            products={products}
             onClose={() => setPanel(null)}
           />
         )}

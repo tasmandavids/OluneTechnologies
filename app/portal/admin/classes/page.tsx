@@ -8,8 +8,9 @@ import { requirePortalSession } from "@/lib/portal/session";
 import { ClassesPageView } from "@/components/admin/classes/ClassesPageView";
 import { getXeroSalesAccountOptions, getXeroItemOptions } from "@/app/portal/admin/accounting/actions";
 import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-accounts";
-import { loadStudioProducts } from "@/lib/billing/catalog";
-import type { ClassProductOption } from "@/components/admin/classes/ClassEditPanel";
+import { loadStudioProducts, loadStudioTaxSettings } from "@/lib/billing/catalog";
+import { isClassPricingModel, loadClassProductDefaults } from "@/lib/billing/class-product";
+import type { ClassProductOption } from "@/components/admin/classes/ClassFormModal";
 
 export type ClassRow = {
   id: string;
@@ -112,17 +113,29 @@ export default async function ClassesPage() {
   });
 
   // Tuition products only — a class bills against a term/recurring/session
-  // price, not a costume fee or a studio-hire rate.
-  const products: ClassProductOption[] = (await loadStudioProducts(supabase, studioId))
-    .filter((p) => ["term", "recurring", "per_session", "one_off"].includes(p.pricingModel))
-    .map((p) => ({
-      id: p.id,
-      name: p.name,
-      code: p.code,
-      unitAmountCents: p.unitAmountCents,
-      accountCode: p.accountCode,
-      itemCode: p.itemCode,
-    }));
+  // price, not a costume fee or a studio-hire rate. The defaults shape the
+  // product the create dialog makes alongside the class.
+  const [allProducts, billingDefaults, taxSettings] = await Promise.all([
+    loadStudioProducts(supabase, studioId),
+    loadClassProductDefaults(supabase, studioId),
+    loadStudioTaxSettings(supabase, studioId),
+  ]);
+
+  const products: ClassProductOption[] = allProducts.flatMap((p) =>
+    isClassPricingModel(p.pricingModel)
+      ? [
+          {
+            id: p.id,
+            name: p.name,
+            code: p.code,
+            unitAmountCents: p.unitAmountCents,
+            pricingModel: p.pricingModel,
+            accountCode: p.accountCode,
+            itemCode: p.itemCode,
+          },
+        ]
+      : [],
+  );
 
   const xeroAccounts: XeroAccountOption[] = xeroAccountsRes.ok ? xeroAccountsRes.data ?? [] : [];
   const xeroItems: XeroItemOption[] = xeroItemsRes.ok ? xeroItemsRes.data ?? [] : [];
@@ -161,6 +174,8 @@ export default async function ClassesPage() {
       xeroAccounts={xeroAccounts}
       xeroItems={xeroItems}
       products={products}
+      defaultPricingModel={billingDefaults.pricingModel}
+      pricesIncludeTax={taxSettings.pricesIncludeTax}
       readOnly={readOnly}
     />
   );

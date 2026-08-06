@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { ImportSource, SetupPath, SetupStepId } from "@/lib/setup/constants";
 import { SETUP_STEPS } from "@/lib/setup/constants";
+import { ensureClassFeeProducts } from "@/lib/billing/class-product";
 
 export type ActionResult<T = void> =
   | { ok: true; data?: T }
@@ -268,6 +269,16 @@ export async function bulkAddClasses(input: unknown): Promise<ActionResult<{ add
 
   if (parsed.data.classes.length === 0) return { ok: true, data: { added: 0 } };
 
+  // A class the studio sells must exist in the catalogue too, or everything
+  // downstream — invoice tax treatment, ledger coding, the Xero item — falls
+  // back to a bare cents column that carries none of it. One product per
+  // distinct price, reusing any tuition product already at that price.
+  const productByPrice = await ensureClassFeeProducts(
+    supabase,
+    studioId,
+    parsed.data.classes.map((c) => c.priceCents),
+  );
+
   const rows = parsed.data.classes.map((c) => ({
     studio_id: studioId,
     name: c.name,
@@ -278,10 +289,13 @@ export async function bulkAddClasses(input: unknown): Promise<ActionResult<{ add
     end_time: c.endTime || null,
     capacity: c.capacity,
     price_cents: c.priceCents,
+    product_id: productByPrice.get(Math.max(0, Math.round(c.priceCents))) ?? null,
   }));
 
   const { error: dbError } = await supabase.from("classes").insert(rows);
   if (dbError) return { ok: false, error: dbError.message };
+
+  revalidatePath("/portal/admin/money");
 
   revalidatePath("/portal/admin/classes");
   return { ok: true, data: { added: rows.length } };

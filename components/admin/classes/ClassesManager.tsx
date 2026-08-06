@@ -9,7 +9,8 @@ import type { ClassRow, TeacherOption } from "@/app/portal/admin/classes/page";
 import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-accounts";
 import { ClassDetailPanel } from "@/components/admin/classes/ClassDetailPanel";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { ClassEditPanel, type ClassProductOption } from "@/components/admin/classes/ClassEditPanel";
+import { ClassFormModal, type ClassProductOption } from "@/components/admin/classes/ClassFormModal";
+import type { ClassPricingModel } from "@/lib/billing/class-product";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import { formatMoney } from "@/lib/currency";
 import { useFormatTimeShort } from "@/lib/i18n/client";
@@ -201,6 +202,8 @@ export default function ClassesManager({
   xeroAccounts,
   xeroItems,
   products,
+  defaultPricingModel,
+  pricesIncludeTax,
   readOnly = false,
 }: {
   classes: ClassRow[];
@@ -208,6 +211,8 @@ export default function ClassesManager({
   xeroAccounts: XeroAccountOption[];
   xeroItems: XeroItemOption[];
   products: ClassProductOption[];
+  defaultPricingModel: ClassPricingModel;
+  pricesIncludeTax: boolean;
   readOnly?: boolean;
 }) {
   const t = useTranslations("admin.classes");
@@ -352,7 +357,7 @@ export default function ClassesManager({
           />
         )}
         {(panel?.type === "create" || panel?.type === "edit") && (
-          <ClassEditPanel
+          <ClassFormModal
             mode={panel.type}
             editing={panel.type === "edit" ? panel.cls : null}
             teachers={teachers}
@@ -360,6 +365,8 @@ export default function ClassesManager({
             xeroAccounts={xeroAccounts}
             xeroItems={xeroItems}
             products={products}
+            defaultPricingModel={defaultPricingModel}
+            pricesIncludeTax={pricesIncludeTax}
             onClose={() => setPanel(null)}
           />
         )}

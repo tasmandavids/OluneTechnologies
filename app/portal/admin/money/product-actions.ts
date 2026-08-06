@@ -148,7 +148,18 @@ export async function updateProduct(
     };
   }
 
+  // Classes bill from the product, but classes.price_cents is still read by the
+  // class_capacity view and the Stripe price sync, so re-pricing a product has
+  // to carry through to every class that bills against it. Without this the two
+  // silently disagree the moment a studio changes a fee.
+  await supabase
+    .from("classes")
+    .update({ price_cents: parsed.data.unitAmountCents })
+    .eq("product_id", productId)
+    .eq("studio_id", studioId);
+
   revalidatePath("/portal/admin/money");
+  revalidatePath("/portal/admin/classes");
   return { ok: true };
 }
 

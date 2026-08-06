@@ -377,8 +377,6 @@
         "startTime": "Ora di inizio",
         "endTime": "Ora di fine",
         "capacity": "Capacità",
-        "priceCents": "Prezzo (centesimi NZD)",
-        "pricePlaceholder": "ad es. 2000 = $ 20",
         "teacher": "Insegnante",
         "xeroAccountCode": "Conto Xero",
         "xeroAccountCodeNone": "Nessun codice assegnato",
@@ -398,8 +396,7 @@
         "seriesStandaloneGroup": "Classi singole",
         "seriesOptionGroupLabel": "{name} · {count} classi",
         "seriesLinkButton": "Collega alla serie",
-        "seriesLinking": "Collegamento…",
-        "xeroSection": "Contabilità (Xero)"
+        "seriesLinking": "Collegamento…"
       },
       "delete": {
         "title": "Eliminare \"{name}\"?",

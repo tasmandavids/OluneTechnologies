@@ -6,8 +6,11 @@
 // ============================================================================
 
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { getAdminStudio } from "@/lib/portal/access";
+import { loadProduct } from "@/lib/billing/catalog";
+import { CLASS_PRICING_MODELS, createClassProduct } from "@/lib/billing/class-product";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -33,7 +36,32 @@ async function archiveClassStripeProducts(productIds: (string | null | undefined
 
 // ─── validation schema ───────────────────────────────────────────────────────
 
-const ClassSchema = z.object({
+/**
+ * How this class is billed. Not optional on create: a class is something the
+ * studio sells, so it always ends up in the catalogue as well as in `classes`
+ * (see lib/billing/class-product.ts). The old free-typed "price in cents with
+ * no product" path is gone — it produced classes with no tax treatment and no
+ * ledger code, which only surfaced when an invoice reached Xero.
+ */
+const ClassBillingSchema = z.discriminatedUnion("mode", [
+  z.object({
+    mode: z.literal("existing"),
+    productId: z.string().uuid("Pick a product for this class"),
+  }),
+  z.object({
+    mode: z.literal("new"),
+    /** Defaults to the class name. */
+    name: z.string().trim().max(120).optional(),
+    code: z.string().trim().max(40).optional(),
+    priceCents: z.coerce.number().int().min(0).max(100_000_00),
+    pricingModel: z.enum(CLASS_PRICING_MODELS).optional(),
+    accountCode: z.string().trim().max(40).optional(),
+    itemCode: z.string().trim().max(40).optional(),
+  }),
+]);
+
+/** The scheduling half — when it runs, how many fit, who teaches it. */
+const ClassCoreSchema = z.object({
   name:       z.string().min(1, "Name is required").max(100),
   discipline: z.string().max(80).optional(),
   level:      z.string().max(80).optional(),
@@ -42,21 +70,73 @@ const ClassSchema = z.object({
   startTime:  z.string().regex(/^\d{2}:\d{2}$/, "Use HH:MM format").optional(),
   endTime:    z.string().regex(/^\d{2}:\d{2}$/, "Use HH:MM format").optional().or(z.literal("")),
   capacity:   z.coerce.number().int().min(1).max(500),
-  priceCents: z.coerce.number().int().min(0),
-  /**
-   * Catalogue product this class bills against. When set it is the source of
-   * truth for price, ledger codes and tax treatment; price_cents is still
-   * written so the class_capacity view and the Stripe price sync keep working
-   * until they're migrated off it.
-   */
-  productId:  z.string().uuid().optional().or(z.literal("")),
   teacherId:  z.string().uuid().optional().or(z.literal("")),
-  xeroAccountCode: z.string().max(20).optional().or(z.literal("")),
-  xeroItemCode: z.string().max(30).optional().or(z.literal("")),
 });
 
+const ClassSchema = ClassCoreSchema.extend({ billing: ClassBillingSchema });
+
+/**
+ * Editing a class never sets a price. Money lives on the product and is edited
+ * in Money → Products; `billing` is accepted here only so a class can be
+ * pointed at a different product (or given its first one, for a legacy class
+ * that predates the catalogue).
+ */
+const ClassUpdateSchema = ClassCoreSchema.extend({ billing: ClassBillingSchema.optional() });
+
 export type ClassFormData = z.infer<typeof ClassSchema>;
+export type ClassBillingInput = z.infer<typeof ClassBillingSchema>;
 export type ActionResult = { ok: true } | { ok: false; error: string };
+
+/**
+ * Turn the billing choice into a product id + the price to mirror onto
+ * classes.price_cents. `createdProductId` is set only when a product was made
+ * for this call, so a failed class insert can take it back out again.
+ */
+type ResolvedBilling = {
+  productId: string;
+  priceCents: number;
+  createdProductId: string | null;
+};
+
+async function resolveBilling(
+  supabase: SupabaseClient,
+  studioId: string,
+  className: string,
+  billing: ClassBillingInput,
+): Promise<{ ok: true; data: ResolvedBilling } | { ok: false; error: string }> {
+  if (billing.mode === "existing") {
+    // Re-read tenant-scoped: the price is never taken from the client, and a
+    // product id from another studio must not resolve at all.
+    const product = await loadProduct(supabase, studioId, billing.productId);
+    if (!product) return { ok: false, error: "That product no longer exists." };
+    return {
+      ok: true,
+      data: { productId: product.id, priceCents: product.unitAmountCents, createdProductId: null },
+    };
+  }
+
+  const created = await createClassProduct(supabase, studioId, className, billing);
+  if (!created.ok) return { ok: false, error: created.error };
+
+  return {
+    ok: true,
+    data: {
+      productId: created.product.productId,
+      priceCents: created.product.unitAmountCents,
+      createdProductId: created.product.productId,
+    },
+  };
+}
+
+/** Undo a just-created product when the class insert it was made for failed. */
+async function rollbackProduct(
+  supabase: SupabaseClient,
+  studioId: string,
+  productId: string | null,
+) {
+  if (!productId) return;
+  await supabase.from("billing_products").delete().eq("id", productId).eq("studio_id", studioId);
+}
 
 export type ClassEnrollmentRow = {
   studentId: string;
@@ -192,6 +272,9 @@ export async function createClass(input: unknown): Promise<ActionResult> {
 
   const d = parsed.data;
 
+  const billing = await resolveBilling(supabase, studioId, d.name, d.billing);
+  if (!billing.ok) return { ok: false, error: billing.error };
+
   const { error: dbError } = await supabase.from("classes").insert({
     studio_id:   studioId,
     name:        d.name,
@@ -202,17 +285,19 @@ export async function createClass(input: unknown): Promise<ActionResult> {
     start_time:  d.startTime || null,
     end_time:    d.endTime || null,
     capacity:    d.capacity,
-    price_cents: d.priceCents,
-    product_id:  d.productId || null,
+    price_cents: billing.data.priceCents,
+    product_id:  billing.data.productId,
     teacher_id:  d.teacherId || null,
-    xero_account_code: d.xeroAccountCode || null,
-    xero_item_code: d.xeroItemCode || null,
   });
 
-  if (dbError) return { ok: false, error: dbError.message };
+  if (dbError) {
+    await rollbackProduct(supabase, studioId, billing.data.createdProductId);
+    return { ok: false, error: dbError.message };
+  }
 
   revalidatePath("/portal/admin/classes");
   revalidatePath("/portal/admin");
+  revalidatePath("/portal/admin/money");
   return { ok: true };
 }
 
@@ -224,7 +309,7 @@ export async function updateClass(
 ): Promise<ActionResult> {
   if (!classId) return { ok: false, error: "Missing class ID" };
 
-  const parsed = ClassSchema.safeParse(input);
+  const parsed = ClassUpdateSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
@@ -233,6 +318,14 @@ export async function updateClass(
   if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
 
   const d = parsed.data;
+
+  // Price and ledger coding are deliberately absent: they belong to the
+  // product now. Only the link itself can change from here, and only when the
+  // form actually sent one.
+  const billing = d.billing
+    ? await resolveBilling(supabase, studioId, d.name, d.billing)
+    : null;
+  if (billing && !billing.ok) return { ok: false, error: billing.error };
 
   const { error: dbError } = await supabase
     .from("classes")
@@ -245,19 +338,22 @@ export async function updateClass(
       start_time:  d.startTime || null,
       end_time:    d.endTime || null,
       capacity:    d.capacity,
-      price_cents: d.priceCents,
-      product_id:  d.productId || null,
       teacher_id:  d.teacherId || null,
-      xero_account_code: d.xeroAccountCode || null,
-      xero_item_code: d.xeroItemCode || null,
+      ...(billing?.ok
+        ? { product_id: billing.data.productId, price_cents: billing.data.priceCents }
+        : {}),
     })
     .eq("id", classId)
     .eq("studio_id", studioId);
 
-  if (dbError) return { ok: false, error: dbError.message };
+  if (dbError) {
+    if (billing?.ok) await rollbackProduct(supabase, studioId, billing.data.createdProductId);
+    return { ok: false, error: dbError.message };
+  }
 
   revalidatePath("/portal/admin/classes");
   revalidatePath("/portal/admin");
+  if (billing?.ok) revalidatePath("/portal/admin/money");
   return { ok: true };
 }
 
@@ -283,6 +379,11 @@ export async function createRecurringClasses(input: unknown): Promise<ActionResu
   const days = Array.from(new Set(d.days));
   const groupId = crypto.randomUUID();
 
+  // One product for the whole series — a Mon/Wed/Fri Ballet is one thing the
+  // family buys, and lib/enrollment-billing.ts already bills a series once.
+  const billing = await resolveBilling(supabase, studioId, d.name, d.billing);
+  if (!billing.ok) return { ok: false, error: billing.error };
+
   const rows = days.map((day) => ({
     studio_id:          studioId,
     recurring_group_id: groupId,
@@ -294,17 +395,19 @@ export async function createRecurringClasses(input: unknown): Promise<ActionResu
     start_time:         d.startTime || null,
     end_time:           d.endTime || null,
     capacity:           d.capacity,
-    price_cents:        d.priceCents,
-    product_id:         d.productId || null,
+    price_cents:        billing.data.priceCents,
+    product_id:         billing.data.productId,
     teacher_id:         d.teacherId || null,
-    xero_account_code:  d.xeroAccountCode || null,
-    xero_item_code:     d.xeroItemCode || null,
   }));
 
   const { error: dbError } = await supabase.from("classes").insert(rows);
-  if (dbError) return { ok: false, error: dbError.message };
+  if (dbError) {
+    await rollbackProduct(supabase, studioId, billing.data.createdProductId);
+    return { ok: false, error: dbError.message };
+  }
 
   revalidatePath("/portal/admin/classes");
+  revalidatePath("/portal/admin/money");
   return { ok: true };
 }
 

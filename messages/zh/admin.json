@@ -379,8 +379,6 @@
         "startTime": "开始时间",
         "endTime": "结束时间",
         "capacity": "容量",
-        "priceCents": "价格（新西兰元分）",
-        "pricePlaceholder": "例如：2000 = $20",
         "teacher": "老师",
         "xeroAccountCode": "Xero 账户",
         "xeroAccountCodeNone": "未分配代码",
@@ -400,8 +398,7 @@
         "seriesStandaloneGroup": "独立课程",
         "seriesOptionGroupLabel": "{name} · {count} 门课程",
         "seriesLinkButton": "关联到系列",
-        "seriesLinking": "关联中…",
-        "xeroSection": "会计（Xero）"
+        "seriesLinking": "关联中…"
       },
       "delete": {
         "title": "删除「{name}」？",
