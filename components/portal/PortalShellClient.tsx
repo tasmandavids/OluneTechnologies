@@ -467,7 +467,7 @@ export function PortalShellClient({
       <div className={`flex flex-1 flex-col overflow-hidden ${isAdminRail ? "md:pl-[98px]" : ""}`}>
         {isAdminRail ? (
           <div className="hidden px-[26px] md:block">
-            <StudioTopBar studioName={studioName} onOpenPalette={() => setPaletteOpen(true)} />
+            <StudioTopBar studioName={studioName} userName={userName} onOpenPalette={() => setPaletteOpen(true)} />
           </div>
         ) : (
           showBell && (

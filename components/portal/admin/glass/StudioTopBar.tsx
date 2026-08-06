@@ -7,13 +7,15 @@
 //  ⌘K search trigger, notification bell, "+New" menu. Same data/behaviour as
 //  before, restyled. The design's studio-switcher dropdown is out of scope —
 //  this app has no multi-studio switching for owners yet — so the studio
-//  chip links straight to Studio Settings instead.
+//  chip opens an account menu (language + settings + sign out) instead.
 // ============================================================================
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
+import { signOut } from "@/app/portal/actions";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { NotificationBell } from "@/components/admin/notifications/NotificationBell";
 import { RippleButton } from "./RippleButton";
 import { IconSearch, IconPlus, IconCalendarPlus, IconReceipt, IconMegaphone, IconUserPlus } from "@/components/admin/dashboard/icons";
@@ -25,19 +27,31 @@ const NEW_MENU_ITEMS = [
   { key: "addLead", href: "/portal/admin/leads", icon: IconUserPlus },
 ] as const;
 
-export function StudioTopBar({ studioName, onOpenPalette }: { studioName: string; onOpenPalette: () => void }) {
+export function StudioTopBar({
+  studioName,
+  userName,
+  onOpenPalette,
+}: {
+  studioName: string;
+  userName: string | null;
+  onOpenPalette: () => void;
+}) {
   const t = useTranslations();
   const tShell = useTranslations("shell");
+  const tCommon = useTranslations("common");
   const [newOpen, setNewOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const newRef = useRef<HTMLDivElement>(null);
+  const accountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (newOpen && newRef.current && !newRef.current.contains(e.target as Node)) setNewOpen(false);
+      if (accountOpen && accountRef.current && !accountRef.current.contains(e.target as Node)) setAccountOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [newOpen]);
+  }, [newOpen, accountOpen]);
 
   return (
     <header
@@ -50,23 +64,56 @@ export function StudioTopBar({ studioName, onOpenPalette }: { studioName: string
         boxShadow: "var(--shadow), inset 0 1px 0 var(--sheen), inset 0 -1px 0 var(--sheen2), inset 1px 0 0 var(--sheen2)",
       }}
     >
-      <Link
-        href="/portal/admin/settings"
-        prefetch={false}
-        className="flex shrink-0 items-center gap-2.5 rounded-[16px] border px-3 py-1.5 pr-3.5 transition-transform duration-300 hover:-translate-y-px"
-        style={{ borderColor: "var(--tb)", background: "linear-gradient(140deg, var(--sheen), var(--sheen2))", boxShadow: "inset 0 1px 0 var(--sheen)" }}
-      >
-        <span
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-[12px] text-[16px] font-display text-white"
-          style={{ background: "linear-gradient(150deg, var(--tg), var(--brand) 55%, var(--brand-deep))", boxShadow: "inset 0 1px 0 rgba(255,255,255,.5)" }}
+      <div className="relative shrink-0" ref={accountRef}>
+        <button
+          type="button"
+          onClick={() => setAccountOpen((o) => !o)}
+          className="flex shrink-0 items-center gap-2.5 rounded-[16px] border px-3 py-1.5 pr-3.5 transition-transform duration-300 hover:-translate-y-px"
+          style={{ borderColor: "var(--tb)", background: "linear-gradient(140deg, var(--sheen), var(--sheen2))", boxShadow: "inset 0 1px 0 var(--sheen)" }}
         >
-          {studioName[0]?.toUpperCase() ?? "S"}
-        </span>
-        <span className="flex flex-col items-start gap-0.5">
-          <span className="text-[9.5px] uppercase tracking-[0.14em] text-muted">{tShell("studioLabel")}</span>
-          <span className="font-display text-[15px] leading-none tracking-tight text-ink">{studioName}</span>
-        </span>
-      </Link>
+          <span
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-[12px] text-[16px] font-display text-white"
+            style={{ background: "linear-gradient(150deg, var(--tg), var(--brand) 55%, var(--brand-deep))", boxShadow: "inset 0 1px 0 rgba(255,255,255,.5)" }}
+          >
+            {studioName[0]?.toUpperCase() ?? "S"}
+          </span>
+          <span className="flex flex-col items-start gap-0.5">
+            <span className="text-[9.5px] uppercase tracking-[0.14em] text-muted">{tShell("studioLabel")}</span>
+            <span className="font-display text-[15px] leading-none tracking-tight text-ink">{studioName}</span>
+          </span>
+        </button>
+        <AnimatePresence>
+          {accountOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 6, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 6, scale: 0.98 }}
+              transition={{ duration: 0.15 }}
+              className="absolute left-0 top-full z-40 mt-1.5 w-56 rounded-xl border p-3"
+              style={{ background: "var(--surface)", borderColor: "var(--hair)", boxShadow: "var(--shadow)" }}
+            >
+              <p className="mb-2.5 truncate text-sm font-semibold text-ink">{userName ?? tCommon("you")}</p>
+              <LanguageSwitcher className="mb-3 w-full justify-between" />
+              <Link
+                href="/portal/admin/settings"
+                prefetch={false}
+                onClick={() => setAccountOpen(false)}
+                className="mb-1.5 block w-full rounded-lg border border-[--hair] px-2.5 py-1.5 text-left text-xs font-medium text-muted transition hover:bg-base hover:text-ink"
+              >
+                {tShell("rail.settings")}
+              </Link>
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="w-full rounded-lg border border-[--hair] px-2.5 py-1.5 text-left text-xs font-medium text-muted transition hover:bg-base hover:text-ink"
+                >
+                  {tCommon("signOut")}
+                </button>
+              </form>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       <button
         type="button"
