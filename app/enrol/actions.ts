@@ -4,6 +4,12 @@ import { z } from "zod";
 import { createPublicClient } from "@/lib/supabase/public";
 import { buildTrialLeadNotes, splitParentName } from "@/lib/enrol/trial-request";
 import { getTranslations } from "@/lib/i18n/server";
+import { cookies } from "next/headers";
+import {
+  ATTRIBUTION_COOKIE,
+  attributionColumns,
+  parseAttribution,
+} from "@/lib/analytics/attribution";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -48,7 +54,14 @@ export async function submitTrialRequest(input: unknown): Promise<ActionResult> 
     phone: d.phone,
   });
 
-  const { error: dbErr } = await supabase.from("leads").insert({
+  // Where the family actually came from. The cookie is written on their first
+  // page view (AttributionCapture) and is first-touch, so a parent who clicked
+  // an ad on Tuesday and enquires on Thursday is still credited to that ad.
+  // `source` stays "enrol-page" — that records which form, which is a separate
+  // and still useful fact.
+  const attribution = parseAttribution((await cookies()).get(ATTRIBUTION_COOKIE)?.value);
+
+  const lead = {
     studio_id: d.studioId,
     first_name: firstName,
     last_name: lastName,
@@ -57,7 +70,22 @@ export async function submitTrialRequest(input: unknown): Promise<ActionResult> 
     source: "enrol-page",
     status: "trial",
     notes,
-  });
+  };
+
+  let { error: dbErr } = await supabase
+    .from("leads")
+    .insert({ ...lead, ...attributionColumns(attribution) });
+
+  // Migration 0116 adds the attribution columns. If it hasn't been applied yet
+  // the insert fails on an unknown column — and losing a real family's trial
+  // request over a marketing nicety is not a trade worth making. Retry with
+  // the lead alone.
+  if (dbErr && /utm_|referrer|landing_path|column/i.test(dbErr.message)) {
+    console.warn(
+      `[enrol] lead attribution columns unavailable (run migration 0116): ${dbErr.message}`,
+    );
+    ({ error: dbErr } = await supabase.from("leads").insert(lead));
+  }
 
   if (dbErr) return { ok: false, error: dbErr.message };
   return { ok: true };

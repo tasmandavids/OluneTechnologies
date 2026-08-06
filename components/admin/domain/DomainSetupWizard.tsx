@@ -43,6 +43,11 @@ export function DomainSetupWizard({ studioName, slug, customDomain, rootDomain }
   const [savedDomain, setSavedDomain] = useState<string | null>(customDomain);
   const [dnsMessage, setDnsMessage] = useState<string | null>(null);
   const [dnsOk, setDnsOk] = useState<boolean | null>(null);
+  // Extra records the host occasionally wants to prove domain ownership. Empty
+  // for almost every studio, but when it isn't, nothing else works until added.
+  const [verification, setVerification] = useState<
+    { type: string; domain: string; value: string }[]
+  >([]);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -100,6 +105,7 @@ export function DomainSetupWizard({ studioName, slug, customDomain, rootDomain }
       }
       setDnsOk(res.data.ok);
       setDnsMessage(res.data.message);
+      setVerification(res.data.verification ?? []);
     });
   }
 
@@ -115,6 +121,7 @@ export function DomainSetupWizard({ studioName, slug, customDomain, rootDomain }
       setDomainInput("");
       setDnsOk(null);
       setDnsMessage(null);
+      setVerification([]);
       setWarning(null);
       setWantsCustom(null);
       go("intro");
@@ -301,6 +308,7 @@ export function DomainSetupWizard({ studioName, slug, customDomain, rootDomain }
               {dnsMessage}
             </p>
           )}
+          <VerificationRecords records={verification} />
           <StepActions onBack={() => go("dns")} />
         </StepCard>
       )}
@@ -334,6 +342,7 @@ export function DomainSetupWizard({ studioName, slug, customDomain, rootDomain }
               {dnsMessage && (
                 <p className={`text-sm ${dnsOk ? "text-green-600" : "text-muted"}`}>{dnsMessage}</p>
               )}
+              <VerificationRecords records={verification} />
               <button
                 type="button"
                 onClick={disconnect}
@@ -485,6 +494,39 @@ function ChoiceButton({
       <span className="font-semibold text-ink">{title}</span>
       <p className="mt-1 text-xs text-muted">{description}</p>
     </button>
+  );
+}
+
+/**
+ * Ownership-challenge records, shown only when the host asks for one. Rendered
+ * with the same copy-field treatment as the main DNS record so it reads as one
+ * more row to add rather than a new kind of problem.
+ */
+function VerificationRecords({
+  records,
+}: {
+  records: { type: string; domain: string; value: string }[];
+}) {
+  const t = useTranslations("site.domain");
+  if (records.length === 0) return null;
+
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+        {t("verification.title")}
+      </p>
+      {records.map((rec) => (
+        <DnsRecordCard
+          key={`${rec.type}-${rec.domain}-${rec.value}`}
+          record={{
+            type: rec.type.toUpperCase(),
+            host: rec.domain,
+            value: rec.value,
+            note: t("verification.note"),
+          }}
+        />
+      ))}
+    </div>
   );
 }
 

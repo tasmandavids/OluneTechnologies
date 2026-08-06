@@ -25,7 +25,44 @@
         "overdue": "Scaduta",
         "draft": "Bozza",
         "void": "Annullata"
-      }
+      },
+      "viewProgress": "Vedi progressi e attestati",
+      "contactBilling": "contatta la scuola per la fatturazione",
+      "contactStudio": "scrivi alla scuola",
+      "adultTitle": "Il mio account",
+      "addChild": "+ Aggiungi ballerino",
+      "addChildTitle": "Aggiungi un ballerino",
+      "addChildDescription": "Crea un profilo per tuo figlio e collegalo al tuo account.",
+      "childNamePlaceholder": "Nome e cognome",
+      "childEmailOptional": "E-mail (facoltativa — invia l'invito all'accesso)",
+      "cancelAddChild": "Annulla",
+      "addingChild": "Aggiunta…",
+      "addChildSubmit": "Aggiungi ballerino",
+      "inviteCoParent": "Invita la famiglia",
+      "inviteCoParentTitle": "Invita un altro genitore",
+      "inviteCoParentDescription": "Invita un altro genitore o tutore nella tua famiglia — vedrà gli stessi ballerini, le stesse fatture e lo stesso orario. Non vengono creati nuovi profili di ballerino.",
+      "coParentEmailPlaceholder": "E-mail dell'altro genitore",
+      "coParentRelationshipLabel": "Rapporto con il/i tuo/i ballerino/i",
+      "relationshipMother": "Madre",
+      "relationshipFather": "Padre",
+      "relationshipGuardian": "Tutore",
+      "relationshipOther": "Altro",
+      "cancelInviteCoParent": "Annulla",
+      "closeInviteCoParent": "Fatto",
+      "invitingCoParent": "Invio…",
+      "inviteCoParentSubmit": "Invia invito",
+      "inviteCoParentSent": "Invito inviato! Riceverà un'e-mail per impostare il proprio accesso.",
+      "inviteCoParentLinked": "Quell'indirizzo ha già un account — lo abbiamo collegato alla tua famiglia.",
+      "payNow": "Paga",
+      "payInvoice": "Paga la fattura",
+      "preparingPayment": "Preparazione…",
+      "continueToPay": "Procedi al pagamento",
+      "payFailed": "Non è stato possibile avviare il pagamento.",
+      "cancelPay": "Annulla",
+      "invoicePayment": "Fattura",
+      "tableActions": "Azioni",
+      "viewBilling": "Fatturazione e pagamenti",
+      "viewSchedule": "Vedi l'orario settimanale"
     },
     "shop": {
       "title": "Negozio dello studio",
@@ -149,7 +186,19 @@
       "multipleClasses": "{count} classes",
       "done": "Fatto",
       "payMonthlyWithAmount": "Paga mensilmente · {amount}/mese",
-      "morePaymentOptions": "Altre opzioni di pagamento"
+      "morePaymentOptions": "Altre opzioni di pagamento",
+      "payMonthly": "Paga mensilmente (3 rate)",
+      "termPayTitle": "Pagamento mensile del trimestre",
+      "termInstallmentProgress": "Rata {current} di {total} · totale sul conto {accountTotal}",
+      "termAccountTotalHint": "Includendo le altre fatture aperte, il totale sul tuo conto è {total}.",
+      "termMonthlyOptionHint": "Oppure suddividi in {count} pagamenti mensili a partire da {amount} (include tutte le fatture aperte sul tuo conto).",
+      "termPayNowHint": "Questa è la prima rata mensile. Le rate successive scadranno ogni mese nella pagina Fatturazione.",
+      "termPaidHint": "Prima rata di {amount} ricevuta. {count} pagamenti mensili in totale — puoi saldare il resto quando vuoi da Fatturazione.",
+      "hoursPerWeek": "{hours} a settimana",
+      "alreadyInvoiced": "{amount} già fatturato",
+      "alreadyInvoicedThisTerm": "Già fatturato in questo trimestre",
+      "siblingDiscount": "Sconto famiglia",
+      "siblingDiscountApplied": "Sconto famiglia −{amount}"
     },
     "email": {
       "title": "E-mail dello studio",
@@ -194,7 +243,8 @@
     },
     "scheduleViews": {
       "family": "La mia famiglia",
-      "studio": "Tutto lo studio"
+      "studio": "Tutto lo studio",
+      "bookPrivateLesson": "Prenota una lezione privata"
     },
     "billing": {
       "summaryBand": {
@@ -206,6 +256,141 @@
         "paid": "{amount} pagati",
         "total": "{amount} in totale",
         "nextInstalment": "Prossima rata di {amount} entro il {date}"
+      },
+      "title": "Fatturazione e pagamenti",
+      "subtitle": "Paga le fatture, consulta le ricevute e gestisci l'addebito automatico delle quote.",
+      "backToHub": "← Area famiglia",
+      "outstanding": "Da saldare",
+      "totalPaid": "Totale pagato",
+      "invoiceCount": "Fatture",
+      "invoicesTitle": "Fatture",
+      "noInvoices": "Ancora nessuna fattura.",
+      "paymentsTitle": "Storico pagamenti",
+      "noPayments": "Nessun pagamento registrato finora.",
+      "ordersTitle": "Ordini dello shop",
+      "payNow": "Paga",
+      "managePaymentMethods": "Gestisci i metodi di pagamento",
+      "openingPortal": "Apertura…",
+      "portalFailed": "Impossibile aprire il portale dei pagamenti. Riprova o contatta la scuola.",
+      "stripeNotConfigured": "I pagamenti online non sono ancora configurati per questa scuola. Contatta la segreteria per pagare in altro modo.",
+      "contactStudioBilling": "Domande su una fattura?",
+      "contactStudioBillingLink": "Scrivi alla scuola per la fatturazione",
+      "termPlanTitle": "Paga il trimestre in 3 rate mensili",
+      "termPlanIntro": "Suddividi il saldo di {total} in {count} pagamenti mensili di circa {installment}. Tutte le fatture aperte sul tuo conto vengono unite.",
+      "termPlanActiveHint": "Hai un piano di pagamento attivo ({paid} rate su {total} pagate). Prossimo pagamento: {next}.",
+      "startTermPlan": "Paga la prima rata",
+      "payNextInstallment": "Paga la rata successiva",
+      "termPayTitle": "Pagamento mensile del trimestre",
+      "termPaySubtitle": "Le tue fatture aperte vengono unite e distribuite sul trimestre.",
+      "termPayExplain": "Sommeremo tutto ciò che risulta sul tuo conto e addebiteremo la rata mensile successiva in sicurezza con carta.",
+      "termInstallmentProgress": "Rata {current} di {total} · totale sul conto {accountTotal}",
+      "continueTermPay": "Procedi al pagamento",
+      "preparingTermPay": "Preparazione…",
+      "cancelTermPay": "Annulla",
+      "termPayFailed": "Impossibile avviare il piano di pagamento. Riprova o contatta la scuola.",
+      "invoiceFallback": "Fattura",
+      "table": {
+        "number": "N. fattura",
+        "issued": "Emessa il",
+        "student": "Ballerino",
+        "amount": "Importo",
+        "due": "Scadenza",
+        "status": "Stato",
+        "actions": "Azioni"
+      },
+      "paymentsTable": {
+        "date": "Data",
+        "amount": "Importo",
+        "invoice": "Fattura"
+      },
+      "ordersTable": {
+        "date": "Data",
+        "amount": "Importo",
+        "status": "Stato"
+      },
+      "invoiceStatus": {
+        "paid": "Pagata",
+        "sent": "Inviata",
+        "overdue": "Scaduta",
+        "draft": "Bozza",
+        "void": "Annullata",
+        "refunded": "Rimborsata"
+      }
+    },
+    "childProgress": {
+      "back": "← Torna all'area famiglia",
+      "unnamedDancer": "Ballerino senza nome",
+      "emptyProgress": "Nessun progresso registrato finora. Il tuo insegnante aggiornerà questa sezione man mano."
+    },
+    "chat": {
+      "title": "Chat della scuola",
+      "subtitle": "Contatta la segreteria o gli insegnanti di tuo figlio.",
+      "studioSection": "Segreteria",
+      "teachersSection": "I tuoi insegnanti",
+      "studioAdmin": "Segreteria",
+      "selectPrompt": "Scegli un argomento",
+      "selectDescription": "Fatturazione, assenze e domande generali vanno alla segreteria. Puoi anche scrivere direttamente ai tuoi insegnanti.",
+      "noContacts": "La messaggistica non è ancora disponibile — contatta la scuola via e-mail.",
+      "youPrefix": "Tu: ",
+      "today": "Oggi",
+      "yesterday": "Ieri",
+      "placeholder": "Scrivi il tuo messaggio… (Invio per inviare)",
+      "teacherPlaceholder": "Scrivi a {name}…",
+      "send": "Invia",
+      "noMessages": "Ancora nessun messaggio.",
+      "sayHello": "Inizia una conversazione con {name}.",
+      "loadFailed": "Impossibile caricare i messaggi.",
+      "sendFailed": "Impossibile inviare il messaggio.",
+      "internalChannel": "I messaggi vengono inviati in modo sicuro al team della scuola.",
+      "parentRole": "genitore",
+      "topics": {
+        "billing": {
+          "label": "Fatturazione e pagamenti",
+          "hint": "Fatture, pagamenti, rimborsi",
+          "subtitle": "Richiesta di fatturazione",
+          "placeholder": "Ho una domanda sulla mia fattura o sul pagamento…"
+        },
+        "absence": {
+          "label": "Segnala un'assenza",
+          "hint": "Comunicaci quando il tuo ballerino sarà assente",
+          "subtitle": "Comunicazione di assenza",
+          "placeholder": "Il mio ballerino sarà assente il…"
+        },
+        "general": {
+          "label": "Domanda generale",
+          "hint": "Iscrizioni, orari, qualsiasi altra cosa",
+          "subtitle": "Richiesta generica",
+          "placeholder": "Ho una domanda su…"
+        }
+      }
+    },
+    "schedule": {
+      "title": "Orario della famiglia",
+      "subtitle": "Corsi settimanali e aggiornamenti della scuola per i tuoi ballerini.",
+      "backToHub": "← Area famiglia",
+      "prevWeek": "Settimana precedente",
+      "nextWeek": "Settimana successiva",
+      "allChildren": "Tutti i ballerini",
+      "unnamedDancer": "Ballerino senza nome",
+      "nothingScheduled": "Nulla in programma",
+      "legend": "I corsi ricorrenti derivano dalle iscrizioni. Le voci aggiuntive vengono inserite dallo staff della scuola.",
+      "days": {
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mer",
+        "thu": "Gio",
+        "fri": "Ven",
+        "sat": "Sab",
+        "sun": "Dom"
+      },
+      "types": {
+        "private_lesson": "Lezione privata",
+        "rehearsal": "Prova",
+        "makeup": "Lezione di recupero",
+        "competition": "Concorso",
+        "event": "Evento",
+        "note": "Nota",
+        "other": "Altro"
       }
     }
   }

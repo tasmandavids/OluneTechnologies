@@ -3,7 +3,8 @@
     "progress": {
       "account": "Account",
       "studio": "Studio",
-      "brand": "Brand"
+      "brand": "Brand",
+      "profile": "Profilo"
     },
     "account": {
       "title": "Avvia il tuo studio",
@@ -14,7 +15,9 @@
       "submitting": "Creazione…",
       "submit": "Crea account con e-mail",
       "hasAccount": "Ne hai già uno?",
-      "logIn": "Accedi"
+      "logIn": "Accedi",
+      "instructorTitle": "Crea il tuo account da insegnante",
+      "instructorSubtitle": "Il tuo spazio personale per insegnare in più scuole."
     },
     "confirmEmail": {
       "title": "Controlla la tua casella",
@@ -40,12 +43,61 @@
       "customColour": "Colore personalizzato",
       "back": "Indietro",
       "submitting": "Creazione dello studio…",
-      "submit": "Crea studio"
+      "submit": "Crea studio",
+      "submittingInstructor": "Creazione del tuo spazio…",
+      "submitInstructor": "Crea lo spazio"
     },
     "done": {
       "title": "Benvenuto in {studioName}",
       "subtitle": "Il tuo studio è online. Configuriamolo…",
-      "continue": "Continua la configurazione →"
+      "continue": "Continua la configurazione →",
+      "instructorSubtitle": "Il tuo spazio da insegnante è pronto.",
+      "instructorContinue": "Vai al tuo orario →"
+    },
+    "vertical": {
+      "title": "Che cosa gestisci?",
+      "subtitle": "Configureremo Olune attorno alla tua attività — corsi, livelli e il linguaggio che usano le tue famiglie.",
+      "comingSoon": "Prossimamente",
+      "options": {
+        "dance": "Scuola di danza",
+        "gymnastics": "Società di ginnastica",
+        "sports-club": "Società sportiva",
+        "swim": "Scuola di nuoto",
+        "martial-arts": "Arti marziali",
+        "music": "Scuola di musica",
+        "cheer": "Cheerleading",
+        "tutoring": "Doposcuola e ripetizioni"
+      }
+    },
+    "waitlist": {
+      "title": "{vertical}: ci stiamo lavorando",
+      "subtitle": "Stiamo costruendo Olune per la tua attività proprio ora. Lasciaci i tuoi dati e ti contatteremo per primi quando sarà disponibile.",
+      "emailPlaceholder": "tu@tuasocieta.it",
+      "orgPlaceholder": "Nome della tua società o scuola (facoltativo)",
+      "submit": "Tienimi aggiornato",
+      "submitting": "Aggiunta in corso…",
+      "doneTitle": "Sei in lista",
+      "doneBody": "Ti scriveremo non appena Olune sarà pronto per {vertical}.",
+      "pickAnother": "Scegli qualcos'altro"
+    },
+    "system": {
+      "title": "Come userai Olune?",
+      "subtitle": "Scegli la configurazione più adatta a te — potrai sempre modificarla in seguito.",
+      "back": "Indietro",
+      "studioOwner": {
+        "title": "Gestisco una scuola o una società",
+        "desc": "Gestisci corsi, famiglie, fatturazione e il tuo sito web."
+      },
+      "instructor": {
+        "title": "Sono un istruttore o insegnante indipendente",
+        "desc": "Collabora con più società, tieni traccia del tuo orario e gestisci il tuo profilo da insegnante."
+      }
+    },
+    "profile": {
+      "title": "Il tuo nome pubblico",
+      "subtitle": "Come ti riconosceranno scuole e allievi.",
+      "namePlaceholder": "Giulia Rossi",
+      "slugPlaceholder": "giulia-rossi"
     }
   }
 }

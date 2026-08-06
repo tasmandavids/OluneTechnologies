@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
+import { trackConversion, toTrackedValue } from "@/lib/analytics/track";
+import { CURRENCY } from "@/lib/currency";
 import CheckoutForm from "@/components/payments/CheckoutForm";
 import { PaymentModalBody, PaymentModalShell } from "@/components/payments/PaymentModalShell";
 
@@ -86,8 +88,14 @@ export default function EventsTickets({ events }: Props) {
         return;
       }
       if (data.free) {
+        trackConversion("purchase", { value: 0, currency: CURRENCY.toUpperCase(), item_name: active.name });
         setQrCode(data.qrCode ?? null);
       } else if (data.clientSecret) {
+        trackConversion("begin_checkout", {
+          value: toTrackedValue(data.totalCents ?? active.ticketPrice * qty),
+          currency: CURRENCY.toUpperCase(),
+          item_name: active.name,
+        });
         setPendingQr(data.qrCode ?? null);
         setClientSecret(data.clientSecret);
       } else {

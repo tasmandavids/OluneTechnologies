@@ -12,6 +12,9 @@ const ALL_TYPES = [
   { type: "invoice_sent",         label: "Invoice sent",          description: "When a new invoice is issued" },
   { type: "birthday_greeting",    label: "Birthday greetings",    description: "Birthday messages for students" },
   { type: "schedule_updated",     label: "Schedule changes",      description: "When a class time or day changes" },
+  { type: "substitute_needed",    label: "Cover requests",        description: "When a class at your studio needs a substitute teacher" },
+  { type: "substitute_filled",    label: "Cover confirmed",       description: "When someone picks up a class you asked to be covered" },
+  { type: "payment_reminder",     label: "Payment reminders",     description: "A nudge before or after a payment is due" },
 ];
 
 export type PrefEntry = {

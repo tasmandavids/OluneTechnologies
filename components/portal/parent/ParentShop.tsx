@@ -5,6 +5,8 @@ import { panelSlide } from "@/lib/motion";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { trackConversion, toTrackedValue } from "@/lib/analytics/track";
+import { CURRENCY } from "@/lib/currency";
 import CheckoutForm from "@/components/payments/CheckoutForm";
 import { OptimizableImage } from "@/components/ui/OptimizableImage";
 
@@ -104,10 +106,21 @@ export function ParentShop({ products }: Props) {
       }
 
       if (data.free) {
+        trackConversion("purchase", {
+          value: 0,
+          currency: CURRENCY.toUpperCase(),
+          item_name: cart.map((i) => i.product.name).join(", "),
+        });
         setCart([]);
         setCartOpen(false);
         setCheckoutDone(true);
       } else if (data.clientSecret) {
+        // Paid orders convert in the Stripe webhook, which has no browser to
+        // report from — so the browser reports the step it can actually see.
+        trackConversion("begin_checkout", {
+          value: toTrackedValue(cart.reduce((sum, i) => sum + i.product.price_cents * i.qty, 0)),
+          currency: CURRENCY.toUpperCase(),
+        });
         setClientSecret(data.clientSecret);
       } else {
         setError(t("paymentStartFailed"));

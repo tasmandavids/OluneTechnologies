@@ -18,11 +18,27 @@
       "thisWeek": "Cette semaine · {count, plural, one {# cours au total} other {# cours au total}}",
       "studentCount": "{count, plural, one {# élève} other {# élèves}}",
       "noClassesAssigned": "Aucun cours ne vous est encore assigné.",
-      "noClassesAssignedHint": "Demandez à l'administrateur du studio de vous assigner des cours."
+      "noClassesAssignedHint": "Demandez à l'administrateur du studio de vous assigner des cours.",
+      "noClassesAssignedInstructorHint": "Demandez à un studio de vous inviter, puis acceptez l'invitation ci-dessous.",
+      "viewAffiliations": "Voir mes studios affiliés"
     },
     "studentProgress": {
       "back": "← Retour au planning",
       "progressLog": "Journal de progression"
+    },
+    "affiliations": {
+      "title": "Studios affiliés",
+      "subtitle": "Les studios où vous enseignez et votre espace personnel.",
+      "homeWorkspace": "Votre espace",
+      "linkedStudios": "Studios rattachés",
+      "noneYet": "Aucun studio affilié pour l'instant. Acceptez l'invitation d'un administrateur de studio pour commencer.",
+      "roleAtStudio": "Accès {role}",
+      "acceptInvite": "Accepter une invitation",
+      "acceptInviteHint": "Collez le jeton d'invitation reçu par e-mail ou via le lien d'invitation de l'administrateur.",
+      "tokenPlaceholder": "Jeton d'invitation",
+      "acceptButton": "Rattacher le studio",
+      "accepting": "Rattachement…",
+      "acceptSuccess": "Studio rattaché avec succès."
     }
   }
 }

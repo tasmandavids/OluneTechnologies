@@ -7,10 +7,16 @@
 //  rather than throwing, so the delivery cron degrades gracefully in any
 //  environment that hasn't set the keys.
 //
+//  SMS resolves credentials per studio first: a studio that connected its own
+//  Twilio account in Settings → Connections sends from its own number and is
+//  billed on its own account. The platform env vars remain the fallback for
+//  studios that haven't, so behaviour is unchanged for everyone else.
+//
 //  Server-only. Never import into client components.
 // ============================================================================
 
-import { getEmailConfig, getSmsConfig } from "./config";
+import { getStudioConnectionAdmin, hasValues } from "@/lib/integrations/credentials";
+import { getEmailConfig, getSmsConfig, type SmsConfig } from "./config";
 
 export type SendResult =
   | { ok: true; skipped?: false; id?: string }
@@ -53,8 +59,30 @@ export async function sendEmail(params: {
   }
 }
 
-export async function sendSms(params: { to: string; body: string }): Promise<SendResult> {
-  const cfg = getSmsConfig();
+/**
+ * The studio's own Twilio connection, if it has one and it's complete.
+ *
+ * A half-filled connection (say the number was never saved) falls through to
+ * the platform account rather than erroring — the studio still gets its texts,
+ * and the hub's card is where the gap gets reported.
+ */
+async function studioSmsConfig(studioId: string): Promise<SmsConfig | null> {
+  const connection = await getStudioConnectionAdmin(studioId, "twilio");
+  if (!hasValues(connection, "accountSid", "authToken", "fromNumber")) return null;
+  return {
+    accountSid: connection.values.accountSid.trim(),
+    authToken: connection.values.authToken.trim(),
+    from: connection.values.fromNumber.trim(),
+  };
+}
+
+export async function sendSms(params: {
+  to: string;
+  body: string;
+  /** Send from this studio's own Twilio account when it has connected one. */
+  studioId?: string | null;
+}): Promise<SendResult> {
+  const cfg = (params.studioId ? await studioSmsConfig(params.studioId) : null) ?? getSmsConfig();
   if (!cfg) return { ok: false, skipped: true };
   if (!params.to) return { ok: false, error: "missing recipient phone" };
 

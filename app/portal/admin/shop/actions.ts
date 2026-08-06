@@ -34,6 +34,65 @@ const ProductSchema = z.object({
 
 export type ProductFormData = z.infer<typeof ProductSchema>;
 
+export const FULFILMENT_STATUSES = ["unfulfilled", "ready", "fulfilled"] as const;
+export type FulfilmentStatus = (typeof FULFILMENT_STATUSES)[number];
+
+/**
+ * Move an order along the goods axis — picked, then handed over.
+ *
+ * Separate from `status`, which is the payment lifecycle. Only a paid order
+ * can be fulfilled: marking an unpaid one "handed over" is how stock walks out
+ * of a studio unrecorded, and refusing it here is cheaper than reconciling it
+ * later.
+ */
+export async function setOrderFulfilment(
+  orderId: string,
+  next: FulfilmentStatus,
+): Promise<ActionResult> {
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Admin only." };
+  if (!z.string().uuid().safeParse(orderId).success) return { ok: false, error: "Unknown order." };
+  if (!FULFILMENT_STATUSES.includes(next)) return { ok: false, error: "Unknown fulfilment status." };
+
+  const { data: order } = await supabase
+    .from("orders")
+    .select("status")
+    .eq("id", orderId)
+    .eq("studio_id", studioId)
+    .maybeSingle();
+
+  if (!order) return { ok: false, error: "Order not found." };
+  if (order.status !== "paid" && next !== "unfulfilled") {
+    return { ok: false, error: "This order hasn't been paid for yet." };
+  }
+
+  const done = next === "fulfilled";
+  const { error: dbErr } = await supabase
+    .from("orders")
+    .update({
+      fulfilment_status: next,
+      // Only the terminal state carries a timestamp; stepping back clears it
+      // so "fulfilled_at" never describes an order that isn't.
+      fulfilled_at: done ? new Date().toISOString() : null,
+      fulfilled_by: done ? (await supabase.auth.getUser()).data.user?.id ?? null : null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", orderId)
+    .eq("studio_id", studioId);
+
+  if (dbErr) {
+    return {
+      ok: false,
+      error: /fulfilment_status/.test(dbErr.message)
+        ? "Order fulfilment isn't provisioned yet — run migration 0115_order_fulfilment.sql (npm run db:push)."
+        : dbErr.message,
+    };
+  }
+
+  revalidatePath("/portal/admin/shop");
+  return { ok: true };
+}
+
 export async function createProduct(input: unknown): Promise<ActionResult> {
   const parsed = ProductSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };

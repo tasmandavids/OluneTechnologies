@@ -117,7 +117,17 @@
         "peopleGrid": "Team",
         "schedule": "Schedule",
         "faq": "FAQ",
-        "pageHeader": "Header"
+        "pageHeader": "Header",
+        "videoBlock": "Видео",
+        "classTabs": "Вкладки занятий",
+        "imageBlock": "Изображение",
+        "heading": "Заголовок",
+        "paragraph": "Текст",
+        "linkBlock": "Кнопка",
+        "divider": "Разделитель",
+        "spacer": "Отступ",
+        "shopGrid": "Магазин",
+        "locations": "Адреса"
       }
     },
     "templateCategories": {
@@ -688,11 +698,14 @@
         "copy": "Copy"
       },
       "continue": "Continue",
-      "back": "Back"
+      "back": "Back",
+      "verification": {
+        "title": "Ещё одна запись, чтобы подтвердить владение доменом",
+        "note": "Добавьте её вместе с записью выше, затем проверьте снова."
+      }
     },
     "urlBanner": {
       "title": "Your public website URL",
-      "openPreview": "Open {url} to preview what families see.",
       "localhostNote": "Pages on plain localhost are the Olune platform, not your studio site.",
       "connectDomain": "Connect your domain →",
       "openPreviewBefore": "Откройте",

@@ -5,6 +5,7 @@
     "processing": "Elaborazione…",
     "payNow": "Paga ora",
     "payAmount": "Paga {amount}",
-    "secureCheckout": "Pagamento sicuro con carta"
+    "secureCheckout": "Pagamento sicuro con carta",
+    "paymentProcessing": "Il pagamento è ancora in elaborazione. Aggiorneremo il tuo conto automaticamente una volta completato — non serve pagare di nuovo."
   }
 }

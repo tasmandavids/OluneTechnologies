@@ -87,10 +87,50 @@ function LeadCard({
           {lead.phone && (
             <p className="text-[0.65rem] text-muted">{lead.phone}</p>
           )}
-          {lead.source && (
-            <span className="mt-1 inline-block rounded-full bg-[--surface] px-2 py-0.5 text-[0.58rem] font-medium uppercase tracking-wide text-muted">
-              {lead.source}
+          <div className="mt-1 flex flex-wrap items-center gap-1">
+            {lead.source && (
+              <span className="inline-block rounded-full bg-[--surface] px-2 py-0.5 text-[0.58rem] font-medium uppercase tracking-wide text-muted">
+                {lead.source}
+              </span>
+            )}
+            {/* The acquisition channel. "Direct" is a real answer, not a
+                missing one — it means we looked and there was no campaign. */}
+            <span
+              className="inline-block rounded-full bg-[--surface] px-2 py-0.5 text-[0.58rem] font-medium uppercase tracking-wide text-muted"
+              title={lead.campaign ? t("campaignTitle", { campaign: lead.campaign }) : undefined}
+            >
+              {lead.channel ?? t("directChannel")}
             </span>
+          </div>
+          {/* Getting back to a lead was previously a copy-paste job — the board
+              recorded that they existed and offered no way to reach them. */}
+          {(lead.email || lead.phone) && (
+            <div className="mt-1.5 flex flex-wrap gap-2">
+              {lead.email && (
+                <a
+                  href={`mailto:${lead.email}`}
+                  className="text-[0.65rem] font-semibold text-brand hover:underline"
+                >
+                  {t("emailLead")}
+                </a>
+              )}
+              {lead.phone && (
+                <>
+                  <a
+                    href={`tel:${lead.phone.replace(/\s+/g, "")}`}
+                    className="text-[0.65rem] font-semibold text-brand hover:underline"
+                  >
+                    {t("callLead")}
+                  </a>
+                  <a
+                    href={`sms:${lead.phone.replace(/\s+/g, "")}`}
+                    className="text-[0.65rem] font-semibold text-brand hover:underline"
+                  >
+                    {t("textLead")}
+                  </a>
+                </>
+              )}
+            </div>
           )}
         </div>
         <div className="flex shrink-0 gap-1">
@@ -189,6 +229,10 @@ function NewLeadSlideOver({
         email: form.email || null,
         phone: form.phone || null,
         source: form.source || null,
+        // A hand-added lead has no click to attribute — it came from a phone
+        // call or the front desk.
+        channel: null,
+        campaign: null,
         status: "new",
         notes: form.notes || null,
         createdAt: new Date().toISOString(),

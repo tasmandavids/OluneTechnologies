@@ -3,7 +3,8 @@
     "progress": {
       "account": "Compte",
       "studio": "Studio",
-      "brand": "Marque"
+      "brand": "Marque",
+      "profile": "Profil"
     },
     "account": {
       "title": "Lancez votre studio",
@@ -14,7 +15,9 @@
       "submitting": "Création…",
       "submit": "Créer un compte par e-mail",
       "hasAccount": "Vous en avez déjà un ?",
-      "logIn": "Se connecter"
+      "logIn": "Se connecter",
+      "instructorTitle": "Créez votre compte professeur",
+      "instructorSubtitle": "Votre espace personnel pour enseigner dans plusieurs studios."
     },
     "confirmEmail": {
       "title": "Vérifiez votre boîte mail",
@@ -40,12 +43,61 @@
       "customColour": "Couleur personnalisée",
       "back": "Retour",
       "submitting": "Création de votre studio…",
-      "submit": "Créer le studio"
+      "submit": "Créer le studio",
+      "submittingInstructor": "Création de votre espace…",
+      "submitInstructor": "Créer l'espace"
     },
     "done": {
       "title": "Bienvenue chez {studioName}",
       "subtitle": "Votre studio est en ligne. Configurons-le…",
-      "continue": "Continuer la configuration →"
+      "continue": "Continuer la configuration →",
+      "instructorSubtitle": "Votre espace professeur est prêt.",
+      "instructorContinue": "Accéder à mon planning →"
+    },
+    "vertical": {
+      "title": "Que gérez-vous ?",
+      "subtitle": "Nous configurerons Olune autour de votre activité — cours, niveaux et le vocabulaire que vos familles utilisent.",
+      "comingSoon": "Bientôt disponible",
+      "options": {
+        "dance": "Studio de danse",
+        "gymnastics": "Club de gymnastique",
+        "sports-club": "Club de sport",
+        "swim": "École de natation",
+        "martial-arts": "Arts martiaux",
+        "music": "École de musique",
+        "cheer": "Cheerleading",
+        "tutoring": "Soutien scolaire"
+      }
+    },
+    "waitlist": {
+      "title": "{vertical} arrive bientôt",
+      "subtitle": "Nous développons Olune pour votre activité en ce moment. Laissez-nous vos coordonnées et nous vous contacterons en priorité à l'ouverture.",
+      "emailPlaceholder": "vous@votreclub.fr",
+      "orgPlaceholder": "Nom de votre club ou école (facultatif)",
+      "submit": "Tenez-moi au courant",
+      "submitting": "Ajout en cours…",
+      "doneTitle": "Vous êtes sur la liste",
+      "doneBody": "Nous vous écrirons dès qu'Olune sera prêt pour {vertical}.",
+      "pickAnother": "Choisir autre chose"
+    },
+    "system": {
+      "title": "Comment allez-vous utiliser Olune ?",
+      "subtitle": "Choisissez la configuration qui vous correspond — vous pourrez toujours l'ajuster plus tard.",
+      "back": "Retour",
+      "studioOwner": {
+        "title": "Je dirige un studio ou un club",
+        "desc": "Gérez les cours, les familles, la facturation et votre site web."
+      },
+      "instructor": {
+        "title": "Je suis coach ou professeur indépendant",
+        "desc": "Travaillez avec plusieurs clubs, suivez votre planning et gérez votre profil d'enseignant."
+      }
+    },
+    "profile": {
+      "title": "Votre nom public",
+      "subtitle": "Comment les studios et les élèves vous identifieront.",
+      "namePlaceholder": "Jeanne Dupont",
+      "slugPlaceholder": "jeanne-dupont"
     }
   }
 }

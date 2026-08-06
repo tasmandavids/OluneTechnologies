@@ -11,6 +11,7 @@ import {
 } from "@/app/portal/admin/advertising/actions";
 import { PLATFORM_META, PRIMARY_PLATFORMS } from "@/lib/advertising/config";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
+import { AdMediaDropzone } from "./AdMediaDropzone";
 import type {
   AdObjective,
   GeneratedAdCopy,
@@ -230,19 +231,21 @@ export function AdComposer({
               placeholder={t("adCreator.bodyPlaceholder")}
               className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm sm:col-span-2"
             />
-            <input
-              type="url"
+            {/* Upload, not paste-a-URL. Facebook and Instagram need a fetchable
+                image; TikTok won't publish at all without a video, which is why
+                it was unusable while this was two text fields. */}
+            <AdMediaDropzone
+              kind="image"
               value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder={t("adCreator.imageUrl")}
-              className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm"
+              onChange={setImageUrl}
+              label={t("adCreator.imageUrl")}
             />
-            <input
-              type="url"
+            <AdMediaDropzone
+              kind="video"
               value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-              placeholder={t("adCreator.videoUrl")}
-              className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm"
+              onChange={setVideoUrl}
+              label={t("adCreator.videoUrl")}
+              hint={t("media.videoHint")}
             />
           </div>
 

@@ -18,11 +18,27 @@
       "thisWeek": "Questa settimana · {count, plural, one {# corso in totale} other {# corsi in totale}}",
       "studentCount": "{count, plural, one {# studente} other {# studenti}}",
       "noClassesAssigned": "Nessun corso assegnato.",
-      "noClassesAssignedHint": "Chiedi all'amministratore dello studio di assegnarti dei corsi."
+      "noClassesAssignedHint": "Chiedi all'amministratore dello studio di assegnarti dei corsi.",
+      "noClassesAssignedInstructorHint": "Chiedi a una scuola di invitarti, poi accetta l'invito qui sotto.",
+      "viewAffiliations": "Vedi le scuole collegate"
     },
     "studentProgress": {
       "back": "← Torna al planning",
       "progressLog": "Registro progressi"
+    },
+    "affiliations": {
+      "title": "Scuole collegate",
+      "subtitle": "Le scuole in cui insegni e il tuo spazio personale.",
+      "homeWorkspace": "Il tuo spazio",
+      "linkedStudios": "Scuole collegate",
+      "noneYet": "Nessuna scuola collegata finora. Accetta l'invito di un amministratore per iniziare.",
+      "roleAtStudio": "Accesso come {role}",
+      "acceptInvite": "Accetta un invito",
+      "acceptInviteHint": "Incolla il token ricevuto nell'e-mail o nel link di invito dell'amministratore.",
+      "tokenPlaceholder": "Token di invito",
+      "acceptButton": "Collega la scuola",
+      "accepting": "Collegamento…",
+      "acceptSuccess": "Scuola collegata correttamente."
     }
   }
 }

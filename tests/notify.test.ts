@@ -36,6 +36,17 @@ describe("channelsForType", () => {
   it("defaults unknown types to in-app only", () => {
     expect(channelsForType("some_future_type")).toEqual([]);
   });
+
+  // A cover request is the most time-critical message the product sends: a
+  // class starts in hours and has no teacher. Email alone assumes the teacher
+  // is at a desk, so this must stay on SMS.
+  it("sends cover requests on SMS as well as email", () => {
+    expect(channelsForType("substitute_needed")).toEqual(["email", "sms"]);
+  });
+
+  it("confirms cover by email only — the urgency is gone once it's filled", () => {
+    expect(channelsForType("substitute_filled")).toEqual(["email"]);
+  });
 });
 
 describe("renderNotificationEmail", () => {

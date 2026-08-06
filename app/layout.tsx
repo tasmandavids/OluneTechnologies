@@ -16,6 +16,9 @@ import { FeedbackHost } from "@/components/ui/FeedbackHost";
 import { MotionProvider } from "@/components/ui/MotionProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import { AttributionCapture } from "@/components/analytics/AttributionCapture";
+import { StudioAnalytics } from "@/components/analytics/StudioAnalytics";
+import { getStudioMeasurementId } from "@/lib/integrations/analytics";
 import { rootUrl } from "@/lib/seo";
 import type { CSSProperties } from "react";
 
@@ -58,9 +61,9 @@ export default async function RootLayout({
   ]);
   const studio = await resolveStudio(host);
 
-  const branding = studio
-    ? await getBrandingCached(studio.id)
-    : { ...DEFAULT_BRANDING };
+  const [branding, measurementId] = studio
+    ? await Promise.all([getBrandingCached(studio.id), getStudioMeasurementId(studio.id)])
+    : [{ ...DEFAULT_BRANDING }, null];
 
   const fonts = fontsForBranding(branding.fontDisplay, branding.fontBody);
   const vars = brandingToCssVars(branding) as CSSProperties;
@@ -85,6 +88,10 @@ export default async function RootLayout({
           </MotionProvider>
           <SpeedInsights />
           <Analytics />
+          {measurementId ? <StudioAnalytics measurementId={measurementId} /> : null}
+          {/* First-touch capture runs regardless of GA4: the studio's own lead
+              attribution shouldn't depend on them having connected Google. */}
+          <AttributionCapture />
         </NextIntlClientProvider>
       </body>
     </html>

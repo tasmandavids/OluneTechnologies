@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
   // 1. Pull the un-delivered queue (oldest first).
   const { data: rows, error: fetchErr } = await supabase
     .from("notifications")
-    .select("id, type, title, body, link, user_id, delivery_attempts")
+    .select("id, type, title, body, link, user_id, studio_id, delivery_attempts")
     .is("delivered_at", null)
     .order("sent_at", { ascending: true })
     .limit(batch);
@@ -158,7 +158,13 @@ export async function GET(req: NextRequest) {
 
     if (channels.includes("sms") && channelEnabled(row.user_id as string, row.type as string, "sms")) {
       if (contact?.phone) {
-        const r = await sendSms({ to: contact.phone, body: renderNotificationSms(notif) });
+        const r = await sendSms({
+          to: contact.phone,
+          body: renderNotificationSms(notif),
+          // Studios with their own connected Twilio account send from their own
+          // number; everyone else falls back to the platform credentials.
+          studioId: (row.studio_id as string | null) ?? null,
+        });
         if (r.ok) {
           update.sms_sent_at = nowIso;
           summary.smsSent += 1;

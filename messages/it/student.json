@@ -11,34 +11,35 @@
       "myClasses": "I miei corsi · {count} iscritti",
       "noEnrolments": "Nessuna iscrizione attiva.",
       "noEnrolmentsHint": "L'amministratore dello studio ti assegnerà dei corsi.",
-      "withTeacher": "con {name}"
+      "withTeacher": "con {name}",
+      "viewProgress": "Vedi progressi e attestati →"
     },
     "classPass": {
-      "title": "Single class pass",
-      "subtitle": "Any single adult ballet class",
-      "allSet": "🎉 You're all set!",
-      "qrAlt": "Class pass QR code",
-      "qrHint": "Show this QR code at the studio to redeem your class.",
-      "done": "Done",
-      "payAmount": "Pay {amount}",
-      "back": "Back",
-      "description": "One pass, good for any single adult ballet class. Show the QR code at the studio and staff will check you in.",
-      "total": "Total",
-      "processing": "Processing…",
-      "buyPass": "Buy pass →",
-      "cardAtCheckout": "Card payment is collected at checkout.",
-      "purchaseFailed": "Purchase failed",
-      "paymentStartFailed": "Could not start payment. Please try again.",
-      "networkError": "Network error. Please try again.",
-      "viewQr": "View QR",
-      "buyAnother": "Buy another pass",
-      "yourPass": "Your pass",
-      "purchasedOn": "Purchased {date}",
-      "myPasses": "My Passes",
-      "myPassesSubtitle": "Tap a pass to show its QR code at the studio.",
-      "passesHeldCount": "{count, plural, one {# pass held} other {# passes held}}",
-      "viewPasses": "View →",
-      "noPassesYet": "No passes yet"
+      "title": "Ingresso singolo",
+      "subtitle": "Una qualsiasi lezione di danza classica per adulti",
+      "allSet": "🎉 È tutto pronto!",
+      "qrAlt": "Codice QR dell'ingresso",
+      "qrHint": "Mostra questo codice QR in sede per usare la tua lezione.",
+      "done": "Fatto",
+      "payAmount": "Paga {amount}",
+      "back": "Indietro",
+      "description": "Un ingresso valido per una qualsiasi lezione di danza classica per adulti. Mostra il codice QR in sede e lo staff registrerà la tua presenza.",
+      "total": "Totale",
+      "processing": "Elaborazione…",
+      "buyPass": "Acquista l'ingresso →",
+      "cardAtCheckout": "Il pagamento con carta viene raccolto al momento del checkout.",
+      "purchaseFailed": "Acquisto non riuscito",
+      "paymentStartFailed": "Impossibile avviare il pagamento. Riprova.",
+      "networkError": "Errore di rete. Riprova.",
+      "viewQr": "Mostra il QR",
+      "buyAnother": "Acquista un altro ingresso",
+      "yourPass": "Il tuo ingresso",
+      "purchasedOn": "Acquistato il {date}",
+      "myPasses": "I miei ingressi",
+      "myPassesSubtitle": "Tocca un ingresso per mostrarne il codice QR in sede.",
+      "passesHeldCount": "{count, plural, one {# ingresso} other {# ingressi}}",
+      "viewPasses": "Vedi →",
+      "noPassesYet": "Ancora nessun ingresso"
     },
     "completeProfile": {
       "heading": "Finish setting up your account",
@@ -47,6 +48,11 @@
       "birthdayLabel": "Date of birth",
       "saving": "Saving…",
       "continue": "Continue"
+    },
+    "progress": {
+      "back": "← Torna all'orario",
+      "unnamedStudent": "Allievo",
+      "emptyProgress": "Nessun progresso registrato finora. Il tuo insegnante aggiornerà questa sezione quando raggiungerai nuovi traguardi."
     }
   }
 }

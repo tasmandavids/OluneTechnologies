@@ -3,6 +3,7 @@ import { loadStudioTaxSettings } from "@/lib/billing/catalog";
 import { totalInvoice } from "@/lib/billing/tax";
 import type { TaxTreatment } from "@/lib/billing/types";
 import { xeroSyncOutstandingInvoice } from "@/lib/xero/webhook-sync";
+import { dispatchStudioEvent } from "@/lib/integrations/events";
 
 export type LineRow = {
   item_type: string;
@@ -127,6 +128,17 @@ export async function insertSubscriptionInvoice(
     body: params.notificationBody,
     link: "/portal/parent",
     payload: { ...params.notificationPayload, invoice_id: invoiceId },
+  });
+
+  dispatchStudioEvent({
+    type: "invoice.sent",
+    studioId: params.studioId,
+    data: {
+      invoiceId,
+      subscriptionId: params.subscriptionId ?? null,
+      amountCents: params.amountCents,
+      dueDate: params.dueDate ?? null,
+    },
   });
 
   await xeroSyncOutstandingInvoice(supabase, invoiceId, {

@@ -193,7 +193,12 @@
       "multipleClasses": "{count} 门课程",
       "done": "完成",
       "payMonthlyWithAmount": "按月支付 · 每月 {amount}",
-      "morePaymentOptions": "更多付款方式"
+      "morePaymentOptions": "更多付款方式",
+      "hoursPerWeek": "每周 {hours}",
+      "alreadyInvoiced": "已开票 {amount}",
+      "alreadyInvoicedThisTerm": "本学期已开票",
+      "siblingDiscount": "家庭优惠",
+      "siblingDiscountApplied": "家庭优惠 −{amount}"
     },
     "email": {
       "title": "工作室邮件",
@@ -385,7 +390,8 @@
     },
     "scheduleViews": {
       "family": "我的家庭",
-      "studio": "整个工作室"
+      "studio": "整个工作室",
+      "bookPrivateLesson": "预约私教课"
     }
   }
 }

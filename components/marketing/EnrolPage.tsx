@@ -8,6 +8,7 @@ import { useShortDayNames, useFormatTimeShort } from "@/lib/i18n/client";
 import { formatMoney } from "@/lib/currency";
 import { PoweredByOlune } from "@/components/brand/PoweredByOlune";
 import { submitTrialRequest } from "@/app/enrol/actions";
+import { trackConversion } from "@/lib/analytics/track";
 
 const DISCIPLINE_KEYS = [
   "ballet",
@@ -93,6 +94,12 @@ export default function EnrolPage({
         setError(res.error);
         return;
       }
+      // The studio's own GA4 previously saw page views and nothing else, so an
+      // enquiry — the outcome the whole page exists for — was unmeasurable.
+      trackConversion("generate_lead", {
+        item_name: selectedClass?.name ?? disciplineLabel ?? undefined,
+        method: "enrol-page",
+      });
       setSubmitted(true);
     });
   };

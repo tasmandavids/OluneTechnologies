@@ -24,7 +24,10 @@ export type NotificationType =
   | "message_received"
   | "waitlist_promoted"
   | "schedule_updated"
-  | "checkin_tap";
+  | "checkin_tap"
+  | "substitute_needed"
+  | "substitute_filled"
+  | "contractor_invoice_received";
 
 export type DeliveryChannel = "email" | "sms";
 
@@ -59,7 +62,12 @@ export function channelsForType(type: string): DeliveryChannel[] {
   switch (type as NotificationType) {
     case "class_reminder":
     case "waitlist_promoted":
+    // A cover request is the most time-critical message in the product — a
+    // class starts in hours and nobody is going to teach it. Email alone
+    // assumes the teacher is at a desk; they are not.
+    case "substitute_needed":
       return ["email", "sms"];
+    case "substitute_filled":
     case "enrollment_confirmed":
     case "payment_failed":
     case "invoice_overdue":
@@ -71,6 +79,12 @@ export function channelsForType(type: string): DeliveryChannel[] {
       return ["email"];
     case "message_received":
     case "checkin_tap":
+    // The invoice email is sent inline by sendContractorInvoice, which has to
+    // know whether delivery actually succeeded before flipping the status.
+    // This row is the admin's in-app copy — routing it outbound too would
+    // email the same invoice twice.
+    case "contractor_invoice_received":
+      return [];
     default:
       return [];
   }

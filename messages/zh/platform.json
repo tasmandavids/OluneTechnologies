@@ -152,6 +152,15 @@
       "action": "操作",
       "target": "对象",
       "noEntries": "暂无审计记录。"
+    },
+    "badges": {
+      "title": "徽章目录",
+      "subtitle": "{total} 个全局徽章中有 {active} 个已启用",
+      "iconLabel": "表情符号",
+      "xpLabel": "经验值",
+      "active": "已启用",
+      "inactive": "已隐藏",
+      "save": "保存"
     }
   }
 }

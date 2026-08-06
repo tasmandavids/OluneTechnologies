@@ -161,7 +161,7 @@
       "billing": "账单",
       "accounting": "会计",
       "website": "网站",
-      "advertising": "广告",
+      "advertising": "社交发布",
       "shop": "商店",
       "messages": "消息",
       "support": "Olune 支持",
@@ -170,7 +170,10 @@
       "availability": "教师可用时间",
       "inbox": "收件箱",
       "passes": "课程通行证",
-      "checkin": "签到"
+      "checkin": "签到",
+      "privateLessons": "私教课",
+      "badges": "徽章",
+      "forms": "表单创建"
     },
     "teacher": {
       "schedule": "课程表与点名",
@@ -183,7 +186,8 @@
       "expenses": "支出",
       "vault": "文件",
       "notifications": "通知设置",
-      "profile": "公开资料"
+      "profile": "公开资料",
+      "privateLessons": "私教课"
     },
     "office": {
       "dashboard": "前台"
@@ -196,7 +200,8 @@
       "recital": "服装与汇演",
       "notifications": "通知",
       "forms": "表格与授权",
-      "messages": "消息"
+      "messages": "消息",
+      "privateLessons": "私教课"
     },
     "student": {
       "timetable": "我的课程表",
@@ -215,10 +220,14 @@
       "settings": "设置",
       "auditLog": "审计日志",
       "consoleTitle": "Olune 平台",
-      "consoleSubtitle": "运营者控制台"
+      "consoleSubtitle": "运营者控制台",
+      "badges": "徽章目录"
     },
     "shared": {
       "notifications": "通知设置"
+    },
+    "portal": {
+      "forms": "表单与规章"
     }
   },
   "auth": {

@@ -117,7 +117,17 @@
         "peopleGrid": "Team",
         "schedule": "Schedule",
         "faq": "FAQ",
-        "pageHeader": "Header"
+        "pageHeader": "Header",
+        "videoBlock": "Video",
+        "classTabs": "Schede corsi",
+        "imageBlock": "Immagine",
+        "heading": "Titolo",
+        "paragraph": "Testo",
+        "linkBlock": "Pulsante",
+        "divider": "Separatore",
+        "spacer": "Spaziatore",
+        "shopGrid": "Shop",
+        "locations": "Sedi"
       }
     },
     "templateCategories": {
@@ -688,11 +698,14 @@
         "copy": "Copy"
       },
       "continue": "Continue",
-      "back": "Back"
+      "back": "Back",
+      "verification": {
+        "title": "Un altro record per dimostrare che il dominio è tuo",
+        "note": "Aggiungilo insieme al record qui sopra, poi verifica di nuovo."
+      }
     },
     "urlBanner": {
       "title": "Your public website URL",
-      "openPreview": "Open {url} to preview what families see.",
       "localhostNote": "Pages on plain localhost are the Olune platform, not your studio site.",
       "connectDomain": "Connect your domain →",
       "openPreviewBefore": "Apri",

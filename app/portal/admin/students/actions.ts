@@ -12,6 +12,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getStudioOpsStudio } from "@/lib/portal/access";
 import { insertTuitionInvoice, quoteEnrollment } from "@/lib/billing/tuition-invoice";
 import { loadStudioTuitionContext } from "@/lib/billing/tuition-model";
+import { dispatchStudioEvent } from "@/lib/integrations/events";
 
 async function getAdminStudio() {
   const ctx = await getStudioOpsStudio();
@@ -48,6 +49,17 @@ export async function enrollStudent(input: unknown): Promise<ActionResult> {
   });
 
   if (!rpcErr && atomicRows?.[0]) {
+    const row = atomicRows[0] as { enrollment_id: string; waitlisted: boolean };
+    dispatchStudioEvent({
+      type: row.waitlisted ? "enrolment.waitlisted" : "enrolment.created",
+      studioId,
+      data: {
+        enrolmentId: row.enrollment_id,
+        studentId,
+        classId,
+        waitlisted: Boolean(row.waitlisted),
+      },
+    });
     revalidatePath("/portal/admin/students");
     revalidatePath("/portal/admin/people");
     revalidatePath("/portal/admin/classes");
@@ -86,6 +98,21 @@ export async function enrollStudent(input: unknown): Promise<ActionResult> {
 
   if (dbError) return { ok: false, error: dbError.message };
 
+  dispatchStudioEvent({
+    type: isFull ? "enrolment.waitlisted" : "enrolment.created",
+    studioId,
+    data: { enrolmentId: null, studentId, classId, waitlisted: isFull },
+  });
+  // The enrolment that takes the last seat is the one worth a Zap — it's the
+  // studio's cue to open another class.
+  if (!isFull && Number(cap.enrolled) + 1 >= Number(cap.capacity)) {
+    dispatchStudioEvent({
+      type: "class.filled",
+      studioId,
+      data: { classId, capacity: Number(cap.capacity) },
+    });
+  }
+
   revalidatePath("/portal/admin/students");
   revalidatePath("/portal/admin/people");
   revalidatePath("/portal/admin/classes");
@@ -112,6 +139,12 @@ export async function unenrollStudent(
     .eq("studio_id", studioId);
 
   if (dbError) return { ok: false, error: dbError.message };
+
+  dispatchStudioEvent({
+    type: "enrolment.cancelled",
+    studioId,
+    data: { studentId, classId },
+  });
 
   revalidatePath("/portal/admin/students");
   revalidatePath("/portal/admin/people");

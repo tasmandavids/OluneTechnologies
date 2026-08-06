@@ -6,6 +6,7 @@ import {
   createContractorInvoice,
   updateContractorInvoice,
   markInvoiceSent,
+  sendContractorInvoice,
   markInvoicePaid,
   voidContractorInvoice,
   deleteContractorInvoice,
@@ -116,10 +117,13 @@ export function ContractorInvoicesManager({
     });
   }
 
-  function handleAction(id: string, action: "sent" | "paid" | "void" | "delete") {
+  function handleAction(id: string, action: "send" | "sent" | "paid" | "void" | "delete") {
     startTransition(async () => {
       let res;
-      if (action === "sent") res = await markInvoiceSent(id);
+      // "send" emails it for real; "sent" only records that the instructor
+      // delivered it themselves. Both land the invoice in the same status.
+      if (action === "send") res = await sendContractorInvoice(id);
+      else if (action === "sent") res = await markInvoiceSent(id);
       else if (action === "paid") res = await markInvoicePaid(id);
       else if (action === "void") res = await voidContractorInvoice(id);
       else res = await deleteContractorInvoice(id);
@@ -127,13 +131,9 @@ export function ContractorInvoicesManager({
       if (action === "delete") {
         setInvoices((prev) => prev.filter((i) => i.id !== id));
       } else {
-        setInvoices((prev) =>
-          prev.map((i) =>
-            i.id === id
-              ? { ...i, status: action === "sent" ? "sent" : action === "paid" ? "paid" : "void" }
-              : i
-          )
-        );
+        const nextStatus =
+          action === "send" || action === "sent" ? "sent" : action === "paid" ? "paid" : "void";
+        setInvoices((prev) => prev.map((i) => (i.id === id ? { ...i, status: nextStatus } : i)));
       }
     });
   }
@@ -213,7 +213,8 @@ export function ContractorInvoicesManager({
                   {inv.status === "draft" && (
                     <>
                       <button onClick={() => openEdit(inv)} className="text-xs text-brand hover:underline">Edit</button>
-                      <button onClick={() => handleAction(inv.id, "sent")} disabled={pending} className="text-xs text-blue-600 hover:underline">Mark sent</button>
+                      <button onClick={() => handleAction(inv.id, "send")} disabled={pending} className="text-xs text-blue-600 hover:underline">Send</button>
+                      <button onClick={() => handleAction(inv.id, "sent")} disabled={pending} className="text-xs text-base-content/60 hover:underline" title="Record it as sent without emailing — for an invoice you delivered yourself">Mark sent</button>
                       <button onClick={() => handleAction(inv.id, "delete")} disabled={pending} className="text-xs text-red-500 hover:underline">Delete</button>
                     </>
                   )}

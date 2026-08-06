@@ -25,7 +25,11 @@ export type AdCampaign = {
   imageUrl: string | null;
   videoUrl: string | null;
   targetUrl: string | null;
-  budgetCents: number | null;
+  // No budget field. Publishing here is ORGANIC — Page feed, Instagram media,
+  // Telegram broadcast, TikTok video (see lib/advertising/publish.ts). Nothing
+  // in this product spends money on a platform, so carrying a budget through
+  // the UI told studio owners we were spending theirs. The `budget_cents`
+  // column still exists, unread, for whenever paid ads are actually built.
   scheduledAt: string | null;
   publishedAt: string | null;
   platformIds: Record<string, string>;

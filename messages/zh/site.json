@@ -698,7 +698,11 @@
         "copy": "复制"
       },
       "continue": "继续",
-      "back": "返回"
+      "back": "返回",
+      "verification": {
+        "title": "还需一条记录来证明您拥有该域名",
+        "note": "请与上方记录一并添加，然后再次检查。"
+      }
     },
     "urlBanner": {
       "title": "您的公开网站 URL",

@@ -11,6 +11,13 @@ import {
   verifyTelegramBotToken,
 } from "@/lib/advertising/telegram";
 import { encryptSocialCredentials } from "@/lib/advertising/crypto";
+import {
+  AD_MEDIA_BUCKET,
+  adMediaObjectPath,
+  validateAdMedia,
+  type AdMediaKind,
+} from "@/lib/advertising/media";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type {
   AdCampaignStatus,
   AdObjective,
@@ -55,6 +62,7 @@ export async function generateAdWithAi(input: unknown): Promise<ActionResultWith
 
   const copy = await generateAdCopy({
     studioName,
+    studioId,
     objective: parsed.data.objective,
     platforms: parsed.data.platforms,
     prompt: parsed.data.prompt,
@@ -74,10 +82,88 @@ const CampaignSchema = z.object({
   imageUrl: z.string().url().optional().or(z.literal("")),
   videoUrl: z.string().url().optional().or(z.literal("")),
   targetUrl: z.string().url().optional().or(z.literal("")),
-  budgetCents: z.coerce.number().int().min(0).optional(),
   scheduledAt: z.string().optional().or(z.literal("")),
   aiGenerated: z.boolean().optional(),
 });
+
+export type AdMediaTicket = { path: string; token: string; publicUrl: string };
+export type AdMediaUploadResult =
+  | { ok: true; data: AdMediaTicket }
+  | { ok: false; error: string };
+
+/**
+ * Mint a signed upload URL for post creative.
+ *
+ * Same shape as createWebsiteImageUploadUrl: the browser uploads straight to
+ * Storage with a short-lived token, so a 100 MB video never passes through a
+ * serverless function. Minted with the service-role key so the write lands
+ * regardless of whether the storage RLS DDL in 0114 has been applied yet.
+ *
+ * The returned URL is public by necessity — Meta and TikTok fetch the media
+ * themselves and cannot read a private object. See lib/advertising/media.ts.
+ */
+export async function createAdMediaUploadUrl(
+  kind: AdMediaKind,
+  contentType: string,
+  sizeBytes: number,
+): Promise<AdMediaUploadResult> {
+  const { error, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Admin only." };
+
+  // Authoritative check. The client runs the same helper for fast feedback,
+  // but a hand-rolled request must not get past this.
+  const valid = validateAdMedia(kind, contentType, sizeBytes);
+  if (!valid.ok) return { ok: false, error: valid.error };
+
+  let admin;
+  try {
+    admin = createAdminClient();
+  } catch {
+    return { ok: false, error: "Uploads are not configured (missing service-role key)." };
+  }
+
+  const rand = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  const path = `${studioId}/${kind}-${rand}.${valid.ext}`;
+
+  const { data, error: signErr } = await admin.storage
+    .from(AD_MEDIA_BUCKET)
+    .createSignedUploadUrl(path);
+  if (signErr || !data) {
+    const message = signErr?.message ?? "Could not start upload.";
+    return {
+      ok: false,
+      error: /bucket not found/i.test(message)
+        ? "Creative storage isn't provisioned yet — run migration 0114_social_media_storage.sql (npm run db:push)."
+        : message,
+    };
+  }
+
+  const { data: pub } = admin.storage.from(AD_MEDIA_BUCKET).getPublicUrl(path);
+  return { ok: true, data: { path: data.path, token: data.token, publicUrl: pub.publicUrl } };
+}
+
+/**
+ * Remove a piece of creative this studio owns.
+ *
+ * Best-effort and never throws: a stranded object costs a few cents, and a
+ * failed delete must not stop the composer from clearing the slot.
+ */
+export async function deleteAdMedia(publicUrl: string): Promise<ActionResult> {
+  const { error, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Admin only." };
+
+  // Returns null for a hand-typed URL or another tenant's path, so this can
+  // never be aimed at an object we don't own.
+  const objectPath = adMediaObjectPath(publicUrl, studioId);
+  if (!objectPath) return { ok: true };
+
+  try {
+    await createAdminClient().storage.from(AD_MEDIA_BUCKET).remove([objectPath]);
+  } catch {
+    // ignore — see above
+  }
+  return { ok: true };
+}
 
 export async function createCampaign(input: unknown): Promise<ActionResultWith<{ id: string }>> {
   const parsed = CampaignSchema.safeParse(input);
@@ -103,7 +189,6 @@ export async function createCampaign(input: unknown): Promise<ActionResultWith<{
       image_url: d.imageUrl || null,
       video_url: d.videoUrl || null,
       target_url: d.targetUrl || null,
-      budget_cents: d.budgetCents ?? null,
       scheduled_at: d.scheduledAt || null,
       ai_generated: d.aiGenerated ?? false,
     })
@@ -147,7 +232,6 @@ export async function publishCampaign(campaignId: string): Promise<ActionResult>
     imageUrl: row.image_url as string | null,
     videoUrl: row.video_url as string | null,
     targetUrl: row.target_url as string | null,
-    budgetCents: row.budget_cents as number | null,
     scheduledAt: row.scheduled_at as string | null,
     publishedAt: row.published_at as string | null,
     platformIds: (row.platform_ids ?? {}) as Record<string, string>,

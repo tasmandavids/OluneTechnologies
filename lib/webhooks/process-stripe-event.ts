@@ -31,6 +31,24 @@ import {
 import { syncStripeAccountStatus } from "@/lib/stripe/connect";
 import { CLASS_PASS_XERO_ACCOUNT_CODE } from "@/lib/passes/constants";
 import { refundPaidClassPassesForPaymentIntent } from "@/lib/passes/refunds";
+import { dispatchStudioEvent } from "@/lib/integrations/events";
+
+/**
+ * Notify the studio's own Zapier / webhook endpoints that money moved.
+ *
+ * Only fired where we already hold the studio id — orders and event tickets
+ * carry neither a studio in their PaymentIntent metadata nor a cheap lookup
+ * here, so they don't emit yet. Dispatch is fire-and-forget by contract, so
+ * this never delays acknowledging the Stripe webhook.
+ */
+function emitPaymentEvent(
+  type: "payment.succeeded" | "payment.failed",
+  studioId: string | null | undefined,
+  data: Record<string, string | number | boolean | null>,
+): void {
+  if (!studioId) return;
+  dispatchStudioEvent({ type, studioId, data });
+}
 
 export async function processStripeEvent(event: Stripe.Event, supabase: ServiceSupabase): Promise<void> {
   switch (event.type) {
@@ -73,6 +91,16 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           }
         }
 
+        emitPaymentEvent("payment.succeeded", target.studioId ?? plan.studio_id, {
+          source: "term_plan",
+          planId: target.planId,
+          installmentNumber: target.installmentNumber,
+          planCompleted: completed,
+          amountCents: intent.amount_received,
+          currency: intent.currency,
+          paymentIntentId: intent.id,
+        });
+
         console.log(
           `[stripe-webhook] term_plan ${target.planId} installment ${target.installmentNumber}${completed ? " (complete)" : ""}`,
         );
@@ -111,6 +139,14 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
         });
 
         await xeroSyncAfterPayment(supabase, "invoice", target.invoiceId);
+
+        emitPaymentEvent("payment.succeeded", target.studioId, {
+          source: "invoice",
+          invoiceId: target.invoiceId,
+          amountCents: intent.amount_received,
+          currency: intent.currency,
+          paymentIntentId: intent.id,
+        });
 
         console.log(`[stripe-webhook] payment_intent.succeeded — invoice ${target.invoiceId} marked paid`);
         break;
@@ -431,6 +467,14 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           link: "/portal/parent",
         });
       }
+
+      emitPaymentEvent("payment.failed", studioId, {
+        source: subId ? "subscription" : "invoice",
+        stripeInvoiceId: stripeInvoice.id ?? null,
+        subscriptionId: subId ?? null,
+        amountCents: invoiceAmountCents(stripeInvoice),
+        currency: stripeInvoice.currency ?? CURRENCY.toLowerCase(),
+      });
 
       console.log(`[stripe-webhook] invoice.payment_failed — ${stripeInvoice.id}`);
       break;

@@ -1,3 +1,4 @@
+import { completeText } from "@/lib/integrations/ai";
 import type { AdObjective, GeneratedAdCopy, SocialPlatform } from "./types";
 
 type AdGenerationInput = {
@@ -6,6 +7,8 @@ type AdGenerationInput = {
   platforms: SocialPlatform[];
   prompt: string;
   targetUrl?: string | null;
+  /** Bills against the studio's own model key when it has connected one. */
+  studioId?: string | null;
 };
 
 function buildHeuristicAdCopy(input: AdGenerationInput): GeneratedAdCopy {
@@ -62,44 +65,23 @@ function buildHeuristicAdCopy(input: AdGenerationInput): GeneratedAdCopy {
   };
 }
 
-async function callOpenAI(system: string, user: string): Promise<string | null> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return null;
-
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: process.env.OPENAI_ADS_MODEL ?? process.env.OPENAI_SUMMARY_MODEL ?? "gpt-4o-mini",
-      temperature: 0.7,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-    }),
-  });
-
-  if (!res.ok) return null;
-  const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-  return json.choices?.[0]?.message?.content?.trim() ?? null;
-}
-
 export async function generateAdCopy(input: AdGenerationInput): Promise<GeneratedAdCopy> {
   const fallback = buildHeuristicAdCopy(input);
   const platformList = input.platforms.join(", ");
 
-  const raw = await callOpenAI(
-    `You are an expert digital advertising copywriter for dance studios. Return JSON with keys: headline (string), bodyText (string), callToAction (string), hashtags (string array, 3-5 tags), platformVariants (object keyed by platform with headline and bodyText). Keep copy authentic, warm, and conversion-focused. Respect platform character limits: Facebook headline ~40 chars, Instagram caption ~2200 chars, TikTok caption ~150 chars, Telegram message ~4096 chars.`,
-    `Studio: ${input.studioName}
+  // Resolves to the studio's own Anthropic/OpenAI key when it connected one,
+  // and the platform key otherwise. Null means no key anywhere — the heuristic
+  // copy below is a real fallback, not a placeholder.
+  const raw = await completeText({
+    studioId: input.studioId,
+    json: true,
+    system: `You are an expert digital advertising copywriter for dance studios. Return JSON with keys: headline (string), bodyText (string), callToAction (string), hashtags (string array, 3-5 tags), platformVariants (object keyed by platform with headline and bodyText). Keep copy authentic, warm, and conversion-focused. Respect platform character limits: Facebook headline ~40 chars, Instagram caption ~2200 chars, TikTok caption ~150 chars, Telegram message ~4096 chars.`,
+    user: `Studio: ${input.studioName}
 Objective: ${input.objective}
 Platforms: ${platformList}
 Brief: ${input.prompt}
 Target URL: ${input.targetUrl ?? "studio website"}`,
-  );
+  });
 
   if (!raw) return fallback;
 

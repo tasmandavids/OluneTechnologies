@@ -51,12 +51,24 @@ export async function POST(req: NextRequest) {
   const discount = await familyDiscountInfo(supabase, event.studio_id, user.id, grossCents);
   const totalCents = discount.discountedCents;
 
-  // Generate QR code — encodes a JSON payload identifying the ticket
+  // Generate QR code — encodes a JSON payload identifying the ticket.
+  //
+  // qr_token is the part that matters: it is an unguessable secret minted here
+  // and stored on the row, so the door scanner can verify the code came from
+  // us. Everything else in the payload is a convenience for humans reading a
+  // scan log — the scanner trusts NONE of it, and reads quantity and status
+  // from the row, because the holder controls what their QR says.
+  //
+  // Generating it here rather than leaning on the column default is deliberate:
+  // the payload has to be encoded into the image before the row is written, and
+  // on re-purchase the upsert below rotates the token, invalidating the old QR.
+  const qrToken = crypto.randomUUID();
   const qrPayload = JSON.stringify({
+    kind:       "event_ticket",
     event_id:   event.id,
+    qr_token:   qrToken,
     event_name: event.name,
     event_date: event.event_date,
-    user_id:    user.id,
     quantity,
     issued_at:  new Date().toISOString(),
   });
@@ -68,12 +80,18 @@ export async function POST(req: NextRequest) {
       .from("event_tickets")
       .upsert(
         {
-          event_id:    event.id,
-          user_id:     user.id,
+          event_id:      event.id,
+          user_id:       user.id,
           quantity,
-          total_cents: 0,
-          qr_code:     qrDataUrl,
-          status:      "paid",
+          total_cents:   0,
+          qr_code:       qrDataUrl,
+          qr_token:      qrToken,
+          status:        "paid",
+          // Re-issuing supersedes the old QR, so any earlier check-in against
+          // it is cleared — otherwise a re-purchase would arrive at the door
+          // already marked as admitted.
+          checked_in_at: null,
+          checked_in_by: null,
         },
         { onConflict: "event_id,user_id" }
       )
@@ -128,8 +146,11 @@ export async function POST(req: NextRequest) {
       quantity,
       total_cents:              totalCents,
       qr_code:                  qrDataUrl,
+      qr_token:                 qrToken,
       stripe_payment_intent_id: intent.id,
       status:                   "reserved",
+      checked_in_at:            null,
+      checked_in_by:            null,
     },
     { onConflict: "event_id,user_id" }
   );

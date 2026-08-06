@@ -25,7 +25,44 @@
         "overdue": "En retard",
         "draft": "Brouillon",
         "void": "Annulée"
-      }
+      },
+      "viewProgress": "Voir la progression et les certificats",
+      "contactBilling": "contacter le studio au sujet de la facturation",
+      "contactStudio": "écrire au studio",
+      "adultTitle": "Mon compte",
+      "addChild": "+ Ajouter un danseur",
+      "addChildTitle": "Ajouter un danseur",
+      "addChildDescription": "Créez un profil pour votre enfant et rattachez-le à votre compte.",
+      "childNamePlaceholder": "Nom complet",
+      "childEmailOptional": "E-mail (facultatif — envoie une invitation de connexion)",
+      "cancelAddChild": "Annuler",
+      "addingChild": "Ajout…",
+      "addChildSubmit": "Ajouter le danseur",
+      "inviteCoParent": "Inviter la famille",
+      "inviteCoParentTitle": "Inviter un co-parent",
+      "inviteCoParentDescription": "Invitez un autre parent ou tuteur dans votre famille — il verra les mêmes danseurs, factures et plannings. Aucun nouveau profil de danseur n'est créé.",
+      "coParentEmailPlaceholder": "E-mail du co-parent",
+      "coParentRelationshipLabel": "Lien avec votre ou vos danseurs",
+      "relationshipMother": "Mère",
+      "relationshipFather": "Père",
+      "relationshipGuardian": "Tuteur",
+      "relationshipOther": "Autre",
+      "cancelInviteCoParent": "Annuler",
+      "closeInviteCoParent": "Terminé",
+      "invitingCoParent": "Envoi…",
+      "inviteCoParentSubmit": "Envoyer l'invitation",
+      "inviteCoParentSent": "Invitation envoyée ! Un e-mail lui permettra de configurer sa connexion.",
+      "inviteCoParentLinked": "Cette adresse a déjà un compte — nous l'avons rattachée à votre famille.",
+      "payNow": "Payer",
+      "payInvoice": "Payer la facture",
+      "preparingPayment": "Préparation…",
+      "continueToPay": "Continuer vers le paiement",
+      "payFailed": "Le paiement n'a pas pu être lancé.",
+      "cancelPay": "Annuler",
+      "invoicePayment": "Facture",
+      "tableActions": "Actions",
+      "viewBilling": "Facturation et paiements",
+      "viewSchedule": "Voir le planning hebdomadaire"
     },
     "shop": {
       "title": "Boutique du studio",
@@ -149,7 +186,19 @@
       "multipleClasses": "{count} classes",
       "done": "Terminé",
       "payMonthlyWithAmount": "Payer mensuellement · {amount}/mois",
-      "morePaymentOptions": "Autres options de paiement"
+      "morePaymentOptions": "Autres options de paiement",
+      "payMonthly": "Payer mensuellement (3 échéances)",
+      "termPayTitle": "Paiement mensuel du trimestre",
+      "termInstallmentProgress": "Échéance {current} sur {total} · total du compte {accountTotal}",
+      "termAccountTotalHint": "En incluant les autres factures en cours, le total de votre compte est de {total}.",
+      "termMonthlyOptionHint": "Ou répartissez sur {count} paiements mensuels à partir de {amount} (inclut toutes les factures en cours sur votre compte).",
+      "termPayNowHint": "Il s'agit de la première échéance mensuelle. Les paiements restants seront dus chaque mois sur votre page Facturation.",
+      "termPaidHint": "Première échéance de {amount} reçue. {count} paiements mensuels au total — réglez le reste à tout moment depuis Facturation.",
+      "hoursPerWeek": "{hours} par semaine",
+      "alreadyInvoiced": "{amount} déjà facturé",
+      "alreadyInvoicedThisTerm": "Déjà facturé ce trimestre",
+      "siblingDiscount": "Remise famille",
+      "siblingDiscountApplied": "Remise famille −{amount}"
     },
     "email": {
       "title": "E-mail du studio",
@@ -194,7 +243,8 @@
     },
     "scheduleViews": {
       "family": "Ma famille",
-      "studio": "Tout le studio"
+      "studio": "Tout le studio",
+      "bookPrivateLesson": "Réserver un cours particulier"
     },
     "billing": {
       "summaryBand": {
@@ -206,6 +256,141 @@
         "paid": "{amount} payés",
         "total": "{amount} au total",
         "nextInstalment": "Prochaine échéance de {amount} le {date}"
+      },
+      "title": "Facturation et paiements",
+      "subtitle": "Payez vos factures, consultez vos reçus et gérez le prélèvement automatique.",
+      "backToHub": "← Espace famille",
+      "outstanding": "Solde dû",
+      "totalPaid": "Total payé",
+      "invoiceCount": "Factures",
+      "invoicesTitle": "Factures",
+      "noInvoices": "Aucune facture pour l'instant.",
+      "paymentsTitle": "Historique des paiements",
+      "noPayments": "Aucun paiement enregistré pour l'instant.",
+      "ordersTitle": "Commandes boutique",
+      "payNow": "Payer",
+      "managePaymentMethods": "Gérer les moyens de paiement",
+      "openingPortal": "Ouverture…",
+      "portalFailed": "Impossible d'ouvrir le portail de paiement. Réessayez ou contactez le studio.",
+      "stripeNotConfigured": "Les paiements en ligne ne sont pas encore configurés pour ce studio. Contactez le studio pour régler autrement.",
+      "contactStudioBilling": "Une question sur une facture ?",
+      "contactStudioBillingLink": "Écrire au studio au sujet de la facturation",
+      "termPlanTitle": "Payez votre trimestre en 3 mensualités",
+      "termPlanIntro": "Répartissez votre solde dû de {total} en {count} paiements mensuels d'environ {installment}. Toutes les factures en cours sur votre compte sont regroupées.",
+      "termPlanActiveHint": "Vous avez un échéancier en cours ({paid} échéances payées sur {total}). Prochain paiement : {next}.",
+      "startTermPlan": "Payer la première échéance",
+      "payNextInstallment": "Payer la prochaine échéance",
+      "termPayTitle": "Paiement mensuel du trimestre",
+      "termPaySubtitle": "Vos factures en cours sont regroupées et réparties sur le trimestre.",
+      "termPayExplain": "Nous totalisons tout ce qui figure sur votre compte et prélevons la prochaine mensualité en toute sécurité par carte.",
+      "termInstallmentProgress": "Échéance {current} sur {total} · total du compte {accountTotal}",
+      "continueTermPay": "Continuer vers le paiement",
+      "preparingTermPay": "Préparation…",
+      "cancelTermPay": "Annuler",
+      "termPayFailed": "Impossible de démarrer l'échéancier. Réessayez ou contactez le studio.",
+      "invoiceFallback": "Facture",
+      "table": {
+        "number": "N° de facture",
+        "issued": "Émise le",
+        "student": "Danseur",
+        "amount": "Montant",
+        "due": "Échéance",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "paymentsTable": {
+        "date": "Date",
+        "amount": "Montant",
+        "invoice": "Facture"
+      },
+      "ordersTable": {
+        "date": "Date",
+        "amount": "Montant",
+        "status": "Statut"
+      },
+      "invoiceStatus": {
+        "paid": "Payée",
+        "sent": "Envoyée",
+        "overdue": "En retard",
+        "draft": "Brouillon",
+        "void": "Annulée",
+        "refunded": "Remboursée"
+      }
+    },
+    "childProgress": {
+      "back": "← Retour à l'espace famille",
+      "unnamedDancer": "Danseur sans nom",
+      "emptyProgress": "Aucune progression enregistrée pour l'instant. Votre professeur mettra ceci à jour au fil des progrès."
+    },
+    "chat": {
+      "title": "Chat du studio",
+      "subtitle": "Contactez l'administration du studio ou les professeurs de votre enfant.",
+      "studioSection": "Administration du studio",
+      "teachersSection": "Vos professeurs",
+      "studioAdmin": "Administration du studio",
+      "selectPrompt": "Choisissez un sujet",
+      "selectDescription": "La facturation, les absences et les questions générales vont à l'administration. Vous pouvez aussi écrire directement à vos professeurs.",
+      "noContacts": "La messagerie n'est pas encore disponible — merci de contacter le studio par e-mail.",
+      "youPrefix": "Vous : ",
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "placeholder": "Écrivez votre message… (Entrée pour envoyer)",
+      "teacherPlaceholder": "Écrire à {name}…",
+      "send": "Envoyer",
+      "noMessages": "Aucun message pour l'instant.",
+      "sayHello": "Démarrez une conversation avec {name}.",
+      "loadFailed": "Impossible de charger les messages.",
+      "sendFailed": "Le message n'a pas pu être envoyé.",
+      "internalChannel": "Les messages sont transmis en toute sécurité à l'équipe du studio.",
+      "parentRole": "parent",
+      "topics": {
+        "billing": {
+          "label": "Facturation et paiements",
+          "hint": "Factures, paiements, remboursements",
+          "subtitle": "Demande de facturation",
+          "placeholder": "J'ai une question sur ma facture ou mon paiement…"
+        },
+        "absence": {
+          "label": "Signaler une absence",
+          "hint": "Prévenez-nous quand votre danseur sera absent",
+          "subtitle": "Avis d'absence",
+          "placeholder": "Mon danseur sera absent le…"
+        },
+        "general": {
+          "label": "Question générale",
+          "hint": "Inscription, planning, ou toute autre question",
+          "subtitle": "Demande générale",
+          "placeholder": "J'ai une question à propos de…"
+        }
+      }
+    },
+    "schedule": {
+      "title": "Planning de la famille",
+      "subtitle": "Cours hebdomadaires et actualités du studio pour vos danseurs.",
+      "backToHub": "← Espace famille",
+      "prevWeek": "Semaine précédente",
+      "nextWeek": "Semaine suivante",
+      "allChildren": "Tous les danseurs",
+      "unnamedDancer": "Danseur sans nom",
+      "nothingScheduled": "Rien de prévu",
+      "legend": "Les cours récurrents proviennent des inscriptions. Les éléments supplémentaires sont ajoutés par l'équipe du studio.",
+      "days": {
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mer",
+        "thu": "Jeu",
+        "fri": "Ven",
+        "sat": "Sam",
+        "sun": "Dim"
+      },
+      "types": {
+        "private_lesson": "Cours particulier",
+        "rehearsal": "Répétition",
+        "makeup": "Cours de rattrapage",
+        "competition": "Concours",
+        "event": "Événement",
+        "note": "Note",
+        "other": "Autre"
       }
     }
   }

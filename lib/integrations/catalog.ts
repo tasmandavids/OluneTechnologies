@@ -12,8 +12,9 @@
 //  Stage is a promise to the studio owner, so be honest with it:
 //    live    — connect it and it does the job end to end
 //    beta    — the connection is real and credentials are stored, but what we
-//              do with them is partial (QuickBooks/MYOB today: connect works,
-//              ledger sync doesn't)
+//              do with them is partial. QuickBooks and MYOB are the only two
+//              left here: they authenticate and store tokens, and no ledger
+//              sync reads them yet.
 //    planned — on the roadmap, no connect path; the card says so
 // ============================================================================
 
@@ -83,14 +84,20 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     name: "QuickBooks Online",
     category: "accounting",
     tagline: "For studios that keep their books in QuickBooks instead of Xero.",
-    stage: "beta",
-    auth: { kind: "oauth", connectPath: "/api/integrations/quickbooks/connect" },
+    // `planned`, not `beta`. OAuth completes and the realm is stored, but
+    // ACCOUNTING_CAPABILITIES.syncSupported is false — no invoice is ever
+    // pushed. Offering it next to a working Xero invited studios to connect
+    // and code their whole catalogue for a ledger that receives nothing.
+    // The connect route and driver stay in place; flip this back to "beta"
+    // with `auth.connectPath` restored the day sync lands.
+    stage: "planned",
+    auth: { kind: "none" },
     color: "#2CA01C",
     exclusiveGroup: "accounting",
     store: "studio_integrations",
     capabilities: [
-      "Connects and stores the QuickBooks company (realm) securely",
-      "Invoice and payment sync is still being built — nothing is pushed yet",
+      "Invoice and payment sync is still being built",
+      "Product ledger codes can already be entered, ready for when it lands",
     ],
     requiredEnv: ["QUICKBOOKS_CLIENT_ID", "QUICKBOOKS_CLIENT_SECRET"],
     docsUrl: "https://developer.intuit.com/app/developer/qbo/docs/develop",
@@ -100,14 +107,15 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     name: "MYOB Business",
     category: "accounting",
     tagline: "For AU/NZ studios running MYOB Business or AccountRight.",
-    stage: "beta",
-    auth: { kind: "oauth", connectPath: "/api/integrations/myob/connect" },
+    // See the QuickBooks entry above — same reason, same route back.
+    stage: "planned",
+    auth: { kind: "none" },
     color: "#6B2C91",
     exclusiveGroup: "accounting",
     store: "studio_integrations",
     capabilities: [
-      "Connects and stores the MYOB company file securely",
-      "Invoice and payment sync is still being built — nothing is pushed yet",
+      "Invoice and payment sync is still being built",
+      "Product ledger codes can already be entered, ready for when it lands",
     ],
     requiredEnv: ["MYOB_CLIENT_ID", "MYOB_CLIENT_SECRET"],
     docsUrl: "https://developer.myob.com/api/accountright/api-overview/",
@@ -269,7 +277,7 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     name: "Mailchimp",
     category: "marketing",
     tagline: "Keep an audience in sync with the studio roll for newsletters.",
-    stage: "beta",
+    stage: "live",
     auth: {
       kind: "api_key",
       fields: [
@@ -286,15 +294,16 @@ export const INTEGRATIONS: IntegrationProvider[] = [
           type: "text",
           placeholder: "a1b2c3d4e5",
           optional: true,
-          hint: "Leave blank to pick the audience later.",
+          hint: "Leave blank if the account has only one audience — we'll use it.",
         },
       ],
     },
     color: "#FFE01B",
     store: "studio_integrations",
     capabilities: [
-      "Stores the key securely against this studio",
-      "Audience sync is still being built",
+      "Parent contacts on the roll are pushed into the audience",
+      "Syncs on connect; existing unsubscribes are never overwritten",
+      "Students are never sent — the list is fee-payers only",
     ],
     docsUrl: "https://mailchimp.com/developer/marketing/guides/quick-start/",
   },
@@ -303,7 +312,7 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     name: "Twilio SMS",
     category: "marketing",
     tagline: "Text families about cancellations and last-minute changes.",
-    stage: "beta",
+    stage: "live",
     auth: {
       kind: "api_key",
       fields: [
@@ -320,7 +329,11 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     },
     color: "#F22F46",
     store: "studio_integrations",
-    capabilities: ["Credentials stored securely", "Send paths are still being built"],
+    capabilities: [
+      "Notification texts send from your number, billed to your Twilio account",
+      "Families still control which notifications reach them by SMS",
+    ],
+    usedBy: { href: "/portal/admin/settings", label: "Settings → Notifications" },
     docsUrl: "https://www.twilio.com/docs/messaging",
   },
   {
@@ -362,7 +375,7 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     name: "Zapier",
     category: "automation",
     tagline: "Trigger Zaps when a student enrols, a payment lands, or a class fills.",
-    stage: "beta",
+    stage: "live",
     auth: {
       kind: "api_key",
       fields: [
@@ -377,14 +390,17 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     },
     color: "#FF4F00",
     store: "studio_integrations",
-    capabilities: ["Stores the hook URL", "Event dispatch is still being built"],
+    capabilities: [
+      "Fires on enrolment, waitlisting, class full, payment and invoice events",
+      "Payloads carry ids and amounts only — never a child's details",
+    ],
   },
   {
     id: "webhooks",
     name: "Custom webhook",
     category: "automation",
     tagline: "Post Olune events to any endpoint you control.",
-    stage: "beta",
+    stage: "live",
     auth: {
       kind: "api_key",
       fields: [
@@ -400,7 +416,11 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     },
     color: "#64748B",
     store: "studio_integrations",
-    capabilities: ["Stores the endpoint and secret", "Event dispatch is still being built"],
+    capabilities: [
+      "Same events as Zapier, posted to your endpoint",
+      "Signed X-Olune-Signature: sha256 HMAC over '<timestamp>.<body>'",
+      "X-Olune-Timestamp is signed too, so a captured payload can't be replayed",
+    ],
   },
 
   // ─── AI & analytics ──────────────────────────────────────────────────────
@@ -409,7 +429,7 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     name: "Anthropic",
     category: "intelligence",
     tagline: "Bring your own Claude key for ad copy and inbox summaries.",
-    stage: "beta",
+    stage: "live",
     auth: {
       kind: "api_key",
       fields: [
@@ -426,8 +446,10 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     store: "studio_integrations",
     capabilities: [
       "Stored encrypted and only decrypted server-side",
-      "Falls back to the platform key when not set",
+      "Used for advertising copy and inbox summaries, billed to your account",
+      "Takes precedence over an OpenAI key; falls back to the platform key when unset",
     ],
+    usedBy: { href: "/portal/admin/advertising", label: "Studio → Advertising" },
     docsUrl: "https://docs.anthropic.com/en/api/overview",
   },
   {
@@ -435,7 +457,7 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     name: "OpenAI",
     category: "intelligence",
     tagline: "Alternative model key for studios standardised on OpenAI.",
-    stage: "beta",
+    stage: "live",
     auth: {
       kind: "api_key",
       fields: [
@@ -451,13 +473,18 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     },
     color: "#10A37F",
     store: "studio_integrations",
+    capabilities: [
+      "Same features as the Anthropic key, on your OpenAI account",
+      "Only used when no Anthropic key is connected",
+    ],
+    usedBy: { href: "/portal/admin/advertising", label: "Studio → Advertising" },
   },
   {
     id: "ga4",
     name: "Google Analytics 4",
     category: "intelligence",
     tagline: "Measurement on the studio website and enrolment funnel.",
-    stage: "beta",
+    stage: "live",
     auth: {
       kind: "api_key",
       fields: [
@@ -471,6 +498,11 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     },
     color: "#E37400",
     store: "studio_integrations",
+    capabilities: [
+      "The gtag is loaded on your public website pages",
+      "Page views are sent on every navigation, not just the first load",
+      "Never loaded inside the admin or parent portal — those URLs contain family record ids",
+    ],
   },
 ];
 

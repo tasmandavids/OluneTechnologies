@@ -5,6 +5,7 @@
     "processing": "Traitement…",
     "payNow": "Payer maintenant",
     "payAmount": "Payer {amount}",
-    "secureCheckout": "Paiement sécurisé par carte"
+    "secureCheckout": "Paiement sécurisé par carte",
+    "paymentProcessing": "Votre paiement est en cours de traitement. Nous mettrons votre compte à jour automatiquement dès qu'il sera validé — inutile de payer à nouveau."
   }
 }

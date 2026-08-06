@@ -5,6 +5,7 @@
 // ============================================================================
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { ProductionWizard } from "./ProductionWizard";
 import { deleteEvent, getFullEvent, type WizardFormState } from "@/app/portal/admin/events/actions";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
@@ -292,15 +293,29 @@ export function EventsManager({ events: initialEvents, profiles, classes }: Even
             {events.length === 0 ? "Create your first production" : `${events.length} event${events.length !== 1 ? "s" : ""}`}
           </p>
         </div>
-        <button
-          onClick={openNew}
-          className="flex items-center gap-2 rounded-xl bg-brand text-white px-5 py-2.5 text-sm font-semibold hover:bg-brand/90 transition shadow-sm"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          New Event
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* The door is a different job from planning the show, done on a
+              phone by whoever is on tickets — so it gets its own entry point
+              rather than living inside an event's edit screen. */}
+          <Link
+            href="/portal/admin/events/scan"
+            className="flex items-center gap-2 rounded-xl border border-[--hair] bg-surface px-5 py-2.5 text-sm font-semibold text-ink transition hover:bg-base"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.5h4.5v4.5h-4.5V4.5zm12 0h4.5v4.5h-4.5V4.5zm-12 10.5h4.5v4.5h-4.5V15zm12 3h4.5m-4.5-3h1.5m3 6v.008M12 3.75v16.5" />
+            </svg>
+            Door check-in
+          </Link>
+          <button
+            onClick={openNew}
+            className="flex items-center gap-2 rounded-xl bg-brand text-white px-5 py-2.5 text-sm font-semibold hover:bg-brand/90 transition shadow-sm"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            New Event
+          </button>
+        </div>
       </div>
 
       {/* Search */}

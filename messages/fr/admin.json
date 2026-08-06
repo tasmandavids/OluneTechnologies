@@ -167,7 +167,8 @@
         "class": "classe",
         "product": "produit",
         "discount": "rabais"
-      }
+      },
+      "retry": "Réessayer"
     },
     "dashboard": {
       "header": {
@@ -252,7 +253,8 @@
           "slot1730": "17h30",
           "slot1830": "18h30",
           "slot1930": "19h30"
-        }
+        },
+        "unscheduled": "Non planifié"
       }
     },
     "people": {
@@ -396,7 +398,38 @@
         "seriesStandaloneGroup": "Classes autonomes",
         "seriesOptionGroupLabel": "{name} · {count} classes",
         "seriesLinkButton": "Associer à la série",
-        "seriesLinking": "Association…"
+        "seriesLinking": "Association…",
+        "xeroAccountCodeDefault": "Valeur par défaut du studio",
+        "newClassSubtitle": "L'horaire se définit ici ; le prix est créé sous forme de produit que vous gérerez dans Finances.",
+        "editClassSubtitle": "Horaire, professeur et capacité ici — la tarification appartient au produit.",
+        "sectionDetails": "Détails du cours",
+        "sectionBilling": "Facturation",
+        "billingModeExisting": "Produit existant",
+        "billingModeNew": "Nouveau produit",
+        "product": "Produit",
+        "chooseProduct": "Choisir un produit…",
+        "productSummary": "{price} · {model} · {code}",
+        "billedAs": "Facturé en tant que",
+        "priceInclusive": "Prix (TVA incluse)",
+        "priceExclusive": "Prix (hors TVA)",
+        "pricingModel": "Facturation",
+        "models": {
+          "term": "Par trimestre",
+          "recurring": "Récurrent",
+          "per_session": "Par séance",
+          "one_off": "Une seule fois"
+        },
+        "productAdvanced": "Code produit et comptabilité",
+        "productName": "Nom du produit",
+        "productNamePlaceholder": "Identique au nom du cours",
+        "productCode": "Code produit (SKU)",
+        "billingNewHint": "Crée un produit correspondant dans Finances → Produits. La tarification, la TVA et les codes comptables s'y modifient ensuite.",
+        "billingEditNotice": "Le prix, la TVA et les codes comptables appartiennent au produit. Modifiez-les dans Finances → Produits et tous les cours liés suivront.",
+        "manageProducts": "Ouvrir Finances → Produits →",
+        "errors": {
+          "needProduct": "Choisissez le produit sur lequel ce cours est facturé.",
+          "needPrice": "Saisissez un prix pour ce cours."
+        }
       },
       "delete": {
         "title": "Supprimer « {name} » ?",
@@ -509,6 +542,40 @@
         "saveEntry": "Enregistrer l'entrée",
         "history": "Historique des progrès · {count}",
         "empty": "Aucun progrès enregistré pour l'instant. Ajoutez la première entrée ci-dessus."
+      },
+      "schedule": {
+        "title": "Planning",
+        "subtitle": "Ajoutez des cours particuliers, des répétitions et d'autres éléments. Les parents sont prévenus automatiquement.",
+        "addEntry": "+ Ajouter",
+        "newEntry": "Nouvel élément de planning",
+        "editEntry": "Modifier l'élément",
+        "cancelEntry": "Annuler l'élément",
+        "days": {
+          "mon": "Lun",
+          "tue": "Mar",
+          "wed": "Mer",
+          "thu": "Jeu",
+          "fri": "Ven",
+          "sat": "Sam",
+          "sun": "Dim"
+        },
+        "fields": {
+          "title": "Titre",
+          "description": "Notes (facultatif)",
+          "type": "Type",
+          "location": "Lieu (facultatif)",
+          "startTime": "Heure de début",
+          "endTime": "Heure de fin"
+        },
+        "types": {
+          "private_lesson": "Cours particulier",
+          "rehearsal": "Répétition",
+          "makeup": "Cours de rattrapage",
+          "competition": "Concours",
+          "event": "Événement",
+          "note": "Note",
+          "other": "Autre"
+        }
       }
     },
     "parents": {
@@ -768,7 +835,8 @@
         "amountLabel": "Montant (NZD)",
         "invalidLineItemsError": "Chaque ligne nécessite une description, une quantité et un prix unitaire.",
         "validAmountError": "Saisissez un montant valide.",
-        "xeroSyncError": "Enregistré, mais la synchronisation Xero a échoué : {error}"
+        "xeroSyncError": "Enregistré, mais la synchronisation Xero a échoué : {error}",
+        "customLine": "Ligne personnalisée"
       },
       "send": "Envoyer",
       "sendXeroSyncError": "Facture envoyée, mais la synchronisation Xero a échoué : {error}",
@@ -789,7 +857,8 @@
         "ledger": "Grand livre",
         "reconcile": "Rapprochement",
         "payouts": "Versements",
-        "reports": "Rapports"
+        "reports": "Rapports",
+        "products": "Produits"
       },
       "comingSoon": {
         "title": "Bientôt disponible",
@@ -888,7 +957,10 @@
           "programmeBody": "Bientôt disponible — revenu, effectif et attrition côte à côte pour chaque type de cours.",
           "export": "Export personnalisé",
           "exportBody": "Bientôt disponible — toute période, tous comptes, CSV ou PDF."
-        }
+        },
+        "manageConnection": "Gérer dans les Paramètres",
+        "connectInSettings": "Connecter Xero dans les Paramètres",
+        "otherLedger": "{provider} est connecté comme grand livre de ce studio. Les rapports lisent toujours depuis Xero — les rapports {provider} sont en cours de développement."
       },
       "ledger": {
         "title": "Grand livre",
@@ -916,6 +988,194 @@
         "title": "Le rapprochement bancaire n'est pas encore disponible",
         "body": "Le rapprochement ligne par ligne de votre relevé bancaire avec les factures et versements arrive bientôt dans Olune.",
         "note": "Le statut des factures est déjà synchronisé automatiquement avec Xero — voir Rapports."
+      },
+      "products": {
+        "title": "Produits et tarifs",
+        "subtitle": "Tout ce que votre studio vend — frais, cartes, tarifs horaires, forfaits — avec les codes comptables associés.",
+        "newProduct": "Nouveau produit",
+        "searchPlaceholder": "Rechercher un produit…",
+        "showArchived": "Afficher les archivés",
+        "archive": "Archiver",
+        "restore": "Restaurer",
+        "archived": "Archivé",
+        "noCode": "Aucun code",
+        "save": "Enregistrer le produit",
+        "saving": "Enregistrement…",
+        "saved": "Produit mis à jour.",
+        "created": "Produit créé.",
+        "cancel": "Annuler",
+        "editTitle": "Modifier le produit",
+        "newTitle": "Nouveau produit",
+        "empty": {
+          "title": "Aucun produit pour l'instant",
+          "body": "Créez un catalogue de départ avec les frais de trimestre habituels, les cours à l'unité, les cartes, les cours particuliers et les frais d'inscription — puis ajustez les prix à votre studio.",
+          "seed": "Créer un catalogue de départ",
+          "seeding": "Création…",
+          "manual": "En ajouter un moi-même"
+        },
+        "categories": {
+          "tuition": "Frais de cours",
+          "fee": "Frais",
+          "pass": "Cartes",
+          "hire": "Location",
+          "retail": "Boutique",
+          "other": "Autre"
+        },
+        "models": {
+          "one_off": "Frais uniques",
+          "hourly": "À l'heure",
+          "per_session": "Par séance",
+          "pass": "Carte (multi-usage)",
+          "recurring": "Récurrent",
+          "term": "Par trimestre",
+          "package": "Forfait"
+        },
+        "intervals": {
+          "week": "Semaine",
+          "fortnight": "Quinzaine",
+          "month": "Mois",
+          "term": "Trimestre",
+          "year": "Année"
+        },
+        "ledgers": {
+          "xero": "Xero",
+          "quickbooks": "QuickBooks Online",
+          "myob": "MYOB Business"
+        },
+        "sections": {
+          "basics": "Informations de base",
+          "pricing": "Mode de tarification",
+          "volume": "Tarifs dégressifs",
+          "tax": "TVA (GST)",
+          "accounting": "Comptabilité"
+        },
+        "fields": {
+          "name": "Nom",
+          "code": "Code",
+          "category": "Catégorie",
+          "description": "Description",
+          "pricingModel": "Modèle de tarification",
+          "priceInclusive": "Prix (TVA incluse)",
+          "priceExclusive": "Prix (hors TVA)",
+          "unitLabel": "Unité",
+          "minUnits": "Minimum",
+          "incrementUnits": "Arrondi à",
+          "creditCount": "Cours inclus",
+          "creditExpiryDays": "Expire après (jours)",
+          "recurringInterval": "Facturé tous les",
+          "recurringIntervalCount": "Nombre de périodes",
+          "term": "Trimestre",
+          "anyTerm": "N'importe quel trimestre",
+          "included": "Inclus dans ce forfait",
+          "addIncluded": "+ Ajouter un produit inclus",
+          "chooseProduct": "Choisir un produit…",
+          "taxTreatment": "Régime de TVA",
+          "taxRate": "Taux de TVA (%)",
+          "accountCode": "Compte de produits",
+          "itemCode": "Code article",
+          "customCode": "Autre chose…",
+          "otherLedgers": "Des codes différents dans QuickBooks ou MYOB ?",
+          "autoApply": "Appliquer automatiquement"
+        },
+        "hints": {
+          "code": "Votre propre référence. Utilisée sur les factures et comme code article par défaut.",
+          "term": "Laissez vide pour conserver ce prix à chaque trimestre.",
+          "package": "Le prix du forfait est ce que la famille paie. Ce qui est listé ici est ce à quoi il donne droit.",
+          "volume": "À partir de cette quantité, l'unité coûte ce prix. La ligne la plus élevée qui correspond l'emporte.",
+          "itemCode": "Ne renseignez ceci que si le code existe déjà dans votre système comptable — un code article inconnu fait échouer la synchronisation de toute la facture.",
+          "accountingConnected": "Sélectionné depuis votre plan comptable {ledger} en direct.",
+          "accountingOffline": "Connectez un système comptable dans les Paramètres pour choisir dans une liste.",
+          "autoApply": "Quand une famille choisit ces cours, ce prix leur est proposé au lieu du prix de chaque cours.",
+          "comboSaves": "Fait économiser {amount} à une famille par rapport au paiement de chaque cours.",
+          "comboNeverFires": "Ceci coûte autant ou plus que les cours couverts, donc ne s'appliquera jamais. Baissez le prix."
+        },
+        "tiers": {
+          "add": "+ Ajouter un palier",
+          "from": "À partir de",
+          "priceEach": "l'unité coûte",
+          "remove": "Supprimer ce palier",
+          "legacyPercent": "À partir de {from} · {percent} % de remise (configuré précédemment)"
+        },
+        "tax": {
+          "standard": "TVA standard",
+          "zero_rated": "Taux zéro",
+          "exempt": "Sans TVA",
+          "inclusiveBadge": "TTC",
+          "exclusiveBadge": "HT",
+          "zeroRatedBadge": "Taux zéro",
+          "exemptBadge": "Sans TVA",
+          "subtotal": "Sous-total",
+          "tax": "TVA",
+          "total": "Total",
+          "notRegistered": "Ce studio n'est pas assujetti à la TVA, donc rien ici ne facture de TVA. Modifiez cela dans les Paramètres."
+        },
+        "errors": {
+          "incomplete": "Donnez au produit un nom, un code et un prix."
+        },
+        "hoursModeNote": "Votre studio facture aux heures par semaine, donc ces prix ne définissent pas les frais d'inscription. Ils s'appliquent tout de même aux réservations à l'unité."
+      },
+      "tuitionModel": {
+        "title": "Votre mode de facturation",
+        "description": "Choisissez-en un. Tout ce qui suit n'affiche que les réglages réellement utilisés par ce mode.",
+        "saved": "Tarification mise à jour",
+        "badges": {
+          "simplest": "Le plus simple",
+          "studioPro": "Style Studio Pro"
+        },
+        "options": {
+          "per_class": {
+            "name": "Par cours",
+            "body": "Chaque cours a son propre prix. Un danseur inscrit à deux cours paie deux cours.",
+            "example": "Intermédiaire lun {each} + mer {each} = {both}."
+          },
+          "hours": {
+            "name": "Aux heures par semaine",
+            "body": "Un seul prix quel que soit le nombre d'heures par semaine. Vous saisissez tout le tableau — pas de calcul, pas de pourcentage.",
+            "example": "2 heures par semaine = {twoHours}. Une heure de plus, c'est {threeHours}."
+          },
+          "per_class_combos": {
+            "name": "Par cours, avec combinaisons",
+            "body": "Les cours gardent leur propre prix, et vous nommez les combinaisons qui bénéficient d'un prix unique.",
+            "example": "Lun + mer ensemble = {each}, et non {both}."
+          }
+        },
+        "confirm": {
+          "title": "Passer à « {model} » ?",
+          "body": "Cela change la tarification des nouvelles inscriptions. Les factures déjà envoyées ne changent pas.",
+          "betweenTerms": "À changer de préférence entre deux trimestres : les frais déjà payés au cours ce trimestre ne comptent pas dans le tableau horaire, donc la première inscription après le changement sera facturée au tarif plein.",
+          "confirm": "Changer mon mode de facturation",
+          "cancel": "Garder mon réglage actuel",
+          "saving": "Modification…"
+        },
+        "warnings": {
+          "noEndTime": "{count, plural, one {# cours n'a} other {# cours n'ont}} pas d'heure de fin, donc la tarification horaire les compte comme nuls.",
+          "fixInClasses": "Corriger dans Cours"
+        }
+      },
+      "rateCard": {
+        "title": "Votre grille tarifaire horaire",
+        "description": "Ce qu'un danseur paie pour les heures effectuées chaque semaine. Saisissez les totaux — rien ici n'est calculé à partir d'un pourcentage.",
+        "columns": {
+          "hours": "Heures par semaine",
+          "theyPay": "Ils paient"
+        },
+        "addRow": "+ Ajouter une ligne",
+        "removeRow": "Supprimer cette ligne",
+        "overflow": {
+          "label": "Au-delà de la dernière ligne,",
+          "hint": "par heure supplémentaire. Laissez vide pour appliquer la dernière ligne quel que soit le nombre d'heures."
+        },
+        "preview": {
+          "title": "Ce qu'une famille paie",
+          "sibling": "Un deuxième danseur de la famille paie {pct} % de moins — 2,5 h reviendraient à {amount}."
+        },
+        "errors": {
+          "duplicateHours": "Deux lignes ont le même nombre d'heures. Modifiez-en une."
+        },
+        "editProduct": "La TVA et les codes comptables de cette ligne se trouvent sur le produit « {name} ».",
+        "save": "Enregistrer la grille tarifaire",
+        "saving": "Enregistrement…",
+        "saved": "Grille tarifaire enregistrée"
       }
     },
     "accounting": {
@@ -1091,7 +1351,29 @@
         "refundConfirm": "Rembourser {amount} pour {buyer} ? Cela libère le(s) siège(s) et ne peut pas être annulé."
       },
       "cancelConfirm": "Annuler cet événement ? Les détenteurs de billets devront être remboursés manuellement.",
-      "deleteConfirm": "Supprimer ce brouillon d'événement ?"
+      "deleteConfirm": "Supprimer ce brouillon d'événement ?",
+      "scanner": {
+        "title": "Contrôle à l'entrée",
+        "subtitle": "Dirigez la caméra vers chaque billet à l'arrivée des familles. La caméra reste active — aucun appui entre les scans.",
+        "eventLabel": "Quel événement",
+        "startCamera": "Démarrer la caméra",
+        "stopCamera": "Arrêter la caméra",
+        "cameraUnavailable": "Impossible de démarrer la caméra. Vérifiez l'autorisation d'accès du navigateur, ou collez un code de billet ci-dessous.",
+        "manualEntryLabel": "Pas de caméra ? Collez un code de billet",
+        "manualEntryPlaceholder": "Collez le code du QR du billet",
+        "useManualEntry": "Valider ce billet",
+        "invalidPayload": "Cela ne ressemble pas à un billet Olune.",
+        "admitted": "Admis",
+        "alreadyScannedAt": "Déjà scanné à {time}",
+        "scanFailed": "Ce billet n'a pas pu être validé.",
+        "networkError": "Pas de connexion — le scan n'a pas été enregistré. Réessayez.",
+        "recentScans": "Scans récents",
+        "admittedCount": "{count} admis",
+        "guests": "{count, plural, one {# invité} other {# invités}}",
+        "unknownHolder": "Détenteur du billet",
+        "noEventsTitle": "Aucun événement à scanner",
+        "noEventsBody": "Publiez un événement daté d'aujourd'hui ou plus tard et il apparaîtra ici."
+      }
     },
     "leads": {
       "title": "Conduit",
@@ -1116,7 +1398,12 @@
         "trial": "Procès",
         "converted": "Converti",
         "lost": "Perdu"
-      }
+      },
+      "directChannel": "Direct",
+      "campaignTitle": "Campagne : {campaign}",
+      "emailLead": "E-mail",
+      "callLead": "Appeler",
+      "textLead": "SMS"
     },
     "shop": {
       "title": "Boutique de marchandises",
@@ -1140,9 +1427,27 @@
           "customer": "Client",
           "total": "Montant total",
           "status": "Statut",
-          "date": "Date de commande"
+          "date": "Date de commande",
+          "items": "Articles",
+          "fulfilment": "Préparation"
         },
-        "refundConfirm": "Rembourser {amount} pour cette commande ? Cela restaure le stock et ne peut pas être annulé."
+        "refundConfirm": "Rembourser {amount} pour cette commande ? Cela restaure le stock et ne peut pas être annulé.",
+        "toFulfil": "À préparer ({count})",
+        "allFulfilled": "Tout a été remis.",
+        "fulfilment": {
+          "status": {
+            "unfulfilled": "À préparer",
+            "ready": "Prête",
+            "fulfilled": "Remise"
+          },
+          "advance": {
+            "ready": "Marquer prête",
+            "fulfilled": "Remise"
+          },
+          "saving": "Enregistrement…",
+          "reopen": "Rouvrir",
+          "reopenHint": "Remettre cette commande en « prête » si elle a été marquée par erreur"
+        }
       },
       "form": {
         "editProduct": "Modifier le produit",
@@ -1166,8 +1471,8 @@
       "deleteConfirm": "Supprimer « {name} » ? Cela ne peut pas être annulé."
     },
     "advertising": {
-      "title": "Centre de publicité",
-      "subtitle": "Connectez Facebook, Instagram et Telegram en quelques minutes, puis publiez les annonces du studio partout en un seul clic.",
+      "title": "Publications sur les réseaux sociaux",
+      "subtitle": "Connectez Facebook, Instagram et Telegram en quelques minutes, puis publiez vos annonces partout en un clic. Les publications sont organiques : rien ici ne dépense d'argent en publicité.",
       "tabs": {
         "connect": "Connecter",
         "create": "Créer",
@@ -1194,7 +1499,9 @@
         "telegramDescription": "Diffusez des mises à jour de cours, des rappels d'inscription et des nouvelles d'événements aux parents via votre chaîne de studio.",
         "telegramButton": "Configurer Telegram →",
         "telegramChannel": "Chaîne de diffusion",
-        "morePlatforms": "Plus de plates-formes (TikTok)"
+        "morePlatforms": "Plus de plates-formes (TikTok)",
+        "noneConnected": "Aucun compte social connecté pour l'instant.",
+        "manageInSettings": "Gérer les connexions"
       },
       "telegram": {
         "badge": "Configuration du télégramme",
@@ -1248,14 +1555,21 @@
         "generatedCopy": "Copie générée",
         "cta": "Appel à l'action : {cta}",
         "campaignName": "Nom de la campagne",
-        "imageUrl": "URL de l'image (recommandée pour Instagram et Telegram)",
-        "videoUrl": "URL de la vidéo (obligatoire pour TikTok)",
+        "imageUrl": "Image (recommandée pour Instagram et Telegram)",
+        "videoUrl": "Vidéo (obligatoire pour TikTok)",
         "saveDraft": "Enregistrer comme brouillon",
         "saveAndPublish": "Enregistrez et publiez maintenant",
         "untitledCampaign": "Campagne sans titre",
         "livePreview": "Aperçu en direct",
         "showPreview": "Afficher l'aperçu",
-        "hidePreview": "Masquer l'aperçu"
+        "hidePreview": "Masquer l'aperçu",
+        "copyRequired": "Ajoutez un titre ou un texte, ou générez-le d'abord avec l'IA.",
+        "headlinePlaceholder": "Titre",
+        "bodyPlaceholder": "Corps du texte",
+        "ctaPlaceholder": "Appel à l'action",
+        "generatedHint": "Modifiez les champs ci-dessus, puis enregistrez ou publiez.",
+        "saved": "Campagne enregistrée.",
+        "published": "Campagne publiée."
       },
       "campaigns": {
         "emptyTitle": "Aucune campagne pour l'instant",
@@ -1280,6 +1594,16 @@
         "noSeoTitle": "Pas de titre SEO",
         "noMetaDescription": "Pas de méta description",
         "aiModernize": "L'IA se modernise"
+      },
+      "media": {
+        "dropImage": "Déposez une photo, ou cliquez pour choisir",
+        "dropVideo": "Déposez une vidéo, ou cliquez pour choisir",
+        "uploading": "Envoi en cours…",
+        "replace": "Remplacer",
+        "remove": "Supprimer",
+        "uploadFailed": "Échec de l'envoi.",
+        "maxSize": "Jusqu'à {size}",
+        "videoHint": "MP4, MOV ou WebM, jusqu'à 100 Mo"
       }
     },
     "email": {
@@ -1343,7 +1667,8 @@
       "sendsFrom": "Envoyé depuis {email}",
       "threadInfo": "Fil de discussion",
       "unreadCount": "{count} non lus",
-      "viewProfile": "Voir le profil"
+      "viewProfile": "Voir le profil",
+      "connectInSettings": "Connecter une boîte mail dans les Paramètres"
     },
     "messages": {
       "title": "Messagerie",
@@ -1357,7 +1682,11 @@
       "placeholder": "Message… (Entrez pour envoyer)",
       "send": "Envoyer",
       "internalChannel": "Canal interne — visible par les administrateurs et ce parent dans leurs notifications",
-      "parentRole": "mère"
+      "parentRole": "mère",
+      "parentEnquiries": "Demandes des parents",
+      "otherContacts": "Autres contacts",
+      "loadFailed": "Impossible de charger les messages.",
+      "sendFailed": "Le message n'a pas pu être envoyé."
     },
     "support": {
       "title": "Prise en charge de Olune",
@@ -1431,7 +1760,72 @@
       "openDomainWizard": "Ouvrir l'assistant de configuration du domaine →",
       "brandingTitle": "Image de marque",
       "brandingDescription": "Logo, couleurs et apparence de votre studio sur le portail et le site web.",
-      "openBranding": "Ouvrir l'image de marque"
+      "openBranding": "Ouvrir l'image de marque",
+      "registration": "Inscription publique",
+      "registrationDescription": "Permettre aux familles de rejoindre votre studio en ligne depuis la page /join de votre sous-domaine.",
+      "registrationEnabled": "Autoriser l'inscription publique",
+      "registrationRole": {
+        "parent": "Parents / tuteurs",
+        "student": "Élèves adultes (18 ans et +)"
+      },
+      "registrationJoinUrl": "Page d'inscription :",
+      "saveRegistration": "Enregistrer les paramètres d'inscription",
+      "embed": {
+        "title": "Liens du portail et intégration",
+        "description": "Utilisez le portail parents/élèves sans le site Olune. Placez ces liens — ou le bouton prêt à l'emploi — sur votre propre site, votre bio sociale ou votre newsletter. Ils ouvrent le portail dans un nouvel onglet.",
+        "loginLabel": "Connexion des membres",
+        "loginHelp": "Pour les familles qui ont déjà un compte.",
+        "joinLabel": "Inscription des nouvelles familles",
+        "joinHelp": "Pour l'inscription de nouvelles familles. Nécessite que l'inscription publique (ci-dessus) soit activée.",
+        "joinDisabledNote": "Activez l'inscription publique ci-dessus pour utiliser ce lien.",
+        "linkHeading": "Lien",
+        "copyLink": "Copier le lien",
+        "snippetHeading": "Bouton pour votre site web",
+        "snippetHelp": "Collez ce code HTML là où vous pouvez ajouter du code (la plupart des créateurs de sites proposent un bloc « Intégration / HTML »).",
+        "copySnippet": "Copier le HTML",
+        "qrHeading": "QR code",
+        "qrHelp": "Pour les affiches, les flyers ou le panneau d'affichage du studio.",
+        "downloadQr": "Télécharger le QR code",
+        "copied": "Copié",
+        "buttonTextLogin": "Connexion membre",
+        "buttonTextJoin": "Rejoindre notre studio",
+        "iframeNote": "Remarque : le portail ne peut pas être placé dans une iframe (pour la sécurité de la connexion). Utilisez un lien ou un bouton qui l'ouvre dans un nouvel onglet."
+      },
+      "nav": {
+        "profile": "Profil",
+        "connections": "Connexions",
+        "billing": "Facturation",
+        "registration": "Inscription",
+        "domains": "Domaines",
+        "account": "Compte"
+      },
+      "account": {
+        "title": "Compte",
+        "description": "Se déconnecter d'Olune sur cet appareil."
+      },
+      "connections": {
+        "title": "Connexions",
+        "description": "Comptabilité, paiements, e-mail, réseaux sociaux et tout ce avec quoi Olune communique — géré au même endroit.",
+        "connected": "Connecté",
+        "needAttention": "Nécessite une action",
+        "available": "Dans le catalogue",
+        "manage": "Gérer les connexions"
+      },
+      "tax": {
+        "title": "TVA (GST)",
+        "description": "Comment vos prix sont indiqués. Cela s'applique à tous les produits, car une facture ne peut être que d'un type ou de l'autre.",
+        "registered": "Ce studio est assujetti à la TVA",
+        "pricing": "Les prix sont saisis",
+        "inclusive": "TVA incluse",
+        "exclusive": "Hors TVA",
+        "pricingHint": "La TVA incluse est l'usage courant en Nouvelle-Zélande — le prix affiché est celui que les familles paient.",
+        "gstNumber": "Numéro de TVA",
+        "save": "Enregistrer les paramètres de TVA",
+        "saving": "Enregistrement…",
+        "saved": "Enregistré",
+        "productsHint": "Les articles à taux zéro ou exonérés se règlent par produit dans",
+        "productsLink": "Finances → Produits"
+      }
     },
     "branding": {
       "title": "Apparence",
@@ -1479,9 +1873,6 @@
       "ariaLabel": "Alertes",
       "title": "Alertes",
       "empty": "Tout est clair, rien de nouveau !"
-    },
-    "placeholder": {
-      "comingSoon": "À venir"
     },
     "staff": {
       "title": "Personnel",
@@ -1581,28 +1972,45 @@
       }
     },
     "passes": {
-      "searchClass": "Search classes",
-      "searchClassPlaceholder": "e.g. Adult Ballet",
-      "noClasses": "No classes found.",
-      "occurrenceDate": "Class date",
-      "redeeming": "Redeeming…",
-      "confirmRedeem": "Redeem pass",
-      "scanTitle": "Redeem a class pass",
-      "scanSubtitle": "Scan the student's QR code, or enter it manually.",
-      "startCamera": "Start camera",
-      "stopCamera": "Stop camera",
-      "cameraUnavailable": "Camera unavailable. Use manual entry below.",
-      "invalidPayload": "That doesn't look like a valid pass code.",
-      "manualEntryLabel": "Manual entry",
-      "manualEntryPlaceholder": "Paste the pass QR payload here",
-      "useManualEntry": "Use this code",
-      "pickOccurrence": "Which class is this for?",
-      "cancel": "Cancel",
-      "redeemedFor": "Redeemed for {className}",
-      "scanAnother": "Scan another pass",
-      "redeemFailed": "Redemption failed",
-      "networkError": "Network error. Please try again.",
-      "classesLoadFailed": "Could not load classes."
+      "searchClass": "Rechercher un cours",
+      "searchClassPlaceholder": "ex. Ballet adultes",
+      "noClasses": "Aucun cours trouvé.",
+      "occurrenceDate": "Date du cours",
+      "redeeming": "Validation…",
+      "confirmRedeem": "Valider la carte",
+      "scanTitle": "Valider une carte de cours",
+      "scanSubtitle": "Scannez le QR code de l'élève, ou saisissez-le manuellement.",
+      "startCamera": "Activer la caméra",
+      "stopCamera": "Arrêter la caméra",
+      "cameraUnavailable": "Caméra indisponible. Utilisez la saisie manuelle ci-dessous.",
+      "invalidPayload": "Cela ne ressemble pas à un code de carte valide.",
+      "manualEntryLabel": "Saisie manuelle",
+      "manualEntryPlaceholder": "Collez ici le contenu du QR code",
+      "useManualEntry": "Utiliser ce code",
+      "pickOccurrence": "Pour quel cours ?",
+      "cancel": "Annuler",
+      "redeemedFor": "Validée pour {className}",
+      "scanAnother": "Scanner une autre carte",
+      "redeemFailed": "Échec de la validation",
+      "networkError": "Erreur réseau. Veuillez réessayer.",
+      "classesLoadFailed": "Impossible de charger les cours."
+    },
+    "badges": {
+      "title": "Catalogue de badges",
+      "subtitle": "{visible} badges sur {total} visibles par votre studio",
+      "addCustom": "Ajouter un badge personnalisé",
+      "cancel": "Annuler",
+      "customTag": "Personnalisé",
+      "delete": "Supprimer",
+      "show": "Afficher",
+      "hide": "Masquer",
+      "iconLabel": "Emoji",
+      "nameLabel": "Nom du badge",
+      "descLabel": "Description (facultatif)",
+      "xpLabel": "XP",
+      "forStudent": "Pour les élèves",
+      "forParent": "Pour les parents",
+      "create": "Créer le badge"
     }
   }
 }

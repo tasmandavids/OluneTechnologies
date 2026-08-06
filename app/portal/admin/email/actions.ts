@@ -112,6 +112,7 @@ export async function summarizeThreadAction(threadId: string): Promise<ActionRes
   const { summarizeConversation } = await import("@/lib/email/summarize");
   const summary = await summarizeConversation({
     subject: thread.subject,
+    studioId: ctx.studioId,
     participants: thread.participant_addresses ?? [],
     messages: (messages ?? []).map((m) => ({
       fromName: m.from_name,

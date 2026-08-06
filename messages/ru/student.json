@@ -11,34 +11,35 @@
       "myClasses": "Мои занятия · записано: {count}",
       "noEnrolments": "Активных записей нет.",
       "noEnrolmentsHint": "Администратор студии назначит вас на занятия.",
-      "withTeacher": "с {name}"
+      "withTeacher": "с {name}",
+      "viewProgress": "Посмотреть прогресс и сертификаты →"
     },
     "classPass": {
-      "title": "Single class pass",
-      "subtitle": "Any single adult ballet class",
-      "allSet": "🎉 You're all set!",
-      "qrAlt": "Class pass QR code",
-      "qrHint": "Show this QR code at the studio to redeem your class.",
-      "done": "Done",
-      "payAmount": "Pay {amount}",
-      "back": "Back",
-      "description": "One pass, good for any single adult ballet class. Show the QR code at the studio and staff will check you in.",
-      "total": "Total",
-      "processing": "Processing…",
-      "buyPass": "Buy pass →",
-      "cardAtCheckout": "Card payment is collected at checkout.",
-      "purchaseFailed": "Purchase failed",
-      "paymentStartFailed": "Could not start payment. Please try again.",
-      "networkError": "Network error. Please try again.",
-      "viewQr": "View QR",
-      "buyAnother": "Buy another pass",
-      "yourPass": "Your pass",
-      "purchasedOn": "Purchased {date}",
-      "myPasses": "My Passes",
-      "myPassesSubtitle": "Tap a pass to show its QR code at the studio.",
-      "passesHeldCount": "{count, plural, one {# pass held} other {# passes held}}",
-      "viewPasses": "View →",
-      "noPassesYet": "No passes yet"
+      "title": "Разовый абонемент",
+      "subtitle": "Любое одно занятие балетом для взрослых",
+      "allSet": "🎉 Всё готово!",
+      "qrAlt": "QR-код абонемента",
+      "qrHint": "Покажите этот QR-код в студии, чтобы использовать занятие.",
+      "done": "Готово",
+      "payAmount": "Оплатить {amount}",
+      "back": "Назад",
+      "description": "Один абонемент на любое занятие балетом для взрослых. Покажите QR-код в студии, и администратор отметит ваш приход.",
+      "total": "Итого",
+      "processing": "Обработка…",
+      "buyPass": "Купить абонемент →",
+      "cardAtCheckout": "Оплата картой производится при оформлении заказа.",
+      "purchaseFailed": "Не удалось совершить покупку",
+      "paymentStartFailed": "Не удалось начать оплату. Попробуйте ещё раз.",
+      "networkError": "Ошибка сети. Попробуйте ещё раз.",
+      "viewQr": "Показать QR-код",
+      "buyAnother": "Купить ещё абонемент",
+      "yourPass": "Ваш абонемент",
+      "purchasedOn": "Куплен {date}",
+      "myPasses": "Мои абонементы",
+      "myPassesSubtitle": "Нажмите на абонемент, чтобы показать его QR-код в студии.",
+      "passesHeldCount": "{count, plural, one {# абонемент} few {# абонемента} many {# абонементов} other {# абонементов}}",
+      "viewPasses": "Посмотреть →",
+      "noPassesYet": "Абонементов пока нет"
     },
     "completeProfile": {
       "heading": "Finish setting up your account",
@@ -47,6 +48,11 @@
       "birthdayLabel": "Date of birth",
       "saving": "Saving…",
       "continue": "Continue"
+    },
+    "progress": {
+      "back": "← Назад к расписанию",
+      "unnamedStudent": "Ученик",
+      "emptyProgress": "Прогресс пока не отмечен. Преподаватель обновит эту страницу, когда вы достигнете новых результатов."
     }
   }
 }

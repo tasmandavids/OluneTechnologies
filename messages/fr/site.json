@@ -698,11 +698,14 @@
         "copy": "Copier"
       },
       "continue": "Continuer",
-      "back": "Retour"
+      "back": "Retour",
+      "verification": {
+        "title": "Un dernier enregistrement pour prouver que ce domaine vous appartient",
+        "note": "Ajoutez-le en plus de l'enregistrement ci-dessus, puis vérifiez à nouveau."
+      }
     },
     "urlBanner": {
       "title": "URL publique de votre site web",
-      "openPreview": "Ouvrez {url} pour prévisualiser ce que voient les familles.",
       "localhostNote": "Les pages sur localhost simple sont la plateforme Olune, pas le site de votre studio.",
       "connectDomain": "Connecter votre domaine →",
       "openPreviewBefore": "Ouvrez",

@@ -120,8 +120,39 @@ export async function saveApiKeyConnection(input: {
 
   if (writeError) return { ok: false, error: writeError.message };
 
+  // Prove the key works by using it, rather than storing it and letting the
+  // studio find out at the next campaign. A failure here is reported on the
+  // card, not returned — the credentials did save.
+  if (provider.id === "mailchimp") {
+    const { syncStudioAudience } = await import("@/lib/integrations/mailchimp");
+    await syncStudioAudience(supabase, studioId);
+  }
+
   revalidateConnections();
   return { ok: true };
+}
+
+/**
+ * Push the studio roll into Mailchimp on demand. Also runs automatically when
+ * the connection is first saved.
+ */
+export async function syncMailchimpAudience(): Promise<
+  { ok: true; created: number; updated: number; skipped: number } | { ok: false; error: string }
+> {
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Admin access required" };
+
+  const { syncStudioAudience } = await import("@/lib/integrations/mailchimp");
+  const result = await syncStudioAudience(supabase, studioId);
+
+  revalidateConnections();
+  if (!result.ok) return result;
+  return {
+    ok: true,
+    created: result.created,
+    updated: result.updated,
+    skipped: result.skipped,
+  };
 }
 
 /**

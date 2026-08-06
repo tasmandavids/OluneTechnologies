@@ -34,6 +34,40 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # Missing translation keys fall back to English silently — a locale can
+      # drift for months without anyone noticing. This asserts key parity,
+      # valid ICU, matching ICU arguments, Russian few/many plural categories,
+      # and that critical namespaces (common, nav, auth, …) aren't still
+      # holding copy-pasted English.
+      - name: i18n check
+        run: npm run check:i18n
+
+      # A build failure currently reaches Vercel unblocked — typecheck and lint
+      # don't catch bad metadataBase URLs, invalid next.config values, or
+      # server/client boundary violations that only surface at build time.
+      # (We ate a total outage from exactly that in June: commit 753f040.)
+      #
+      # Real secrets are used when configured; otherwise well-formed stubs let
+      # the build run on forks and before secrets are set. The stubs must be
+      # valid absolute URLs — next.config.ts parses the Supabase URL for the
+      # next/image allowlist and APP_URL becomes the metadataBase.
+      - name: Build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://stub.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'stub-anon-key' }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'https://olune.app' }}
+          NEXT_PUBLIC_ROOT_DOMAIN: ${{ secrets.NEXT_PUBLIC_ROOT_DOMAIN || 'olune.app' }}
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_stub' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'stub-service-role-key' }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_stub' }}
+        run: npm run build
+
+      # Fails the build on a known-vulnerable *production* dependency. Dev-only
+      # advisories (eslint toolchain and friends) are deliberately excluded —
+      # they never ship to a user.
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
   # Every merge to main: apply pending migrations + refresh the test admin seed.
   migrate-and-seed:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

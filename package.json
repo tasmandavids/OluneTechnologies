@@ -11,6 +11,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit --incremental false",
+    "check:i18n": "node scripts/check-i18n.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "INTEGRATION_TEST=1 node --env-file=.env.local ./node_modules/vitest/vitest.mjs run --config vitest.integration.config.ts",
@@ -43,7 +44,7 @@
     "html5-qrcode": "^2.3.8",
     "imapflow": "^1.4.2",
     "immer": "^11.1.8",
-    "next": "^15.1.0",
+    "next": "^15.5.22",
     "next-intl": "^4.13.0",
     "nodemailer": "^9.0.1",
     "passkit-generator": "^3.5.7",
@@ -61,7 +62,11 @@
     "zustand": "^5.0.14"
   },
   "overrides": {
-    "postcss": "^8.5.10"
+    "postcss": "^8.5.26",
+    "sharp": "^0.35.3",
+    "joi": "^17.13.4",
+    "ip-address": "^10.4.0",
+    "js-yaml": "^4.3.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",

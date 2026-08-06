@@ -11,34 +11,35 @@
       "myClasses": "Mes cours · {count} inscrits",
       "noEnrolments": "Aucune inscription active.",
       "noEnrolmentsHint": "L'administrateur du studio vous assignera des cours.",
-      "withTeacher": "avec {name}"
+      "withTeacher": "avec {name}",
+      "viewProgress": "Voir la progression et les certificats →"
     },
     "classPass": {
-      "title": "Single class pass",
-      "subtitle": "Any single adult ballet class",
-      "allSet": "🎉 You're all set!",
-      "qrAlt": "Class pass QR code",
-      "qrHint": "Show this QR code at the studio to redeem your class.",
-      "done": "Done",
-      "payAmount": "Pay {amount}",
-      "back": "Back",
-      "description": "One pass, good for any single adult ballet class. Show the QR code at the studio and staff will check you in.",
+      "title": "Carte cours à l'unité",
+      "subtitle": "Un cours de ballet adultes au choix",
+      "allSet": "🎉 Tout est prêt !",
+      "qrAlt": "QR code de la carte de cours",
+      "qrHint": "Présentez ce QR code au studio pour utiliser votre cours.",
+      "done": "Terminé",
+      "payAmount": "Payer {amount}",
+      "back": "Retour",
+      "description": "Une carte, valable pour un cours de ballet adultes au choix. Présentez le QR code au studio et l'équipe vous enregistrera.",
       "total": "Total",
-      "processing": "Processing…",
-      "buyPass": "Buy pass →",
-      "cardAtCheckout": "Card payment is collected at checkout.",
-      "purchaseFailed": "Purchase failed",
-      "paymentStartFailed": "Could not start payment. Please try again.",
-      "networkError": "Network error. Please try again.",
-      "viewQr": "View QR",
-      "buyAnother": "Buy another pass",
-      "yourPass": "Your pass",
-      "purchasedOn": "Purchased {date}",
-      "myPasses": "My Passes",
-      "myPassesSubtitle": "Tap a pass to show its QR code at the studio.",
-      "passesHeldCount": "{count, plural, one {# pass held} other {# passes held}}",
-      "viewPasses": "View →",
-      "noPassesYet": "No passes yet"
+      "processing": "Traitement…",
+      "buyPass": "Acheter la carte →",
+      "cardAtCheckout": "Le paiement par carte est encaissé au moment du règlement.",
+      "purchaseFailed": "Échec de l'achat",
+      "paymentStartFailed": "Impossible de démarrer le paiement. Veuillez réessayer.",
+      "networkError": "Erreur réseau. Veuillez réessayer.",
+      "viewQr": "Voir le QR code",
+      "buyAnother": "Acheter une autre carte",
+      "yourPass": "Votre carte",
+      "purchasedOn": "Achetée le {date}",
+      "myPasses": "Mes cartes",
+      "myPassesSubtitle": "Touchez une carte pour afficher son QR code au studio.",
+      "passesHeldCount": "{count, plural, one {# carte} other {# cartes}}",
+      "viewPasses": "Voir →",
+      "noPassesYet": "Aucune carte pour l'instant"
     },
     "completeProfile": {
       "heading": "Finish setting up your account",
@@ -47,6 +48,11 @@
       "birthdayLabel": "Date of birth",
       "saving": "Saving…",
       "continue": "Continue"
+    },
+    "progress": {
+      "back": "← Retour au planning",
+      "unnamedStudent": "Élève",
+      "emptyProgress": "Aucune progression enregistrée pour l'instant. Votre professeur la mettra à jour à chaque nouvelle étape franchie."
     }
   }
 }

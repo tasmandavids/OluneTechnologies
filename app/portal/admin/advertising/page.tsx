@@ -54,7 +54,6 @@ export default async function AdvertisingPage({
     imageUrl: r.image_url as string | null,
     videoUrl: r.video_url as string | null,
     targetUrl: r.target_url as string | null,
-    budgetCents: r.budget_cents as number | null,
     scheduledAt: r.scheduled_at as string | null,
     publishedAt: r.published_at as string | null,
     platformIds: (r.platform_ids ?? {}) as Record<string, string>,

@@ -1351,7 +1351,29 @@
         "refundConfirm": "Refund {amount} for {buyer}? This frees the seat(s) and cannot be undone."
       },
       "cancelConfirm": "Cancel this event? Ticket holders will need to be refunded manually.",
-      "deleteConfirm": "Delete this draft event?"
+      "deleteConfirm": "Delete this draft event?",
+      "scanner": {
+        "title": "Door check-in",
+        "subtitle": "Point the camera at each ticket as families arrive. The camera stays on — no tapping between scans.",
+        "eventLabel": "Which event",
+        "startCamera": "Start camera",
+        "stopCamera": "Stop camera",
+        "cameraUnavailable": "We couldn't start the camera. Check the browser's camera permission, or paste a ticket code below.",
+        "manualEntryLabel": "No camera? Paste a ticket code",
+        "manualEntryPlaceholder": "Paste the code from the ticket's QR",
+        "useManualEntry": "Check in this ticket",
+        "invalidPayload": "That doesn't look like an Olune ticket.",
+        "admitted": "Admitted",
+        "alreadyScannedAt": "Already scanned at {time}",
+        "scanFailed": "That ticket couldn't be checked in.",
+        "networkError": "No connection — the scan wasn't recorded. Try again.",
+        "recentScans": "Recent scans",
+        "admittedCount": "{count} admitted",
+        "guests": "{count, plural, one {# guest} other {# guests}}",
+        "unknownHolder": "Ticket holder",
+        "noEventsTitle": "No events to scan",
+        "noEventsBody": "Publish an event with a date today or later and it will appear here."
+      }
     },
     "leads": {
       "title": "Leads",
@@ -1376,7 +1398,12 @@
         "trial": "Trial",
         "converted": "Converted",
         "lost": "Lost"
-      }
+      },
+      "directChannel": "Direct",
+      "campaignTitle": "Campaign: {campaign}",
+      "emailLead": "Email",
+      "callLead": "Call",
+      "textLead": "Text"
     },
     "shop": {
       "title": "Merchandise Shop",
@@ -1400,9 +1427,27 @@
           "customer": "Customer",
           "total": "Total",
           "status": "Status",
-          "date": "Date"
+          "date": "Date",
+          "items": "Items",
+          "fulfilment": "Fulfilment"
         },
-        "refundConfirm": "Refund {amount} for this order? This restores stock and cannot be undone."
+        "refundConfirm": "Refund {amount} for this order? This restores stock and cannot be undone.",
+        "toFulfil": "To fulfil ({count})",
+        "allFulfilled": "Everything's been handed over.",
+        "fulfilment": {
+          "status": {
+            "unfulfilled": "To prepare",
+            "ready": "Ready",
+            "fulfilled": "Handed over"
+          },
+          "advance": {
+            "ready": "Mark ready",
+            "fulfilled": "Handed over"
+          },
+          "saving": "Saving…",
+          "reopen": "Reopen",
+          "reopenHint": "Put this order back to ready if it was marked by mistake"
+        }
       },
       "form": {
         "editProduct": "Edit Product",
@@ -1426,8 +1471,8 @@
       "deleteConfirm": "Delete \"{name}\"? This cannot be undone."
     },
     "advertising": {
-      "title": "Advertising Hub",
-      "subtitle": "Connect Facebook, Instagram & Telegram in minutes — then publish studio announcements everywhere with one click.",
+      "title": "Social posting",
+      "subtitle": "Connect Facebook, Instagram & Telegram in minutes — then publish studio announcements everywhere with one click. Posts are organic; nothing here spends money on ads.",
       "tabs": {
         "connect": "Connect",
         "create": "Create",
@@ -1510,8 +1555,8 @@
         "generatedCopy": "Generated copy",
         "cta": "CTA: {cta}",
         "campaignName": "Campaign name",
-        "imageUrl": "Image URL (recommended for Instagram & Telegram)",
-        "videoUrl": "Video URL (required for TikTok)",
+        "imageUrl": "Image (recommended for Instagram & Telegram)",
+        "videoUrl": "Video (required for TikTok)",
         "saveDraft": "Save as draft",
         "saveAndPublish": "Save & publish now",
         "untitledCampaign": "Untitled campaign",
@@ -1549,6 +1594,16 @@
         "noSeoTitle": "No SEO title",
         "noMetaDescription": "No meta description",
         "aiModernize": "AI modernize"
+      },
+      "media": {
+        "dropImage": "Drop a photo, or click to choose",
+        "dropVideo": "Drop a video, or click to choose",
+        "uploading": "Uploading…",
+        "replace": "Replace",
+        "remove": "Remove",
+        "uploadFailed": "Upload failed.",
+        "maxSize": "Up to {size}",
+        "videoHint": "MP4, MOV or WebM, up to 100 MB"
       }
     },
     "email": {
@@ -1818,9 +1873,6 @@
       "ariaLabel": "Notifications",
       "title": "Notifications",
       "empty": "All clear — nothing new!"
-    },
-    "placeholder": {
-      "comingSoon": "Coming soon"
     },
     "staff": {
       "title": "Staff",

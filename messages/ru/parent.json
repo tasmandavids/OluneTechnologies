@@ -25,7 +25,44 @@
         "overdue": "Просрочен",
         "draft": "Черновик",
         "void": "Аннулирован"
-      }
+      },
+      "viewProgress": "Посмотреть прогресс и сертификаты",
+      "contactBilling": "написать студии по вопросам оплаты",
+      "contactStudio": "написать студии",
+      "adultTitle": "Мой аккаунт",
+      "addChild": "+ Добавить танцора",
+      "addChildTitle": "Добавить танцора",
+      "addChildDescription": "Создайте профиль для своего ребёнка и привяжите его к своему аккаунту.",
+      "childNamePlaceholder": "Полное имя",
+      "childEmailOptional": "Эл. почта (необязательно — отправит приглашение для входа)",
+      "cancelAddChild": "Отмена",
+      "addingChild": "Добавление…",
+      "addChildSubmit": "Добавить танцора",
+      "inviteCoParent": "Пригласить члена семьи",
+      "inviteCoParentTitle": "Пригласить второго родителя",
+      "inviteCoParentDescription": "Пригласите второго родителя или опекуна в свою семью — он увидит тех же танцоров, те же счета и то же расписание. Новые профили танцоров не создаются.",
+      "coParentEmailPlaceholder": "Эл. почта второго родителя",
+      "coParentRelationshipLabel": "Кем приходится вашему танцору",
+      "relationshipMother": "Мать",
+      "relationshipFather": "Отец",
+      "relationshipGuardian": "Опекун",
+      "relationshipOther": "Другое",
+      "cancelInviteCoParent": "Отмена",
+      "closeInviteCoParent": "Готово",
+      "invitingCoParent": "Отправка…",
+      "inviteCoParentSubmit": "Отправить приглашение",
+      "inviteCoParentSent": "Приглашение отправлено! Он получит письмо для настройки входа.",
+      "inviteCoParentLinked": "У этого адреса уже есть аккаунт — мы привязали его к вашей семье.",
+      "payNow": "Оплатить",
+      "payInvoice": "Оплатить счёт",
+      "preparingPayment": "Подготовка…",
+      "continueToPay": "Перейти к оплате",
+      "payFailed": "Не удалось начать оплату.",
+      "cancelPay": "Отмена",
+      "invoicePayment": "Счёт",
+      "tableActions": "Действия",
+      "viewBilling": "Счета и платежи",
+      "viewSchedule": "Посмотреть расписание на неделю"
     },
     "shop": {
       "title": "Магазин студии",
@@ -149,7 +186,19 @@
       "multipleClasses": "{count} classes",
       "done": "Готово",
       "payMonthlyWithAmount": "Помесячно · {amount}/мес",
-      "morePaymentOptions": "Другие способы оплаты"
+      "morePaymentOptions": "Другие способы оплаты",
+      "payMonthly": "Платить ежемесячно (3 платежа)",
+      "termPayTitle": "Ежемесячная оплата за семестр",
+      "termInstallmentProgress": "Платёж {current} из {total} · всего по счёту {accountTotal}",
+      "termAccountTotalHint": "С учётом других неоплаченных счетов общая сумма по вашему аккаунту составляет {total}.",
+      "termMonthlyOptionHint": "Или разбейте на {count} ежемесячных платежей от {amount} (включая все неоплаченные счета по вашему аккаунту).",
+      "termPayNowHint": "Это первый ежемесячный платёж. Остальные будут начисляться каждый месяц на странице «Счета и платежи».",
+      "termPaidHint": "Первый платёж на {amount} получен. Всего {count} ежемесячных платежей — остальные можно внести в любой момент в разделе «Счета и платежи».",
+      "hoursPerWeek": "{hours} в неделю",
+      "alreadyInvoiced": "{amount} уже выставлено",
+      "alreadyInvoicedThisTerm": "Уже выставлено в этом семестре",
+      "siblingDiscount": "Семейная скидка",
+      "siblingDiscountApplied": "Семейная скидка −{amount}"
     },
     "email": {
       "title": "Почта студии",
@@ -194,7 +243,8 @@
     },
     "scheduleViews": {
       "family": "Моя семья",
-      "studio": "Вся студия"
+      "studio": "Вся студия",
+      "bookPrivateLesson": "Записаться на индивидуальное занятие"
     },
     "billing": {
       "summaryBand": {
@@ -206,6 +256,141 @@
         "paid": "Оплачено {amount}",
         "total": "Всего {amount}",
         "nextInstalment": "Следующий платёж {amount} — {date}"
+      },
+      "title": "Счета и платежи",
+      "subtitle": "Оплачивайте счета, просматривайте квитанции и управляйте автоплатежом за занятия.",
+      "backToHub": "← Семейный раздел",
+      "outstanding": "К оплате",
+      "totalPaid": "Всего оплачено",
+      "invoiceCount": "Счета",
+      "invoicesTitle": "Счета",
+      "noInvoices": "Счетов пока нет.",
+      "paymentsTitle": "История платежей",
+      "noPayments": "Платежи пока не зарегистрированы.",
+      "ordersTitle": "Заказы в магазине",
+      "payNow": "Оплатить",
+      "managePaymentMethods": "Управление способами оплаты",
+      "openingPortal": "Открытие…",
+      "portalFailed": "Не удалось открыть платёжный портал. Повторите попытку или свяжитесь со студией.",
+      "stripeNotConfigured": "Онлайн-оплата для этой студии пока не настроена. Свяжитесь со студией, чтобы оплатить другим способом.",
+      "contactStudioBilling": "Вопросы по счёту?",
+      "contactStudioBillingLink": "Написать студии по вопросам оплаты",
+      "termPlanTitle": "Оплатите семестр тремя ежемесячными платежами",
+      "termPlanIntro": "Разделите задолженность {total} на {count} ежемесячных платежей примерно по {installment}. Все неоплаченные счета по вашему аккаунту объединяются.",
+      "termPlanActiveHint": "У вас действует план оплаты (оплачено платежей: {paid} из {total}). Следующий платёж: {next}.",
+      "startTermPlan": "Внести первый платёж",
+      "payNextInstallment": "Внести следующий платёж",
+      "termPayTitle": "Ежемесячная оплата за семестр",
+      "termPaySubtitle": "Ваши неоплаченные счета объединяются и распределяются на семестр.",
+      "termPayExplain": "Мы подсчитаем всё, что числится по вашему аккаунту, и безопасно спишем следующий ежемесячный платёж с карты.",
+      "termInstallmentProgress": "Платёж {current} из {total} · всего по счёту {accountTotal}",
+      "continueTermPay": "Перейти к оплате",
+      "preparingTermPay": "Подготовка…",
+      "cancelTermPay": "Отмена",
+      "termPayFailed": "Не удалось запустить план оплаты. Повторите попытку или свяжитесь со студией.",
+      "invoiceFallback": "Счёт",
+      "table": {
+        "number": "№ счёта",
+        "issued": "Выставлен",
+        "student": "Танцор",
+        "amount": "Сумма",
+        "due": "Срок оплаты",
+        "status": "Статус",
+        "actions": "Действия"
+      },
+      "paymentsTable": {
+        "date": "Дата",
+        "amount": "Сумма",
+        "invoice": "Счёт"
+      },
+      "ordersTable": {
+        "date": "Дата",
+        "amount": "Сумма",
+        "status": "Статус"
+      },
+      "invoiceStatus": {
+        "paid": "Оплачен",
+        "sent": "Отправлен",
+        "overdue": "Просрочен",
+        "draft": "Черновик",
+        "void": "Аннулирован",
+        "refunded": "Возвращён"
+      }
+    },
+    "childProgress": {
+      "back": "← Назад в семейный раздел",
+      "unnamedDancer": "Танцор без имени",
+      "emptyProgress": "Прогресс пока не отмечен. Преподаватель будет обновлять эту страницу по мере успехов вашего танцора."
+    },
+    "chat": {
+      "title": "Чат студии",
+      "subtitle": "Свяжитесь с администрацией студии или преподавателями вашего ребёнка.",
+      "studioSection": "Администрация студии",
+      "teachersSection": "Ваши преподаватели",
+      "studioAdmin": "Администрация студии",
+      "selectPrompt": "Выберите тему",
+      "selectDescription": "Вопросы оплаты, пропусков и общие темы адресуются администрации. Также вы можете написать преподавателям напрямую.",
+      "noContacts": "Чат пока недоступен — пожалуйста, свяжитесь со студией по электронной почте.",
+      "youPrefix": "Вы: ",
+      "today": "Сегодня",
+      "yesterday": "Вчера",
+      "placeholder": "Напишите сообщение… (Enter — отправить)",
+      "teacherPlaceholder": "Написать: {name}…",
+      "send": "Отправить",
+      "noMessages": "Сообщений пока нет.",
+      "sayHello": "Начните разговор с {name}.",
+      "loadFailed": "Не удалось загрузить сообщения.",
+      "sendFailed": "Не удалось отправить сообщение.",
+      "internalChannel": "Сообщения безопасно передаются команде студии.",
+      "parentRole": "родитель",
+      "topics": {
+        "billing": {
+          "label": "Счета и платежи",
+          "hint": "Счета, платежи, возвраты",
+          "subtitle": "Вопрос по оплате",
+          "placeholder": "У меня вопрос по счёту или платежу…"
+        },
+        "absence": {
+          "label": "Сообщить о пропуске",
+          "hint": "Предупредите нас, когда танцор пропустит занятие",
+          "subtitle": "Уведомление о пропуске",
+          "placeholder": "Мой танцор пропустит занятие…"
+        },
+        "general": {
+          "label": "Общий вопрос",
+          "hint": "Запись, расписание и всё остальное",
+          "subtitle": "Общий запрос",
+          "placeholder": "У меня вопрос о…"
+        }
+      }
+    },
+    "schedule": {
+      "title": "Расписание семьи",
+      "subtitle": "Еженедельные занятия и новости студии для ваших танцоров.",
+      "backToHub": "← Семейный раздел",
+      "prevWeek": "Предыдущая неделя",
+      "nextWeek": "Следующая неделя",
+      "allChildren": "Все танцоры",
+      "unnamedDancer": "Танцор без имени",
+      "nothingScheduled": "Ничего не запланировано",
+      "legend": "Регулярные занятия берутся из записей. Дополнительные события добавляет команда студии.",
+      "days": {
+        "mon": "Пн",
+        "tue": "Вт",
+        "wed": "Ср",
+        "thu": "Чт",
+        "fri": "Пт",
+        "sat": "Сб",
+        "sun": "Вс"
+      },
+      "types": {
+        "private_lesson": "Индивидуальное занятие",
+        "rehearsal": "Репетиция",
+        "makeup": "Отработка занятия",
+        "competition": "Конкурс",
+        "event": "Мероприятие",
+        "note": "Заметка",
+        "other": "Другое"
       }
     }
   }

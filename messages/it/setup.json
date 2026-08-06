@@ -1,180 +1,180 @@
 {
   "setup": {
-    "header": "Setting up {studioName}",
+    "header": "Configurazione di {studioName}",
     "schemaPending": {
-      "title": "Database migration pending",
-      "body": "Run {command} to enable saving setup progress.",
+      "title": "Migrazione del database in sospeso",
+      "body": "Esegui {command} per abilitare il salvataggio dei progressi.",
       "command": "supabase db push"
     },
-    "progressAria": "Setup progress",
+    "progressAria": "Avanzamento della configurazione",
     "steps": {
-      "path": "Get started",
-      "profile": "Your studio",
-      "students": "Dancers",
-      "classes": "Classes",
+      "path": "Inizia",
+      "profile": "Il tuo studio",
+      "students": "Ballerini",
+      "classes": "Corsi",
       "tour": "Tour"
     },
     "actions": {
-      "back": "Back",
-      "skip": "Skip for now",
-      "working": "Working…",
-      "continue": "Continue",
-      "saveLater": "Save progress & finish later →"
+      "back": "Indietro",
+      "skip": "Salta per ora",
+      "working": "In corso…",
+      "continue": "Continua",
+      "saveLater": "Salva i progressi e finisci dopo →"
     },
     "path": {
-      "title": "How are you getting started?",
-      "subtitle": "Brand-new studio or moving from another system — we'll tailor the next steps.",
+      "title": "Come vuoi iniziare?",
+      "subtitle": "Studio nuovo o migrazione da un altro sistema — adatteremo i passaggi successivi.",
       "scratch": {
-        "title": "Start from scratch",
-        "body": "You're opening fresh or have a small roster to enter by hand."
+        "title": "Parti da zero",
+        "body": "Stai aprendo adesso o hai pochi iscritti da inserire a mano."
       },
       "import": {
-        "title": "I have an existing studio",
-        "body": "Bulk import from StudioPro, Class Manager, or any spreadsheet."
+        "title": "Ho già uno studio",
+        "body": "Importazione in blocco da StudioPro, Class Manager o qualsiasi foglio di calcolo."
       },
-      "sourcePrompt": "Where is your data today?"
+      "sourcePrompt": "Dove si trovano oggi i tuoi dati?"
     },
     "profile": {
-      "title": "Tell us about your studio",
-      "subtitle": "This helps us personalise your site, class suggestions, and local settings.",
-      "city": "City / town",
-      "cityPlaceholder": "e.g. Auckland",
-      "region": "Region",
-      "regionPlaceholder": "Select region…",
-      "country": "Country",
-      "about": "What makes your studio special?",
-      "aboutPlaceholder": "Community-focused preschool ballet, competition teams, adult open classes…",
-      "stylesLabel": "Dance styles you offer",
-      "stylesRequired": "Pick at least one style to continue."
+      "title": "Parlaci del tuo studio",
+      "subtitle": "Ci aiuta a personalizzare il tuo sito, i suggerimenti dei corsi e le impostazioni locali.",
+      "city": "Città",
+      "cityPlaceholder": "es. Auckland",
+      "region": "Regione",
+      "regionPlaceholder": "Seleziona una regione…",
+      "country": "Paese",
+      "about": "Cosa rende speciale il tuo studio?",
+      "aboutPlaceholder": "Danza classica per i più piccoli, squadre agonistiche, corsi aperti per adulti…",
+      "stylesLabel": "Stili di danza offerti",
+      "stylesRequired": "Scegli almeno uno stile per continuare."
     },
     "students": {
-      "title": "Add your dancers",
-      "subtitle": "Paste, upload a CSV, or type rows — parent/guardian columns are linked automatically.",
-      "tipTitle": "{source} tip",
-      "uploadLabel": "Upload CSV or TSV file",
-      "pasteLabel": "Or paste from spreadsheet",
-      "pastePlaceholder": "Name\tEmail\tPhone\tParent Name\tParent Email\nEmma Johnson\temma@example.com\t021 234 567\tJane Johnson\tjane@example.com",
-      "detected": "{count, plural, one {# dancer detected} other {# dancers detected}}",
-      "manualLabel": "Or add manually",
-      "namePlaceholder": "Student name *",
-      "emailPlaceholder": "Student email",
-      "phonePlaceholder": "Phone",
-      "parentNamePlaceholder": "Parent / guardian name",
-      "parentEmailPlaceholder": "Parent email",
-      "addAnother": "+ Add another student",
-      "linkParents": "Create parent accounts & link families when parent details are provided",
-      "import": "Import {count, plural, one {# dancer} other {# dancers}}"
+      "title": "Aggiungi i tuoi ballerini",
+      "subtitle": "Incolla, carica un CSV o inserisci le righe — le colonne genitore/tutore vengono collegate automaticamente.",
+      "tipTitle": "Suggerimento {source}",
+      "uploadLabel": "Carica un file CSV o TSV",
+      "pasteLabel": "Oppure incolla da un foglio di calcolo",
+      "pastePlaceholder": "Nome\tE-mail\tTelefono\tNome genitore\tE-mail genitore\nEmma Johnson\temma@example.com\t021 234 567\tJane Johnson\tjane@example.com",
+      "detected": "{count, plural, one {# ballerino rilevato} other {# ballerini rilevati}}",
+      "manualLabel": "Oppure aggiungi manualmente",
+      "namePlaceholder": "Nome dell'allievo *",
+      "emailPlaceholder": "E-mail dell'allievo",
+      "phonePlaceholder": "Telefono",
+      "parentNamePlaceholder": "Nome genitore / tutore",
+      "parentEmailPlaceholder": "E-mail del genitore",
+      "addAnother": "+ Aggiungi un altro allievo",
+      "linkParents": "Crea account genitore e collega le famiglie quando i dati del genitore sono presenti",
+      "import": "Importa {count, plural, one {# ballerino} other {# ballerini}}"
     },
     "classes": {
-      "title": "Build your timetable",
-      "subtitle": "Upload a CSV, paste a class list, or start from suggestions based on your styles.",
-      "suggest": "✨ Suggest classes from my styles",
-      "suggestionsReady": "{count} starter classes ready",
-      "tableClass": "Class",
-      "tableStyle": "Style",
-      "tableDay": "Day",
-      "tableTime": "Time",
-      "uploadLabel": "Upload class list (CSV / TSV)",
-      "pasteLabel": "Or paste from spreadsheet",
-      "pastePlaceholder": "Class\tStyle\tDay\tStart\tEnd\tCapacity\tPrice\nJunior Ballet\tBallet\tMon\t16:00\t17:00\t15\t18",
-      "detected": "{count, plural, one {# class detected} other {# classes detected}}",
-      "create": "Create {count, plural, one {# class} other {# classes}}"
+      "title": "Costruisci il tuo orario",
+      "subtitle": "Carica un CSV, incolla un elenco di corsi o parti dai suggerimenti basati sui tuoi stili.",
+      "suggest": "✨ Suggerisci corsi dai miei stili",
+      "suggestionsReady": "{count} corsi iniziali pronti",
+      "tableClass": "Corso",
+      "tableStyle": "Stile",
+      "tableDay": "Giorno",
+      "tableTime": "Ora",
+      "uploadLabel": "Carica l'elenco dei corsi (CSV / TSV)",
+      "pasteLabel": "Oppure incolla da un foglio di calcolo",
+      "pastePlaceholder": "Corso\tStile\tGiorno\tInizio\tFine\tCapienza\tPrezzo\nDanza classica junior\tDanza classica\tLun\t16:00\t17:00\t15\t18",
+      "detected": "{count, plural, one {# corso rilevato} other {# corsi rilevati}}",
+      "create": "Crea {count, plural, one {# corso} other {# corsi}}"
     },
     "tour": {
-      "title": "{studioName} is ready",
-      "subtitle": "Here's what you can do in Olune — explore anytime from your dashboard.",
-      "enterDashboard": "Enter your dashboard →"
+      "title": "{studioName} è pronto",
+      "subtitle": "Ecco cosa puoi fare in Olune — esplora quando vuoi dalla dashboard.",
+      "enterDashboard": "Vai alla dashboard →"
     },
     "importSummary": {
-      "added": "Added {count, plural, one {# dancer} other {# dancers}}",
-      "parentsLinked": "{count, plural, one {# parent link} other {# parent links}}",
-      "skipped": "{count} skipped"
+      "added": "{count, plural, one {# ballerino aggiunto} other {# ballerini aggiunti}}",
+      "parentsLinked": "{count, plural, one {# collegamento genitore} other {# collegamenti genitore}}",
+      "skipped": "{count} saltati"
     },
     "resume": {
-      "title": "Finish setting up your studio",
-      "body": "You paused at {step} — pick up where you left off.",
-      "openWizard": "Open wizard",
-      "opening": "Opening…",
-      "resume": "Resume setup",
-      "defaultStep": "Get started"
+      "title": "Completa la configurazione del tuo studio",
+      "body": "Ti sei fermato al passaggio {step} — riprendi da dove avevi lasciato.",
+      "openWizard": "Apri la procedura guidata",
+      "opening": "Apertura…",
+      "resume": "Riprendi la configurazione",
+      "defaultStep": "Inizia"
     },
     "csvUpload": {
-      "loaded": "Loaded {fileName}",
-      "readError": "Could not read file"
+      "loaded": "{fileName} caricato",
+      "readError": "Impossibile leggere il file"
     },
     "danceStyles": {
-      "ballet": "Ballet",
+      "ballet": "Danza classica",
       "jazz": "Jazz",
       "hipHop": "Hip-Hop",
-      "contemporary": "Contemporary",
-      "tap": "Tap",
-      "lyrical": "Lyrical",
+      "contemporary": "Contemporaneo",
+      "tap": "Tip tap",
+      "lyrical": "Lirico",
       "acro": "Acro",
-      "pointe": "Pointe",
-      "musicalTheatre": "Musical Theatre",
-      "ballroom": "Ballroom",
-      "latin": "Latin",
-      "aerial": "Aerial",
-      "preschool": "Preschool / Tiny Tots",
-      "adultOpen": "Adult Open",
-      "competitionTeam": "Competition Team"
+      "pointe": "Punte",
+      "musicalTheatre": "Teatro musicale",
+      "ballroom": "Danze da sala",
+      "latin": "Latino-americane",
+      "aerial": "Discipline aeree",
+      "preschool": "Propedeutica / Piccolissimi",
+      "adultOpen": "Corsi adulti",
+      "competitionTeam": "Squadra agonistica"
     },
     "importSources": {
       "studiopro": {
         "name": "StudioPro",
-        "hint": "Export your student list from Reports → Students → Export CSV.",
-        "sampleHeaders": "First Name · Last Name · Email · Phone · Parent Name · Parent Email"
+        "hint": "Esporta l'elenco allievi da Report → Allievi → Esporta CSV.",
+        "sampleHeaders": "Nome · Cognome · E-mail · Telefono · Nome genitore · E-mail genitore"
       },
       "classmanager": {
         "name": "Class Manager",
-        "hint": "Download your roster from Settings → Data export.",
-        "sampleHeaders": "Student · Email · Mobile · Guardian · Guardian Email · Class"
+        "hint": "Scarica il tuo elenco da Impostazioni → Esportazione dati.",
+        "sampleHeaders": "Allievo · E-mail · Cellulare · Tutore · E-mail tutore · Corso"
       },
       "jackrabbit": {
         "name": "Jackrabbit Dance",
-        "hint": "Use Families → Export, or copy directly from your class roster grid.",
-        "sampleHeaders": "Student Name · Student Email · Family Email · Phone · Classes"
+        "hint": "Usa Famiglie → Esporta, oppure copia direttamente dalla griglia dei corsi.",
+        "sampleHeaders": "Nome allievo · E-mail allievo · E-mail famiglia · Telefono · Corsi"
       },
       "dancestudio-pro": {
         "name": "DanceStudio-Pro",
-        "hint": "Export students from the Students tab, or paste from your spreadsheet.",
-        "sampleHeaders": "Name · Email · Phone · Parent · Parent Email"
+        "hint": "Esporta gli allievi dalla scheda Allievi, oppure incolla dal tuo foglio di calcolo.",
+        "sampleHeaders": "Nome · E-mail · Telefono · Genitore · E-mail genitore"
       },
       "spreadsheet": {
-        "name": "Spreadsheet",
-        "hint": "Copy rows from Excel or Google Sheets — we'll detect columns automatically.",
-        "sampleHeaders": "Name · Email · Phone"
+        "name": "Foglio di calcolo",
+        "hint": "Copia le righe da Excel o Google Sheets — rileveremo le colonne automaticamente.",
+        "sampleHeaders": "Nome · E-mail · Telefono"
       },
       "other": {
-        "name": "Another system",
-        "hint": "Paste any export — we'll try to match name, email, and phone columns.",
-        "sampleHeaders": "Name · Email · Phone"
+        "name": "Un altro sistema",
+        "hint": "Incolla qualsiasi esportazione — proveremo a riconoscere le colonne nome, e-mail e telefono.",
+        "sampleHeaders": "Nome · E-mail · Telefono"
       }
     },
     "tourFeatures": {
       "dashboard": {
         "title": "Dashboard",
-        "body": "See enrolments, revenue, and today's schedule at a glance."
+        "body": "Iscrizioni, incassi e programma di oggi a colpo d'occhio."
       },
       "classes": {
-        "title": "Classes",
-        "body": "Build your timetable, set capacity, and manage waitlists."
+        "title": "Corsi",
+        "body": "Costruisci l'orario, imposta la capienza e gestisci le liste d'attesa."
       },
       "students": {
-        "title": "Students & families",
-        "body": "Roster, enrolments, progress notes, and parent accounts."
+        "title": "Allievi e famiglie",
+        "body": "Elenchi, iscrizioni, note sui progressi e account genitore."
       },
       "billing": {
-        "title": "Billing",
-        "body": "Invoices, Stripe payments, and term fees in NZD."
+        "title": "Fatturazione",
+        "body": "Fatture, pagamenti Stripe e quote trimestrali in NZD."
       },
       "website": {
-        "title": "Website",
-        "body": "Your public site — classes, enrolments, and your brand."
+        "title": "Sito web",
+        "body": "Il tuo sito pubblico — corsi, iscrizioni e il tuo brand."
       },
       "leads": {
-        "title": "Leads & messages",
-        "body": "Trial enquiries and two-way messaging with families."
+        "title": "Contatti e messaggi",
+        "body": "Richieste di lezioni di prova e messaggistica bidirezionale con le famiglie."
       }
     },
     "regions": {
@@ -196,13 +196,13 @@
       "southland": "Southland"
     },
     "days": {
-      "sun": "Sun",
-      "mon": "Mon",
-      "tue": "Tue",
-      "wed": "Wed",
-      "thu": "Thu",
-      "fri": "Fri",
-      "sat": "Sat"
+      "sun": "Dom",
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Gio",
+      "fri": "Ven",
+      "sat": "Sab"
     }
   }
 }

@@ -28,8 +28,10 @@ The engineering fundamentals here are genuinely strong. What follows is what sta
 
 This matters more than it looks: it's the single source of truth an AI assistant, a new contractor, or future-you reads first, and right now it will actively mislead all three.
 
-### 0.4 `next build` does not run in CI
+### 0.4 `next build` does not run in CI — ✅ done 7 Aug 2026
 CI runs `test`, `typecheck`, `lint`. A build failure reaches Vercel unblocked. Add a build step with stub env vars.
+
+**Done:** `.github/workflows/ci.yml` → `quality` job now runs `npm run build` (real secrets when set, well-formed stubs otherwise) followed by `npm audit --omit=dev --audit-level=high`, so a vulnerable production dependency also fails the build.
 
 ---
 

@@ -72,6 +72,32 @@
       "instructorSubtitle": "您的教师工作区已就绪。",
       "continue": "继续设置 →",
       "instructorContinue": "前往您的日程 →"
+    },
+    "vertical": {
+      "title": "您经营的是什么？",
+      "subtitle": "我们会围绕您的业务来配置 Olune——课程、级别，以及您的家庭们习惯的用语。",
+      "comingSoon": "即将推出",
+      "options": {
+        "dance": "舞蹈工作室",
+        "gymnastics": "体操俱乐部",
+        "sports-club": "体育俱乐部",
+        "swim": "游泳学校",
+        "martial-arts": "武术",
+        "music": "音乐学校",
+        "cheer": "啦啦操",
+        "tutoring": "课外辅导"
+      }
+    },
+    "waitlist": {
+      "title": "{vertical} 即将上线",
+      "subtitle": "我们正在为您的业务打造 Olune。留下联系方式，开放时我们会第一时间联系您。",
+      "emailPlaceholder": "you@yourclub.co.nz",
+      "orgPlaceholder": "您的俱乐部或学校名称（选填）",
+      "submit": "请通知我",
+      "submitting": "正在添加…",
+      "doneTitle": "您已加入名单",
+      "doneBody": "Olune 支持 {vertical} 后，我们会立刻发邮件通知您。",
+      "pickAnother": "选择其他类型"
     }
   }
 }

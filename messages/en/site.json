@@ -698,7 +698,11 @@
         "copy": "Copy"
       },
       "continue": "Continue",
-      "back": "Back"
+      "back": "Back",
+      "verification": {
+        "title": "One more record to prove you own this domain",
+        "note": "Add this alongside the record above, then check again."
+      }
     },
     "urlBanner": {
       "title": "Your public website URL",
