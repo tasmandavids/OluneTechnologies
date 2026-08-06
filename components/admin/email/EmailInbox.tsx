@@ -9,15 +9,14 @@ import { IconSearch, IconPlus, IconX } from "@/components/admin/dashboard/icons"
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import { RippleButton } from "@/components/portal/admin/glass/RippleButton";
 import { onGlowMove, onGlowLeave } from "@/components/portal/admin/glass/useMicroInteractions";
+import { CONNECTIONS_PATH } from "@/lib/integrations/routes";
 import type { EmailAccountRow, EmailMessageRow, EmailThreadRow } from "@/lib/email/types";
 import { PROVIDER_META } from "@/lib/email/types";
 import {
-  connectImapAccount,
   disconnectEmailAccount,
   markThreadReadAction,
   summarizeThreadAction,
 } from "@/app/portal/admin/email/actions";
-import { oauthConnectPath } from "@/lib/email/oauth-paths";
 import type { ContactMatch } from "@/lib/email/identify-contact";
 import { contactTypeLabel } from "@/lib/email/identify-contact";
 
@@ -162,113 +161,6 @@ function EmailBody({ message }: { message: EmailMessageRow }) {
   );
 }
 
-function ConnectPanel({ onConnected }: { onConnected: () => void }) {
-  const t = useTranslations("admin.email");
-  const tShared = useTranslations("admin.shared");
-  const tCommon = useTranslations("common");
-  const [imapProvider, setImapProvider] = useState<"icloud" | "mailru" | null>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
-
-  const submitImap = () => {
-    if (!imapProvider) return;
-    setError(null);
-    startTransition(async () => {
-      const result = await connectImapAccount({ provider: imapProvider, email, password });
-      if (!result.ok) {
-        setError(result.error);
-        return;
-      }
-      setPassword("");
-      setImapProvider(null);
-      onConnected();
-    });
-  };
-
-  return (
-    <div className="mx-auto max-w-3xl space-y-6 p-6">
-      <div>
-        <h1 className="text-2xl font-black text-ink">{t("title")}</h1>
-        <p className="text-sm text-muted">{t("connectDescription")}</p>
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2">
-        {(["gmail", "microsoft"] as const).map((provider) => (
-          <Link
-            key={provider}
-            href={oauthConnectPath(provider)}
-            className="box rounded-2xl p-5 text-left transition"
-          >
-            <p className="font-semibold text-ink">{PROVIDER_META[provider].label}</p>
-            <p className="mt-1 text-xs text-muted">{PROVIDER_META[provider].description}</p>
-            <p className="mt-3 text-xs font-semibold text-brand">{t("connectOAuth")}</p>
-          </Link>
-        ))}
-        {(["icloud", "mailru"] as const).map((provider) => (
-          <button
-            key={provider}
-            type="button"
-            onClick={() => setImapProvider(provider)}
-            className="box rounded-2xl p-5 text-left transition"
-          >
-            <p className="font-semibold text-ink">{PROVIDER_META[provider].label}</p>
-            <p className="mt-1 text-xs text-muted">{PROVIDER_META[provider].description}</p>
-            <p className="mt-3 text-xs font-semibold text-brand">{t("connectPassword")}</p>
-          </button>
-        ))}
-      </div>
-
-      <AnimatePresence>
-        {imapProvider && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            className="box rounded-2xl p-5"
-          >
-            <h2 className="mb-4 font-black text-ink">
-              {t("connectTitle", { provider: PROVIDER_META[imapProvider].label })}
-            </h2>
-            <div className="space-y-3">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t("emailAddress")}
-                className="w-full rounded-xl border border-[--hair] bg-base px-4 py-2.5 text-sm"
-              />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={imapProvider === "icloud" ? t("appPassword") : t("password")}
-                className="w-full rounded-xl border border-[--hair] bg-base px-4 py-2.5 text-sm"
-              />
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={submitImap}
-                  disabled={pending || !email || !password}
-                  className="rounded-xl px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
-                  style={{ background: "var(--brand)" }}
-                >
-                  {pending ? tShared("connecting") : t("connect")}
-                </button>
-                <button type="button" onClick={() => setImapProvider(null)} className="text-sm text-muted">
-                  {tCommon("cancel")}
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
 const GLASS_ROW = {
   background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass2)",
   backdropFilter: "blur(var(--blur)) saturate(1.85)",
@@ -328,7 +220,6 @@ export function EmailInbox({
   const [loadingThread, setLoadingThread] = useState(false);
   const [sending, setSending] = useState(false);
   const [pending, startTransition] = useTransition();
-  const [showConnect, setShowConnect] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [initialSyncDone, setInitialSyncDone] = useState(!bannerConnected);
 
@@ -540,12 +431,24 @@ export function EmailInbox({
   };
 
   if (accounts.length === 0) {
+    // Mailboxes are connected in Settings → Connections along with every other
+    // integration; the inbox only reads them.
     return (
       <>
         {bannerError && (
           <div className="border-b border-red-200 bg-red-50 px-6 py-3 text-sm text-red-700">{bannerError}</div>
         )}
-        <ConnectPanel onConnected={() => window.location.reload()} />
+        <div className="mx-auto max-w-2xl space-y-4 p-10 text-center">
+          <h1 className="text-2xl font-black text-ink">{t("title")}</h1>
+          <p className="text-sm text-muted">{t("connectDescription")}</p>
+          <Link
+            href={CONNECTIONS_PATH}
+            className="inline-flex rounded-full px-5 py-2.5 text-sm font-semibold text-white transition"
+            style={{ background: "linear-gradient(150deg, var(--tg), var(--brand) 60%, var(--brand-deep))" }}
+          >
+            {t("connectInSettings")}
+          </Link>
+        </div>
       </>
     );
   }
@@ -634,16 +537,14 @@ export function EmailInbox({
                     </span>
                   );
                 })}
-                <RippleButton
-                  variant="quiet"
-                  size="sm"
-                  onClick={() => setShowConnect(true)}
+                <Link
+                  href={CONNECTIONS_PATH}
                   title={t("connectMore")}
                   aria-label={t("connectMore")}
-                  style={{ borderRadius: 999 }}
+                  className="grid h-7 w-7 place-items-center rounded-full text-muted transition hover:text-ink"
                 >
                   <IconPlus className="h-3.5 w-3.5" />
-                </RippleButton>
+                </Link>
               </div>
 
               <div className="flex items-center gap-2">
@@ -976,33 +877,6 @@ export function EmailInbox({
           </div>
         )}
       </div>
-
-      <AnimatePresence>
-        {showConnect && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 pt-12 backdrop-blur-sm"
-            onClick={() => setShowConnect(false)}
-          >
-            <motion.div
-              initial={{ y: 16, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 16, opacity: 0 }}
-              className="w-full max-w-3xl rounded-2xl border border-[--hair] bg-base shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <ConnectPanel
-                onConnected={() => {
-                  setShowConnect(false);
-                  window.location.reload();
-                }}
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <AnimatePresence>
         {composeOpen && (

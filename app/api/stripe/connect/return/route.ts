@@ -13,20 +13,21 @@ import { createClient } from "@/lib/supabase/server";
 import { loadStudioStripeAccount, syncStripeAccountStatus } from "@/lib/stripe/connect";
 import { verifyStripeConnectState } from "@/lib/stripe/connect-state";
 import { verifyAdminOAuthCallback } from "@/lib/oauth/verify-admin-callback";
+import { CONNECTIONS_PATH } from "@/lib/integrations/routes";
 
 export const runtime = "nodejs";
 
-const BASE = "/portal/admin/money?tab=payouts";
+const BASE = CONNECTIONS_PATH;
 
 export async function GET(req: NextRequest) {
   const stateParam = req.nextUrl.searchParams.get("state");
   if (!stateParam) {
-    return NextResponse.redirect(new URL(`${BASE}&error=Missing+state`, req.url));
+    return NextResponse.redirect(new URL(`${BASE}?error=Missing+state`, req.url));
   }
 
   const payload = verifyStripeConnectState(stateParam);
   if (!payload) {
-    return NextResponse.redirect(new URL(`${BASE}&error=Invalid+or+expired+link`, req.url));
+    return NextResponse.redirect(new URL(`${BASE}?error=Invalid+or+expired+link`, req.url));
   }
 
   const supabase = await createClient();
@@ -40,21 +41,28 @@ export async function GET(req: NextRequest) {
   const authz = await verifyAdminOAuthCallback(supabase, user, payload);
   if (!authz.ok) {
     return NextResponse.redirect(
-      new URL(`${BASE}&error=${encodeURIComponent(authz.reason)}`, req.url),
+      new URL(`${BASE}?error=${encodeURIComponent(authz.reason)}`, req.url),
     );
   }
 
   const account = await loadStudioStripeAccount(supabase, payload.studioId);
   if (!account) {
-    return NextResponse.redirect(new URL(`${BASE}&error=No+Stripe+account+found`, req.url));
+    return NextResponse.redirect(new URL(`${BASE}?error=No+Stripe+account+found`, req.url));
   }
 
   try {
     const updated = await syncStripeAccountStatus(supabase, account.stripe_account_id);
-    const connected = updated?.charges_enabled ? "1" : "0";
-    return NextResponse.redirect(new URL(`${BASE}&connected=${connected}`, req.url));
+    // Onboarding can return without charges enabled (Stripe still reviewing, or
+    // the studio bailed out). The hub's Stripe card shows the live status either
+    // way, so only say "connected" when it actually is.
+    if (updated?.charges_enabled) {
+      return NextResponse.redirect(new URL(`${BASE}?connected=stripe`, req.url));
+    }
+    return NextResponse.redirect(
+      new URL(`${BASE}?error=Stripe+onboarding+isn%27t+finished+yet`, req.url),
+    );
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to verify Stripe account";
-    return NextResponse.redirect(new URL(`${BASE}&error=${encodeURIComponent(msg)}`, req.url));
+    return NextResponse.redirect(new URL(`${BASE}?error=${encodeURIComponent(msg)}`, req.url));
   }
 }

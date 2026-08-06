@@ -6,6 +6,7 @@ import { verifyAdvertisingOAuthState } from "@/lib/advertising/oauth-state";
 import { exchangeTiktokCode } from "@/lib/advertising/publish";
 import { verifyAdminOAuthCallback } from "@/lib/oauth/verify-admin-callback";
 import { resolveAppOrigin } from "@/lib/email/app-origin";
+import { CONNECTIONS_PATH } from "@/lib/integrations/routes";
 
 export const runtime = "nodejs";
 
@@ -14,7 +15,7 @@ export async function GET(req: NextRequest) {
   const state = req.nextUrl.searchParams.get("state");
   const oauthError = req.nextUrl.searchParams.get("error");
   const origin = resolveAppOrigin(req);
-  const base = `${origin}/portal/admin/advertising`;
+  const base = `${origin}${CONNECTIONS_PATH}`;
 
   if (oauthError || !code || !state) {
     return NextResponse.redirect(
@@ -32,7 +33,7 @@ export async function GET(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user || user.id !== payload.userId) {
-    return NextResponse.redirect(new URL("/login?next=/portal/admin/advertising", req.url));
+    return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(CONNECTIONS_PATH)}`, req.url));
   }
 
   const authz = await verifyAdminOAuthCallback(supabase, user, payload);

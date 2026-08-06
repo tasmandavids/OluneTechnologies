@@ -1,6 +1,5 @@
 "use client";
 
-import { confirmDialog } from "@/lib/feedback";
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,8 +18,9 @@ import {
 import type { AccountingSnapshot } from "@/lib/xero/accounting-data";
 import { openInXeroUrl } from "@/lib/xero/links";
 import { formatMonthKey, formatShortDate, formatSyncTime } from "@/lib/xero/format";
-import { disconnectXero, refreshAccountingData } from "@/app/portal/admin/accounting/actions";
+import { refreshAccountingData } from "@/app/portal/admin/accounting/actions";
 import { formatMoney } from "@/lib/currency";
+import { connectionPath } from "@/lib/integrations/routes";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const NZD = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD", maximumFractionDigits: 0 });
@@ -61,16 +61,19 @@ function ComingSoonCard({ title, body }: { title: string; body: string }) {
 export function ReportsDashboard({
   snapshot,
   redirectUri,
-  bannerError,
-  bannerConnected,
+  /**
+   * Name of the studio's ledger when it isn't Xero (QuickBooks, MYOB). Those
+   * connect but have no reporting sync yet, so say so instead of showing an
+   * empty "connect Xero" prompt to a studio that already connected a ledger.
+   */
+  otherLedger,
   gstMonthCents,
   gstQuarterCents,
   aged,
 }: {
   snapshot: AccountingSnapshot;
   redirectUri: string;
-  bannerError: string | null;
-  bannerConnected: boolean;
+  otherLedger: string | null;
   gstMonthCents: number;
   gstQuarterCents: number;
   aged: AgedReceivables;
@@ -79,7 +82,6 @@ export function ReportsDashboard({
   const tShared = useTranslations("admin.shared");
   const tReports = useTranslations("admin.money.reports");
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
   const [refreshing, startRefresh] = useTransition();
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -105,17 +107,8 @@ export function ReportsDashboard({
     });
   };
 
-  const onDisconnect = async () => {
-    setActionError(null);
-    if (!(await confirmDialog({ title: t("disconnectConfirm"), destructive: true }))) return;
-    startTransition(async () => {
-      const res = await disconnectXero();
-      if (!res.ok) setActionError(res.error);
-    });
-  };
-
   const displayError =
-    bannerError ?? actionError ?? snapshot.fetchError ?? snapshot.connection?.sync_error ?? null;
+    actionError ?? snapshot.fetchError ?? snapshot.connection?.sync_error ?? null;
 
   const agedRows: { key: string; label: string; bucket: AgedBucket }[] = [
     { key: "current", label: tReports("aged.current"), bucket: aged.current },
@@ -150,7 +143,7 @@ export function ReportsDashboard({
             <button
               type="button"
               onClick={onRefresh}
-              disabled={refreshing || pending}
+              disabled={refreshing}
               className="rounded-xl border border-[--hair] bg-surface px-4 py-2.5 text-sm font-semibold text-ink hover:bg-base disabled:opacity-50"
             >
               {refreshing ? tShared("refreshing") : t("refresh")}
@@ -168,21 +161,17 @@ export function ReportsDashboard({
         )}
       </motion.header>
 
-      {(displayError || bannerConnected) && (
+      {displayError && (
         <motion.div variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}>
-          {bannerConnected && (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-              {t("connectedSuccess")}
-            </div>
-          )}
-          {displayError && (
-            <div className={`rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 ${bannerConnected ? "mt-2" : ""}`}>
-              {displayError}
-            </div>
-          )}
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {displayError}
+          </div>
         </motion.div>
       )}
 
+      {/* Connection *state* still belongs on this tab — it explains whether the
+          numbers below are live. Connecting and disconnecting moved to
+          Settings → Connections so every integration is managed in one place. */}
       <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
         <GlassPanel className="!p-5">
         {!snapshot.configured ? (
@@ -199,24 +188,34 @@ export function ReportsDashboard({
                 })}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={onDisconnect}
-              disabled={pending || refreshing}
-              className="rounded-lg border border-[--hair] px-3 py-1.5 text-xs font-semibold text-muted hover:text-ink disabled:opacity-50"
+            <Link
+              href={connectionPath("xero")}
+              className="rounded-lg border border-[--hair] px-3 py-1.5 text-xs font-semibold text-muted transition hover:text-ink"
             >
-              {pending ? tShared("disconnecting") : t("disconnect")}
-            </button>
+              {tReports("manageConnection")}
+            </Link>
+          </div>
+        ) : otherLedger ? (
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <p className="max-w-[60ch] text-sm text-muted">
+              {tReports("otherLedger", { provider: otherLedger })}
+            </p>
+            <Link
+              href={connectionPath("xero")}
+              className="rounded-lg border border-[--hair] px-3 py-1.5 text-xs font-semibold text-muted transition hover:text-ink"
+            >
+              {tReports("manageConnection")}
+            </Link>
           </div>
         ) : (
           <div className="flex flex-wrap items-center justify-between gap-4">
             <p className="text-sm text-muted">{t("connectDescription")}</p>
             <Link
-              href="/api/xero/oauth/connect"
+              href={connectionPath("xero")}
               className="inline-flex items-center gap-2 rounded-xl bg-[#13B5EA] px-4 py-2.5 text-sm font-bold text-white"
             >
               <XeroMark />
-              {t("connectXero")}
+              {tReports("connectInSettings")}
             </Link>
           </div>
         )}

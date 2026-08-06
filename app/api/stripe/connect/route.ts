@@ -11,6 +11,7 @@ import { stripe, isStripeConfigured } from "@/lib/stripe";
 import { loadStudioStripeAccount } from "@/lib/stripe/connect";
 import { signStripeConnectState } from "@/lib/stripe/connect-state";
 import { resolveAppOriginFromHeaders } from "@/lib/xero/app-origin";
+import { CONNECTIONS_PATH } from "@/lib/integrations/routes";
 
 export const runtime = "nodejs";
 
@@ -18,13 +19,13 @@ export async function GET(req: NextRequest) {
   const ctx = await getAdminStudio();
   if (ctx.error || !ctx.studioId || !ctx.userId) {
     return NextResponse.redirect(
-      new URL(`/login?next=${encodeURIComponent("/portal/admin/money?tab=payouts")}`, req.url),
+      new URL(`/login?next=${encodeURIComponent(CONNECTIONS_PATH)}`, req.url),
     );
   }
 
   if (!isStripeConfigured()) {
     return NextResponse.redirect(
-      new URL("/portal/admin/money?tab=payouts&error=Stripe+is+not+configured", req.url),
+      new URL(`${CONNECTIONS_PATH}?error=Stripe+is+not+configured`, req.url),
     );
   }
 
@@ -82,7 +83,7 @@ export async function GET(req: NextRequest) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to start Stripe onboarding";
     return NextResponse.redirect(
-      new URL(`/portal/admin/money?tab=payouts&error=${encodeURIComponent(msg)}`, req.url),
+      new URL(`${CONNECTIONS_PATH}?error=${encodeURIComponent(msg)}`, req.url),
     );
   }
 }

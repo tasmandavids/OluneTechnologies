@@ -1,6 +1,7 @@
+import { redirect } from "next/navigation";
 import { requirePortalSession } from "@/lib/portal/session";
-import { isMetaConfigured, isTiktokConfigured } from "@/lib/advertising/config";
 import type { AdCampaign, SocialConnection } from "@/lib/advertising/types";
+import { CONNECTIONS_PATH } from "@/lib/integrations/routes";
 import { AdvertisingHub } from "@/components/admin/advertising/AdvertisingHub";
 
 export default async function AdvertisingPage({
@@ -10,6 +11,15 @@ export default async function AdvertisingPage({
 }) {
   const { supabase, studioId } = await requirePortalSession();
   const params = await searchParams;
+
+  // Old OAuth callbacks (and bookmarks) that still land here with connect
+  // results belong on the connections hub now.
+  if (params.error || params.connected) {
+    const qs = new URLSearchParams();
+    if (params.error) qs.set("error", params.error);
+    if (params.connected) qs.set("connected", params.connected);
+    redirect(`${CONNECTIONS_PATH}?${qs.toString()}`);
+  }
 
   const [connectionsRes, campaignsRes] = await Promise.all([
     supabase
@@ -54,14 +64,5 @@ export default async function AdvertisingPage({
     updatedAt: r.updated_at as string,
   }));
 
-  return (
-    <AdvertisingHub
-      connections={connections}
-      campaigns={campaigns}
-      metaConfigured={isMetaConfigured()}
-      tiktokConfigured={isTiktokConfigured()}
-      bannerError={params.error ?? null}
-      bannerConnected={params.connected ?? null}
-    />
-  );
+  return <AdvertisingHub connections={connections} campaigns={campaigns} />;
 }

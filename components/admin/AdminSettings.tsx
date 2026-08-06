@@ -97,16 +97,33 @@ function SaveStatus({ status, savedLabel }: { status: string | null; savedLabel:
   );
 }
 
-const NAV_SECTIONS = ["profile", "billing", "registration", "domains", "account"] as const;
+const NAV_SECTIONS = [
+  "profile",
+  "connections",
+  "billing",
+  "registration",
+  "domains",
+  "account",
+] as const;
+
+export type ConnectionsSummary = {
+  connected: number;
+  attention: number;
+  total: number;
+  /** Names of the connected providers, for the "Xero, Stripe, Gmail" line. */
+  names: string[];
+};
 
 export default function AdminSettings({
   studio,
   terms,
   userEmail,
+  connections,
 }: {
   studio: StudioInfo | null;
   terms: StudioTermInfo[];
   userEmail?: string | null;
+  connections: ConnectionsSummary;
 }) {
   const t = useTranslations("admin.settings");
   const tShared = useTranslations("admin.shared");
@@ -301,6 +318,61 @@ export default function AdminSettings({
                 </button>
                 <SaveStatus status={tzStatus} savedLabel={t("timezoneUpdated")} />
               </div>
+            </div>
+          </div>
+        </GlassPanel>
+
+        <GlassPanel id="connections" className="scroll-mt-20 !p-6">
+          <div className="flex flex-col gap-5">
+            <div>
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+                {t("connections.title")}
+              </h2>
+              <p className="mt-1 max-w-[62ch] text-sm text-muted">{t("connections.description")}</p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+              <div>
+                <p className="font-display text-[26px] font-medium leading-none text-ink">
+                  {connections.connected}
+                </p>
+                <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+                  {t("connections.connected")}
+                </p>
+              </div>
+              <div>
+                <p
+                  className="font-display text-[26px] font-medium leading-none"
+                  style={{ color: connections.attention > 0 ? "#f59e0b" : "var(--ink, var(--text))" }}
+                >
+                  {connections.attention}
+                </p>
+                <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+                  {t("connections.needAttention")}
+                </p>
+              </div>
+              <div>
+                <p className="font-display text-[26px] font-medium leading-none text-ink">
+                  {connections.total}
+                </p>
+                <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+                  {t("connections.available")}
+                </p>
+              </div>
+            </div>
+
+            {connections.names.length > 0 && (
+              <p className="text-sm text-muted">{connections.names.join(" · ")}</p>
+            )}
+
+            <div>
+              <Link
+                href="/portal/admin/settings/connections"
+                className="inline-flex rounded-full px-5 py-2 text-sm font-semibold text-white transition"
+                style={{ background: "linear-gradient(150deg, var(--tg), var(--brand) 60%, var(--brand-deep))" }}
+              >
+                {t("connections.manage")}
+              </Link>
             </div>
           </div>
         </GlassPanel>

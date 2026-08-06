@@ -7,6 +7,7 @@
 // ============================================================================
 
 import { requirePortalSession } from "@/lib/portal/session";
+import { resolveAccountingProvider } from "@/lib/accounting/provider";
 import { fetchAccountingSnapshot } from "@/lib/xero/accounting-data";
 import { xeroRedirectUri } from "@/lib/xero/config";
 import { resolveAppOriginFromHeaders } from "@/lib/xero/app-origin";
@@ -20,19 +21,14 @@ function quarterStart() {
   return new Date(d.getFullYear(), q, 1).toISOString().slice(0, 10);
 }
 
-export async function ReportsTab({
-  bannerError,
-  bannerConnected,
-}: {
-  bannerError: string | null;
-  bannerConnected: boolean;
-}) {
+export async function ReportsTab() {
   const { supabase, studioId } = await requirePortalSession();
   const origin = await resolveAppOriginFromHeaders();
   const redirectUri = xeroRedirectUri(origin);
 
-  const [snapshot, gstMonthRes, gstQuarterRes, unpaidRes] = await Promise.all([
+  const [snapshot, activeLedger, gstMonthRes, gstQuarterRes, unpaidRes] = await Promise.all([
     fetchAccountingSnapshot(supabase, studioId, redirectUri),
+    resolveAccountingProvider(supabase, studioId),
     supabase
       .from("invoices")
       .select("gst_cents")
@@ -80,8 +76,9 @@ export async function ReportsTab({
     <ReportsDashboard
       snapshot={snapshot}
       redirectUri={redirectUri}
-      bannerError={bannerError}
-      bannerConnected={bannerConnected}
+      otherLedger={
+        activeLedger && activeLedger.provider !== "xero" ? activeLedger.capabilities.name : null
+      }
       gstMonthCents={gstMonthCents}
       gstQuarterCents={gstQuarterCents}
       aged={aged}

@@ -1,60 +1,35 @@
 "use client";
 
-import { confirmDialog } from "@/lib/feedback";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { disconnectSocialPlatform } from "@/app/portal/admin/advertising/actions";
-import { PLATFORM_META } from "@/lib/advertising/config";
-import type { AdCampaign, SocialConnection, SocialPlatform } from "@/lib/advertising/types";
+import type { AdCampaign, SocialConnection } from "@/lib/advertising/types";
+import { CONNECTIONS_PATH } from "@/lib/integrations/routes";
 import { AdComposer } from "./AdComposer";
 import { AdvertisingOverview } from "./AdvertisingOverview";
 import { CampaignsPanel } from "./CampaignsPanel";
-import { ConnectHub } from "./ConnectHub";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
-type Tab = "connect" | "create" | "campaigns";
+type Tab = "create" | "campaigns";
 
 export function AdvertisingHub({
   connections,
   campaigns,
-  metaConfigured,
-  tiktokConfigured,
-  bannerError,
-  bannerConnected,
 }: {
   connections: SocialConnection[];
   campaigns: AdCampaign[];
-  metaConfigured: boolean;
-  tiktokConfigured: boolean;
-  bannerError: string | null;
-  bannerConnected: string | null;
 }) {
   const t = useTranslations("admin.advertising");
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>(connections.length === 0 ? "connect" : "create");
-  const [actionError, setActionError] = useState<string | null>(null);
-  const [, startDisconnect] = useTransition();
+  const [tab, setTab] = useState<Tab>("create");
 
   function refresh() {
     router.refresh();
   }
 
-  async function handleDisconnect(platform: SocialPlatform) {
-    if (!(await confirmDialog({ title: t("disconnectConfirm", { platform: PLATFORM_META[platform].label }), destructive: true }))) return;
-    setActionError(null);
-    startDisconnect(async () => {
-      const res = await disconnectSocialPlatform(platform);
-      if (!res.ok) setActionError(res.error);
-      else refresh();
-    });
-  }
-
-  const displayError = bannerError ?? actionError;
-
   const tabs: { id: Tab; label: string }[] = [
-    { id: "connect", label: t("tabs.connect") },
     { id: "create", label: t("tabs.create") },
     { id: "campaigns", label: t("tabs.campaigns") },
   ];
@@ -75,26 +50,24 @@ export function AdvertisingHub({
         <AdvertisingOverview connections={connections} campaigns={campaigns} />
       </motion.div>
 
-      {(displayError || bannerConnected) && (
-        <motion.div variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}>
-          {bannerConnected && (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-              {bannerConnected === "meta"
-                ? t("metaConnected")
-                : bannerConnected === "telegram"
-                  ? t("telegramConnected")
-                  : t("platformConnected", {
-                      platform: `${bannerConnected.charAt(0).toUpperCase()}${bannerConnected.slice(1)}`,
-                    })}
-            </div>
-          )}
-          {displayError && (
-            <div className={`rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 ${bannerConnected ? "mt-2" : ""}`}>
-              {displayError}
-            </div>
-          )}
-        </motion.div>
-      )}
+      {/* Connecting Facebook/Instagram/TikTok/Telegram moved to
+          Settings → Connections; this page composes and publishes. */}
+      <motion.div variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}>
+        <GlassPanel className="flex flex-wrap items-center justify-between gap-3 !p-5">
+          <p className="text-sm text-muted">
+            {connections.length === 0
+              ? t("connect.noneConnected")
+              : t("connect.connectedCount", { count: connections.length })}
+          </p>
+          <Link
+            href={CONNECTIONS_PATH}
+            className="shrink-0 rounded-full border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[--t2]"
+            style={{ borderColor: "var(--ring)" }}
+          >
+            {t("connect.manageInSettings")}
+          </Link>
+        </GlassPanel>
+      </motion.div>
 
       <motion.div variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}>
         <GlassPanel className="flex gap-1 overflow-x-auto !p-1">
@@ -114,18 +87,6 @@ export function AdvertisingHub({
       </motion.div>
 
       <AnimatePresence mode="wait">
-        {tab === "connect" && (
-          <motion.div key="connect" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-            <ConnectHub
-              connections={connections}
-              metaConfigured={metaConfigured}
-              tiktokConfigured={tiktokConfigured}
-              onDisconnect={handleDisconnect}
-              onRefresh={refresh}
-            />
-          </motion.div>
-        )}
-
         {tab === "create" && (
           <motion.div key="create" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
             <AdComposer connections={connections} onCreated={refresh} />

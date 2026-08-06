@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import type { StripeBalanceSummary, StripeConnectAccountRow, StripePayoutRow } from "@/lib/stripe/connect";
 import { getStripeExpressLoginLink } from "@/app/portal/admin/payments/actions";
 import { formatMoney } from "@/lib/currency";
+import { connectionPath } from "@/lib/integrations/routes";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }> = {
@@ -65,16 +67,12 @@ export function PayoutsDashboard({
   payouts,
   fetchError,
   bannerError,
-  bannerConnected,
-  bannerIncomplete,
 }: {
   account: StripeConnectAccountRow | null;
   balance: StripeBalanceSummary | null;
   payouts: StripePayoutRow[];
   fetchError: string | null;
   bannerError: string | null;
-  bannerConnected: boolean;
-  bannerIncomplete: boolean;
 }) {
   const chargeable = account?.charges_enabled === true;
   const displayError = bannerError ?? fetchError;
@@ -100,17 +98,6 @@ export function PayoutsDashboard({
         {chargeable && <DashboardLinkButton />}
       </header>
 
-      {bannerConnected && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          Stripe connected — new payments now go directly to this studio&apos;s account.
-        </div>
-      )}
-      {bannerIncomplete && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          Stripe onboarding isn&apos;t finished yet — you can resume it below.
-        </div>
-      )}
-
       {!account && (
         <GlassPanel className="!p-10 text-center">
           <p className="text-sm font-semibold text-ink">Stripe isn&apos;t connected yet</p>
@@ -118,13 +105,12 @@ export function PayoutsDashboard({
             Connect this studio&apos;s own Stripe account to start receiving payments — and see
             balance and payout history here.
           </p>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- redirects to Stripe's hosted onboarding */}
-          <a
-            href="/api/stripe/connect"
+          <Link
+            href={connectionPath("stripe")}
             className="mt-5 inline-block rounded-xl bg-ink px-4 py-2.5 text-sm font-bold text-paper hover:opacity-90"
           >
-            Connect with Stripe
-          </a>
+            Set it up in Settings → Connections
+          </Link>
         </GlassPanel>
       )}
 
@@ -136,13 +122,12 @@ export function PayoutsDashboard({
               ? `Stripe needs more information before payouts can start (${account.disabled_reason}).`
               : "Finish Stripe onboarding to start receiving payments and payouts."}
           </p>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- redirects to Stripe's hosted onboarding */}
-          <a
-            href="/api/stripe/connect"
+          <Link
+            href={connectionPath("stripe")}
             className="mt-4 inline-block rounded-xl bg-ink px-4 py-2.5 text-sm font-bold text-paper hover:opacity-90"
           >
-            Resume Stripe setup
-          </a>
+            Resume setup in Settings → Connections
+          </Link>
         </div>
       )}
 

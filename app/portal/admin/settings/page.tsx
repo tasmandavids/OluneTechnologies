@@ -5,6 +5,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import AdminSettings from "@/components/admin/AdminSettings";
+import { INTEGRATIONS } from "@/lib/integrations/catalog";
+import { attentionCount, connectedCount, loadIntegrationStates } from "@/lib/integrations/state";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -34,8 +36,21 @@ export default async function SettingsPage() {
         .order("start_date")
     : { data: [] };
 
+  // Connections summary for the settings overview card. The full hub lives at
+  // /portal/admin/settings/connections.
+  const states = profile?.studio_id
+    ? await loadIntegrationStates(supabase, profile.studio_id)
+    : {};
+  const connections = {
+    connected: connectedCount(states),
+    attention: attentionCount(states),
+    total: INTEGRATIONS.length,
+    names: INTEGRATIONS.filter((p) => states[p.id]?.connected).map((p) => p.name),
+  };
+
   return (
     <AdminSettings
+      connections={connections}
       studio={
         studio
           ? {

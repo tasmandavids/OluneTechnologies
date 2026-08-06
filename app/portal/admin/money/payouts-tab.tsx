@@ -13,19 +13,11 @@ import {
 } from "@/lib/stripe/connect";
 import { PayoutsDashboard } from "@/components/admin/money/PayoutsDashboard";
 
-export async function PayoutsTab({
-  bannerError,
-  bannerConnected,
-  bannerIncomplete,
-}: {
-  bannerError: string | null;
-  bannerConnected: boolean;
-  bannerIncomplete: boolean;
-}) {
+export async function PayoutsTab({ bannerError }: { bannerError: string | null }) {
   const { supabase, studioId } = await requirePortalSession();
   const account = await loadStudioStripeAccount(supabase, studioId);
 
-  const banners = { bannerError, bannerConnected, bannerIncomplete };
+  const banners = { bannerError };
 
   if (!isChargeable(account)) {
     return <PayoutsDashboard account={account} balance={null} payouts={[]} fetchError={null} {...banners} />;

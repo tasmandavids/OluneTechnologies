@@ -88,6 +88,8 @@ html:has(#olune-landing-root) {
 .dcl-tier-hot:hover { transform: translateY(-28px) !important; box-shadow: 0 56px 110px -30px #8b7cf0 !important; }
 .dcl-compare-row:hover { background: #8b7cf00d; transform: translateX(6px); }
 .dcl-lang:hover { color: #ffffff !important; }
+.dcl-rel-latest:hover { transform: translateY(-6px); box-shadow: 0 70px 130px -50px #8b7cf0 !important; border-color: #8b7cf077 !important; }
+.dcl-rel-row:hover { transform: translateX(8px); background: rgba(255, 255, 255, 0.06) !important; border-color: #8b7cf055 !important; }
 
 /* ── small screens (the export is desktop-only; keep it usable) ────────── */
 @media (max-width: 900px) {
@@ -108,6 +110,9 @@ html:has(#olune-landing-root) {
   .dcl-mobile-showcase aside { width: 100%; max-width: 402px; }
   .dcl-cc-split { grid-template-columns: 1fr !important; }
   .dcl-cc-ladder { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .dcl-grid-release { grid-template-columns: 1fr !important; }
+  .dcl-grid-release-row { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .dcl-grid-nextup { grid-template-columns: 1fr !important; }
 }
 
 @media (max-width: 460px) {

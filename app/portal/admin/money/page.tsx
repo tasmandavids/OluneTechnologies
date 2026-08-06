@@ -52,7 +52,7 @@ function ComingSoonTab({ title, body, note }: { title: string; body: string; not
 export default async function MoneyPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string; invoice?: string; error?: string; connected?: string }>;
+  searchParams: Promise<{ tab?: string; invoice?: string; error?: string }>;
 }) {
   const params = await searchParams;
   const tab = resolveTab(params.tab);
@@ -108,16 +108,8 @@ export default async function MoneyPage({
       {tab === "reconcile" && (
         <ComingSoonTab title={reconcileTitle} body={reconcileBody} note={reconcileNote} />
       )}
-      {tab === "payouts" && (
-        <PayoutsTab
-          bannerError={params.error ?? null}
-          bannerConnected={params.connected === "1"}
-          bannerIncomplete={params.connected === "0"}
-        />
-      )}
-      {tab === "reports" && (
-        <ReportsTab bannerError={params.error ?? null} bannerConnected={params.connected === "1"} />
-      )}
+      {tab === "payouts" && <PayoutsTab bannerError={params.error ?? null} />}
+      {tab === "reports" && <ReportsTab />}
     </div>
   );
 }

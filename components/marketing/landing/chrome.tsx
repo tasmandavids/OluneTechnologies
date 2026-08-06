@@ -51,6 +51,7 @@ export function LandingNav() {
     { label: "Card", href: "/card" },
     { label: "FAQ", href: "/faq" },
     { label: "Team", href: "/team" },
+    { label: "Updates", href: "/#updates" },
     { label: t("about"), href: "/#about" },
   ];
 
@@ -109,6 +110,7 @@ export function LandingFooter() {
     { label: "Card", href: "/card" },
     { label: "FAQ", href: "/faq" },
     { label: "Team", href: "/team" },
+    { label: "Updates", href: "/#updates" },
     { label: "Privacy", href: "/privacy" },
     { label: "Data Deletion", href: "/data-deletion" },
     { label: t("signIn"), href: "/login" },

@@ -30,6 +30,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { setLocale } from "@/app/actions/locale";
 import { localeLabels, locales, type Locale } from "@/lib/i18n/config";
 import { landingFontVars } from "./landing/fonts";
+import { NEXT_UP, RELEASES } from "./landing/releases-data";
 
 const ACCENT = "#8b7cf0";
 const NAVY = "#1a1535";
@@ -369,7 +370,7 @@ export default function OluneLanding() {
   });
 
   // ---------- progress eclipse ----------
-  const SECTION_KEYS = ["human", "jobs", "bento", "why", "everyday", "promise", "pricing", "about", "compare", "footer"];
+  const SECTION_KEYS = ["human", "jobs", "bento", "why", "everyday", "promise", "pricing", "about", "updates", "compare", "footer"];
   const progress = SECTION_KEYS.filter((k) => revealed[k]).length / SECTION_KEYS.length;
   const pp2 = navyPhase(0.44 + progress * 0.56);
 
@@ -473,6 +474,7 @@ export default function OluneLanding() {
     { label: "Card", href: "/card" },
     { label: "FAQ", href: "/faq" },
     { label: "Team", href: "/team" },
+    { label: "Updates", href: "/#updates" },
     { label: t("about"), href: "/#about" },
   ];
   const footerLinks = [
@@ -482,6 +484,7 @@ export default function OluneLanding() {
     { label: "Card", href: "/card" },
     { label: "FAQ", href: "/faq" },
     { label: "Team", href: "/team" },
+    { label: "Updates", href: "/#updates" },
     { label: t("signIn"), href: "/login" },
     { label: t("startFree"), href: "/onboarding" },
   ];
@@ -491,6 +494,10 @@ export default function OluneLanding() {
   const climaxStars = stars(20, 43, 61, "#ffffff");
   const footerStars = stars(14, 37, 53, ACCENT);
   const statStars = stars(12, 39, 71, ACCENT);
+  const releaseStars = stars(22, 47, 59, ACCENT);
+
+  // release notes — newest leads as the hero card, the rest fall onto the rail
+  const [latestRelease, ...pastReleases] = RELEASES;
 
   const navLinkStyle: CSSProperties = { color: "rgba(26,21,53,0.66)", fontSize: 15, fontWeight: 500, transition: "color 0.25s ease" };
 
@@ -980,6 +987,97 @@ export default function OluneLanding() {
               <p style={{ fontFamily: DISPLAY, fontStyle: "italic", fontSize: "clamp(22px, 2.4vw, 30px)", color: NAVY, margin: 0, lineHeight: 1.25 }}>&quot;{t("aboutSection.quote")}&quot;</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* UPDATES — release notes. Newest release leads as a lit glass card, the
+          rest hang off a rail beneath it. Copy lives in landing/releases-data.ts. */}
+      <section id="updates" ref={sectionRef("updates")} className="dcl-section" style={{ position: "relative", background: "radial-gradient(circle at 50% -12%, #2b2158 0%, #1c1541 40%, #16112e 100%)", padding: "118px 48px 126px", overflow: "hidden", borderRadius: "48px 48px 0 0", marginTop: -48, boxShadow: "0 -34px 80px -34px rgba(26,21,53,0.4)" }}>
+        <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+          <Starfield items={releaseStars} />
+          <div style={mkShoot("12%", "6%", 2.4, 9)} />
+          <div style={mkShoot("40%", "58%", 6.6, 11)} />
+          <div style={{ position: "absolute", top: "-24%", left: "50%", width: 900, height: 900, marginLeft: -450, borderRadius: "50%", background: `radial-gradient(circle, ${ACCENT}33 0%, ${ACCENT}00 64%)`, animation: "pulseGlow 12s ease-in-out infinite" }} />
+        </div>
+
+        <div style={{ maxWidth: 900, margin: "0 auto 58px", textAlign: "center", position: "relative", zIndex: 2, ...reveal("updates", 0, "up") }}>
+          <div style={{ ...eyebrowDarkStyle, justifyContent: "center" }}><span style={accentDotStyle} />Release notes</div>
+          <h2 style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(36px, 4.8vw, 66px)", lineHeight: 1.08, color: "#ffffff", margin: "22px 0 22px", letterSpacing: "-0.02em" }}>
+            Built in the open, <span style={{ fontStyle: "italic", color: ACCENT }}>shipped every week</span>
+          </h2>
+          <p style={{ fontSize: 17.5, lineHeight: 1.7, color: "rgba(255,255,255,0.6)", maxWidth: 600, margin: "0 auto" }}>
+            Every release, dated and written down. Nothing here is a roadmap promise — it&apos;s already live in your studio.
+          </p>
+        </div>
+
+        {/* the latest release */}
+        <div style={{ maxWidth: 1080, margin: "0 auto", position: "relative", zIndex: 2, ...reveal("updates", 1, "scale") }}>
+          <div className="dcl-rel-latest" style={{ position: "relative", overflow: "hidden", borderRadius: 22, padding: "clamp(30px, 3.6vw, 50px)", background: "linear-gradient(150deg, rgba(255,255,255,0.11) 0%, rgba(255,255,255,0.04) 46%, rgba(139,124,240,0.18) 100%)", border: "1px solid rgba(255,255,255,0.15)", backdropFilter: "blur(18px) saturate(1.35)", WebkitBackdropFilter: "blur(18px) saturate(1.35)", boxShadow: `0 60px 120px -56px ${ACCENT}`, transition: "transform 0.5s cubic-bezier(.16,1,.3,1), box-shadow 0.5s ease, border-color 0.5s ease" }}>
+            <div aria-hidden style={{ position: "absolute", top: -140, right: -110, width: 420, height: 420, borderRadius: "50%", background: `radial-gradient(circle, ${ACCENT}55 0%, ${ACCENT}00 68%)`, filter: "blur(20px)", animation: "floatA 22s ease-in-out infinite", pointerEvents: "none" }} />
+            <div className="dcl-grid-release" style={{ position: "relative", zIndex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(28px, 4vw, 56px)", alignItems: "start" }}>
+              <div>
+                <span style={{ ...liveBadgeStyle, background: `${ACCENT}22`, borderColor: `${ACCENT}66` }}><span style={liveDotStyle} />Latest release</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 26, flexWrap: "wrap" }}>
+                  <span style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(56px, 8vw, 104px)", lineHeight: 0.9, letterSpacing: "-0.03em", background: `linear-gradient(90deg, #ffffff, ${ACCENT}, #ffffff)`, backgroundSize: "200% auto", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", animation: "shimmer 6s linear infinite" }}>{latestRelease.version}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.42)" }}>{latestRelease.date}</span>
+                </div>
+                <h3 style={{ fontFamily: DISPLAY, fontStyle: "italic", fontWeight: 500, fontSize: "clamp(28px, 3.4vw, 44px)", lineHeight: 1.15, color: "#ffffff", margin: "18px 0 20px", letterSpacing: "-0.015em" }}>{latestRelease.name}</h3>
+                <p style={{ fontSize: 16.5, lineHeight: 1.72, color: "rgba(255,255,255,0.66)", margin: 0 }}>{latestRelease.summary}</p>
+              </div>
+              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 2 }}>
+                {latestRelease.points.map((point, i) => (
+                  <li key={point} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "16px 0", borderBottom: i === latestRelease.points.length - 1 ? "none" : "1px solid rgba(255,255,255,0.09)" }}>
+                    <span aria-hidden style={{ position: "relative", width: 15, height: 15, flexShrink: 0, marginTop: 4 }}>
+                      <span style={{ position: "absolute", top: "16%", left: "17%", width: "76%", height: "76%", borderRadius: "50%", background: PURPLE_GRAD, boxShadow: `0 0 12px ${ACCENT}aa` }} />
+                      <span style={{ position: "absolute", top: "6%", left: "6%", width: "76%", height: "76%", borderRadius: "50%", background: "#1d1640" }} />
+                    </span>
+                    <span style={{ fontSize: 15.5, lineHeight: 1.6, color: "rgba(255,255,255,0.82)" }}>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* everything before it, on the rail */}
+        <div style={{ maxWidth: 1080, margin: "56px auto 0", position: "relative", zIndex: 2 }}>
+          <div style={{ position: "relative", marginLeft: 8, paddingLeft: 42, borderLeft: `1px solid ${ACCENT}3d` }}>
+            {pastReleases.map((release, i) => (
+              <div key={release.version} style={reveal("updates", i + 2, "up")}>
+                <div className="dcl-rel-row dcl-grid-release-row" style={{ position: "relative", display: "grid", gridTemplateColumns: "160px 1fr", gap: 28, padding: "28px 30px", marginBottom: 18, borderRadius: 16, border: "1px solid rgba(255,255,255,0.09)", background: "rgba(255,255,255,0.035)", transition: "transform 0.42s cubic-bezier(.16,1,.3,1), background 0.42s ease, border-color 0.42s ease" }}>
+                  <span aria-hidden style={{ position: "absolute", left: -48, top: 34, width: 12, height: 12, borderRadius: "50%", background: PURPLE_GRAD, boxShadow: `0 0 14px ${ACCENT}aa`, border: "2px solid #1a1440" }} />
+                  <div>
+                    <div style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: 38, lineHeight: 1, color: "rgba(255,255,255,0.9)", letterSpacing: "-0.02em" }}>{release.version}</div>
+                    <div style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.36)", marginTop: 12 }}>{release.date}</div>
+                  </div>
+                  <div>
+                    <h3 style={{ fontFamily: DISPLAY, fontStyle: "italic", fontWeight: 500, fontSize: 26, color: ACCENT, margin: "0 0 12px", lineHeight: 1.2 }}>{release.name}</h3>
+                    <p style={{ fontSize: 15.5, lineHeight: 1.68, color: "rgba(255,255,255,0.62)", margin: "0 0 18px" }}>{release.summary}</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                      {release.points.map((point) => (
+                        <span key={point} style={{ display: "inline-flex", alignItems: "center", gap: 9, padding: "8px 15px", borderRadius: 999, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", fontSize: 13.5, lineHeight: 1.4, color: "rgba(255,255,255,0.72)" }}>
+                          <span aria-hidden style={{ width: 5, height: 5, borderRadius: "50%", background: ACCENT, flexShrink: 0 }} />
+                          {point}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* what's still coming */}
+        <div className="dcl-grid-nextup" style={{ maxWidth: 1080, margin: "46px auto 0", display: "grid", gridTemplateColumns: "1fr auto", gap: 32, alignItems: "center", padding: "32px 36px", borderRadius: 18, border: `1px dashed ${ACCENT}55`, background: `${ACCENT}12`, position: "relative", zIndex: 2, ...reveal("updates", pastReleases.length + 2, "up") }}>
+          <div>
+            <div style={{ ...eyebrowAccentStyle }}><span style={accentDotStyle} />{NEXT_UP.label}</div>
+            <h3 style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(24px, 2.8vw, 34px)", color: "#ffffff", margin: "16px 0 12px", lineHeight: 1.2 }}>
+              {NEXT_UP.title} <span style={{ fontStyle: "italic", color: ACCENT }}>· {NEXT_UP.date}</span>
+            </h3>
+            <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "rgba(255,255,255,0.62)", margin: 0, maxWidth: 620 }}>{NEXT_UP.body}</p>
+          </div>
+          <Link href="/onboarding" className="dcl-cta-dark" style={ctaOnDarkStyle}>{t("startFree")} <span aria-hidden>→</span></Link>
         </div>
       </section>
 
