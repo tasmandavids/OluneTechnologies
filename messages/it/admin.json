@@ -173,6 +173,10 @@
       "header": {
         "subhead": "{count, plural, =0 {Al momento nulla richiede la tua attenzione — va tutto avanti da solo.} one {Una cosa ha bisogno di te oggi. Il resto va avanti da solo.} other {# cose hanno bisogno di te oggi. Il resto va avanti da solo.}}"
       },
+      "layout": {
+        "customize": "Personalizza layout",
+        "done": "Fatto"
+      },
       "pulse": {
         "occupancy": { "label": "Occupazione" },
         "enrolled": { "label": "Iscritti" },

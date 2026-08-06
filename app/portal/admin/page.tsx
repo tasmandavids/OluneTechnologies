@@ -35,6 +35,7 @@ export default async function AdminDashboardPage() {
     overdueRes,
     leadsRes,
     cashInRes,
+    dashboardLayoutRes,
   ] = await Promise.all([
       supabase
         .from("profiles")
@@ -83,6 +84,12 @@ export default async function AdminDashboardPage() {
         .eq("studio_id", studioId)
         .eq("status", "succeeded")
         .gte("created_at", sevenDaysAgo),
+
+      supabase
+        .from("dashboard_layouts")
+        .select("layout")
+        .eq("studio_id", studioId)
+        .maybeSingle(),
     ]);
 
   const classRows = capacityRes.data ?? [];
@@ -255,6 +262,7 @@ export default async function AdminDashboardPage() {
       cashInTotalCents={cashInTotalCents}
       cashInPaymentCount={cashInRows.length}
       cashInDays={cashInDays}
+      savedLayout={dashboardLayoutRes.data?.layout ?? null}
     />
   );
 }
