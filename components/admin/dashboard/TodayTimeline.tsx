@@ -52,7 +52,7 @@ function DayList({
         return (
           <div
             key={cls.id}
-            className="grid grid-cols-[56px_minmax(84px,1fr)_minmax(0,150px)_92px] items-start gap-2.5 rounded-[12px] px-4 py-3 text-[13.5px]"
+            className="grid grid-cols-[56px_minmax(0,1fr)_92px] items-start gap-2.5 rounded-[12px] px-4 py-3 text-[13.5px]"
             style={{
               opacity: status === "done" ? 0.55 : 1,
               background: status === "live" ? "color-mix(in srgb, var(--brand) 10%, transparent)" : "transparent",
@@ -61,20 +61,22 @@ function DayList({
             <span className="text-[12.5px] tabular-nums text-muted">
               {cls.startTime ? formatTime(cls.startTime) : "—"}
             </span>
-            <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 font-semibold text-ink">
-              <span className="min-w-0 break-words">{cls.name}</span>
-              {status === "live" && (
-                <span
-                  className="inline-flex shrink-0 items-center gap-[5px] rounded-full px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.08em] text-white"
-                  style={{ background: "var(--brand)" }}
-                >
-                  <span className="h-[5px] w-[5px] shrink-0 animate-[admin-breathe_2.6s_ease-in-out_infinite] rounded-full bg-white" />
-                  {t("status.live")}
-                </span>
-              )}
-            </span>
-            <span className="break-words text-[12.5px] text-muted">
-              {[cls.teacherName, cls.room].filter(Boolean).join(" · ")}
+            <span className="flex min-w-0 flex-col gap-0.5">
+              <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 font-semibold text-ink">
+                <span className="min-w-0">{cls.name}</span>
+                {status === "live" && (
+                  <span
+                    className="inline-flex shrink-0 items-center gap-[5px] rounded-full px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.08em] text-white"
+                    style={{ background: "var(--brand)" }}
+                  >
+                    <span className="h-[5px] w-[5px] shrink-0 animate-[admin-breathe_2.6s_ease-in-out_infinite] rounded-full bg-white" />
+                    {t("status.live")}
+                  </span>
+                )}
+              </span>
+              <span className="text-[12.5px] text-muted">
+                {[cls.teacherName, cls.room].filter(Boolean).join(" · ")}
+              </span>
             </span>
             <span className="flex items-center justify-end gap-1.5 text-[12.5px] tabular-nums text-muted">
               {status === "done" ? (
