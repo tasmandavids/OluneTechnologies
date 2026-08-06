@@ -21,6 +21,7 @@ import {
   type AccountBillingSummary,
 } from "@/app/portal/parent/billing/actions";
 import { splitTermInstallments } from "@/lib/term-payments";
+import type { TuitionQuoteLine } from "@/lib/billing/tuition-quote";
 import CheckoutForm from "@/components/payments/CheckoutForm";
 import { NZD, type EnrollData } from "./types";
 
@@ -31,7 +32,7 @@ export function Step3Review({
   onBack,
 }: {
   childId: string;
-  enrollData: Pick<EnrollData, "childName" | "classes">;
+  enrollData: Pick<EnrollData, "childName" | "classes" | "quote">;
   onComplete: (
     waitlisted: boolean,
     opts?: { payLater?: boolean; paidOnline?: boolean; payMonthly?: boolean; installmentCents?: number },
@@ -55,7 +56,13 @@ export function Step3Review({
   const [accountSummary, setAccountSummary] = useState<AccountBillingSummary | null>(null);
 
   const classes = enrollData.classes;
-  const totalBillableCents = classes.reduce((sum, c) => sum + c.billableCents, 0);
+  const quote = enrollData.quote ?? null;
+
+  // The quote is authoritative. The raw class prices are only a fallback for
+  // the moment before it arrives (or if the call failed) — they're never what
+  // gets charged, since every payment path re-quotes server-side.
+  const totalBillableCents =
+    quote?.totalCents ?? classes.reduce((sum, c) => sum + c.priceCents, 0);
   const isPaid = totalBillableCents > 0;
   const isSingleClass = classes.length === 1;
 
@@ -243,7 +250,21 @@ export function Step3Review({
   }
 
   // ── Summary phase ──────────────────────────────────────────────────────────
-  const allIncluded = classes.every((c) => c.includedInProgramme);
+  // Lines come from the quote so this screen and the invoice read identically:
+  // a combo in bold over the indented classes it covers, or one tuition line
+  // for the dancer's week.
+  const lines: TuitionQuoteLine[] =
+    quote?.lines ??
+    classes.map((cls) => ({
+      kind: "class",
+      classId: cls.classId,
+      productId: null,
+      description: cls.className,
+      chargeCents: cls.priceCents,
+      includedReason: null,
+    }));
+
+  const allIncluded = lines.length > 0 && lines.every((l) => l.includedReason !== null);
 
   return (
     <div className="flex flex-col gap-4">
@@ -251,18 +272,52 @@ export function Step3Review({
 
       <div className="box rounded-xl p-5 space-y-3">
         {/* Class list */}
-        {classes.map((cls) => (
-          <div key={cls.classId} className="flex justify-between text-sm">
-            <span className="text-muted truncate pr-2">{cls.className}</span>
+        {lines.map((line, idx) => (
+          <div
+            key={`${line.classId ?? line.kind}-${idx}`}
+            className={`flex justify-between text-sm ${
+              line.kind === "combo_detail" ? "pl-3" : ""
+            }`}
+          >
+            <span
+              className={`truncate pr-2 ${
+                line.kind === "combo" ? "font-semibold text-ink" : "text-muted"
+              }`}
+            >
+              {line.description}
+            </span>
             <span className="font-semibold text-ink shrink-0">
-              {cls.includedInProgramme
+              {line.includedReason
                 ? t("programIncluded")
-                : cls.billableCents > 0
-                ? NZD.format(cls.billableCents / 100)
+                : line.chargeCents > 0
+                ? NZD.format(line.chargeCents / 100)
                 : t("free")}
             </span>
           </div>
         ))}
+
+        {/* The sibling discount used to be folded silently into each line. It
+            gets its own row now — a family should be able to see the thing
+            they were promised. */}
+        {quote && quote.siblingDiscountCents > 0 && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted">{t("siblingDiscount")}</span>
+            <span className="font-semibold text-ink shrink-0">
+              −{NZD.format(quote.siblingDiscountCents / 100)}
+            </span>
+          </div>
+        )}
+
+        {/* Without this row an hours top-up looks like an arbitrary number. */}
+        {quote && quote.priorCreditCents > 0 && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted">{t("alreadyInvoicedThisTerm")}</span>
+            <span className="font-semibold text-ink shrink-0">
+              −{NZD.format(quote.priorCreditCents / 100)}
+            </span>
+          </div>
+        )}
+
         <div className="flex justify-between text-sm">
           <span className="text-muted">{t("summaryDancer")}</span>
           <span className="font-semibold text-ink">{enrollData.childName ?? "—"}</span>

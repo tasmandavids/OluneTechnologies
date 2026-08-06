@@ -14,6 +14,7 @@
 // ============================================================================
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { hoursBetween } from "@/lib/billing/pricing";
 import type { TaxTreatment } from "@/lib/billing/types";
 
 export type ClassPriceRow = {
@@ -27,10 +28,12 @@ export type ClassPriceRow = {
   itemCode: string | null;
   taxTreatment: TaxTreatment;
   taxRateBp: number;
+  /** Weekly hours, for studios pricing on an hours ladder. 0 with no end time. */
+  hours: number;
 };
 
 const CLASS_PRICE_COLUMNS = `
-  id, name, price_cents, studio_id, recurring_group_id,
+  id, name, price_cents, studio_id, recurring_group_id, start_time, end_time,
   xero_account_code, xero_item_code, product_id,
   product:billing_products ( id, unit_amount_cents, account_code, item_code, tax_treatment, tax_rate_bp, active )
 `;
@@ -61,6 +64,13 @@ function mapClassRow(row: Record<string, unknown>): ClassPriceRow {
     itemCode: product?.item_code ?? (row.xero_item_code as string | null) ?? null,
     taxTreatment: ((product?.tax_treatment as TaxTreatment | null) ?? "standard") as TaxTreatment,
     taxRateBp: Number(product?.tax_rate_bp ?? 1500),
+    // classes.end_time is nullable, and a class without one can't be measured.
+    // Counting it as zero is the honest answer; the Products screen warns a
+    // studio how many of these they have before they switch to hours pricing.
+    hours:
+      row.start_time && row.end_time
+        ? hoursBetween(row.start_time as string, row.end_time as string)
+        : 0,
   };
 }
 

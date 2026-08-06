@@ -3,24 +3,46 @@
 // Step 1: Select child + class (browse by day / discipline, capacity check).
 // Pure file split from EnrollModal.tsx (1.6.1) — no logic changes.
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useShortDayNames, useFormatTimeShort } from "@/lib/i18n/client";
 import type { Child } from "@/app/portal/parent/page";
-import { getAvailableClasses, type AvailableClass } from "@/app/portal/parent/enroll/actions";
+import {
+  getAvailableClasses,
+  getDancerTuitionState,
+  type AvailableClass,
+  type ClientTuitionContext,
+  type DancerTuitionState,
+} from "@/app/portal/parent/enroll/actions";
+import { formatHours } from "@/lib/billing/hours-ladder";
+import { quoteTuition, type QuoteClass } from "@/lib/billing/tuition-quote";
 import { NZD } from "./types";
+
+function toQuoteClass(cls: AvailableClass): QuoteClass {
+  return {
+    classId: cls.id,
+    name: cls.name,
+    productId: cls.productId,
+    priceCents: cls.priceCents,
+    hours: cls.hours,
+    recurringGroupId: cls.recurringGroupId,
+  };
+}
 
 function ClassCard({
   cls,
   selected,
   includedInBatch,
+  chargesByHours,
   onToggle,
 }: {
   cls: AvailableClass;
   selected: boolean;
   includedInBatch: boolean;
+  /** Under an hours ladder a per-class price is meaningless — show the length. */
+  chargesByHours: boolean;
   onToggle: () => void;
 }) {
   const t = useTranslations("parent.enroll");
@@ -69,7 +91,11 @@ function ClassCard({
             </p>
           </div>
           <div className="text-right shrink-0">
-            {includedInBatch ? (
+            {chargesByHours ? (
+              <p className="text-sm font-bold text-ink">
+                {cls.hours > 0 ? formatHours(cls.hours) : ""}
+              </p>
+            ) : includedInBatch ? (
               <p className="text-sm font-bold" style={{ color: "var(--brand)" }}>
                 {t("programIncluded")}
               </p>
@@ -166,6 +192,8 @@ export function Step1SelectClass({
   const dayShort = useShortDayNames();
   const [childId, setChildId] = useState(familyChildren[0]?.studentId ?? "");
   const [classes, setClasses] = useState<AvailableClass[]>([]);
+  const [tuition, setTuition] = useState<ClientTuitionContext | null>(null);
+  const [dancer, setDancer] = useState<DancerTuitionState | null>(null);
   const [filter, setFilter] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -173,11 +201,29 @@ export function Step1SelectClass({
 
   useEffect(() => {
     getAvailableClasses().then((res) => {
-      if (res.ok) setClasses(res.data);
-      else setError(res.error);
+      if (res.ok) {
+        setClasses(res.data.classes);
+        setTuition(res.data.tuition);
+      } else {
+        setError(res.error);
+      }
       setLoading(false);
     });
   }, []);
+
+  // What this dancer already has changes the quote — decisively so under an
+  // hours ladder, where the price depends on the week they already do.
+  useEffect(() => {
+    if (!childId) return;
+    let stale = false;
+    setDancer(null);
+    getDancerTuitionState(childId).then((res) => {
+      if (!stale && res.ok) setDancer(res.data);
+    });
+    return () => {
+      stale = true;
+    };
+  }, [childId]);
 
   const filtered = classes.filter((c) => {
     if (!filter) return true;
@@ -202,22 +248,41 @@ export function Step1SelectClass({
   const selectedChild = familyChildren.find((c) => c.studentId === childId);
   const selectedClasses = classes.filter((c) => selectedIds.has(c.id));
 
-  // Compute which selected classes are "included" (linked recurring-series
-  // sibling of one already counted, not the first). Only an explicit shared
-  // recurringGroupId counts — never matched by class name.
-  const paidGroupsInSelection = new Set<string>();
-  const includedInBatchIds = new Set<string>();
-  for (const c of selectedClasses) {
-    if (!c.recurringGroupId) continue;
-    if (paidGroupsInSelection.has(c.recurringGroupId)) {
-      includedInBatchIds.add(c.id);
-    } else {
-      paidGroupsInSelection.add(c.recurringGroupId);
-    }
-  }
-  const totalCents = selectedClasses
-    .filter((c) => !includedInBatchIds.has(c.id))
-    .reduce((sum, c) => sum + c.priceCents, 0);
+  // The running total runs quoteTuition — the same function the server bills
+  // with. This screen used to reimplement the linked-series rule by hand, which
+  // meant the preview and the invoice could disagree the moment either changed.
+  // The server still re-prices from the database before anything is charged;
+  // this is a mirror, not an authority.
+  const quote = useMemo(
+    () =>
+      quoteTuition({
+        model: tuition?.model ?? "per_class",
+        adding: selectedClasses.map(toQuoteClass),
+        existing: (dancer?.existing ?? []).map((e) => ({
+          classId: e.classId,
+          name: e.name,
+          productId: e.productId,
+          priceCents: e.priceCents,
+          hours: e.hours,
+          recurringGroupId: e.recurringGroupId,
+        })),
+        ladder: tuition?.ladder ?? null,
+        ladderProductName: tuition?.ladderProductName ?? undefined,
+        combos: tuition?.combos ?? [],
+        priorInvoicedCents: dancer?.priorInvoicedCents ?? 0,
+        siblingDiscountPct: dancer?.siblingDiscountPct ?? 0,
+      }),
+    [tuition, dancer, selectedClasses],
+  );
+
+  const includedInBatchIds = new Set(
+    quote.lines
+      .filter((line) => line.includedReason && line.classId)
+      .map((line) => line.classId as string),
+  );
+
+  const totalCents = quote.totalCents;
+  const chargesByHours = (tuition?.model ?? "per_class") === "hours";
 
   // Suggested classes: other days of a linked recurring series the dancer is
   // already enrolled in (or has just selected) — same recurringGroupId, so
@@ -286,6 +351,7 @@ export function Step1SelectClass({
               cls={cls}
               selected={selectedIds.has(cls.id)}
               includedInBatch={includedInBatchIds.has(cls.id)}
+              chargesByHours={chargesByHours}
               onToggle={() => toggleClass(cls.id)}
             />
           ))}
@@ -294,14 +360,42 @@ export function Step1SelectClass({
 
       {/* Selection summary */}
       {selectedIds.size > 0 && (
-        <div className="box flex items-center justify-between rounded-lg px-3 py-2 text-xs">
-          <span className="text-muted">
-            {selectedIds.size === 1
-              ? t("classSelected", { count: 1 })
-              : t("classesSelected", { count: selectedIds.size })}
-          </span>
-          {totalCents > 0 && (
-            <span className="font-bold text-ink">{NZD.format(totalCents / 100)}</span>
+        <div className="box rounded-lg px-3 py-2 text-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-muted">
+              {selectedIds.size === 1
+                ? t("classSelected", { count: 1 })
+                : t("classesSelected", { count: selectedIds.size })}
+            </span>
+            {totalCents > 0 && (
+              <span className="font-bold text-ink">{NZD.format(totalCents / 100)}</span>
+            )}
+          </div>
+
+          {/* Under an hours ladder the headline number is the week, and what
+              they pay now is the difference from what they've already been
+              invoiced. Showing only the difference would look like a mistake;
+              showing only the week would look like a double charge. */}
+          {chargesByHours && quote.hours && (
+            <p className="mt-1 text-muted">
+              {t("hoursPerWeek", { hours: formatHours(quote.hours.after) })}
+              {quote.priorCreditCents > 0 && (
+                <>
+                  {" · "}
+                  {t("alreadyInvoiced", {
+                    amount: NZD.format(quote.priorCreditCents / 100),
+                  })}
+                </>
+              )}
+            </p>
+          )}
+
+          {quote.siblingDiscountCents > 0 && (
+            <p className="mt-1 text-muted">
+              {t("siblingDiscountApplied", {
+                amount: NZD.format(quote.siblingDiscountCents / 100),
+              })}
+            </p>
           )}
         </div>
       )}

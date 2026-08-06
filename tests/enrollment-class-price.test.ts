@@ -50,7 +50,38 @@ describe("loadStudioClassPrice", () => {
       itemCode: null,
       taxTreatment: "standard",
       taxRateBp: 1500,
+      hours: 0,
     });
+  });
+
+  // Hours pricing measures the class; a class with no finish time can't be
+  // measured, and counting it as zero is more honest than guessing.
+  it("derives weekly hours from the class times", async () => {
+    const row = (start: string | null, end: string | null) => ({
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            eq: () => ({
+              maybeSingle: async () => ({
+                data: {
+                  id: "class-1",
+                  name: "Ballet",
+                  price_cents: 44500,
+                  studio_id: "studio-1",
+                  recurring_group_id: null,
+                  start_time: start,
+                  end_time: end,
+                },
+              }),
+            }),
+          }),
+        }),
+      }),
+    });
+
+    expect((await loadStudioClassPrice(row("16:00", "17:30") as never, "studio-1", "c"))?.hours).toBe(1.5);
+    expect((await loadStudioClassPrice(row("16:00", null) as never, "studio-1", "c"))?.hours).toBe(0);
+    expect((await loadStudioClassPrice(row(null, null) as never, "studio-1", "c"))?.hours).toBe(0);
   });
 
   // Since the billing catalogue (0105) the linked product is the source of

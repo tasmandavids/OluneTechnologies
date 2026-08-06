@@ -9,15 +9,16 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCY } from "@/lib/currency";
-import { loadStudioTaxSettings } from "@/lib/billing/catalog";
-import { totalInvoice } from "@/lib/billing/tax";
-import { siblingDiscountedCents } from "@/lib/discounts";
-import { enrollmentBillableCents, batchEnrollmentBillableCents } from "@/lib/enrollment-billing";
+import { insertTuitionInvoice, quoteEnrollment } from "@/lib/billing/tuition-invoice";
+import { loadStudioTuitionContext } from "@/lib/billing/tuition-model";
+import type { TuitionPricingModel, TuitionQuote } from "@/lib/billing/tuition-quote";
+import type { HoursLadder } from "@/lib/billing/hours-ladder";
+import type { ComboDefinition } from "@/lib/billing/combo-match";
 import { loadStudioClassPrice, loadStudioClassPrices } from "@/lib/enrollment-class-price";
-import { xeroSyncOutstandingInvoice } from "@/lib/xero/webhook-sync";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
-import { studioLocalYmdOffset } from "@/lib/date/studio-date";
 import { resolveTransferData } from "@/lib/stripe/connect";
+import { currentTuitionPeriod, invoicedTuitionCents } from "@/lib/billing/tuition-ledger";
+import { siblingDiscountInfo } from "@/lib/discounts";
 import { getTranslations } from "@/lib/i18n/server";
 import { getParentStudio } from "@/lib/portal/access";
 import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
@@ -38,10 +39,42 @@ export type AvailableClass = {
   capacity: number;
   enrolled: number;
   priceCents: number;
+  /** Weekly hours. Shown instead of a price when the studio charges by hours. */
+  hours: number;
+  productId: string | null;
   /** Non-null only when this class is an explicit linked recurring series
    *  (e.g. a Mon/Wed/Fri programme created together) — the studio bills once
    *  per group, not per day. Never matched by class name. */
   recurringGroupId: string | null;
+};
+
+/**
+ * The studio-level half of a live quote, so the wizard can price a basket in
+ * the browser with the same function the server bills with.
+ *
+ * Everything here is already member-readable under RLS, so nothing is exposed
+ * that a parent couldn't read anyway — and the server still re-prices from the
+ * database before writing a single cent.
+ */
+export type ClientTuitionContext = {
+  model: TuitionPricingModel;
+  ladder: HoursLadder | null;
+  ladderProductName: string | null;
+  combos: ComboDefinition[];
+};
+
+/** The per-dancer half. Fetched once the wizard knows whose enrolment it is. */
+export type DancerTuitionState = {
+  existing: {
+    classId: string;
+    name: string;
+    productId: string | null;
+    priceCents: number;
+    hours: number;
+    recurringGroupId: string | null;
+  }[];
+  priorInvoicedCents: number;
+  siblingDiscountPct: number;
 };
 
 export type Waiver = {
@@ -99,7 +132,9 @@ async function assertStudentAccess(
 
 // ─── Get available classes ───────────────────────────────────────────────────
 
-export async function getAvailableClasses(): Promise<ActionResult<AvailableClass[]>> {
+export async function getAvailableClasses(): Promise<
+  ActionResult<{ classes: AvailableClass[]; tuition: ClientTuitionContext }>
+> {
   const { error, supabase, studioId } = await getEnrollmentContext();
   if (error || !studioId) return { ok: false, error: error ?? "No studio found." };
 
@@ -114,7 +149,10 @@ export async function getAvailableClasses(): Promise<ActionResult<AvailableClass
   // Prices come from the same server-authoritative loader the enrolment charge
   // uses, so the quote a parent sees can't drift from what they're billed.
   const ids = (data ?? []).map((r) => r.id as string);
-  const priceRows = await loadStudioClassPrices(supabase, studioId, ids);
+  const [priceRows, context] = await Promise.all([
+    loadStudioClassPrices(supabase, studioId, ids),
+    loadStudioTuitionContext(supabase, studioId),
+  ]);
 
   const classes: AvailableClass[] = (data ?? []).map((r) => {
     const priced = priceRows.get(r.id as string);
@@ -128,11 +166,84 @@ export async function getAvailableClasses(): Promise<ActionResult<AvailableClass
       capacity: Number(r.capacity ?? 0),
       enrolled: Number(r.enrolled ?? 0),
       priceCents: priced?.priceCents ?? 0,
+      hours: priced?.hours ?? 0,
+      productId: priced?.productId ?? null,
       recurringGroupId: priced?.recurringGroupId ?? null,
     };
   });
 
-  return { ok: true, data: classes };
+  return {
+    ok: true,
+    data: {
+      classes,
+      tuition: {
+        model: context.model,
+        ladder: context.ladder,
+        ladderProductName: context.ladderProduct?.name ?? null,
+        combos: context.combos,
+      },
+    },
+  };
+}
+
+/**
+ * What this dancer already has, so the wizard's preview can account for it.
+ *
+ * Split from getAvailableClasses because Step 1 renders before a child is
+ * picked — and because in hours mode the answer changes per dancer, not per
+ * studio.
+ */
+export async function getDancerTuitionState(
+  studentId: string,
+): Promise<ActionResult<DancerTuitionState>> {
+  const t = await getTranslations("errors.actions");
+  const ctx = await getEnrollmentContext();
+  const { error, supabase, userId, studioId, mode } = ctx;
+  if (error || !userId || !studioId) return { ok: false, error: error ?? t("unknown") };
+  if (!uuidField.safeParse(studentId).success) {
+    return { ok: false, error: t("invalidStudentOrClass") };
+  }
+
+  const accessErr = await assertStudentAccess(ctx, studentId, t);
+  if (accessErr) return { ok: false, error: accessErr };
+
+  const { data: enrolled } = await supabase
+    .from("enrollments")
+    .select("class_id")
+    .eq("student_id", studentId)
+    .eq("status", "active");
+
+  const ids = (enrolled ?? []).map((r) => r.class_id as string).filter(Boolean);
+  const rows = ids.length ? await loadStudioClassPrices(supabase, studioId, ids) : new Map();
+
+  const context = await loadStudioTuitionContext(supabase, studioId);
+  let priorInvoicedCents = 0;
+  if (context.model === "hours") {
+    const period = await currentTuitionPeriod(supabase, studioId);
+    priorInvoicedCents = await invoicedTuitionCents(supabase, studioId, studentId, period);
+  }
+
+  let siblingDiscountPct = 0;
+  if (mode !== "self") {
+    const info = await siblingDiscountInfo(supabase, studioId, userId, studentId, 10_000);
+    siblingDiscountPct = info.applies ? info.pct : 0;
+  }
+
+  return {
+    ok: true,
+    data: {
+      existing: [...rows.values()].map((row) => ({
+        classId: row.id,
+        name: row.name,
+        productId: row.productId,
+        priceCents: row.priceCents,
+        hours: row.hours,
+        recurringGroupId: row.recurringGroupId,
+      })),
+      priorInvoicedCents,
+      siblingDiscountPct,
+    },
+  };
 }
 
 // ─── Get studio waivers ──────────────────────────────────────────────────────
@@ -290,173 +401,45 @@ export async function enrollChildInClass(
   };
 }
 
-async function enrollmentChargeCents(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  studioId: string,
-  userId: string,
+/**
+ * Price a whole basket in one call.
+ *
+ * Replaces the per-class quote the wizard used to loop over. Under an hours
+ * ladder there is no such thing as "what this one class costs" — the ladder
+ * prices the dancer's week — so a per-class endpoint would be actively
+ * misleading, and even under per-class pricing the loop had to reimplement the
+ * linked-series rule client-side to stop each sibling zeroing the others out.
+ */
+export async function getBasketQuote(
   studentId: string,
-  priceCents: number,
-  mode: "parent" | "self" | null,
-  classId: string,
-) {
-  const baseCents = await enrollmentBillableCents(supabase, studentId, classId, priceCents);
-  if (baseCents <= 0) return 0;
-
-  return mode === "self"
-    ? baseCents
-    : siblingDiscountedCents(supabase, studioId, userId, studentId, baseCents);
-}
-
-export async function getEnrollmentBillingQuote(
-  studentId: string,
-  classId: string,
-  /** @deprecated Ignored — price is always loaded from the database. */
-  _priceCents?: number,
-): Promise<ActionResult<{ billableCents: number; includedInProgramme: boolean }>> {
+  classIds: string[],
+): Promise<ActionResult<TuitionQuote>> {
   const t = await getTranslations("errors.actions");
   const ctx = await getEnrollmentContext();
   const { error, supabase, userId, studioId, mode } = ctx;
   if (error || !userId || !studioId) return { ok: false, error: error ?? t("unknown") };
-  if (!uuidField.safeParse(studentId).success || !uuidField.safeParse(classId).success) {
+  if (
+    !uuidField.safeParse(studentId).success ||
+    classIds.some((id) => !uuidField.safeParse(id).success)
+  ) {
     return { ok: false, error: t("invalidStudentOrClass") };
   }
 
   const accessErr = await assertStudentAccess(ctx, studentId, t);
   if (accessErr) return { ok: false, error: accessErr };
 
-  const cls = await loadStudioClassPrice(supabase, studioId, classId);
-  if (!cls) return { ok: false, error: t("invalidStudentOrClass") };
-
-  const billableCents = await enrollmentChargeCents(
-    supabase,
-    studioId,
-    userId,
-    studentId,
-    cls.priceCents,
+  const result = await quoteEnrollment(supabase, studioId, studentId, classIds, {
     mode,
-    classId,
-  );
-
-  return {
-    ok: true,
-    data: {
-      billableCents,
-      includedInProgramme: cls.priceCents > 0 && billableCents === 0,
-    },
-  };
-}
-
-/**
- * Shared write path for an enrollment invoice: creates one `invoices` row and
- * one `invoice_line_items` row per billable class. Used by the pay-later flow
- * (one call per enrollment session, N classes, always a draft — see
- * `sendNow` below), the pay-monthly flow (one call, N classes, sent
- * immediately because it's about to be folded into an active term payment
- * plan that starts charging the card right away), and the pay-now flow (one
- * call, one class, sent immediately) — so a parent enrolling in several
- * classes at once gets a single itemized invoice instead of one flat-amount
- * invoice per class.
- *
- * `sendNow` controls whether this lands as a draft awaiting manual review
- * (pay-later — nothing has been charged yet, so nothing should go out to the
- * parent until an admin checks it) or as sent immediately (pay-now /
- * pay-monthly — the parent is already being charged as part of enrolling, so
- * there's no meaningful "draft" moment to insert). Either way the invoice is
- * synced to Xero immediately as a Xero Draft — Xero always mirrors Olune's
- * own draft state — and later sending it (via sendInvoiceNow) flips that
- * existing Xero draft to Authorised rather than creating a second copy.
- */
-async function insertEnrollmentInvoice(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  studioId: string,
-  userId: string,
-  studentId: string,
-  charges: { classId: string; className: string; chargeCents: number }[],
-  sendNow: boolean,
-  t: Awaited<ReturnType<typeof getTranslations>>,
-) {
-  const dueDate = studioLocalYmdOffset(7);
-  const now = new Date().toISOString();
-
-  // Ledger codes and tax treatment come from each class's catalogue product
-  // and get frozen onto the line, so re-pricing or re-coding that product
-  // later can't rewrite an invoice the parent has already been sent.
-  const priceRows = await loadStudioClassPrices(
-    supabase,
-    studioId,
-    charges.map((c) => c.classId),
-  );
-  const taxSettings = await loadStudioTaxSettings(supabase, studioId);
-
-  const lines = charges.map((c, idx) => {
-    const priced = priceRows.get(c.classId);
-    return {
-      item_type: "class",
-      reference_id: c.classId,
-      product_id: priced?.productId ?? null,
-      description: c.className,
-      quantity: 1,
-      unit_cents: c.chargeCents,
-      line_total_cents: c.chargeCents,
-      sort_order: idx,
-      account_code: priced?.accountCode ?? null,
-      item_code: priced?.itemCode ?? null,
-      tax_treatment: priced?.taxTreatment ?? "standard",
-      tax_rate_bp: priced?.taxRateBp ?? 1500,
-    };
+    payerId: userId,
   });
+  if (!result) return { ok: false, error: t("invalidStudentOrClass") };
 
-  const totals = totalInvoice(
-    lines.map((l) => ({
-      lineTotalCents: l.line_total_cents,
-      taxTreatment: l.tax_treatment,
-      taxRateBp: l.tax_rate_bp,
-    })),
-    { inclusive: taxSettings.pricesIncludeTax, registered: taxSettings.gstRegistered },
-  );
-
-  const { data: invoice, error: invErr } = await supabase
-    .from("invoices")
-    .insert({
-      studio_id: studioId,
-      payer_id: userId,
-      student_id: studentId,
-      amount_cents: totals.totalCents,
-      subtotal_cents: totals.subtotalCents,
-      gst_cents: totals.taxCents,
-      tax_inclusive: taxSettings.pricesIncludeTax,
-      status: sendNow ? "sent" : "draft",
-      due_date: dueDate,
-      issued_at: sendNow ? now : null,
-    })
-    .select("id")
-    .single();
-
-  if (invErr || !invoice) {
-    return { ok: false as const, error: invErr?.message ?? t("couldNotCreateInvoice") };
-  }
-
-  const invoiceId = invoice.id as string;
-
-  const { error: lineItemsErr } = await supabase
-    .from("invoice_line_items")
-    .insert(lines.map((l) => ({ ...l, invoice_id: invoiceId })));
-
-  if (lineItemsErr) {
-    return { ok: false as const, error: lineItemsErr.message };
-  }
-
-  await xeroSyncOutstandingInvoice(supabase, invoiceId, {
-    lineDescription:
-      charges.length === 1 ? `Enrollment — ${charges[0].className}` : "Enrollment",
-  });
-
-  return { ok: true as const, invoiceId };
+  return { ok: true, data: result.quote };
 }
 
 // ─── Create invoice only (pay later — no Stripe charge at enrollment) ───────
 //  `sendNow` distinguishes true pay-later (draft, admin sends manually later)
-//  from pay-monthly (sent immediately — see insertEnrollmentInvoice above).
+//  from pay-monthly (sent immediately — see insertTuitionInvoice).
 
 export async function createEnrollmentPayLaterInvoice(
   studentId: string,
@@ -482,49 +465,38 @@ export async function createEnrollmentPayLaterInvoice(
     return { ok: false, error: t("unknown") };
   }
 
-  const priced = await loadStudioClassPrices(
+  // Every price, enrolment and prior invoice is re-read server-side; the
+  // client payload only ever says which classes, never what they cost. All of
+  // `classes` are already active rows by the time this runs, which is exactly
+  // why quoteEnrollment excludes the batch from the dancer's existing load.
+  const context = await loadStudioTuitionContext(supabase, studioId);
+  const result = await quoteEnrollment(
     supabase,
     studioId,
-    classes.map((c) => c.classId),
-  );
-  if (priced.size !== classes.length) {
-    return { ok: false, error: t("invalidStudentOrClass") };
-  }
-
-  // Batch-aware: all of `classes` are enrolled (as active rows) before this
-  // billing step runs, so a per-class check would find every linked-series
-  // sibling already active and zero all of them out. See
-  // batchEnrollmentBillableCents for why this can't reuse enrollmentChargeCents.
-  // Prices always come from the DB — never from the client payload.
-  const baseCentsByClassId = await batchEnrollmentBillableCents(
-    supabase,
     studentId,
-    classes.map((c) => {
-      const row = priced.get(c.classId)!;
-      return { classId: c.classId, priceCents: row.priceCents };
-    }),
+    classes.map((c) => c.classId),
+    { mode, payerId: userId, context },
   );
+  if (!result) return { ok: false, error: t("invalidStudentOrClass") };
 
-  const charges: { classId: string; className: string; chargeCents: number }[] = [];
-  for (const cls of classes) {
-    const row = priced.get(cls.classId)!;
-    const baseCents = baseCentsByClassId.get(cls.classId) ?? 0;
-    if (baseCents <= 0) continue;
-    const chargeCents =
-      mode === "self" ? baseCents : await siblingDiscountedCents(supabase, studioId, userId, studentId, baseCents);
-    if (chargeCents > 0) {
-      charges.push({ classId: cls.classId, className: row.name, chargeCents });
-    }
-  }
-
-  if (!charges.length) {
+  if (result.quote.totalCents <= 0) {
     revalidatePath("/portal/parent");
     revalidatePath("/portal/student");
     revalidatePath("/portal/parent/billing");
     return { ok: true, data: { billingSkipped: true } };
   }
 
-  const invoiceRes = await insertEnrollmentInvoice(supabase, studioId, userId, studentId, charges, sendNow, t);
+  const invoiceRes = await insertTuitionInvoice(supabase, {
+    studioId,
+    payerId: userId,
+    studentId,
+    quote: result.quote,
+    priced: result.priced,
+    context,
+    sendNow,
+    xeroDescription: "Enrollment",
+    fallbackError: t("couldNotCreateInvoice"),
+  });
   if (!invoiceRes.ok) return { ok: false, error: invoiceRes.error };
 
   revalidatePath("/portal/parent");
@@ -567,17 +539,18 @@ export async function createEnrollmentIntent(
 
   const cls = await loadStudioClassPrice(supabase, studioId, classId);
   if (!cls) return { ok: false, error: t("invalidStudentOrClass") };
-  if (cls.priceCents <= 0) return { ok: false, error: t("classNoFee") };
 
-  const chargeCents = await enrollmentChargeCents(
-    supabase,
-    studioId,
-    userId,
-    studentId,
-    cls.priceCents,
+  // Under an hours ladder or a combo there is no per-class price to check, so
+  // the "is this class free" gate is now the quote itself.
+  const context = await loadStudioTuitionContext(supabase, studioId);
+  const result = await quoteEnrollment(supabase, studioId, studentId, [classId], {
     mode,
-    classId,
-  );
+    payerId: userId,
+    context,
+  });
+  if (!result) return { ok: false, error: t("invalidStudentOrClass") };
+
+  const chargeCents = result.quote.totalCents;
 
   if (chargeCents <= 0) {
     revalidatePath("/portal/parent");
@@ -586,15 +559,17 @@ export async function createEnrollmentIntent(
     return { ok: true, data: { billingSkipped: true } };
   }
 
-  const invoiceRes = await insertEnrollmentInvoice(
-    supabase,
+  const invoiceRes = await insertTuitionInvoice(supabase, {
     studioId,
-    userId,
+    payerId: userId,
     studentId,
-    [{ classId, className: cls.name, chargeCents }],
-    true,
-    t,
-  );
+    quote: result.quote,
+    priced: result.priced,
+    context,
+    sendNow: true,
+    xeroDescription: `Enrollment — ${cls.name}`,
+    fallbackError: t("couldNotCreateInvoice"),
+  });
   if (!invoiceRes.ok) return { ok: false, error: invoiceRes.error };
 
   // Resolve / create the Stripe customer.

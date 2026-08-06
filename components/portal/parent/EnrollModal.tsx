@@ -17,8 +17,8 @@ import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import type { Child } from "@/app/portal/parent/page";
-import { getEnrollmentBillingQuote } from "@/app/portal/parent/enroll/actions";
-import type { EnrollData, SelectedClass } from "@/components/portal/parent/enroll/types";
+import { getBasketQuote } from "@/app/portal/parent/enroll/actions";
+import type { EnrollData } from "@/components/portal/parent/enroll/types";
 import { Step1SelectClass } from "@/components/portal/parent/enroll/Step1SelectClass";
 import { Step2SignWaivers } from "@/components/portal/parent/enroll/Step2SignWaivers";
 import { Step3Review } from "@/components/portal/parent/enroll/Step3Review";
@@ -120,8 +120,6 @@ export function EnrollModal({
                         classId: cls.id,
                         className: cls.name,
                         priceCents: cls.priceCents,
-                        billableCents: cls.priceCents,
-                        includedInProgramme: false,
                         recurringGroupId: cls.recurringGroupId,
                       })),
                     });
@@ -134,28 +132,20 @@ export function EnrollModal({
                   childName={enrollData.childName ?? null}
                   childId={enrollData.childId!}
                   onNext={async () => {
-                    // Process quotes sequentially so that within this batch, the
-                    // second day of a linked recurring series (same
-                    // recurringGroupId) is correctly treated as included —
-                    // mirroring the DB logic in enrollment-billing.ts, which
-                    // never matches by class name.
-                    const paidGroups = new Set<string>();
-                    const updatedClasses: SelectedClass[] = [];
-                    for (const cls of enrollData.classes ?? []) {
-                      if (cls.recurringGroupId && paidGroups.has(cls.recurringGroupId)) {
-                        updatedClasses.push({ ...cls, billableCents: 0, includedInProgramme: true });
-                        continue;
-                      }
-                      const quote = await getEnrollmentBillingQuote(
-                        enrollData.childId!,
-                        cls.classId,
-                      );
-                      const billable = quote.ok ? quote.data.billableCents : cls.priceCents;
-                      const included = quote.ok ? quote.data.includedInProgramme : false;
-                      if (billable > 0 && cls.recurringGroupId) paidGroups.add(cls.recurringGroupId);
-                      updatedClasses.push({ ...cls, billableCents: billable, includedInProgramme: included });
+                    // One authoritative quote for the whole basket. This used
+                    // to be a per-class loop that re-derived the linked-series
+                    // rule here, in the browser, to stop each sibling zeroing
+                    // the others out — a third copy of a rule that already
+                    // existed twice. The server prices the basket as a unit,
+                    // which is also the only way an hours ladder or a combo
+                    // can be expressed at all.
+                    const result = await getBasketQuote(
+                      enrollData.childId!,
+                      (enrollData.classes ?? []).map((c) => c.classId),
+                    );
+                    if (result.ok) {
+                      setEnrollData((prev) => ({ ...prev, quote: result.data }));
                     }
-                    setEnrollData((prev) => ({ ...prev, classes: updatedClasses }));
                     setStep(2);
                   }}
                   onBack={() => setStep(0)}
@@ -167,6 +157,7 @@ export function EnrollModal({
                   enrollData={{
                     childName: enrollData.childName ?? null,
                     classes: enrollData.classes ?? [],
+                    quote: enrollData.quote,
                   }}
                   onComplete={(waitlisted, opts) => {
                     setEnrollData((prev) => ({

@@ -10,13 +10,8 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStudioOpsStudio } from "@/lib/portal/access";
-import { loadStudioTaxSettings } from "@/lib/billing/catalog";
-import { totalInvoice } from "@/lib/billing/tax";
-import { batchEnrollmentBillableCents } from "@/lib/enrollment-billing";
-import { loadStudioClassPrices } from "@/lib/enrollment-class-price";
-import { siblingDiscountedCents } from "@/lib/discounts";
-import { studioLocalYmdOffset } from "@/lib/date/studio-date";
-import { xeroSyncOutstandingInvoice } from "@/lib/xero/webhook-sync";
+import { insertTuitionInvoice, quoteEnrollment } from "@/lib/billing/tuition-invoice";
+import { loadStudioTuitionContext } from "@/lib/billing/tuition-model";
 
 async function getAdminStudio() {
   const ctx = await getStudioOpsStudio();
@@ -440,9 +435,9 @@ export async function bulkDeleteStudents(input: unknown): Promise<BulkDeleteResu
 }
 
 // ─── CREATE DRAFT INVOICE FROM CURRENT ENROLLMENTS ────────────────────────────
-// Redrafts a fresh invoice for a student's currently-active enrollments, using
-// the same per-class pricing rules as the parent-facing enroll flow: linked
-// recurring-series siblings bill once (batchEnrollmentBillableCents), and the
+// Redrafts a fresh invoice for a student's currently-active enrollments through
+// the same builder as the parent-facing enrol flow, so it prices on whatever
+// model the studio charges on — per class, an hours ladder, or combos — and the
 // studio's sibling discount applies when billing a guardian who has other
 // actively-enrolled children. Always lands as a draft for admin review before
 // sending — this exists for "we fixed the student's enrollments, now redraft
@@ -519,99 +514,42 @@ export async function createDraftInvoiceFromEnrollments(
     applySiblingDiscount = false;
   }
 
-  // Catalogue is the source of truth for price, ledger codes and tax treatment;
-  // the class row only still supplies name and recurring-group linkage.
-  const priceRows = await loadStudioClassPrices(
+  // One shared builder with the parent enrol flow — this used to be a
+  // near-verbatim copy of it, which meant any change to how a line freezes its
+  // price had to be made twice. It also means an admin billing a student gets
+  // whatever pricing model the studio actually charges on.
+  const context = await loadStudioTuitionContext(supabase, studioId);
+  const quoted = await quoteEnrollment(
     supabase,
     studioId,
-    classes.map((c) => c.id),
-  );
-
-  const baseCentsByClassId = await batchEnrollmentBillableCents(
-    supabase,
     studentId,
-    classes.map((c) => ({
-      classId: c.id,
-      priceCents: priceRows.get(c.id)?.priceCents ?? c.price_cents ?? 0,
-    })),
+    classes.map((c) => c.id),
+    { mode: null, payerId, applySiblingDiscount, context },
   );
+  if (!quoted) return { ok: false, error: "Could not price this student's classes." };
 
-  const charges: { classId: string; className: string; chargeCents: number }[] = [];
-  for (const cls of classes) {
-    const baseCents = baseCentsByClassId.get(cls.id) ?? 0;
-    if (baseCents <= 0) continue;
-    const chargeCents = applySiblingDiscount
-      ? await siblingDiscountedCents(supabase, studioId, payerId, studentId, baseCents)
-      : baseCents;
-    if (chargeCents > 0) charges.push({ classId: cls.id, className: cls.name, chargeCents });
-  }
-
-  if (charges.length === 0) {
+  if (quoted.quote.totalCents <= 0) {
     return { ok: false, error: "Nothing billable — every enrolled class is fully covered already." };
   }
 
-  const dueDate = studioLocalYmdOffset(7);
-  const taxSettings = await loadStudioTaxSettings(supabase, studioId);
-
-  const lines = charges.map((c, idx) => {
-    const priced = priceRows.get(c.classId);
-    return {
-      item_type: "class",
-      reference_id: c.classId,
-      product_id: priced?.productId ?? null,
-      description: c.className,
-      quantity: 1,
-      unit_cents: c.chargeCents,
-      line_total_cents: c.chargeCents,
-      sort_order: idx,
-      account_code: priced?.accountCode ?? null,
-      item_code: priced?.itemCode ?? null,
-      tax_treatment: priced?.taxTreatment ?? "standard",
-      tax_rate_bp: priced?.taxRateBp ?? 1500,
-    };
+  const invoiceRes = await insertTuitionInvoice(supabase, {
+    studioId,
+    payerId,
+    studentId,
+    quote: quoted.quote,
+    priced: quoted.priced,
+    context,
+    sendNow: false,
+    xeroDescription:
+      classes.length === 1 ? `Enrollment — ${classes[0].name}` : "Enrollment",
+    fallbackError: "Could not create invoice.",
   });
+  if (!invoiceRes.ok) return { ok: false, error: invoiceRes.error };
 
-  const totals = totalInvoice(
-    lines.map((l) => ({
-      lineTotalCents: l.line_total_cents,
-      taxTreatment: l.tax_treatment,
-      taxRateBp: l.tax_rate_bp,
-    })),
-    { inclusive: taxSettings.pricesIncludeTax, registered: taxSettings.gstRegistered },
-  );
-
-  const { data: invoice, error: invErr } = await supabase
-    .from("invoices")
-    .insert({
-      studio_id: studioId,
-      payer_id: payerId,
-      student_id: studentId,
-      amount_cents: totals.totalCents,
-      subtotal_cents: totals.subtotalCents,
-      gst_cents: totals.taxCents,
-      tax_inclusive: taxSettings.pricesIncludeTax,
-      status: "draft",
-      due_date: dueDate,
-      issued_at: null,
-    })
-    .select("id")
-    .single();
-
-  if (invErr || !invoice) return { ok: false, error: invErr?.message ?? "Could not create invoice." };
-
-  const invoiceId = invoice.id as string;
-
-  const { error: lineItemsErr } = await supabase
-    .from("invoice_line_items")
-    .insert(lines.map((l) => ({ ...l, invoice_id: invoiceId })));
-  if (lineItemsErr) return { ok: false, error: lineItemsErr.message };
-
-  const xero = await xeroSyncOutstandingInvoice(supabase, invoiceId, {
-    lineDescription: charges.length === 1 ? `Enrollment — ${charges[0].className}` : "Enrollment",
-  });
+  const invoiceId = invoiceRes.invoiceId;
 
   revalidatePath("/portal/admin/students");
   revalidatePath("/portal/admin/people");
   revalidatePath("/portal/admin/money");
-  return { ok: true, invoiceId, xeroError: xero.ok ? undefined : xero.error };
+  return { ok: true, invoiceId };
 }

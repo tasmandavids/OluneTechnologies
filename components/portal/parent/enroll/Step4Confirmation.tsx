@@ -17,7 +17,8 @@ export function Step4Confirmation({
   const t = useTranslations("parent.enroll");
   const dancerName = enrollData.childName ?? t("yourDancer");
   const classes = enrollData.classes;
-  const totalBillableCents = classes.reduce((sum, c) => sum + c.billableCents, 0);
+  const totalBillableCents =
+    enrollData.quote?.totalCents ?? classes.reduce((sum, c) => sum + c.priceCents, 0);
 
   return (
     <div className="flex flex-col items-center gap-5 py-4 text-center">

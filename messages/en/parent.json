@@ -193,7 +193,12 @@
       "multipleClasses": "{count} classes",
       "done": "Done",
       "payMonthlyWithAmount": "Pay monthly · {amount}/month",
-      "morePaymentOptions": "More payment options"
+      "morePaymentOptions": "More payment options",
+      "hoursPerWeek": "{hours} a week",
+      "alreadyInvoiced": "{amount} already invoiced",
+      "alreadyInvoicedThisTerm": "Already invoiced this term",
+      "siblingDiscount": "Family discount",
+      "siblingDiscountApplied": "Family discount −{amount}"
     },
     "email": {
       "title": "Studio email",
