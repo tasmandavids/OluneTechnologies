@@ -370,7 +370,7 @@ export function PortalShellClient({
   const sidebarOpen = !collapsed || hoverPeek;
 
   return (
-    <div className={`flex h-screen overflow-hidden bg-base ${isAdminRail ? "admin-glass" : ""}`}>
+    <div className={`flex h-screen overflow-hidden bg-base ${isAdminRail ? "admin-glass relative isolate" : ""}`}>
       <PortalThemeSync theme={portalTheme} />
       {isAdminRail && <AmbientBackground />}
       {isAdminRail ? (
