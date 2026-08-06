@@ -25,7 +25,7 @@ const TYPE_ICON: Record<string, string> = {
   schedule_updated:     "📅",
 };
 
-export function NotificationBell() {
+export function NotificationBell({ size = "sm" }: { size?: "sm" | "lg" }) {
   const t = useTranslations("admin.notifications");
   const tShared = useTranslations("admin.shared");
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -99,11 +99,20 @@ export function NotificationBell() {
     <div ref={dropdownRef} className="relative">
       <button
         onClick={handleOpen}
-        className="relative grid h-9 w-9 place-items-center rounded-xl text-muted transition-colors hover:bg-surface hover:text-ink"
+        className={
+          size === "lg"
+            ? "relative grid h-11 w-11 place-items-center rounded-[16px] border text-ink transition-transform duration-300 hover:-translate-y-px"
+            : "relative grid h-9 w-9 place-items-center rounded-xl text-muted transition-colors hover:bg-surface hover:text-ink"
+        }
+        style={
+          size === "lg"
+            ? { background: "var(--t1)", borderColor: "var(--tb)", boxShadow: "inset 0 1px 0 var(--sheen)" }
+            : undefined
+        }
         aria-label={t("ariaLabel")}
       >
         <svg
-          className="h-5 w-5"
+          className={size === "lg" ? "h-[22px] w-[22px]" : "h-5 w-5"}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -115,8 +124,15 @@ export function NotificationBell() {
           <path d="M13.73 21a2 2 0 0 1-3.46 0" />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute right-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-brand px-1 text-[0.6rem] font-bold text-white">
-            {unreadCount > 99 ? "99+" : unreadCount}
+          <span
+            className={
+              size === "lg"
+                ? "absolute right-2.5 top-2.5 h-2 w-2 rounded-full"
+                : "absolute right-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-brand px-1 text-[0.6rem] font-bold text-white"
+            }
+            style={size === "lg" ? { background: "var(--brand)", boxShadow: "0 0 0 3px var(--glass), 0 0 10px var(--tg)" } : undefined}
+          >
+            {size === "lg" ? null : unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
       </button>
