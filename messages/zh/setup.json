@@ -12,6 +12,7 @@
       "profile": "您的工作室",
       "students": "舞者",
       "classes": "课程",
+      "pricing": "收费方式",
       "tour": "导览"
     },
     "actions": {
@@ -45,7 +46,8 @@
       "about": "您的工作室有何特别之处？",
       "aboutPlaceholder": "以社区为中心的学前芭蕾、比赛队、成人公开课…",
       "stylesLabel": "您提供的舞蹈风格",
-      "stylesRequired": "请至少选择一种风格以继续。"
+      "stylesRequired": "请至少选择一种风格以继续。",
+      "stylesHint": "它们会用于课程建议、网站的课程页面，以及家长看到的咨询表单。"
     },
     "students": {
       "title": "添加您的舞者",
@@ -63,7 +65,8 @@
       "parentEmailPlaceholder": "家长邮箱",
       "addAnother": "+ 添加另一位学员",
       "linkParents": "提供家长信息时，创建家长账户并关联家庭",
-      "import": "导入 {count, plural, other {# 名舞者}}"
+      "import": "导入 {count, plural, other {# 名舞者}}",
+      "portalNote": "每位加入的成员都会获得门户账号，并可发放签到卡和接收你的表单。"
     },
     "classes": {
       "title": "搭建您的课程表",
@@ -78,7 +81,46 @@
       "pasteLabel": "或从电子表格粘贴",
       "pastePlaceholder": "Class\tStyle\tDay\tStart\tEnd\tCapacity\tPrice\nJunior Ballet\tBallet\tMon\t16:00\t17:00\t15\t18",
       "detected": "{count, plural, other {检测到 # 门课程}}",
-      "create": "创建 {count, plural, other {# 门课程}}"
+      "create": "创建 {count, plural, other {# 门课程}}",
+      "productsNote": "你填写的每个价格都会成为账单目录中的产品，账单从第一张起就带有正确的税率和会计科目。"
+    },
+    "pricing": {
+      "title": "你打算怎么收费？",
+      "subtitle": "选择工作室实际使用的学费计算方式——家长报名时看到的就是它。",
+      "options": {
+        "per_class": {
+          "name": "按课收费",
+          "body": "每节课各有价格。上两门课的学员就付两门课的钱。",
+          "example": "周一 {each} + 周三 {each} = {both}。"
+        },
+        "hours": {
+          "name": "按每周课时",
+          "body": "按学员每周上多少小时收一个价。整张表由你填写——不用算数，也没有百分比。",
+          "example": "每周 2 小时 = {twoHours}。再加一小时就是 {threeHours}。"
+        },
+        "per_class_combos": {
+          "name": "按课收费，含套餐",
+          "body": "课程保留各自的价格，由你指定哪些组合合并为一个价格。",
+          "example": "周一和周三一起 = {each}，而不是 {both}。"
+        }
+      },
+      "rateCard": {
+        "title": "你的课时价目表",
+        "description": "学员按每周上课时长支付的金额。直接填总价——这里没有任何按百分比推算的数字。",
+        "hours": "每周小时数",
+        "theyPay": "应付金额",
+        "addRow": "+ 添加一行",
+        "removeRow": "删除此行",
+        "overflowLabel": "超出最后一行后，",
+        "overflowHint": "每多一小时的加价。留空则不论多少小时都按最后一行收费。",
+        "previewTitle": "家庭实际支付"
+      },
+      "duplicateHours": "有两行的小时数相同，请修改其中一行。",
+      "perClassNote": "每门课保留你设定的价格，家长报名时看到的就是这个金额。",
+      "combosNote": "课程保留各自的价格。合并为一个价格的组合请在「财务 → 产品」中设定。",
+      "changeLater": "随时可以在「财务 → 产品」中修改。",
+      "save": "保存并完成设置",
+      "rateCardRequired": "请至少在价目表中添加一行，或改回按课收费。"
     },
     "tour": {
       "title": "{studioName} 已就绪",
@@ -153,28 +195,44 @@
     },
     "tourFeatures": {
       "dashboard": {
-        "title": "仪表盘",
-        "body": "一目了然地查看报名、收入和今日日程。"
+        "title": "今日",
+        "body": "今天的课程、签到情况、收入与待收款项。"
       },
       "classes": {
         "title": "课程",
-        "body": "搭建课程表、设置容量并管理候补名单。"
+        "body": "编排课表、设定人数上限并管理候补名单。"
       },
       "students": {
-        "title": "学员与家庭",
-        "body": "名单、报名、进度记录和家长账户。"
+        "title": "成员",
+        "body": "学员、家庭与员工同在一个通讯录，可发送门户邀请。"
+      },
+      "products": {
+        "title": "产品与价格",
+        "body": "价目表、课程费用、次卡与套餐——统一的目录。"
       },
       "billing": {
-        "title": "账单",
-        "body": "账单、Stripe 付款，以及以新西兰元计的学期费用。"
+        "title": "财务",
+        "body": "账单、Stripe 结算与 Xero，以新西兰元计。"
       },
       "website": {
         "title": "网站",
-        "body": "您的公开网站——课程、报名和您的品牌。"
+        "body": "你的对外网站——课程、在线报名与品牌形象。"
+      },
+      "forms": {
+        "title": "表单",
+        "body": "报名表、章程与免责声明，可在屏幕上签署。"
+      },
+      "checkin": {
+        "title": "签到",
+        "body": "NFC 卡、Apple Wallet 通行证，以及实时在馆名单。"
+      },
+      "connections": {
+        "title": "连接",
+        "body": "Stripe、Xero、邮箱与日历，都在设置中连接。"
       },
       "leads": {
-        "title": "潜在客户与消息",
-        "body": "试课咨询以及与家庭的双向沟通。"
+        "title": "线索与消息",
+        "body": "试课咨询以及与家长的双向沟通。"
       }
     },
     "regions": {

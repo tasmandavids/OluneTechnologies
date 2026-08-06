@@ -12,6 +12,7 @@
       "profile": "Votre studio",
       "students": "Danseurs",
       "classes": "Cours",
+      "pricing": "Tarifs",
       "tour": "Visite"
     },
     "actions": {
@@ -45,7 +46,8 @@
       "about": "Qu'est-ce qui rend votre studio unique ?",
       "aboutPlaceholder": "Ballet préscolaire axé sur la communauté, équipes de compétition, cours ouverts pour adultes…",
       "stylesLabel": "Styles de danse proposés",
-      "stylesRequired": "Choisissez au moins un style pour continuer."
+      "stylesRequired": "Choisissez au moins un style pour continuer.",
+      "stylesHint": "Ils alimentent nos suggestions de cours, les pages programme de votre site et le formulaire de contact vu par les familles."
     },
     "students": {
       "title": "Ajoutez vos danseurs",
@@ -63,7 +65,8 @@
       "parentEmailPlaceholder": "E-mail du parent",
       "addAnother": "+ Ajouter un autre élève",
       "linkParents": "Créer des comptes parents et lier les familles lorsque les coordonnées sont fournies",
-      "import": "Importer {count, plural, one {# danseur} other {# danseurs}}"
+      "import": "Importer {count, plural, one {# danseur} other {# danseurs}}",
+      "portalNote": "Chaque personne ajoutée reçoit un accès au portail, peut recevoir une carte de pointage et vos formulaires."
     },
     "classes": {
       "title": "Composez votre planning",
@@ -78,7 +81,46 @@
       "pasteLabel": "Ou coller depuis un tableur",
       "pastePlaceholder": "Cours\tStyle\tJour\tDébut\tFin\tCapacité\tPrix\nBallet juniors\tBallet\tLun\t16:00\t17:00\t15\t18",
       "detected": "{count, plural, one {# cours détecté} other {# cours détectés}}",
-      "create": "Créer {count, plural, one {# cours} other {# cours}}"
+      "create": "Créer {count, plural, one {# cours} other {# cours}}",
+      "productsNote": "Chaque prix saisi devient un produit de votre catalogue de facturation : les factures portent la bonne TVA et les bons codes comptables dès la première."
+    },
+    "pricing": {
+      "title": "Comment allez-vous facturer ?",
+      "subtitle": "Choisissez la façon dont votre studio tarifie réellement les cours — c'est le devis que reçoivent les familles à l'inscription.",
+      "options": {
+        "per_class": {
+          "name": "Par cours",
+          "body": "Chaque cours a son propre prix. Une danseuse inscrite à deux cours paie deux cours.",
+          "example": "Lundi {each} + mercredi {each} = {both}."
+        },
+        "hours": {
+          "name": "Aux heures par semaine",
+          "body": "Un seul prix selon le nombre d'heures par semaine. Vous saisissez tout le tableau — aucun calcul, aucun pourcentage.",
+          "example": "2 heures par semaine = {twoHours}. Une heure de plus, c'est {threeHours}."
+        },
+        "per_class_combos": {
+          "name": "Par cours, avec forfaits",
+          "body": "Les cours gardent leur prix, et vous nommez les combinaisons qui obtiennent un prix unique.",
+          "example": "Lundi et mercredi ensemble = {each}, et non {both}."
+        }
+      },
+      "rateCard": {
+        "title": "Votre grille horaire",
+        "description": "Ce qu'une danseuse paie pour ses heures hebdomadaires. Saisissez les totaux — rien n'est déduit d'un pourcentage.",
+        "hours": "Heures par semaine",
+        "theyPay": "Elle paie",
+        "addRow": "+ Ajouter une ligne",
+        "removeRow": "Supprimer cette ligne",
+        "overflowLabel": "Au-delà de la dernière ligne,",
+        "overflowHint": "par heure supplémentaire. Laissez vide pour appliquer la dernière ligne quel que soit le nombre d'heures.",
+        "previewTitle": "Ce que paie une famille"
+      },
+      "duplicateHours": "Deux lignes indiquent le même nombre d'heures. Modifiez-en une.",
+      "perClassNote": "Chaque cours conserve le prix que vous lui avez donné, et c'est ce qui est proposé aux familles à l'inscription.",
+      "combosNote": "Les cours gardent leur prix. Nommez les combinaisons à prix unique dans Finances → Produits.",
+      "changeLater": "Vous pouvez changer à tout moment dans Finances → Produits.",
+      "save": "Enregistrer et terminer",
+      "rateCardRequired": "Ajoutez au moins une ligne à votre grille, ou revenez à la tarification par cours."
     },
     "tour": {
       "title": "{studioName} est prêt",
@@ -153,28 +195,44 @@
     },
     "tourFeatures": {
       "dashboard": {
-        "title": "Tableau de bord",
-        "body": "Inscriptions, chiffre d'affaires et planning du jour en un coup d'œil."
+        "title": "Aujourd'hui",
+        "body": "Les cours du jour, les présences, les encaissements et les impayés."
       },
       "classes": {
         "title": "Cours",
-        "body": "Construisez votre planning, définissez les capacités et gérez les listes d'attente."
+        "body": "Construisez votre planning, fixez les capacités et gérez les listes d'attente."
       },
       "students": {
-        "title": "Élèves et familles",
-        "body": "Effectifs, inscriptions, notes de progression et comptes parents."
+        "title": "Personnes",
+        "body": "Danseurs, familles et équipe dans un seul annuaire, avec invitations au portail."
+      },
+      "products": {
+        "title": "Produits et tarifs",
+        "body": "Votre grille, les frais de cours, les cartes et les forfaits — un seul catalogue."
       },
       "billing": {
-        "title": "Facturation",
-        "body": "Factures, paiements Stripe et frais de trimestre en NZD."
+        "title": "Finances",
+        "body": "Factures, versements Stripe et Xero, en NZD."
       },
       "website": {
         "title": "Site web",
-        "body": "Votre site public — cours, inscriptions et votre marque."
+        "body": "Votre site public — cours, inscription en ligne et votre identité."
+      },
+      "forms": {
+        "title": "Formulaires",
+        "body": "Inscriptions, règlements et décharges, signés à l'écran."
+      },
+      "checkin": {
+        "title": "Pointage",
+        "body": "Cartes NFC, passes Apple Wallet et présence en direct dans le studio."
+      },
+      "connections": {
+        "title": "Connexions",
+        "body": "Stripe, Xero, e-mail et agendas, connectés dans Réglages."
       },
       "leads": {
         "title": "Prospects et messages",
-        "body": "Demandes de cours d'essai et messagerie bidirectionnelle avec les familles."
+        "body": "Demandes d'essai et messagerie avec les familles."
       }
     },
     "regions": {

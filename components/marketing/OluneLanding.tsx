@@ -234,7 +234,11 @@ const caretStyle: CSSProperties = { display: "inline-block", width: 2, height: 1
 function ChromeWindow({ width, height, url, children }: { width: number; height: number; url: string; children: ReactNode }) {
   const t = useTranslations("marketing");
   return (
-    <div style={{ width: "100%", maxWidth: width, overflow: "hidden", borderRadius: 16, border: "1px solid rgba(255,255,255,0.1)", background: "#202124", boxShadow: "0 24px 80px -24px rgba(26,21,53,0.55)" }}>
+    // data-nosnippet: everything inside is a fake screenshot of a fictional
+    // studio ("Classes 6 days a week · Ponsonby, Auckland", "Tempo Dance Co.").
+    // Google was splicing that copy onto the end of the homepage's meta
+    // description in search results, which read as though Olune ran classes.
+    <div data-nosnippet style={{ width: "100%", maxWidth: width, overflow: "hidden", borderRadius: 16, border: "1px solid rgba(255,255,255,0.1)", background: "#202124", boxShadow: "0 24px 80px -24px rgba(26,21,53,0.55)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px 0" }}>
         <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#ff5f57" }} />
         <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#febc2e" }} />
@@ -538,13 +542,20 @@ export default function OluneLanding() {
     { label: "Updates", href: "/#updates" },
     { label: t("about"), href: "/#about" },
   ];
+  // Real routes first, and with the anchor text Google should read as the page
+  // name — sitelink labels are drawn from anchor text and <title>, so "Card"
+  // and "Team" were giving it nothing to work with. /instructors and /privacy
+  // are in the sitemap but were unreachable from the homepage; a page with no
+  // internal link is not a sitelink candidate. In-page anchors go last.
   const footerLinks = [
+    { label: "Olune Mobile", href: "/mobile" },
+    { label: "Check-in card", href: "/card" },
+    { label: "Find an instructor", href: "/instructors" },
+    { label: "Meet the team", href: "/team" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Privacy", href: "/privacy" },
     { label: t("features"), href: "/#features" },
     { label: t("pricing"), href: "/#pricing" },
-    { label: "Mobile", href: "/mobile" },
-    { label: "Card", href: "/card" },
-    { label: "FAQ", href: "/faq" },
-    { label: "Team", href: "/team" },
     { label: "Updates", href: "/#updates" },
     { label: t("signIn"), href: "/login" },
     { label: t("startFree"), href: "/onboarding" },

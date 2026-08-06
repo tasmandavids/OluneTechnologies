@@ -12,6 +12,7 @@
       "profile": "Your studio",
       "students": "Dancers",
       "classes": "Classes",
+      "pricing": "Pricing",
       "tour": "Tour"
     },
     "actions": {
@@ -45,7 +46,8 @@
       "about": "What makes your studio special?",
       "aboutPlaceholder": "Community-focused preschool ballet, competition teams, adult open classes…",
       "stylesLabel": "Dance styles you offer",
-      "stylesRequired": "Pick at least one style to continue."
+      "stylesRequired": "Pick at least one style to continue.",
+      "stylesHint": "These seed your class suggestions, your website's programme pages, and the enquiry form families see."
     },
     "students": {
       "title": "Add your dancers",
@@ -63,7 +65,8 @@
       "parentEmailPlaceholder": "Parent email",
       "addAnother": "+ Add another student",
       "linkParents": "Create parent accounts & link families when parent details are provided",
-      "import": "Import {count, plural, one {# dancer} other {# dancers}}"
+      "import": "Import {count, plural, one {# dancer} other {# dancers}}",
+      "portalNote": "Everyone you add gets a portal login, and can be issued a check-in card and sent your forms."
     },
     "classes": {
       "title": "Build your timetable",
@@ -78,7 +81,46 @@
       "pasteLabel": "Or paste from spreadsheet",
       "pastePlaceholder": "Class\tStyle\tDay\tStart\tEnd\tCapacity\tPrice\nJunior Ballet\tBallet\tMon\t16:00\t17:00\t15\t18",
       "detected": "{count, plural, one {# class detected} other {# classes detected}}",
-      "create": "Create {count, plural, one {# class} other {# classes}}"
+      "create": "Create {count, plural, one {# class} other {# classes}}",
+      "productsNote": "Each price you type becomes a product in your billing catalogue, so invoices carry the right GST and accounting codes from the first one."
+    },
+    "pricing": {
+      "title": "How will you charge?",
+      "subtitle": "Pick the way your studio actually prices tuition — this is what families are quoted at enrolment.",
+      "options": {
+        "per_class": {
+          "name": "Per class",
+          "body": "Each class has its own price. A dancer in two classes pays for two classes.",
+          "example": "Monday {each} + Wednesday {each} = {both}."
+        },
+        "hours": {
+          "name": "By hours a week",
+          "body": "One price for however many hours a week a dancer does. You type the whole table — no maths, no percentages.",
+          "example": "2 hours a week = {twoHours}. Add an hour, it's {threeHours}."
+        },
+        "per_class_combos": {
+          "name": "Per class, with combos",
+          "body": "Classes keep their own prices, and you name the combinations that get one price instead.",
+          "example": "Monday and Wednesday together = {each}, not {both}."
+        }
+      },
+      "rateCard": {
+        "title": "Your hourly rate card",
+        "description": "What a dancer pays for the hours they do each week. Type the totals — nothing here is worked out from a percentage.",
+        "hours": "Hours a week",
+        "theyPay": "They pay",
+        "addRow": "+ Add a row",
+        "removeRow": "Remove this row",
+        "overflowLabel": "Beyond the last row,",
+        "overflowHint": "per extra hour. Leave blank to charge the last row however many hours they do.",
+        "previewTitle": "What a family pays"
+      },
+      "duplicateHours": "Two rows have the same number of hours. Change one of them.",
+      "perClassNote": "Every class keeps the price you gave it, and that is what a family is quoted at enrolment.",
+      "combosNote": "Classes keep their own prices. Name the combinations that get one price instead in Money → Products.",
+      "changeLater": "You can change this any time in Money → Products.",
+      "save": "Save & finish setup",
+      "rateCardRequired": "Add at least one row to your rate card, or switch back to per-class pricing."
     },
     "tour": {
       "title": "{studioName} is ready",
@@ -153,24 +195,40 @@
     },
     "tourFeatures": {
       "dashboard": {
-        "title": "Dashboard",
-        "body": "See enrolments, revenue, and today's schedule at a glance."
+        "title": "Today",
+        "body": "Today's classes, who has checked in, what came in and what is owed."
       },
       "classes": {
         "title": "Classes",
         "body": "Build your timetable, set capacity, and manage waitlists."
       },
       "students": {
-        "title": "Students & families",
-        "body": "Roster, enrolments, progress notes, and parent accounts."
+        "title": "People",
+        "body": "Dancers, families and staff in one directory, with portal invites."
+      },
+      "products": {
+        "title": "Products & pricing",
+        "body": "Your rate card, class fees, passes and combos — one catalogue."
       },
       "billing": {
-        "title": "Billing",
-        "body": "Invoices, Stripe payments, and term fees in NZD."
+        "title": "Money",
+        "body": "Invoices, Stripe payouts and Xero, in NZD."
       },
       "website": {
         "title": "Website",
-        "body": "Your public site — classes, enrolments, and your brand."
+        "body": "Your public site — classes, online enrolment and your brand."
+      },
+      "forms": {
+        "title": "Forms",
+        "body": "Enrolment forms, policies and waivers, signed on screen."
+      },
+      "checkin": {
+        "title": "Check-in",
+        "body": "NFC cards, Apple Wallet passes and a live building roster."
+      },
+      "connections": {
+        "title": "Connections",
+        "body": "Stripe, Xero, email and calendars, all connected in Settings."
       },
       "leads": {
         "title": "Leads & messages",

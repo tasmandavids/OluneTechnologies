@@ -5,9 +5,20 @@ import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import type { ImportSource, SetupPath, SetupStepId } from "@/lib/setup/constants";
+import type {
+  ImportSource,
+  SetupPath,
+  SetupStepId,
+  TourFeatureKey,
+} from "@/lib/setup/constants";
 import { SETUP_STEPS } from "@/lib/setup/constants";
+import type { TuitionPricingModel } from "@/lib/billing/tuition-quote";
 import { ensureClassFeeProducts } from "@/lib/billing/class-product";
+import { TUITION_PRICING_MODELS } from "@/lib/billing/tuition-quote";
+import {
+  saveHoursRateCard,
+  setTuitionPricingModel,
+} from "@/app/portal/admin/money/product-actions";
 
 export type ActionResult<T = void> =
   | { ok: true; data?: T }
@@ -301,6 +312,50 @@ export async function bulkAddClasses(input: unknown): Promise<ActionResult<{ add
   return { ok: true, data: { added: rows.length } };
 }
 
+// ─── How the studio charges ──────────────────────────────────────────────────
+
+const HourBandSchema = z.object({
+  minHours: z.number().positive().max(100),
+  totalCents: z.number().int().nonnegative().max(100_000_00),
+});
+
+const TuitionSchema = z.object({
+  model: z.enum(TUITION_PRICING_MODELS),
+  bands: z.array(HourBandSchema).max(30).optional(),
+  overflowRateCents: z.number().int().nonnegative().max(100_000_00).nullable().optional(),
+});
+
+/**
+ * The pricing step, saved through the same two actions Money → Products uses.
+ *
+ * Deliberately not a second implementation: setTuitionPricingModel carries the
+ * auto-pay preflight that refuses an hours switch which would double-charge a
+ * family, and saveHoursRateCard creates the single hours-ladder product on
+ * first save. A wizard that wrote `studios.tuition_pricing_model` directly
+ * would skip both, and a studio's first rate card is exactly when those guards
+ * matter most.
+ */
+export async function saveTuitionModel(input: unknown): Promise<ActionResult> {
+  const parsed = TuitionSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Check the rate card and try again." };
+
+  const { error, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
+
+  const modelResult = await setTuitionPricingModel(parsed.data.model);
+  if (!modelResult.ok) return { ok: false, error: modelResult.error };
+
+  if (parsed.data.model === "hours" && parsed.data.bands?.length) {
+    const cardResult = await saveHoursRateCard(
+      parsed.data.bands,
+      parsed.data.overflowRateCents ?? null,
+    );
+    if (!cardResult.ok) return { ok: false, error: cardResult.error };
+  }
+
+  return { ok: true };
+}
+
 const stepIds = SETUP_STEPS.map((s) => s.id) as [SetupStepId, ...SetupStepId[]];
 
 const StepSchema = z.object({
@@ -389,4 +444,14 @@ export type SetupStudio = {
   about: string | null;
   danceStyles: string[];
   schemaReady: boolean;
+  /** How the studio charges today, and the rate card behind it (0109/0110). */
+  tuition: {
+    model: TuitionPricingModel;
+    bands: { minHours: number; totalCents: number }[];
+    overflowRateCents: number | null;
+    /** False when 0109/0110 aren't applied — the pricing step is then skipped. */
+    ready: boolean;
+  };
+  /** Tour cards this studio's pack actually entitles it to. */
+  tourFeatures: TourFeatureKey[];
 };

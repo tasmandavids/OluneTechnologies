@@ -36,6 +36,7 @@ export const SETUP_STEP_IDS = [
   "profile",
   "students",
   "classes",
+  "pricing",
   "tour",
 ] as const;
 
@@ -57,20 +58,36 @@ export const TOUR_FEATURE_KEYS = [
   "dashboard",
   "classes",
   "students",
+  "products",
   "billing",
   "website",
+  "forms",
+  "checkin",
+  "connections",
   "leads",
 ] as const;
 
 export type TourFeatureKey = (typeof TOUR_FEATURE_KEYS)[number];
 
+/**
+ * The doors a studio should know exist on day one, in the order they matter.
+ *
+ * `module` mirrors ADMIN_NAV's gating (lib/portal/nav-config.ts): a tour card
+ * for a module this studio's pack doesn't include would send an admin to a
+ * placeholder, so the wizard filters on the same entitlements the rail does.
+ * Absent means always shown, exactly as in the nav.
+ */
 export const TOUR_FEATURES = [
   { id: "dashboard" as const, href: "/portal/admin", emoji: "📊" },
-  { id: "classes" as const, href: "/portal/admin/classes", emoji: "🩰" },
   { id: "students" as const, href: "/portal/admin/people", emoji: "👨‍👩‍👧" },
-  { id: "billing" as const, href: "/portal/admin/money", emoji: "💳" },
-  { id: "website" as const, href: "/portal/admin/site", emoji: "🌐" },
-  { id: "leads" as const, href: "/portal/admin/leads", emoji: "✉️" },
+  { id: "classes" as const, href: "/portal/admin/classes", emoji: "🩰", module: "classes" },
+  { id: "products" as const, href: "/portal/admin/money?tab=products", emoji: "🏷️", module: "billing" },
+  { id: "billing" as const, href: "/portal/admin/money", emoji: "💳", module: "billing" },
+  { id: "website" as const, href: "/portal/admin/site", emoji: "🌐", module: "site" },
+  { id: "forms" as const, href: "/portal/admin/forms", emoji: "📝", module: "forms" },
+  { id: "checkin" as const, href: "/portal/admin/checkin", emoji: "📲" },
+  { id: "connections" as const, href: "/portal/admin/settings/connections", emoji: "🔌" },
+  { id: "leads" as const, href: "/portal/admin/leads", emoji: "✉️", module: "leads" },
 ] as const;
 
 export const NZ_REGION_KEYS = [
