@@ -82,7 +82,7 @@ export default function StudentTimetable({
           {t("today", { day: dayNames[todayDow] })}
         </h2>
         {today.length === 0 ? (
-          <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-8 text-center">
+          <div className="box rounded-2xl px-6 py-8 text-center">
             <p className="text-sm text-muted">{t("noClassesToday")}</p>
           </div>
         ) : (
@@ -90,8 +90,8 @@ export default function StudentTimetable({
             {today.map((c) => (
               <div
                 key={c.enrollmentId}
-                className="relative overflow-hidden rounded-2xl border border-[--hair] bg-surface p-5"
-                style={{ borderLeftColor: discColor(c.discipline), borderLeftWidth: 3 }}
+                className="box relative overflow-hidden rounded-2xl p-5"
+                style={{ boxShadow: `inset 3px 0 0 ${discColor(c.discipline)}, var(--box-shadow)` }}
               >
                 <div
                   className="pointer-events-none absolute inset-0"
@@ -123,7 +123,7 @@ export default function StudentTimetable({
 
       <motion.section variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
         <h2 className="mb-3 text-xs uppercase tracking-widest text-muted">{t("weeklySchedule")}</h2>
-        <div className="overflow-x-auto rounded-2xl border border-[--hair] bg-surface p-4">
+        <div className="box overflow-x-auto rounded-2xl p-4">
           <div
             className="grid min-w-[480px] gap-2"
             style={{ gridTemplateColumns: `repeat(${SHOW_DAYS.length}, minmax(0,1fr))` }}
@@ -169,7 +169,7 @@ export default function StudentTimetable({
           {t("myClasses", { count: classes.length })}
         </h2>
         {classes.length === 0 ? (
-          <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-10 text-center">
+          <div className="box rounded-2xl px-6 py-10 text-center">
             <p className="text-sm text-muted">{t("noEnrolments")}</p>
             <p className="mt-1 text-xs text-muted">{t("noEnrolmentsHint")}</p>
           </div>
@@ -179,7 +179,7 @@ export default function StudentTimetable({
               <motion.div
                 key={c.enrollmentId}
                 whileHover={{ y: -2 }}
-                className="rounded-2xl border border-[--hair] bg-surface p-4"
+                className="box rounded-2xl p-4"
               >
                 <div className="flex items-start gap-3">
                   <span

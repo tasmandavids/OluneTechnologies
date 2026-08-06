@@ -12,7 +12,7 @@ type AttStatus = "present" | "absent" | "late" | "excused" | null;
 
 function StudioBadge({ name }: { name: string }) {
   return (
-    <span className="inline-flex rounded-full border border-[--hair] bg-base/60 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wide text-muted">
+    <span className="box-pill inline-flex px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wide text-muted">
       {name}
     </span>
   );
@@ -59,9 +59,9 @@ function RollCallCard({ cls, todayDate }: { cls: TeacherClass; todayDate: string
   const total = cls.students.length;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+    <div className="box overflow-hidden rounded-2xl">
       <div
-        className="flex items-center justify-between px-5 py-4 border-b border-[--hair]"
+        className="flex items-center justify-between px-5 py-4"
         style={{ background: "color-mix(in srgb, var(--brand) 8%, var(--surface))" }}
       >
         <div>
@@ -87,7 +87,7 @@ function RollCallCard({ cls, todayDate }: { cls: TeacherClass; todayDate: string
       {cls.students.length === 0 ? (
         <p className="px-5 py-6 text-center text-sm text-muted">{t("noStudents")}</p>
       ) : (
-        <ul className="divide-y divide-[--hair]">
+        <ul className="flex flex-col">
           {cls.students.map((student) => {
             const status = statuses[student.studentId];
             return (
@@ -157,7 +157,7 @@ function ScheduleRow({ cls, dayName }: { cls: TeacherClass; dayName: string }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-[--hair] bg-surface">
+    <div className="box overflow-hidden rounded-xl">
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
@@ -196,12 +196,12 @@ function ScheduleRow({ cls, dayName }: { cls: TeacherClass; dayName: string }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden border-t border-[--hair]"
+            className="overflow-hidden"
           >
             {cls.students.length === 0 ? (
               <p className="px-5 py-4 text-center text-sm text-muted">{t("noStudents")}</p>
             ) : (
-              <ul className="divide-y divide-[--hair]">
+              <ul className="flex flex-col">
                 {cls.students.map((student) => (
                   <li key={student.studentId} className="flex items-center gap-3 px-5 py-2.5">
                     <span
@@ -285,7 +285,7 @@ export default function TeacherSchedule({
           {t("todayRoll", { day: dayNames[todayDow] })}
         </h2>
         {todayClasses.length === 0 ? (
-          <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-8 text-center">
+          <div className="box rounded-2xl px-6 py-8 text-center">
             <p className="text-sm text-muted">{t("noClassesToday")}</p>
           </div>
         ) : (
@@ -314,19 +314,19 @@ export default function TeacherSchedule({
         <motion.section variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
           <h2 className="mb-3 text-xs uppercase tracking-widest text-muted">Income overview</h2>
           <div className="grid grid-cols-3 gap-3">
-            <Link href="/portal/teacher/invoices" className="rounded-2xl border border-[--hair] bg-surface px-4 py-4 text-center hover:border-brand/40 transition-colors">
+            <Link href="/portal/teacher/invoices" className="box rounded-2xl px-4 py-4 text-center">
               <p className="text-[0.7rem] text-muted uppercase tracking-wide">Paid</p>
               <p className="text-lg font-bold text-green-600 mt-0.5">
                 {new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD", maximumFractionDigits: 0 }).format(incomeSummary.paidCents / 100)}
               </p>
             </Link>
-            <Link href="/portal/teacher/invoices" className="rounded-2xl border border-[--hair] bg-surface px-4 py-4 text-center hover:border-brand/40 transition-colors">
+            <Link href="/portal/teacher/invoices" className="box rounded-2xl px-4 py-4 text-center">
               <p className="text-[0.7rem] text-muted uppercase tracking-wide">Outstanding</p>
               <p className="text-lg font-bold text-brand mt-0.5">
                 {new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD", maximumFractionDigits: 0 }).format(incomeSummary.outstandingCents / 100)}
               </p>
             </Link>
-            <Link href="/portal/teacher/clients" className="rounded-2xl border border-[--hair] bg-surface px-4 py-4 text-center hover:border-brand/40 transition-colors">
+            <Link href="/portal/teacher/clients" className="box rounded-2xl px-4 py-4 text-center">
               <p className="text-[0.7rem] text-muted uppercase tracking-wide">Private clients</p>
               <p className="text-lg font-bold text-ink mt-0.5">{incomeSummary.privateClients}</p>
             </Link>
@@ -335,7 +335,7 @@ export default function TeacherSchedule({
       )}
 
       {classes.length === 0 && (
-        <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-12 text-center">
+        <div className="box rounded-2xl px-6 py-12 text-center">
           <p className="text-sm text-muted">{t("noClassesAssigned")}</p>
           <p className="mt-1 text-xs text-muted">
             {isInstructor ? t("noClassesAssignedInstructorHint") : t("noClassesAssignedHint")}

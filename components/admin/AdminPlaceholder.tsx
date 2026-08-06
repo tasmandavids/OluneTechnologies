@@ -18,7 +18,7 @@ export function AdminPlaceholder({
       animate={{ opacity: 1, y: 0 }}
       className="mx-auto max-w-2xl p-6"
     >
-      <div className="rounded-2xl border border-[--hair] bg-surface px-8 py-14 text-center">
+      <div className="box rounded-2xl px-8 py-14 text-center">
         <p className="mb-2 text-[0.62rem] font-semibold uppercase tracking-widest text-muted">
           {t("comingSoon")}
         </p>

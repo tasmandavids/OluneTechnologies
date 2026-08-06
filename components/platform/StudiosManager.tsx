@@ -103,7 +103,7 @@ export function StudiosManager({
         {statusMsg && <span className="self-center text-xs text-muted">{statusMsg}</span>}
       </div>
 
-      <motion.div layout className="overflow-x-auto rounded-2xl border border-[--hair] bg-surface">
+      <motion.div layout className="box overflow-x-auto rounded-2xl">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead>
             <tr className="border-b border-[--hair] text-xs uppercase tracking-widest text-muted">

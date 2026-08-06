@@ -59,7 +59,7 @@ function StudentList({
       {students.map((s) => (
         <li
           key={s.studentId}
-          className="flex items-center gap-3 rounded-xl border border-[--hair] bg-base px-4 py-3"
+          className="box flex items-center gap-3 rounded-xl px-4 py-3"
         >
           <Link
             href={`/portal/admin/students/${s.studentId}`}
@@ -282,7 +282,7 @@ export function ClassDetailPanel({
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
-          <div className="rounded-xl border border-[--hair] bg-base px-4 py-3">
+          <div className="box rounded-xl px-4 py-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted">{t("enrollment")}</span>
               <span

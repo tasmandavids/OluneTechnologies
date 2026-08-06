@@ -114,8 +114,8 @@ export function OwnerSupportPanel({
               <li key={thread.id}>
                 <button
                   onClick={() => setSelectedId(thread.id)}
-                  className={`w-full rounded-xl border bg-surface p-3 text-left text-sm ${
-                    selectedId === thread.id ? "border-brand" : "border-[--hair]"
+                  className={`w-full rounded-xl p-3 text-left text-sm ${
+                    selectedId === thread.id ? "box-tint" : "box"
                   }`}
                 >
                   <p className="font-semibold text-ink">{thread.subject}</p>
@@ -136,7 +136,7 @@ export function OwnerSupportPanel({
               <div
                 key={m.id}
                 className={`rounded-xl px-4 py-2 text-sm ${
-                  m.isFromOlune ? "mr-8 border border-[--hair] bg-surface" : "ml-8 bg-brand text-white"
+                  m.isFromOlune ? "mr-8 box" : "ml-8 bg-brand text-white"
                 }`}
               >
                 {m.body}

@@ -113,7 +113,7 @@ export function JoinStudioFlow({
             <OluneLogo variant="stacked" size="md" />
           </OluneHomeLink>
         </div>
-        <div className="rounded-3xl border border-[--hair] bg-surface p-7 shadow-2xl">
+        <div className="box rounded-3xl p-7">
           <p className="text-[0.62rem] font-semibold uppercase tracking-widest text-brand">{studioName}</p>
           <h1 className="mt-1 text-2xl font-black tracking-tight">{t("title")}</h1>
           <p className="mt-1 text-sm text-muted">{t("subtitle")}</p>

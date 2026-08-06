@@ -46,13 +46,13 @@ function DayList({
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-0.5 p-1.5">
       {sorted.map((cls) => {
         const status = showStatus ? rowStatus(cls, nowMin) : "upcoming";
         return (
           <div
             key={cls.id}
-            className="grid grid-cols-[56px_minmax(84px,1fr)_minmax(0,150px)_92px] items-center gap-2.5 border-b border-[--hair] px-4 py-3 text-[13.5px] last:border-b-0"
+            className="grid grid-cols-[56px_minmax(84px,1fr)_minmax(0,150px)_92px] items-center gap-2.5 rounded-[12px] px-4 py-3 text-[13.5px]"
             style={{
               opacity: status === "done" ? 0.55 : 1,
               background: status === "live" ? "color-mix(in srgb, var(--brand) 10%, transparent)" : "transparent",
@@ -118,7 +118,7 @@ export function TodayTimeline({
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{t("title")}</h2>
           <span className="ml-auto text-xs text-muted">{t("hint", { count: today.length, students: todayStudents })}</span>
         </div>
-        <div className="overflow-hidden rounded-[14px] border border-[--hair] bg-surface">
+        <div className="box overflow-hidden rounded-[14px]">
           <DayList classes={today} showStatus emptyLabel={t("empty")} />
         </div>
       </div>
@@ -130,7 +130,7 @@ export function TodayTimeline({
             {t("hint", { count: tomorrow.length, students: tomorrowStudents })}
           </span>
         </div>
-        <div className="overflow-hidden rounded-[14px] border border-[--hair] bg-surface">
+        <div className="box overflow-hidden rounded-[14px]">
           <DayList classes={tomorrow} showStatus={false} emptyLabel={t("empty")} />
         </div>
       </div>

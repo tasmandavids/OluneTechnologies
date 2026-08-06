@@ -111,10 +111,10 @@ export function CommandCentre({
   return (
     <motion.section
       variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
-      className="rounded-2xl border border-[--hair] bg-surface overflow-hidden"
+      className="box rounded-2xl overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-center justify-between gap-3 border-b border-[--hair] px-5 py-3.5">
+      <div className="flex items-center justify-between gap-3 px-5 py-3.5">
         <h2 className="text-xs font-semibold uppercase tracking-widest text-muted">
           This week
         </h2>

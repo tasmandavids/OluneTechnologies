@@ -75,7 +75,7 @@ export function SupportInbox({ threads: initialThreads }: { threads: SupportThre
         </ul>
       </div>
 
-      <div className="flex flex-1 flex-col rounded-2xl border border-[--hair] bg-surface">
+      <div className="box flex flex-1 flex-col rounded-2xl">
         {selected ? (
           <>
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[--hair] p-4">
@@ -106,7 +106,7 @@ export function SupportInbox({ threads: initialThreads }: { threads: SupportThre
                   className={`max-w-[85%] rounded-xl px-4 py-3 text-sm ${
                     m.isOperator
                       ? "ml-auto bg-brand text-white"
-                      : "mr-auto border border-[--hair] bg-base text-ink"
+                      : "mr-auto box text-ink"
                   }`}
                 >
                   <p className="mb-1 text-[0.65rem] opacity-70">

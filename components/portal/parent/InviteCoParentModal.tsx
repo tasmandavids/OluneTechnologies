@@ -50,7 +50,7 @@ export function InviteCoParentModal({ onClose }: { onClose: () => void }) {
 
           {success ? (
             <>
-              <p className="mt-4 rounded-xl border border-[--hair] bg-base px-4 py-3 text-sm text-ink">
+              <p className="box mt-4 rounded-xl px-4 py-3 text-sm text-ink">
                 {success}
               </p>
               <div className="mt-6 flex justify-end">

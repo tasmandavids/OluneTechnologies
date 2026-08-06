@@ -242,7 +242,7 @@ export default function ProgressTracker({
                     className="absolute -left-[1.7rem] top-1.5 h-3 w-3 rounded-full border-2 border-surface"
                     style={{ background: "var(--brand)" }}
                   />
-                  <div className="rounded-2xl border border-[--hair] bg-surface p-4">
+                  <div className="box rounded-2xl p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex flex-wrap items-center gap-2">
                         {entry.level && (
@@ -280,14 +280,14 @@ export default function ProgressTracker({
                               key={c}
                               href={certDownloadHref(entry.id, c)}
                               download
-                              className="inline-flex items-center gap-1 rounded-full border border-[--hair] px-2.5 py-0.5 text-[0.62rem] font-semibold text-ink transition-colors hover:border-[--brand] hover:text-[--brand]"
+                              className="box-pill inline-flex items-center gap-1 px-2.5 py-0.5 text-[0.62rem] font-semibold text-ink transition-colors hover:text-[--brand]"
                             >
                               🏅 {c} ↓
                             </a>
                           ) : (
                             <span
                               key={c}
-                              className="inline-flex items-center gap-1 rounded-full border border-[--hair] px-2.5 py-0.5 text-[0.62rem] font-semibold text-ink"
+                              className="box-pill inline-flex items-center gap-1 px-2.5 py-0.5 text-[0.62rem] font-semibold text-ink"
                             >
                               🏅 {c}
                             </span>

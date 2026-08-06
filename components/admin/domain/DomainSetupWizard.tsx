@@ -207,8 +207,8 @@ export function DomainSetupWizard({ studioName, slug, customDomain, rootDomain }
                     else setDomainInput(`book.${base}.co.nz`);
                   }
                 }}
-                className={`w-full rounded-xl border p-4 text-left transition ${
-                  kind === opt.id ? "border-brand bg-brand/5" : "border-[--hair] hover:border-brand/50"
+                className={`w-full rounded-xl p-4 text-left transition ${
+                  kind === opt.id ? "box-tint" : "box"
                 }`}
               >
                 <span className="font-semibold text-ink">{t(`kind.${opt.id}.label`)}</span>
@@ -274,7 +274,7 @@ export function DomainSetupWizard({ studioName, slug, customDomain, rootDomain }
 
       {step === "connect" && (
         <StepCard title={t("connect.title")} subtitle={t("connect.subtitle")}>
-          <div className="rounded-xl border border-[--hair] bg-base p-4 font-mono text-sm text-ink">
+          <div className="box rounded-xl p-4 font-mono text-sm text-ink">
             {normalizedDomain}
           </div>
           <p className="text-sm text-muted">{t("connect.hint")}</p>
@@ -478,8 +478,8 @@ function ChoiceButton({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-xl border p-4 text-left transition ${
-        selected ? "border-brand bg-brand/5" : "border-[--hair] hover:border-brand/50"
+      className={`rounded-xl p-4 text-left transition ${
+        selected ? "box-tint" : "box"
       }`}
     >
       <span className="font-semibold text-ink">{title}</span>
@@ -491,7 +491,7 @@ function ChoiceButton({
 function DnsRecordCard({ record }: { record: { type: string; host: string; value: string; note: string } }) {
   const t = useTranslations("site.domain");
   return (
-    <div className="space-y-2 rounded-xl border border-[--hair] bg-base p-4">
+    <div className="box space-y-2 rounded-xl p-4">
       <p className="text-xs text-muted">{record.note}</p>
       <div className="grid gap-2 sm:grid-cols-3">
         <CopyField label={t("dnsFields.type")} value={record.type} />
@@ -522,7 +522,7 @@ function CopyField({ label, value }: { label: string; value: string }) {
         <button
           type="button"
           onClick={copy}
-          className="shrink-0 rounded-lg border border-[--hair] px-2 py-1.5 text-[0.65rem] font-medium text-ink hover:bg-surface"
+          className="box-pill shrink-0 px-2 py-1.5 text-[0.65rem] font-medium text-ink"
         >
           {copied ? t("dnsFields.copied") : t("dnsFields.copy")}
         </button>

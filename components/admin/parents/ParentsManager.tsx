@@ -56,7 +56,7 @@ function ParentCard({ parent }: { parent: ParentRow }) {
             parent.children.map((child) => (
               <span
                 key={child.id}
-                className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.62rem] font-medium text-ink"
+                className="box-pill rounded-full px-2 py-0.5 text-[0.62rem] font-medium text-ink"
               >
                 {child.name ?? tCommon("student")}
               </span>

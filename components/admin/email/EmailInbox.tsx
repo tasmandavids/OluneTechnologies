@@ -156,7 +156,7 @@ function EmailBody({ message }: { message: EmailMessageRow }) {
     );
   }
   return (
-    <div className="min-h-[12rem] whitespace-pre-wrap rounded-2xl border border-[--hair] bg-base px-6 py-5 text-[15px] leading-relaxed text-ink">
+    <div className="box min-h-[12rem] whitespace-pre-wrap rounded-2xl px-6 py-5 text-[15px] leading-relaxed text-ink">
       {message.body_text ?? tShared("noContent")}
     </div>
   );
@@ -199,7 +199,7 @@ function ConnectPanel({ onConnected }: { onConnected: () => void }) {
           <Link
             key={provider}
             href={oauthConnectPath(provider)}
-            className="rounded-2xl border border-[--hair] bg-surface p-5 text-left transition hover:border-brand/40"
+            className="box rounded-2xl p-5 text-left transition"
           >
             <p className="font-semibold text-ink">{PROVIDER_META[provider].label}</p>
             <p className="mt-1 text-xs text-muted">{PROVIDER_META[provider].description}</p>
@@ -211,7 +211,7 @@ function ConnectPanel({ onConnected }: { onConnected: () => void }) {
             key={provider}
             type="button"
             onClick={() => setImapProvider(provider)}
-            className="rounded-2xl border border-[--hair] bg-surface p-5 text-left transition hover:border-brand/40"
+            className="box rounded-2xl p-5 text-left transition"
           >
             <p className="font-semibold text-ink">{PROVIDER_META[provider].label}</p>
             <p className="mt-1 text-xs text-muted">{PROVIDER_META[provider].description}</p>
@@ -226,7 +226,7 @@ function ConnectPanel({ onConnected }: { onConnected: () => void }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
-            className="rounded-2xl border border-[--hair] bg-surface p-5"
+            className="box rounded-2xl p-5"
           >
             <h2 className="mb-4 font-black text-ink">
               {t("connectTitle", { provider: PROVIDER_META[imapProvider].label })}

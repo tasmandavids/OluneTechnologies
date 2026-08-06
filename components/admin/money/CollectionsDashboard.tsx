@@ -50,7 +50,7 @@ function FamilyReminderButton({
             else onDone();
           });
         }}
-        className="rounded-lg border border-[--hair] bg-surface px-3 py-1.5 text-xs font-semibold text-ink hover:bg-base disabled:opacity-50"
+        className="box-pill px-3 py-1.5 text-xs font-semibold text-ink disabled:opacity-50"
       >
         {pending ? t("sending") : t("remind")}
       </button>

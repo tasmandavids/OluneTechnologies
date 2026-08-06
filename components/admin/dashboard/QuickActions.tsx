@@ -31,7 +31,7 @@ export function QuickActions() {
             href={href}
             onMouseMove={onMagnetMove}
             onMouseLeave={onMagnetLeave}
-            className="flex items-center gap-2 rounded-xl border border-[--hair] bg-surface px-3 py-2.5 text-[13px] font-medium text-ink transition-transform duration-300 hover:bg-[color-mix(in_srgb,var(--brand)_8%,var(--surface))]"
+            className="box flex items-center gap-2 rounded-xl px-3 py-2.5 text-[13px] font-medium text-ink transition-transform duration-300 hover:bg-[color-mix(in_srgb,var(--brand)_8%,var(--surface))]"
           >
             <Icon className="h-4 w-4 shrink-0" style={{ color: "var(--brand-deep)" }} />
             {t(key)}

@@ -184,7 +184,7 @@ export function ParentShop({ products }: Props) {
             const soldOut = p.stock_qty === 0;
 
             return (
-              <div key={p.id} className="rounded-2xl border border-[--hair] bg-surface p-4">
+              <div key={p.id} className="box rounded-2xl p-4">
                 <div className="relative mb-3 h-28 overflow-hidden rounded-xl bg-base">
                   {p.image_url ? (
                     <OptimizableImage

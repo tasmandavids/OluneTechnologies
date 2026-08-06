@@ -412,7 +412,7 @@ export function StageView({ actId, actTitle, cues, participants, onSave, onClose
                 </button>
               </div>
             ) : (
-              <div className="rounded-xl border border-dashed border-[--hair] py-4 text-center">
+              <div className="box rounded-xl py-4 text-center">
                 <p className="text-xs text-muted">Click a light on the stage to select it</p>
               </div>
             )}

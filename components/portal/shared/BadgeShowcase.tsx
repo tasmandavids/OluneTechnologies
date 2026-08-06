@@ -24,7 +24,7 @@ export default function BadgeShowcase({
 
   if (totalCount === 0) {
     return (
-      <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+      <section className="box rounded-2xl p-5">
         <h2 className="mb-1 text-xs font-semibold uppercase tracking-widest text-muted">
           {t("title", { earned: 0, total: 0 })}
         </h2>
@@ -42,7 +42,7 @@ export default function BadgeShowcase({
   const categories = [...CATEGORY_ORDER].filter((c) => byCategory.has(c));
 
   return (
-    <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+    <section className="box rounded-2xl p-5">
       <div className="mb-4 flex items-baseline justify-between gap-3">
         <h2 className="text-xs font-semibold uppercase tracking-widest text-muted">
           {t("title", { earned: earnedCount, total: totalCount })}

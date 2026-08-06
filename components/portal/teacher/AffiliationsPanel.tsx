@@ -41,19 +41,19 @@ export function AffiliationsPanel({ memberships }: { memberships: StudioMembersh
       </header>
 
       {home && (
-        <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+        <section className="box rounded-2xl p-5">
           <p className="text-xs uppercase tracking-widest text-muted">{t("homeWorkspace")}</p>
           <p className="mt-1 font-black text-ink">{home.studioName}</p>
           <p className="text-xs text-muted">{home.studioSlug}.olune.app</p>
         </section>
       )}
 
-      <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+      <section className="box rounded-2xl p-5">
         <h2 className="text-sm font-black text-ink">{t("linkedStudios")}</h2>
         {affiliated.length === 0 ? (
           <p className="mt-3 text-sm text-muted">{t("noneYet")}</p>
         ) : (
-          <ul className="mt-4 divide-y divide-[--hair]">
+          <ul className="mt-4 flex flex-col">
             {affiliated.map((m) => (
               <li key={m.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
                 <div>
@@ -62,7 +62,7 @@ export function AffiliationsPanel({ memberships }: { memberships: StudioMembersh
                     {t("roleAtStudio", { role: m.role })} · {m.studioSlug}.olune.app
                   </p>
                 </div>
-                <span className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wide text-muted">
+                <span className="box-pill px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wide text-muted">
                   {m.status}
                 </span>
               </li>
@@ -71,7 +71,7 @@ export function AffiliationsPanel({ memberships }: { memberships: StudioMembersh
         )}
       </section>
 
-      <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+      <section className="box rounded-2xl p-5">
         <h2 className="text-sm font-black text-ink">{t("acceptInvite")}</h2>
         <p className="mt-1 text-sm text-muted">{t("acceptInviteHint")}</p>
         <form onSubmit={onAccept} className="mt-4 flex flex-col gap-3 sm:flex-row">

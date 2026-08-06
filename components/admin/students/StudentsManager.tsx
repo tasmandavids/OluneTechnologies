@@ -648,14 +648,14 @@ function StudentCard({
               student.enrollments.slice(0, 3).map((e) => (
                 <span
                   key={e.classId}
-                  className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.62rem] font-medium text-ink"
+                  className="box-pill rounded-full px-2 py-0.5 text-[0.62rem] font-medium text-ink"
                 >
                   {e.className}
                 </span>
               ))
             )}
             {student.enrollments.length > 3 && (
-              <span className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.62rem] text-muted">
+              <span className="box-pill rounded-full px-2 py-0.5 text-[0.62rem] text-muted">
                 {tShared("moreCount", { count: student.enrollments.length - 3 })}
               </span>
             )}

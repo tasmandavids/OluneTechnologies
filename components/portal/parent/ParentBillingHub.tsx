@@ -179,15 +179,15 @@ export function ParentBillingHub({
       )}
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-2xl border border-[--hair] bg-surface p-4">
+        <div className="box rounded-2xl p-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("outstanding")}</p>
           <p className="mt-1 text-xl font-black text-ink">{formatMoney(outstanding)}</p>
         </div>
-        <div className="rounded-2xl border border-[--hair] bg-surface p-4">
+        <div className="box rounded-2xl p-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("totalPaid")}</p>
           <p className="mt-1 text-xl font-black text-ink">{formatMoney(totalPaid)}</p>
         </div>
-        <div className="rounded-2xl border border-[--hair] bg-surface p-4">
+        <div className="box rounded-2xl p-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("invoiceCount")}</p>
           <p className="mt-1 text-xl font-black text-ink">{invoices.length}</p>
         </div>
@@ -196,7 +196,7 @@ export function ParentBillingHub({
       {/* Wallet summary band — plan progress, subscriptions, saved payment
           method access. Merged here from the old Family Wallet page (1.6.1). */}
       {(paymentPlans.length > 0 || autopayActive) && (
-        <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+        <section className="box rounded-2xl p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-sm font-bold text-ink">{t("summaryBand.title")}</h2>
             <span className="inline-flex items-center gap-2 text-xs font-semibold text-ink">
@@ -288,11 +288,11 @@ export function ParentBillingHub({
       <section>
         <h2 className="mb-3 text-xs uppercase tracking-widest text-muted">{t("invoicesTitle")}</h2>
         {invoices.length === 0 ? (
-          <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-10 text-center">
+          <div className="box rounded-2xl px-6 py-10 text-center">
             <p className="text-sm text-muted">{t("noInvoices")}</p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+          <div className="box overflow-hidden rounded-2xl">
             <table className="w-full min-w-[520px] text-sm">
               <thead>
                 <tr className="border-b border-[--hair]">
@@ -350,11 +350,11 @@ export function ParentBillingHub({
       <section>
         <h2 className="mb-3 text-xs uppercase tracking-widest text-muted">{t("paymentsTitle")}</h2>
         {payments.length === 0 ? (
-          <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-10 text-center">
+          <div className="box rounded-2xl px-6 py-10 text-center">
             <p className="text-sm text-muted">{t("noPayments")}</p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+          <div className="box overflow-hidden rounded-2xl">
             <table className="w-full min-w-[400px] text-sm">
               <thead>
                 <tr className="border-b border-[--hair]">
@@ -389,7 +389,7 @@ export function ParentBillingHub({
       {orders.length > 0 && (
         <section>
           <h2 className="mb-3 text-xs uppercase tracking-widest text-muted">{t("ordersTitle")}</h2>
-          <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+          <div className="box overflow-hidden rounded-2xl">
             <table className="w-full min-w-[360px] text-sm">
               <thead>
                 <tr className="border-b border-[--hair]">

@@ -99,7 +99,7 @@ export default function ParentHub({
         </div>
         <div className="flex items-center gap-3">
           {outstanding > 0 && (
-            <div className="rounded-xl border border-[--hair] bg-surface px-4 py-2 text-right">
+            <div className="box rounded-xl px-4 py-2 text-right">
               <p className="text-xs text-muted">{t("outstanding")}</p>
               <p className="text-lg font-black" style={{ color: "var(--brand-hot)" }}>
                 {NZD.format(outstanding / 100)}
@@ -149,7 +149,7 @@ export default function ParentHub({
           {t("yourDancers", { count: familyChildren.length })}
         </h2>
         {familyChildren.length === 0 ? (
-          <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-10 text-center">
+          <div className="box rounded-2xl px-6 py-10 text-center">
             <p className="text-sm text-muted">{t("noChildren")}</p>
             <p className="mt-1 text-xs text-muted">{t("noChildrenHint")}</p>
             {!selfManaged && (
@@ -172,7 +172,7 @@ export default function ParentHub({
               >
               <motion.div
                 whileHover={{ y: -2 }}
-                className="rounded-2xl border border-[--hair] bg-surface p-5 transition-colors group-hover:border-[color-mix(in_srgb,var(--brand)_35%,var(--hair))]"
+                className="box rounded-2xl p-5"
               >
                 <div className="mb-4 flex items-center gap-3">
                   <span
@@ -229,11 +229,11 @@ export default function ParentHub({
           </Link>
         </div>
         {invoices.length === 0 ? (
-          <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-10 text-center">
+          <div className="box rounded-2xl px-6 py-10 text-center">
             <p className="text-sm text-muted">{t("noInvoices")}</p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+          <div className="box overflow-hidden rounded-2xl">
             <table className="w-full min-w-[400px] text-sm">
               <thead>
                 <tr className="border-b border-[--hair]">

@@ -220,7 +220,7 @@ export function InvoiceDetailModal({
                   />
                 </label>
               ) : invoice.lineItems.length > 0 ? (
-                <ul className="space-y-1 rounded-lg border border-[--hair] bg-base p-3 text-sm">
+                <ul className="box space-y-1 rounded-lg p-3 text-sm">
                   {invoice.lineItems.map((li) => (
                     <li key={li.id} className="flex justify-between gap-2">
                       <span className="text-ink">

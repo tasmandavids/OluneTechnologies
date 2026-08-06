@@ -140,7 +140,7 @@ export default function StudioBadgeManager({ badges }: { badges: ManagedBadge[] 
                         type="button"
                         onClick={() => removeCustom(b)}
                         disabled={pending}
-                        className="shrink-0 rounded-lg border border-[--hair] px-3 py-1.5 text-xs font-bold text-muted hover:border-red-400 hover:text-red-600 disabled:opacity-50"
+                        className="box-pill shrink-0 px-3 py-1.5 text-xs font-bold text-muted hover:text-red-600 disabled:opacity-50"
                       >
                         {t("delete")}
                       </button>
@@ -149,7 +149,7 @@ export default function StudioBadgeManager({ badges }: { badges: ManagedBadge[] 
                         type="button"
                         onClick={() => toggleHidden(b)}
                         disabled={pending}
-                        className="shrink-0 rounded-lg border border-[--hair] px-3 py-1.5 text-xs font-bold text-ink hover:border-[--brand] disabled:opacity-50"
+                        className="box-pill shrink-0 px-3 py-1.5 text-xs font-bold text-ink disabled:opacity-50"
                       >
                         {b.hidden ? t("show") : t("hide")}
                       </button>

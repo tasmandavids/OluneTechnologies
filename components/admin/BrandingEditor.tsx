@@ -122,7 +122,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
               <button
                 key={p.key}
                 onClick={() => setB((prev) => ({ ...prev, brandColor: p.brandColor, base: p.base }))}
-                className="flex items-center gap-2 rounded-full border border-[--hair] px-3 py-1.5 text-xs"
+                className="box-pill flex items-center gap-2 px-3 py-1.5 text-xs"
               >
                 <span className="h-3 w-3 rounded-full" style={{ background: p.brandColor }} />
                 {t(`presets.${p.key}`)}
@@ -269,7 +269,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
         <div
           style={previewVars}
           data-base={b.base}
-          className="overflow-hidden rounded-2xl border border-[--hair]"
+          className="box overflow-hidden rounded-2xl"
         >
           <div style={{ background: "var(--base)", color: "var(--text)" }} className="p-7">
             <div className="mb-6 flex items-center gap-2">

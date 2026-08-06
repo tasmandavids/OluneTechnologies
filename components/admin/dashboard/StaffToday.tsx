@@ -72,7 +72,7 @@ export function StaffToday({
     <div>
       <h2 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{t("title")}</h2>
       {rows.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-[--hair] bg-surface px-3.5 py-3 text-xs text-muted">
+        <p className="box rounded-xl px-3.5 py-3 text-xs text-muted">
           {t("empty")}
         </p>
       ) : (
@@ -80,7 +80,7 @@ export function StaffToday({
           {rows.map(({ teacher, count, live, nextTime }) => (
             <div
               key={teacher.id}
-              className="flex items-center gap-2.5 rounded-xl border border-[--hair] bg-surface px-2.5 py-2"
+              className="box flex items-center gap-2.5 rounded-xl px-2.5 py-2"
             >
               <span className="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-full bg-[color-mix(in_srgb,var(--brand)_12%,transparent)] text-xs font-bold text-[--brand-deep]">
                 {initials(teacher.name)}

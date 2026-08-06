@@ -77,7 +77,7 @@ export default async function OfficeHomePage() {
         </p>
       </div>
 
-      <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+      <section className="box rounded-2xl p-5">
         <h2 className="mb-3 text-lg font-bold text-ink">{t("upcomingShifts")}</h2>
         {myShifts.length === 0 ? (
           <p className="text-sm text-muted">{t("noShiftsThisWeek")}</p>
@@ -96,7 +96,7 @@ export default async function OfficeHomePage() {
         )}
       </section>
 
-      <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+      <section className="box rounded-2xl p-5">
         <h2 className="mb-3 text-lg font-bold text-ink">{t("workingToday")}</h2>
         {todayStudio.length === 0 ? (
           <p className="text-sm text-muted">{t("noShiftsToday")}</p>
@@ -125,7 +125,7 @@ export default async function OfficeHomePage() {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-xl border border-[--hair] bg-surface px-4 py-3 text-sm font-medium text-ink transition hover:shadow-md"
+              className="box rounded-xl px-4 py-3 text-sm font-medium text-ink transition hover:shadow-md"
             >
               {link.label}
             </Link>

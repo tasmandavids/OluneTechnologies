@@ -97,7 +97,7 @@ export function AbsenceManager({
           Reported absences
         </h2>
         {absences.length === 0 ? (
-          <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-10 text-center text-sm text-muted">
+          <div className="box rounded-2xl px-6 py-10 text-center text-sm text-muted">
             No absences reported yet.
           </div>
         ) : (
@@ -105,7 +105,7 @@ export function AbsenceManager({
             {absences.map((a) => (
               <div
                 key={a.id}
-                className="flex flex-wrap items-center gap-3 rounded-2xl border border-[--hair] bg-surface px-5 py-4"
+                className="box flex flex-wrap items-center gap-3 rounded-2xl px-5 py-4"
               >
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-ink">{a.className}</p>

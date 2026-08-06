@@ -187,7 +187,7 @@ function Step1Details({
 
         <div className="space-y-4">
           {state.performances.map((p, i) => (
-            <div key={i} className="rounded-xl border border-[--hair] p-4 space-y-3 bg-[--subtle]/30">
+            <div key={i} className="box rounded-xl p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-muted uppercase tracking-wide">
                   {state.performances.length > 1 ? `Performance ${i + 1}` : "Performance date"}
@@ -389,7 +389,7 @@ function Step3Team({
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
-      <div className="rounded-xl bg-[--subtle]/40 border border-[--hair] px-4 py-3">
+      <div className="box rounded-xl px-4 py-3">
         <p className="text-xs text-muted">
           Add the production team — stage manager, tech director, choreographers, backstage crew. You can link Olune staff or add external people.
         </p>
@@ -397,7 +397,7 @@ function Step3Team({
 
       <div className="space-y-4">
         {state.crew.map((c, i) => (
-          <div key={i} className="rounded-xl border border-[--hair] p-4 space-y-3 bg-surface">
+          <div key={i} className="box rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-muted uppercase tracking-wide">Team member {i + 1}</span>
               <button
@@ -512,7 +512,7 @@ function CastMemberRow({
   onRemove: () => void;
 }) {
   return (
-    <div className="flex items-center gap-2 py-1.5 border-b border-[--hair] last:border-0">
+    <div className="flex items-center gap-2 py-1.5">
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-ink truncate">{member.displayName}</p>
       </div>
@@ -610,7 +610,7 @@ function Step4Cast({
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
-      <div className="rounded-xl bg-[--subtle]/40 border border-[--hair] px-4 py-3">
+      <div className="box rounded-xl px-4 py-3">
         <p className="text-xs text-muted">
           Organise performers into groups (e.g. &ldquo;Junior Ensemble&rdquo;, &ldquo;Senior Company&rdquo;). Each cast member gets a role label and base costume note. You can override costumes per-act in the Builder.
         </p>
@@ -618,7 +618,7 @@ function Step4Cast({
 
       {/* Groups */}
       {state.castGroups.map((group, gi) => (
-        <div key={gi} className="rounded-xl border border-[--hair] overflow-hidden">
+        <div key={gi} className="box rounded-xl overflow-hidden">
           {/* Group header */}
           <div className="flex items-center gap-3 px-4 py-3 bg-[--subtle]/40 border-b border-[--hair]">
             <Input
@@ -646,7 +646,7 @@ function Step4Cast({
 
           {/* Import class dropdown */}
           {showImport === `${gi}` && (
-            <div className="px-4 py-3 border-b border-[--hair] bg-brand/5">
+            <div className="box-tint px-4 py-3">
               <p className="text-xs text-muted mb-2">Import all enrolled students from a class:</p>
               <div className="flex gap-2 flex-wrap">
                 {classes.map(c => (
@@ -676,14 +676,16 @@ function Step4Cast({
                   <span className="w-40 text-[10px] font-semibold text-muted uppercase tracking-wide">Base costume</span>
                   <span className="w-5" />
                 </div>
-                {group.members.map((m, mi) => (
-                  <CastMemberRow
-                    key={mi}
-                    member={m}
-                    onUpdate={patch => patchMember(gi, mi, patch)}
-                    onRemove={() => removeMemberFromGroup(gi, mi)}
-                  />
-                ))}
+                <div className="flex flex-col gap-0.5">
+                  {group.members.map((m, mi) => (
+                    <CastMemberRow
+                      key={mi}
+                      member={m}
+                      onUpdate={patch => patchMember(gi, mi, patch)}
+                      onRemove={() => removeMemberFromGroup(gi, mi)}
+                    />
+                  ))}
+                </div>
               </>
             )}
 
@@ -750,12 +752,12 @@ function Step6Review({
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
-      <div className="rounded-2xl border border-[--hair] overflow-hidden">
+      <div className="box rounded-2xl overflow-hidden">
         <div className="px-5 py-4 bg-[--subtle]/30 border-b border-[--hair]">
           <h3 className="text-sm font-bold text-ink">{state.name || "Unnamed event"}</h3>
           <p className="text-xs text-muted capitalize mt-0.5">{state.eventType}</p>
         </div>
-        <div className="divide-y divide-[--hair]">
+        <div className="flex flex-col">
           <ReviewRow
             label="Performances"
             value={`${state.performances.length} date${state.performances.length !== 1 ? "s" : ""}`}

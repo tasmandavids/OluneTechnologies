@@ -18,7 +18,7 @@ export default function AttendanceHistory({ records }: { records: AttendanceReco
   const rate = records.length > 0 ? Math.round((presentCount / records.length) * 100) : null;
 
   return (
-    <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+    <section className="box rounded-2xl p-5">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="text-xs font-semibold uppercase tracking-widest text-muted">
@@ -33,7 +33,7 @@ export default function AttendanceHistory({ records }: { records: AttendanceReco
       {records.length === 0 ? (
         <p className="rounded-xl bg-base px-4 py-8 text-center text-sm text-muted">{t("empty")}</p>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-[--hair]">
+        <div className="box overflow-hidden rounded-xl">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[--hair] bg-base">

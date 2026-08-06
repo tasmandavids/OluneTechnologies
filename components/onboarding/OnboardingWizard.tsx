@@ -245,8 +245,8 @@ export function OnboardingWizard({
           </div>
         )}
 
-        <div className="rounded-3xl border border-[--hair] bg-surface p-7 shadow-2xl">
-          {error && <p className="mb-4 rounded-lg border border-[--hair] bg-base/50 px-3 py-2 text-sm text-red-400">{error}</p>}
+        <div className="box rounded-3xl p-7">
+          {error && <p className="box-warn mb-4 rounded-lg px-3 py-2 text-sm text-red-400">{error}</p>}
 
           {awaitingConfirm ? (
             <div className="text-center">
@@ -467,7 +467,7 @@ export function OnboardingWizard({
                     <h1 className="text-2xl font-black tracking-tight">{t("brand.title")}</h1>
                     <p className="mt-1 text-sm text-muted">{t("brand.subtitle")}</p>
 
-                    <div className="mt-5 rounded-2xl border border-[--hair] bg-base p-5">
+                    <div className="box mt-5 rounded-2xl p-5">
                       <div className="flex items-center gap-2">
                         <span className="grid h-8 w-8 place-items-center border text-sm font-black text-ink" style={{ borderColor: brand }}>{initial}</span>
                         <span className="text-sm font-bold text-ink">{studioName || t("brand.fallbackName")}</span>

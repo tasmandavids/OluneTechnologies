@@ -37,7 +37,7 @@ export function FeatureFlagsManager({ flags }: { flags: FeatureFlag[] }) {
           {globalFlags.map((f) => (
             <li
               key={f.id}
-              className="flex items-start justify-between gap-4 rounded-2xl border border-[--hair] bg-surface p-4"
+              className="box flex items-start justify-between gap-4 rounded-2xl p-4"
             >
               <div>
                 <p className="font-semibold text-ink">{f.label}</p>
@@ -67,7 +67,7 @@ export function FeatureFlagsManager({ flags }: { flags: FeatureFlag[] }) {
             {studioFlags.map((f) => (
               <li
                 key={f.id}
-                className="flex items-center justify-between rounded-xl border border-[--hair] bg-surface px-4 py-3 text-sm"
+                className="box flex items-center justify-between rounded-xl px-4 py-3 text-sm"
               >
                 <span>
                   {f.label} · <strong>{f.studioName}</strong>

@@ -124,7 +124,7 @@ export default function EnrolPage({
               key="done"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="rounded-3xl border border-[--hair] bg-surface p-8 text-center shadow-2xl"
+              className="box rounded-3xl p-8 text-center"
             >
               <motion.div
                 initial={{ scale: 0 }}
@@ -155,7 +155,7 @@ export default function EnrolPage({
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="rounded-3xl border border-[--hair] bg-surface p-7 shadow-2xl"
+              className="box rounded-3xl p-7"
             >
               <p className="text-xs font-semibold uppercase tracking-wider text-muted">
                 {t("steps.pickClass")}
@@ -237,7 +237,7 @@ export default function EnrolPage({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               onSubmit={onSubmit}
-              className="rounded-3xl border border-[--hair] bg-surface p-7 shadow-2xl"
+              className="box rounded-3xl p-7"
             >
               <button
                 type="button"
@@ -248,7 +248,7 @@ export default function EnrolPage({
               </button>
 
               {selectedClass && (
-                <p className="mb-4 rounded-xl border border-[--hair] bg-base/50 px-3 py-2 text-sm">
+                <p className="box mb-4 rounded-xl px-3 py-2 text-sm">
                   <span className="text-muted">{t("selectedClass")}: </span>
                   <span className="font-semibold">{selectedClass.name}</span>
                 </p>

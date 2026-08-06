@@ -77,7 +77,7 @@ function LoginForm() {
           <LanguageSwitcher compact />
         </div>
       </div>
-      <div className="rounded-3xl border border-[--hair] bg-surface p-7 shadow-2xl">
+      <div className="box rounded-3xl p-7">
         <h1 className="text-2xl font-black tracking-tight">{t("welcomeBack")}</h1>
         <p className="mt-1 text-sm text-muted">{t("signInSubtitle")}</p>
 
@@ -90,7 +90,7 @@ function LoginForm() {
         <form onSubmit={signIn}>
           {error && (
             <div className="mb-4 space-y-2">
-              <p className="rounded-lg border border-[--hair] bg-base/50 px-3 py-2 text-sm text-red-400">
+              <p className="box-warn rounded-lg px-3 py-2 text-sm text-red-400">
                 {error}
               </p>
               <p className="text-center text-sm text-muted">{t("emailLoginGoogleHint")}</p>
@@ -179,7 +179,7 @@ export default function LoginPage() {
     <div className="grid min-h-screen place-items-center bg-base px-5 text-ink">
       <Suspense
         fallback={
-          <div className="w-full max-w-sm rounded-3xl border border-[--hair] bg-surface p-7 text-center text-sm text-muted">
+          <div className="box w-full max-w-sm rounded-3xl p-7 text-center text-sm text-muted">
             {tCommon("loading")}
           </div>
         }

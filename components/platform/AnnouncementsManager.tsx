@@ -73,7 +73,7 @@ export function AnnouncementsManager({
         <p className="text-sm text-muted">{t("subtitle")}</p>
       </header>
 
-      <div className="rounded-2xl border border-[--hair] bg-surface p-5 space-y-3">
+      <div className="box rounded-2xl p-5 space-y-3">
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -122,7 +122,7 @@ export function AnnouncementsManager({
 
       <ul className="space-y-3">
         {items.map((a) => (
-          <li key={a.id} className="rounded-2xl border border-[--hair] bg-surface p-5">
+          <li key={a.id} className="box rounded-2xl p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="font-bold text-ink">{a.title}</p>

@@ -29,7 +29,7 @@ export function OAuthButtons({
     <div className="space-y-3">
       {googleError && (
         <div className="space-y-2">
-          <p className="rounded-lg border border-[--hair] bg-base/50 px-3 py-2 text-sm text-red-400">
+          <p className="box-warn rounded-lg px-3 py-2 text-sm text-red-400">
             {googleError}
           </p>
           <p className="text-center text-sm text-muted">

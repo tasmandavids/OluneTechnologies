@@ -51,7 +51,7 @@ export function PlatformDashboard({
           <motion.div
             key={s.id}
             variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
-            className="rounded-2xl border border-[--hair] bg-surface p-5"
+            className="box rounded-2xl p-5"
           >
             <p className="text-xs uppercase tracking-widest text-muted">{s.label}</p>
             <p className="mt-2 text-3xl font-black text-ink">{s.value}</p>
@@ -61,7 +61,7 @@ export function PlatformDashboard({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+        <section className="box rounded-2xl p-5">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-sm font-bold uppercase tracking-widest text-muted">
               {t("recentSignups")}
@@ -88,7 +88,7 @@ export function PlatformDashboard({
           </ul>
         </section>
 
-        <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+        <section className="box rounded-2xl p-5">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-sm font-bold uppercase tracking-widest text-muted">
               {t("openSupport")}
@@ -113,7 +113,7 @@ export function PlatformDashboard({
         </section>
       </div>
 
-      <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+      <section className="box rounded-2xl p-5">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-sm font-bold uppercase tracking-widest text-muted">{t("opsQueue")}</h2>
           <Link href="/platform/tasks" className="text-xs text-brand hover:underline">
@@ -123,7 +123,7 @@ export function PlatformDashboard({
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {openTasks.length === 0 && <p className="text-sm text-muted">{t("noOpenTasks")}</p>}
           {openTasks.map((task) => (
-            <div key={task.id} className="rounded-xl border border-[--hair] bg-base p-4 text-sm">
+            <div key={task.id} className="box rounded-xl p-4 text-sm">
               <p className="font-semibold text-ink">{task.title}</p>
               <p className="mt-1 text-xs text-muted">
                 {task.priority}

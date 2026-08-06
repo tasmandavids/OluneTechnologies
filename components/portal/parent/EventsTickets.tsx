@@ -115,7 +115,7 @@ export default function EventsTickets({ events }: Props) {
               key={ev.id}
               type="button"
               onClick={() => openEvent(ev)}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-[--hair] bg-surface text-left transition-shadow hover:shadow-md"
+              className="box group flex flex-col overflow-hidden rounded-2xl text-left transition-shadow hover:shadow-md"
             >
               <div className="flex h-28 items-center justify-center overflow-hidden bg-base">
                 {ev.imageUrl ? (

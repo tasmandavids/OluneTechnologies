@@ -28,7 +28,7 @@ export default async function JoinPage() {
   if (!studioInfo?.registration_enabled) {
     return (
       <div className="grid min-h-screen place-items-center bg-base px-5 text-ink">
-        <div className="max-w-md rounded-3xl border border-[--hair] bg-surface p-8 text-center">
+        <div className="box max-w-md rounded-3xl p-8 text-center">
           <h1 className="text-xl font-black">Registration closed</h1>
           <p className="mt-2 text-sm text-muted">
             {studioInfo?.name ?? "This studio"} is not accepting online registrations right now.

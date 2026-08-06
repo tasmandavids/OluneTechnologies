@@ -16,7 +16,7 @@ export default function CertificateDownloads({ certificates }: { certificates: C
   if (certificates.length === 0) return null;
 
   return (
-    <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+    <section className="box rounded-2xl p-5">
       <h2 className="mb-1 text-xs font-semibold uppercase tracking-widest text-muted">
         {t("title", { count: certificates.length })}
       </h2>
@@ -26,7 +26,7 @@ export default function CertificateDownloads({ certificates }: { certificates: C
         {certificates.map((cert) => (
           <li
             key={`${cert.progressId}:${cert.title}`}
-            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[--hair] bg-base px-4 py-3"
+            className="box flex flex-wrap items-center justify-between gap-3 rounded-xl px-4 py-3"
           >
             <div className="min-w-0">
               <p className="font-semibold text-ink">🏅 {cert.title}</p>
@@ -38,7 +38,7 @@ export default function CertificateDownloads({ certificates }: { certificates: C
             <a
               href={downloadHref(cert.progressId, cert.title)}
               download
-              className="shrink-0 rounded-xl border border-[--hair] px-4 py-2 text-xs font-bold text-ink transition-colors hover:border-[--brand] hover:text-[--brand]"
+              className="box-pill shrink-0 px-4 py-2 text-xs font-bold text-ink transition-colors hover:text-[--brand]"
               aria-label={t("downloadAria", { title: cert.title })}
             >
               {t("downloadPdf")}

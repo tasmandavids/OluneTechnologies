@@ -114,13 +114,13 @@ export function FormsVault({
       )}
 
       {forms.length === 0 ? (
-        <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-12 text-center text-sm text-muted">
+        <div className="box rounded-2xl px-6 py-12 text-center text-sm text-muted">
           No forms from your studio yet. They&apos;ll appear here when needed.
         </div>
       ) : (
         <div className="space-y-3">
           {forms.map((form) => (
-            <div key={form.id} className="rounded-2xl border border-[--hair] bg-surface p-5">
+            <div key={form.id} className="box rounded-2xl p-5">
               <div className="mb-3 flex items-start gap-3">
                 <span className="text-xl">{TYPE_ICONS[form.formType] ?? "📋"}</span>
                 <div className="flex-1">
@@ -149,7 +149,7 @@ export function FormsVault({
                   const done = isCompleted(form.id, child.studentId);
                   const resp = responses.find((r) => r.formId === form.id && r.studentId === child.studentId);
                   return (
-                    <div key={child.studentId} className="flex items-center justify-between gap-3 rounded-xl border border-[--hair] px-4 py-2.5">
+                    <div key={child.studentId} className="box flex items-center justify-between gap-3 rounded-xl px-4 py-2.5">
                       <div className="flex items-center gap-2">
                         <span
                           className="grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-black text-white"

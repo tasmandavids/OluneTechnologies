@@ -123,7 +123,7 @@ function SuggestedClassesPanel({
         </div>
         <div className="flex flex-col gap-2">
           {suggestions.map((cls) => (
-            <div key={cls.id} className="rounded-xl border border-[--hair] bg-surface p-3">
+            <div key={cls.id} className="box rounded-xl p-3">
               <p className="text-sm font-semibold text-ink">{cls.name}</p>
               <p className="mt-0.5 text-xs text-muted">
                 {cls.discipline}
@@ -294,7 +294,7 @@ export function Step1SelectClass({
 
       {/* Selection summary */}
       {selectedIds.size > 0 && (
-        <div className="flex items-center justify-between rounded-lg border border-[--hair] bg-surface px-3 py-2 text-xs">
+        <div className="box flex items-center justify-between rounded-lg px-3 py-2 text-xs">
           <span className="text-muted">
             {selectedIds.size === 1
               ? t("classSelected", { count: 1 })

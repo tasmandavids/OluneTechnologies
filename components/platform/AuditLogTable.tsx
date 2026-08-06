@@ -14,7 +14,7 @@ export function AuditLogTable({ entries }: { entries: AuditEntry[] }) {
         <p className="text-sm text-muted">{t("subtitle")}</p>
       </header>
 
-      <div className="overflow-x-auto rounded-2xl border border-[--hair] bg-surface">
+      <div className="box overflow-x-auto rounded-2xl">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead>
             <tr className="border-b border-[--hair] text-xs uppercase tracking-widest text-muted">

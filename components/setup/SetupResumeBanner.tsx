@@ -42,7 +42,7 @@ export function SetupResumeBanner({
         <div className="flex shrink-0 gap-2">
           <Link
             href="/setup"
-            className="rounded-full border border-[--hair] px-4 py-1.5 text-xs font-semibold text-muted hover:text-ink"
+            className="box-pill px-4 py-1.5 text-xs font-semibold text-muted hover:text-ink"
           >
             {t("resume.openWizard")}
           </Link>

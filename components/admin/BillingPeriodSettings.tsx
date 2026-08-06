@@ -152,10 +152,8 @@ export default function BillingPeriodSettings({
           type="button"
           disabled={periodPending}
           onClick={() => onChangePeriod("monthly")}
-          className={`rounded-xl border p-4 text-left transition disabled:opacity-60 ${
-            period === "monthly"
-              ? "border-[--brand] bg-[color-mix(in_srgb,var(--brand)_8%,var(--surface))]"
-              : "border-[--hair] hover:bg-base"
+          className={`rounded-xl p-4 text-left transition disabled:opacity-60 ${
+            period === "monthly" ? "box-tint" : "box"
           }`}
         >
           <p className="font-semibold text-ink">{t("billingPeriod.monthly")}</p>
@@ -165,10 +163,8 @@ export default function BillingPeriodSettings({
           type="button"
           disabled={periodPending}
           onClick={() => onChangePeriod("termly")}
-          className={`rounded-xl border p-4 text-left transition disabled:opacity-60 ${
-            period === "termly"
-              ? "border-[--brand] bg-[color-mix(in_srgb,var(--brand)_8%,var(--surface))]"
-              : "border-[--hair] hover:bg-base"
+          className={`rounded-xl p-4 text-left transition disabled:opacity-60 ${
+            period === "termly" ? "box-tint" : "box"
           }`}
         >
           <p className="font-semibold text-ink">{t("billingPeriod.termly")}</p>
@@ -182,7 +178,7 @@ export default function BillingPeriodSettings({
       )}
 
       {period === "termly" && (
-        <div className="space-y-4 rounded-xl border border-[--hair] bg-base p-4">
+        <div className="box space-y-4 rounded-xl p-4">
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-widest text-muted">
               {t("billingPeriod.termsHeading")}
@@ -199,7 +195,7 @@ export default function BillingPeriodSettings({
                 return (
                   <li
                     key={term.id}
-                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[--hair] bg-surface px-3 py-2.5"
+                    className="box flex flex-wrap items-center justify-between gap-2 rounded-lg px-3 py-2.5"
                   >
                     <div>
                       <p className="text-sm font-semibold text-ink">{term.name}</p>
@@ -215,7 +211,7 @@ export default function BillingPeriodSettings({
                       <button
                         type="button"
                         onClick={() => startEdit(term)}
-                        className="rounded-lg border border-[--hair] px-2.5 py-1 text-xs font-semibold text-ink hover:bg-base"
+                        className="box-pill px-2.5 py-1 text-xs font-semibold text-ink"
                       >
                         {tCommon("edit")}
                       </button>
@@ -223,7 +219,7 @@ export default function BillingPeriodSettings({
                         type="button"
                         disabled={deletePending && deletingId === term.id}
                         onClick={() => onDelete(term.id)}
-                        className="rounded-lg border border-[--hair] px-2.5 py-1 text-xs font-semibold text-[#dc2626] hover:bg-[#fee2e2] disabled:opacity-50"
+                        className="box-pill px-2.5 py-1 text-xs font-semibold text-[#dc2626] disabled:opacity-50"
                       >
                         {tCommon("delete")}
                       </button>
@@ -234,7 +230,7 @@ export default function BillingPeriodSettings({
             </ul>
           )}
 
-          <div className="space-y-3 rounded-lg border border-dashed border-[--hair] p-3">
+          <div className="box space-y-3 rounded-lg p-3">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted">
               {editingId ? t("billingPeriod.editTerm") : t("billingPeriod.addTerm")}
             </p>

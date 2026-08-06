@@ -67,13 +67,13 @@ export function Step2SignWaivers({
       ) : error ? (
         <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">{error}</div>
       ) : waivers.length === 0 ? (
-        <div className="rounded-lg border border-[--hair] bg-surface p-4 text-sm text-muted">
+        <div className="box rounded-lg p-4 text-sm text-muted">
           {t("noWaiversRequired")}
         </div>
       ) : (
         <div className="space-y-4">
           {waivers.map((w) => (
-            <div key={w.id} className="rounded-xl border border-[--hair] bg-surface p-4">
+            <div key={w.id} className="box rounded-xl p-4">
               <p className="mb-2 font-semibold text-ink">{w.title}</p>
               <div className="mb-3 max-h-32 overflow-y-auto rounded-lg bg-base p-3 text-xs text-muted leading-relaxed whitespace-pre-wrap">
                 {w.content}

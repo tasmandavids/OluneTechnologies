@@ -419,7 +419,7 @@ export function ClassEditPanel({
           </div>
 
           {mode === "edit" && editing && (
-            <div className="rounded-xl border border-[--hair] bg-base/50 p-4">
+            <div className="box rounded-xl p-4">
               <Label>{t("seriesLabel")}</Label>
               <p className="mb-2 text-[0.68rem] text-muted">{t("seriesHint")}</p>
               <Select value={seriesChoice} onChange={setSeriesChoice}>
@@ -465,7 +465,7 @@ export function ClassEditPanel({
               disclosure, and only when Xero is actually connected (the option
               lists are empty otherwise). */}
           {(xeroAccounts.length > 0 || xeroItems.length > 0) && (
-            <details className="rounded-xl border border-[--hair] bg-base/50">
+            <details className="box rounded-xl">
               <summary className="cursor-pointer select-none px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-wider text-muted">
                 {t("xeroSection")}
               </summary>

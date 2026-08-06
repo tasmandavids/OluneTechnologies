@@ -98,7 +98,7 @@ function OrderRefundButton({ order, onDone }: { order: Order; onDone: (id: strin
       <button
         onClick={onClick}
         disabled={pending}
-        className="rounded-lg border border-[--hair] px-2.5 py-1 text-[0.7rem] font-semibold text-red-500 hover:bg-red-500/10 disabled:opacity-50"
+        className="box-pill px-2.5 py-1 text-[0.7rem] font-semibold text-red-500 disabled:opacity-50"
       >
         {pending ? tShared("refunding") : tShared("refund")}
       </button>
@@ -270,7 +270,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
             </div>
 
             {filtered.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-[--hair] py-16 text-center">
+              <div className="box rounded-2xl py-16 text-center">
                 <p className="text-3xl mb-3">🛍️</p>
                 <p className="font-semibold text-ink">{t("empty.title")}</p>
                 <p className="text-sm text-muted mt-1">{t("empty.description")}</p>
@@ -280,7 +280,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
                 {filtered.map((p) => (
                   <div
                     key={p.id}
-                    className={`rounded-2xl border border-[--hair] bg-surface p-4 transition-opacity ${!p.active ? "opacity-50" : ""}`}
+                    className={`box rounded-2xl p-4 transition-opacity ${!p.active ? "opacity-50" : ""}`}
                   >
                     <div className="relative mb-3 h-32 w-full overflow-hidden rounded-xl bg-base">
                       {p.image_url ? (
@@ -305,30 +305,30 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
                     <div className="mt-2 flex items-center gap-2">
                       <button
                         onClick={() => handleAdjust(p, -1)}
-                        className="h-6 w-6 rounded-md border border-[--hair] text-xs text-muted hover:text-ink"
+                        className="box-pill h-6 w-6 text-xs text-muted hover:text-ink"
                       >−</button>
                       <span className={`text-sm font-semibold ${p.stock_qty === 0 ? "text-red-500" : "text-ink"}`}>
                         {t("inStock", { count: p.stock_qty })}
                       </span>
                       <button
                         onClick={() => handleAdjust(p, 1)}
-                        className="h-6 w-6 rounded-md border border-[--hair] text-xs text-muted hover:text-ink"
+                        className="box-pill h-6 w-6 text-xs text-muted hover:text-ink"
                       >+</button>
                     </div>
 
                     <div className="mt-3 flex gap-2">
                       <button
                         onClick={() => openEdit(p)}
-                        className="flex-1 rounded-lg border border-[--hair] py-1 text-xs text-muted hover:text-ink"
+                        className="box-pill flex-1 py-1 text-xs text-muted hover:text-ink"
                       >
                         {tCommon("edit")}
                       </button>
                       <button
                         onClick={() => handleToggle(p)}
-                        className={`flex-1 rounded-lg py-1 text-xs font-medium ${
+                        className={`flex-1 py-1 text-xs font-medium ${
                           p.active
-                            ? "border border-[--hair] text-muted hover:text-red-500"
-                            : "bg-brand/10 text-brand hover:opacity-80"
+                            ? "box-pill text-muted hover:text-red-500"
+                            : "rounded-lg bg-brand/10 text-brand hover:opacity-80"
                         }`}
                       >
                         {p.active ? t("deactivate") : t("activate")}

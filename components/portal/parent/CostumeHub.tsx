@@ -117,7 +117,7 @@ export function CostumeHub({
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {recitals.map((r, i) => (
-              <div key={i} className="rounded-2xl border border-[--hair] bg-surface p-5 space-y-2">
+              <div key={i} className="box rounded-2xl p-5 space-y-2">
                 <p className="font-bold text-ink">{r.eventName}</p>
                 {r.eventDate && (
                   <p className="text-sm text-muted">
@@ -131,7 +131,7 @@ export function CostumeHub({
                   </p>
                 )}
                 {r.runningOrder && (
-                  <p className="text-xs text-muted whitespace-pre-line border-t border-[--hair] pt-2 mt-2">
+                  <p className="text-xs text-muted whitespace-pre-line pt-2 mt-2">
                     {r.runningOrder}
                   </p>
                 )}
@@ -169,7 +169,7 @@ export function CostumeHub({
           Costumes ({costumes.length})
         </h2>
         {costumes.length === 0 ? (
-          <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-10 text-center text-sm text-muted">
+          <div className="box rounded-2xl px-6 py-10 text-center text-sm text-muted">
             No costumes assigned yet. Your studio will add them when recital planning begins.
           </div>
         ) : (
@@ -177,7 +177,7 @@ export function CostumeHub({
             {costumes.map((c) => (
               <div
                 key={c.id}
-                className="rounded-2xl border border-[--hair] bg-surface p-5"
+                className="box rounded-2xl p-5"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -219,7 +219,7 @@ export function CostumeHub({
 
                 {/* Size section */}
                 {editingId === c.id ? (
-                  <div className="mt-4 space-y-3 border-t border-[--hair] pt-4">
+                  <div className="mt-4 space-y-3 pt-4">
                     <div>
                       <label className="block text-xs font-semibold text-muted mb-1">Size</label>
                       <div className="flex flex-wrap gap-1.5">
@@ -275,7 +275,7 @@ export function CostumeHub({
                     </div>
                   </div>
                 ) : (
-                  <div className="mt-3 flex items-center justify-between border-t border-[--hair] pt-3">
+                  <div className="mt-3 flex items-center justify-between pt-3">
                     <p className="text-xs text-muted">
                       Size:{" "}
                       <span className={c.sizeLabel ? "font-semibold text-ink" : "text-[--brand-hot]"}>

@@ -19,7 +19,7 @@ export default function LevelBar({ xp }: { xp: XpSummary }) {
   const atTop = xp.xpToNext === null;
 
   return (
-    <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+    <section className="box rounded-2xl p-5">
       <div className="flex items-center gap-4">
         <span
           className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl text-2xl"

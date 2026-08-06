@@ -63,7 +63,7 @@ export function MusicCue({ actId, music, onSave, onRemove }: MusicCueProps) {
   // ── Displaying saved music ──────────────────────────────────────────────────
   if (music) {
     return (
-      <div className="rounded-xl border border-[--hair] overflow-hidden">
+      <div className="box rounded-xl overflow-hidden">
         <div className="flex items-center gap-3 p-3">
           {/* Thumbnail */}
           {music.thumbnailUrl ? (

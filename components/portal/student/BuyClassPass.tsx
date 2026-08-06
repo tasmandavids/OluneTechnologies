@@ -120,7 +120,7 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
       <button
         type="button"
         onClick={openMyPasses}
-        className="group flex w-full items-center justify-between rounded-2xl border border-[--hair] bg-surface p-4 text-left transition-shadow hover:shadow-md sm:max-w-sm"
+        className="group box flex w-full items-center justify-between rounded-2xl p-4 text-left sm:max-w-sm"
       >
         <div className="flex items-center gap-3">
           <span className="text-2xl">🎫</span>
@@ -161,7 +161,7 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
                       key={pass.id}
                       type="button"
                       onClick={() => viewPass(pass)}
-                      className="group flex items-center justify-between rounded-xl border border-[--hair] bg-base px-4 py-3 text-left hover:border-[color-mix(in_srgb,var(--brand)_35%,var(--hair))]"
+                      className="group box flex items-center justify-between rounded-xl px-4 py-3 text-left"
                     >
                       <div>
                         <p className="text-sm font-semibold text-ink">{t("title")}</p>
@@ -177,7 +177,7 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
                   <button
                     type="button"
                     onClick={openBuy}
-                    className="mt-2 rounded-xl border border-dashed border-[--hair] px-4 py-3 text-center text-sm font-semibold text-brand hover:bg-base"
+                    className="box mt-2 rounded-xl px-4 py-3 text-center text-sm font-semibold text-brand"
                   >
                     {t("buyAnother")}
                   </button>

@@ -209,7 +209,7 @@ export function CreateSubscriptionModal({
             </label>
           </div>
 
-          <div className="rounded-xl border border-[--hair] bg-base p-4">
+          <div className="box rounded-xl p-4">
             <div className="flex flex-wrap gap-2">
               <select
                 defaultValue=""
@@ -257,7 +257,7 @@ export function CreateSubscriptionModal({
                 {lines.map((line) => (
                   <li
                     key={line.key}
-                    className="flex flex-wrap items-center gap-2 rounded-lg border border-[--hair] bg-surface px-3 py-2"
+                    className="box flex flex-wrap items-center gap-2 rounded-lg px-3 py-2"
                   >
                     <span className="text-[0.65rem] font-bold uppercase tracking-wider text-muted">
                       {line.itemType}
@@ -304,7 +304,7 @@ export function CreateSubscriptionModal({
             )}
           </div>
 
-          <div className="rounded-xl border border-[--hair] bg-base px-4 py-3 text-sm">
+          <div className="box rounded-xl px-4 py-3 text-sm">
             <div className="flex justify-between">
               <span className="text-muted">{t("monthlyTotal")}</span>
               <span className="font-bold tabular-nums">{formatMoney(monthlyCents)}</span>

@@ -104,7 +104,7 @@ export function OwnersDirectory({ owners }: { owners: PlatformOwner[] }) {
       </div>
 
       {selected && (
-        <aside className="w-full shrink-0 space-y-4 rounded-2xl border border-[--hair] bg-surface p-5 lg:w-96">
+        <aside className="box w-full shrink-0 space-y-4 rounded-2xl p-5 lg:w-96">
           <div>
             <h2 className="text-lg font-bold text-ink">{selected.fullName ?? t("ownerFallback")}</h2>
             <p className="text-sm text-muted">{selected.studioName}</p>

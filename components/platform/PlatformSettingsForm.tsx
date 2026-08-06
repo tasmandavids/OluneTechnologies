@@ -26,7 +26,7 @@ export function PlatformSettingsForm({ settings }: { settings: PlatformSettings 
         <p className="text-sm text-muted">{t("subtitle")}</p>
       </header>
 
-      <div className="space-y-4 rounded-2xl border border-[--hair] bg-surface p-5">
+      <div className="box space-y-4 rounded-2xl p-5">
         <label className="flex items-center justify-between gap-4 text-sm">
           <span>{t("maintenanceMode")}</span>
           <input
@@ -88,7 +88,7 @@ export function PlatformSettingsForm({ settings }: { settings: PlatformSettings 
         </div>
       </div>
 
-      <section className="rounded-2xl border border-[--hair] bg-surface p-5 text-sm text-muted">
+      <section className="box rounded-2xl p-5 text-sm text-muted">
         <h2 className="mb-2 font-bold text-ink">{t("operatorAccessTitle")}</h2>
         <p>
           {t.rich("operatorAccessBody", {

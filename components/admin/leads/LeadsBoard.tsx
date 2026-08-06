@@ -71,7 +71,7 @@ function LeadCard({
   }
 
   return (
-    <div className="rounded-xl border border-[--hair] bg-base p-3 text-sm shadow-sm">
+    <div className="box rounded-xl p-3 text-sm">
       <div className="flex items-start gap-2">
         <span
           className="mt-0.5 h-2 w-2 shrink-0 rounded-full"

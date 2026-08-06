@@ -218,7 +218,7 @@ export function TermPaymentPlansManager({
                       <button
                         disabled={pending}
                         onClick={() => handleCancel(plan.id)}
-                        className="rounded-lg border border-[--hair] px-3 py-1.5 text-xs font-semibold text-muted hover:bg-base disabled:opacity-50"
+                        className="box-pill px-3 py-1.5 text-xs font-semibold text-muted disabled:opacity-50"
                       >
                         Cancel
                       </button>

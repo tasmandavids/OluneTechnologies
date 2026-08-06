@@ -439,7 +439,7 @@ function RemindButton({
             else onDone?.();
           });
         }}
-        className="rounded-lg border border-[--hair] bg-base px-2.5 py-1 text-[0.7rem] font-semibold text-ink hover:bg-surface disabled:opacity-50"
+        className="box-pill px-2.5 py-1 text-[0.7rem] font-semibold text-ink disabled:opacity-50"
       >
         {pending ? tShared("sending") : (label ?? tShared("remind"))}
       </button>
@@ -495,7 +495,7 @@ function RefundButton({ invoice, onDone }: { invoice: InvoiceRow; onDone: (id: s
       <button
         type="button"
         onClick={() => { setErr(null); setAmountStr(maxDollars.toFixed(2)); setOpen(true); }}
-        className="rounded-lg border border-[--hair] px-2.5 py-1 text-[0.7rem] font-semibold text-[#dc2626] hover:bg-[#fee2e2]"
+        className="box-pill px-2.5 py-1 text-[0.7rem] font-semibold text-[#dc2626]"
       >
         {tShared("refund")}
       </button>
@@ -522,14 +522,14 @@ function RefundButton({ invoice, onDone }: { invoice: InvoiceRow; onDone: (id: s
           type="button"
           onClick={doRefund}
           disabled={pending}
-          className="rounded-lg border border-[--hair] px-2 py-0.5 text-[0.7rem] font-semibold text-[#dc2626] hover:bg-[#fee2e2] disabled:opacity-50"
+          className="box-pill px-2 py-0.5 text-[0.7rem] font-semibold text-[#dc2626] disabled:opacity-50"
         >
           {pending ? tShared("refunding") : "Confirm"}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="rounded-lg border border-[--hair] px-2 py-0.5 text-[0.7rem] text-muted hover:bg-surface"
+          className="box-pill px-2 py-0.5 text-[0.7rem] text-muted"
         >
           Cancel
         </button>
@@ -581,7 +581,7 @@ function VoidButton({ invoice, onDone }: { invoice: InvoiceRow; onDone: (id: str
           });
         }}
         disabled={pending}
-        className="rounded-lg border border-[--hair] px-2.5 py-1 text-[0.7rem] font-semibold text-muted hover:bg-surface disabled:opacity-50"
+        className="box-pill px-2.5 py-1 text-[0.7rem] font-semibold text-muted disabled:opacity-50"
       >
         {pending ? tShared("voiding") : tShared("void")}
       </button>
@@ -962,7 +962,7 @@ export function BillingDashboard({
               {unpaidAccounts.slice(0, 8).map((acct) => (
                 <li
                   key={acct.payerId}
-                  className="flex items-center justify-between rounded-xl border border-[--hair] bg-base px-4 py-3"
+                  className="box flex items-center justify-between rounded-xl px-4 py-3"
                 >
                   <div>
                     <p className="font-semibold text-ink">{acct.payerName}</p>
@@ -1129,7 +1129,7 @@ export function BillingDashboard({
                           <button
                             type="button"
                             onClick={() => setViewingInvoice(inv)}
-                            className="rounded-lg border border-[--hair] bg-base px-2.5 py-1 text-[0.7rem] font-semibold text-ink hover:bg-surface"
+                            className="box-pill px-2.5 py-1 text-[0.7rem] font-semibold text-ink"
                           >
                             {t("view")}
                           </button>

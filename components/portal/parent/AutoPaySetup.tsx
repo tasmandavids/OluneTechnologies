@@ -87,7 +87,7 @@ export default function AutoPaySetup({ items }: { items: AutoPayItem[] }) {
           const isCancelling = cancelled.has(key);
 
           return (
-            <div key={key} className="rounded-2xl border border-[--hair] bg-surface p-4">
+            <div key={key} className="box rounded-2xl p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-semibold text-ink">{item.className}</p>

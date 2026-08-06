@@ -96,7 +96,7 @@ export default function PlatformBadgeManager({ badges }: { badges: GlobalBadge[]
                 return (
                   <li
                     key={b.id}
-                    className="flex flex-wrap items-center gap-3 rounded-2xl border border-[--hair] bg-surface p-3"
+                    className="box flex flex-wrap items-center gap-3 rounded-2xl p-3"
                   >
                     <input
                       value={b.icon ?? ""}

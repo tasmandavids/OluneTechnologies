@@ -70,7 +70,7 @@ export function OpsTasksBoard({
       </header>
 
       {showForm && (
-        <div className="rounded-2xl border border-[--hair] bg-surface p-5 space-y-3">
+        <div className="box rounded-2xl p-5 space-y-3">
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block text-sm">
               <span className="text-xs uppercase tracking-widest text-muted">{t("type")}</span>
@@ -145,13 +145,13 @@ export function OpsTasksBoard({
         {COLUMN_IDS.map((colId) => {
           const colTasks = tasks.filter((task) => task.status === colId);
           return (
-            <div key={colId} className="rounded-2xl border border-[--hair] bg-surface/50 p-3">
+            <div key={colId} className="box rounded-2xl p-3">
               <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted">
                 {t(`columns.${colId}`)} ({colTasks.length})
               </h2>
               <ul className="space-y-2">
                 {colTasks.map((task) => (
-                  <li key={task.id} className="rounded-xl border border-[--hair] bg-base p-3 text-sm">
+                  <li key={task.id} className="box rounded-xl p-3 text-sm">
                     <p className="font-semibold text-ink">{task.title}</p>
                     <p className="text-[0.65rem] uppercase text-muted">
                       {task.taskType.replace(/_/g, " ")}

@@ -119,7 +119,7 @@ export function NotificationsTimeline({
       </div>
 
       {visible.length === 0 ? (
-        <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-12 text-center text-sm text-muted">
+        <div className="box rounded-2xl px-6 py-12 text-center text-sm text-muted">
           {filter === "unread" ? "No unread notifications." : "No notifications yet."}
         </div>
       ) : (
@@ -130,11 +130,7 @@ export function NotificationsTimeline({
               layout
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`group relative rounded-2xl border transition ${
-                n.readAt
-                  ? "border-[--hair] bg-surface"
-                  : "border-[color-mix(in_srgb,var(--brand)_25%,var(--hair))] bg-[color-mix(in_srgb,var(--brand)_4%,var(--surface))]"
-              }`}
+              className={`group relative rounded-2xl transition ${n.readAt ? "box" : "box-tint"}`}
             >
               {n.actionUrl ? (
                 <Link href={n.actionUrl} className="block p-4" onClick={() => !n.readAt && startTransition(() => onMarkRead(n.id))}>

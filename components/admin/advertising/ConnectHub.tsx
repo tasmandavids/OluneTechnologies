@@ -78,7 +78,7 @@ function MetaConnectCard({
         {connected ? (
           <div className="mt-5 space-y-3">
             {fbConn && (
-              <div className="flex items-center justify-between rounded-xl border border-[--hair] bg-base px-4 py-3">
+              <div className="box flex items-center justify-between rounded-xl px-4 py-3">
                 <div>
                   <p className="text-xs font-bold text-ink">Facebook</p>
                   <p className="truncate text-xs text-muted">{fbConn.accountName ?? fbConn.accountId}</p>
@@ -89,7 +89,7 @@ function MetaConnectCard({
               </div>
             )}
             {igConn ? (
-              <div className="flex items-center justify-between rounded-xl border border-[--hair] bg-base px-4 py-3">
+              <div className="box flex items-center justify-between rounded-xl px-4 py-3">
                 <div>
                   <p className="text-xs font-bold text-ink">Instagram</p>
                   <p className="truncate text-xs text-muted">{igConn.accountName ?? igConn.accountId}</p>
@@ -143,7 +143,7 @@ function TelegramConnectCard({
         <p className="mt-1 text-sm leading-relaxed text-muted">{t("connect.telegramDescription")}</p>
 
         {connected ? (
-          <div className="mt-5 flex items-center justify-between rounded-xl border border-[--hair] bg-base px-4 py-3">
+          <div className="box mt-5 flex items-center justify-between rounded-xl px-4 py-3">
             <div>
               <p className="text-xs font-bold text-ink">{conn?.accountName}</p>
               <p className="text-[0.65rem] text-muted">{t("connect.telegramChannel")}</p>
@@ -189,7 +189,7 @@ function TiktokConnectCard({
       <h3 className="text-lg font-black text-ink">{PLATFORM_META.tiktok.label}</h3>
       <p className="mt-1 text-sm text-muted">{PLATFORM_META.tiktok.description}</p>
       {connected ? (
-        <div className="mt-5 flex items-center justify-between rounded-xl border border-[--hair] bg-base px-4 py-3">
+        <div className="box mt-5 flex items-center justify-between rounded-xl px-4 py-3">
           <p className="truncate text-xs text-ink">{conn?.accountName ?? conn?.accountId}</p>
           <button type="button" onClick={onDisconnect} className="text-xs font-semibold text-red-600 hover:underline">
             {t("social.disconnect")}

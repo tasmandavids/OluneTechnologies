@@ -68,7 +68,7 @@ export default function BadgeAwarder({
   }
 
   return (
-    <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+    <section className="box rounded-2xl p-5">
       <h2 className="mb-1 text-xs font-semibold uppercase tracking-widest text-muted">
         {t("title")}
       </h2>
@@ -102,7 +102,7 @@ export default function BadgeAwarder({
           return (
             <li
               key={b.id}
-              className="flex items-center gap-3 rounded-xl border border-[--hair] bg-base px-3 py-2"
+              className="box flex items-center gap-3 rounded-xl px-3 py-2"
             >
               <span
                 className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-lg"
@@ -125,7 +125,7 @@ export default function BadgeAwarder({
                   type="button"
                   onClick={() => runRevoke(b.id)}
                   disabled={isBusy}
-                  className="shrink-0 rounded-lg border border-[--hair] px-3 py-1.5 text-xs font-bold text-muted transition-colors hover:border-red-400 hover:text-red-600 disabled:opacity-50"
+                  className="box-pill shrink-0 px-3 py-1.5 text-xs font-bold text-muted transition-colors hover:text-red-600 disabled:opacity-50"
                 >
                   {isBusy ? "…" : t("revoke")}
                 </button>

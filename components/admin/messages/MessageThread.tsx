@@ -207,7 +207,7 @@ export function MessageThread({
             <button
               type="button"
               onClick={() => loadThread(peerId, topic)}
-              className="rounded-lg border border-[--hair] px-3 py-1.5 text-xs text-ink hover:bg-surface"
+              className="box-pill px-3 py-1.5 text-xs text-ink"
             >
               {tShared("retry")}
             </button>

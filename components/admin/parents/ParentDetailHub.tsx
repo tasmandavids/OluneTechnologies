@@ -436,7 +436,7 @@ function CoParentCard({ coParent }: { coParent: CoParent }) {
   const tShared = useTranslations("admin.shared");
 
   return (
-    <li className="flex items-center justify-between rounded-xl border border-[--hair] px-3 py-2">
+    <li className="box flex items-center justify-between rounded-xl px-3 py-2">
       <div>
         <p className="text-sm font-semibold text-ink">{coParent.name ?? tShared("unknown")}</p>
         <p className="text-xs text-muted">{coParent.email ?? coParent.phone ?? tShared("dash")}</p>
@@ -467,7 +467,7 @@ function ChildRow({
   const tCommon = useTranslations("common");
 
   return (
-    <li className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[--hair] bg-surface px-4 py-3">
+    <li className="box flex flex-wrap items-center justify-between gap-3 rounded-xl px-4 py-3">
       <div className="flex items-center gap-3">
         <Link
           href={`/portal/admin/students/${child.id}`}

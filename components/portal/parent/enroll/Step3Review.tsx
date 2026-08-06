@@ -213,7 +213,7 @@ export function Step3Review({
             })}
           </p>
         )}
-        <div className="flex items-center justify-between rounded-xl border border-[--hair] bg-surface px-4 py-3">
+        <div className="box flex items-center justify-between rounded-xl px-4 py-3">
           <span className="text-sm text-muted">{label}</span>
           <span className="font-black text-ink">{NZD.format(chargeCents / 100)}</span>
         </div>
@@ -249,7 +249,7 @@ export function Step3Review({
     <div className="flex flex-col gap-4">
       <h3 className="text-base font-bold text-ink">{t("reviewTitle")}</h3>
 
-      <div className="rounded-xl border border-[--hair] bg-surface p-5 space-y-3">
+      <div className="box rounded-xl p-5 space-y-3">
         {/* Class list */}
         {classes.map((cls) => (
           <div key={cls.classId} className="flex justify-between text-sm">
@@ -267,7 +267,7 @@ export function Step3Review({
           <span className="text-muted">{t("summaryDancer")}</span>
           <span className="font-semibold text-ink">{enrollData.childName ?? "—"}</span>
         </div>
-        <div className="my-2 border-t border-[--hair]" />
+        <div className="my-2" />
         <div className="flex justify-between">
           <span className="font-bold text-ink">{t("summaryTotalDue")}</span>
           <span className="font-black text-ink">

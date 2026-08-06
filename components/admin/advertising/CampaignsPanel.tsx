@@ -107,7 +107,7 @@ export function CampaignsPanel({
                 type="button"
                 onClick={() => handleDelete(c.id)}
                 disabled={pending}
-                className="rounded-xl border border-[--hair] px-3 py-1.5 text-xs font-semibold text-muted hover:text-red-600 disabled:opacity-50"
+                className="box-pill px-3 py-1.5 text-xs font-semibold text-muted hover:text-red-600 disabled:opacity-50"
               >
                 {tCommon("delete")}
               </button>

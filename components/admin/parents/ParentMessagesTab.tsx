@@ -50,7 +50,7 @@ export default function ParentMessagesTab({
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-[--hair] bg-base">
+      <div className="box overflow-hidden rounded-2xl">
         <MessageThread
           currentUserId={currentUserId}
           peerId={parentId}

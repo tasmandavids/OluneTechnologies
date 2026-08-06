@@ -21,7 +21,7 @@ export default function PortalError({
 
   return (
     <div className="mx-auto max-w-5xl p-6">
-      <div className="grid min-h-[50vh] place-items-center rounded-2xl border border-[--hair] bg-surface px-6">
+      <div className="box grid min-h-[50vh] place-items-center rounded-2xl px-6">
         <div className="max-w-md py-14 text-center">
           <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]">
             <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden>

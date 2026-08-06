@@ -270,7 +270,7 @@ export function SetupWizard({ studio, schemaError }: Props) {
           </nav>
         )}
 
-        <div className="rounded-3xl border border-[--hair] bg-surface p-6 shadow-2xl sm:p-8">
+        <div className="box rounded-3xl p-6 sm:p-8">
           {error && (
             <p className="mb-4 rounded-lg border border-red-400/30 bg-red-400/10 px-3 py-2 text-sm text-red-400">
               {error}
@@ -743,7 +743,7 @@ function StudentsStep({
             {t("students.manualLabel")}
           </p>
           {manualStudents.map((row, i) => (
-            <div key={i} className="space-y-2 rounded-xl border border-[--hair] p-3">
+            <div key={i} className="box space-y-2 rounded-xl p-3">
               <div className="grid gap-2 sm:grid-cols-3">
                 <input
                   className="field-premium text-sm"
@@ -891,7 +891,7 @@ function ClassesStep({
       )}
 
       {manualClasses.length > 0 && !classPaste.trim() && (
-        <div className="mt-4 overflow-x-auto rounded-xl border border-[--hair]">
+        <div className="box mt-4 overflow-x-auto rounded-xl">
           <table className="w-full min-w-[480px] text-left text-xs">
             <thead>
               <tr className="border-b border-[--hair] text-muted">
@@ -989,7 +989,7 @@ function TourStep({
           <Link
             key={f.href}
             href={f.href}
-            className="group rounded-2xl border border-[--hair] p-4 transition hover:border-brand/40 hover:bg-brand/5"
+            className="box group rounded-2xl p-4 transition hover:bg-[color-mix(in_srgb,var(--brand)_8%,var(--surface))]"
           >
             <span className="text-xl">{f.emoji}</span>
             <p className="mt-2 font-bold text-ink group-hover:text-brand">

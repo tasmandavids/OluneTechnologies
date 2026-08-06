@@ -181,7 +181,7 @@ function ParticipantRow({
   };
 
   return (
-    <div className="flex items-center gap-2 py-1.5 border-b border-[--hair] last:border-0 group">
+    <div className="flex items-center gap-2 py-1.5 group">
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-ink truncate">{participant.displayName}</p>
       </div>
@@ -394,29 +394,31 @@ export function ActDetailPanel({ act, castGroups, onUpdate }: ActDetailPanelProp
           </div>
 
           {act.participants.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-[--hair] py-4 text-center">
+            <div className="box rounded-xl py-4 text-center">
               <p className="text-xs text-muted">No cast assigned yet</p>
               {castGroups.length === 0 && (
                 <p className="text-xs text-muted/60 mt-0.5">Set up cast groups in Step 4 first</p>
               )}
             </div>
           ) : (
-            <div className="rounded-xl border border-[--hair] px-3 py-1">
+            <div className="box rounded-xl px-3 py-1">
               {/* Column headers */}
               <div className="flex items-center gap-2 py-1.5 mb-0.5">
                 <span className="flex-1 text-[10px] font-semibold text-muted/60 uppercase tracking-wide">Performer</span>
                 <span className="w-36 text-[10px] font-semibold text-muted/60 uppercase tracking-wide">Costume override</span>
                 <span className="w-5" />
               </div>
-              {act.participants.map(p => (
-                <ParticipantRow
-                  key={p.castMemberId}
-                  participant={p}
-                  actId={actId}
-                  onCostumeChange={val => handleCostumeChange(p.castMemberId, val)}
-                  onRemove={() => handleRemoveParticipant(p.castMemberId)}
-                />
-              ))}
+              <div className="flex flex-col gap-0.5">
+                {act.participants.map(p => (
+                  <ParticipantRow
+                    key={p.castMemberId}
+                    participant={p}
+                    actId={actId}
+                    onCostumeChange={val => handleCostumeChange(p.castMemberId, val)}
+                    onRemove={() => handleRemoveParticipant(p.castMemberId)}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -437,10 +439,10 @@ export function ActDetailPanel({ act, castGroups, onUpdate }: ActDetailPanelProp
           <SectionLabel>Stage & lighting</SectionLabel>
           <button
             onClick={() => setStageViewOpen(true)}
-            className="w-full rounded-xl border border-[--hair] bg-surface hover:border-brand/40 hover:bg-brand/5 transition px-4 py-3 flex items-center gap-3"
+            className="box w-full rounded-xl hover:bg-brand/5 transition px-4 py-3 flex items-center gap-3"
           >
             {/* Mini stage preview */}
-            <div className="w-10 h-8 rounded border border-[--hair] bg-[--subtle]/40 flex items-center justify-center shrink-0">
+            <div className="w-10 h-8 rounded bg-[--subtle]/40 flex items-center justify-center shrink-0">
               <svg className="w-5 h-5 text-muted/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
               </svg>

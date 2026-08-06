@@ -63,7 +63,7 @@ export function SubscriptionCancelActions({
             type="button"
             onClick={() => runCancel(false)}
             disabled={pending}
-            className="rounded-lg border border-[--hair] px-2.5 py-1 text-[0.7rem] font-semibold text-muted hover:bg-surface disabled:opacity-50"
+            className="box-pill px-2.5 py-1 text-[0.7rem] font-semibold text-muted disabled:opacity-50"
             title={tShared("cancelAtPeriodEndTitle")}
           >
             {pending ? "…" : tShared("cancelAtPeriodEnd")}
@@ -74,7 +74,7 @@ export function SubscriptionCancelActions({
             type="button"
             onClick={() => runCancel(true)}
             disabled={pending}
-            className="rounded-lg border border-[--hair] px-2.5 py-1 text-[0.7rem] font-semibold text-[#dc2626] hover:bg-[#fee2e2] disabled:opacity-50"
+            className="box-pill px-2.5 py-1 text-[0.7rem] font-semibold text-[#dc2626] disabled:opacity-50"
             title={tShared("cancelImmediatelyTitle")}
           >
             {pending ? "…" : tShared("cancelNow")}

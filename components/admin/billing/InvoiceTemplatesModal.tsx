@@ -156,7 +156,7 @@ export function InvoiceTemplatesModal({
             </button>
 
             {templates.length === 0 ? (
-              <p className="rounded-xl border border-[--hair] bg-base px-4 py-8 text-center text-sm text-muted">
+              <p className="box rounded-xl px-4 py-8 text-center text-sm text-muted">
                 {t("empty")}
               </p>
             ) : (
@@ -166,7 +166,7 @@ export function InvoiceTemplatesModal({
                   return (
                     <li
                       key={tpl.id}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-[--hair] bg-base px-4 py-3"
+                      className="box flex items-center justify-between gap-3 rounded-xl px-4 py-3"
                     >
                       <div>
                         <p className="font-semibold text-ink">{tpl.name}</p>
@@ -178,7 +178,7 @@ export function InvoiceTemplatesModal({
                         <button
                           type="button"
                           onClick={() => startEdit(tpl)}
-                          className="rounded-lg border border-[--hair] px-2.5 py-1 text-xs font-semibold text-ink hover:bg-surface"
+                          className="box-pill px-2.5 py-1 text-xs font-semibold text-ink"
                         >
                           {tCommon("edit")}
                         </button>
@@ -186,7 +186,7 @@ export function InvoiceTemplatesModal({
                           type="button"
                           onClick={() => remove(tpl.id)}
                           disabled={pending && deletingId === tpl.id}
-                          className="rounded-lg border border-[--hair] px-2.5 py-1 text-xs font-semibold text-[#dc2626] hover:bg-[#fee2e2] disabled:opacity-50"
+                          className="box-pill px-2.5 py-1 text-xs font-semibold text-[#dc2626] disabled:opacity-50"
                         >
                           {pending && deletingId === tpl.id ? tShared("deleting") : tCommon("delete")}
                         </button>

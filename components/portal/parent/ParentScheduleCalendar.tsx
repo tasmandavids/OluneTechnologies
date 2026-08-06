@@ -138,7 +138,7 @@ export default function ParentScheduleCalendar({
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-2xl border border-[--hair] bg-surface">
+      <div className="box overflow-x-auto rounded-2xl">
         <div className="min-w-[720px]">
           <div className="grid grid-cols-7 border-b border-[--hair]">
             {weekDates.map((date, i) => (

@@ -101,7 +101,7 @@ export default function PortalEmbed({ slug, customDomain, root, registrationEnab
   ];
 
   return (
-    <section className="space-y-6 rounded-2xl border border-[--hair] bg-surface p-6">
+    <section className="box space-y-6 rounded-2xl p-6">
       <div>
         <h2 className="text-xs font-semibold uppercase tracking-widest text-muted">{t("title")}</h2>
         <p className="mt-1 text-sm text-muted">{t("description")}</p>
@@ -110,9 +110,7 @@ export default function PortalEmbed({ slug, customDomain, root, registrationEnab
       {cards.map((card) => (
         <div
           key={card.id}
-          className={`space-y-4 border-t border-[--hair] pt-5 first:border-0 first:pt-0 ${
-            card.disabled ? "opacity-60" : ""
-          }`}
+          className={`space-y-4 ${card.disabled ? "opacity-60" : ""}`}
         >
           <div>
             <h3 className="text-sm font-semibold text-ink">{card.label}</h3>
@@ -125,7 +123,7 @@ export default function PortalEmbed({ slug, customDomain, root, registrationEnab
               {t("linkHeading")}
             </span>
             <div className="flex items-center gap-2">
-              <code className="flex-1 overflow-x-auto rounded-lg border border-[--hair] bg-base px-3 py-2 text-xs text-ink">
+              <code className="box flex-1 overflow-x-auto rounded-lg px-3 py-2 text-xs text-ink">
                 {card.url}
               </code>
               <CopyButton
@@ -170,7 +168,7 @@ export default function PortalEmbed({ slug, customDomain, root, registrationEnab
                 className="rounded-lg border border-[--hair] bg-white p-1"
               />
             ) : (
-              <div className="h-[88px] w-[88px] rounded-lg border border-dashed border-[--hair]" />
+              <div className="box h-[88px] w-[88px] rounded-lg" />
             )}
             <div className="space-y-2">
               <span className="block text-[0.7rem] font-medium uppercase tracking-wider text-muted">
@@ -181,7 +179,7 @@ export default function PortalEmbed({ slug, customDomain, root, registrationEnab
                 type="button"
                 onClick={() => downloadQr(card.url, card.qrFile)}
                 disabled={!qr[card.url]}
-                className="rounded-full border border-[--hair] px-3 py-1.5 text-xs font-medium text-ink transition hover:bg-base disabled:opacity-50"
+                className="box-pill px-3 py-1.5 text-xs font-medium text-ink transition disabled:opacity-50"
               >
                 {t("downloadQr")}
               </button>
@@ -190,7 +188,7 @@ export default function PortalEmbed({ slug, customDomain, root, registrationEnab
         </div>
       ))}
 
-      <p className="border-t border-[--hair] pt-4 text-xs text-muted">{t("iframeNote")}</p>
+      <p className="pt-4 text-xs text-muted">{t("iframeNote")}</p>
     </section>
   );
 }
@@ -210,7 +208,7 @@ function CopyButton({
     <button
       type="button"
       onClick={onClick}
-      className="shrink-0 rounded-full border border-[--hair] px-3 py-1.5 text-xs font-medium text-ink transition hover:bg-base"
+      className="box-pill shrink-0 px-3 py-1.5 text-xs font-medium text-ink transition"
     >
       {copied ? `✓ ${copiedLabel}` : label}
     </button>

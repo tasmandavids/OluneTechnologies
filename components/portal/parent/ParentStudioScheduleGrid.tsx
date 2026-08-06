@@ -256,13 +256,13 @@ export default function ParentStudioScheduleGrid({
 
       {/* ── Content ── */}
       {classes.length === 0 ? (
-        <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-16 text-center">
+        <div className="box rounded-2xl px-6 py-16 text-center">
           <p className="text-base font-medium text-muted">{t("noClasses")}</p>
         </div>
       ) : (
         <>
           {/* Desktop grid (md+) */}
-          <div className="hidden md:block overflow-x-auto rounded-2xl border border-[--hair] bg-surface">
+          <div className="box hidden md:block overflow-x-auto rounded-2xl">
             {/* Day headers */}
             <div className="grid grid-cols-7 border-b border-[--hair]">
               {STUDIO_SCHEDULE_DAYS.map(({ key }) => (

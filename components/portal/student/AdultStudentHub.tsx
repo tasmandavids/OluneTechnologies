@@ -110,7 +110,7 @@ export default function AdultStudentHub({
           {outstanding > 0 && (
             <Link
               href="/portal/parent/billing"
-              className="rounded-xl border border-[--hair] bg-surface px-4 py-2 text-right hover:border-[color-mix(in_srgb,var(--brand)_35%,var(--hair))]"
+              className="box rounded-xl px-4 py-2 text-right"
             >
               <p className="text-xs text-muted">{tHub("outstanding")}</p>
               <p className="text-base font-black tabular-nums" style={{ color: "var(--brand-hot)" }}>
@@ -145,7 +145,7 @@ export default function AdultStudentHub({
           {t("today", { day: dayNames[todayDow] })}
         </h2>
         {todayClasses.length === 0 ? (
-          <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-8 text-center">
+          <div className="box rounded-2xl px-6 py-8 text-center">
             <p className="text-sm text-muted">{t("noClassesToday")}</p>
           </div>
         ) : (
@@ -153,8 +153,8 @@ export default function AdultStudentHub({
             {todayClasses.map((c) => (
               <div
                 key={c.enrollmentId}
-                className="relative overflow-hidden rounded-2xl border border-[--hair] bg-surface p-5"
-                style={{ borderLeftColor: discColor(c.discipline), borderLeftWidth: 3 }}
+                className="box relative overflow-hidden rounded-2xl p-5"
+                style={{ boxShadow: `inset 3px 0 0 ${discColor(c.discipline)}, var(--box-shadow)` }}
               >
                 <div
                   className="pointer-events-none absolute inset-0"
@@ -187,7 +187,7 @@ export default function AdultStudentHub({
       {/* ── Weekly schedule grid ────────────────────────────────── */}
       <motion.section variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
         <h2 className="mb-3 text-xs uppercase tracking-widest text-muted">{t("weeklySchedule")}</h2>
-        <div className="overflow-x-auto rounded-2xl border border-[--hair] bg-surface p-4">
+        <div className="box overflow-x-auto rounded-2xl p-4">
           <div
             className="grid min-w-[480px] gap-2"
             style={{ gridTemplateColumns: `repeat(${SHOW_DAYS.length}, minmax(0,1fr))` }}
@@ -234,7 +234,7 @@ export default function AdultStudentHub({
           {t("myClasses", { count: classes.length })}
         </h2>
         {classes.length === 0 ? (
-          <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-10 text-center">
+          <div className="box rounded-2xl px-6 py-10 text-center">
             <p className="text-sm text-muted">{t("noEnrolments")}</p>
             <button
               type="button"
@@ -250,7 +250,7 @@ export default function AdultStudentHub({
               <motion.div
                 key={c.enrollmentId}
                 whileHover={{ y: -2 }}
-                className="rounded-2xl border border-[--hair] bg-surface p-4"
+                className="box rounded-2xl p-4"
               >
                 <div className="flex items-start gap-3">
                   <span
@@ -295,11 +295,11 @@ export default function AdultStudentHub({
           </Link>
         </div>
         {invoices.length === 0 ? (
-          <div className="rounded-2xl border border-[--hair] bg-surface px-6 py-10 text-center">
+          <div className="box rounded-2xl px-6 py-10 text-center">
             <p className="text-sm text-muted">{tHub("noInvoices")}</p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-[--hair] bg-surface">
+          <div className="box overflow-hidden rounded-2xl">
             <table className="w-full min-w-[400px] text-sm">
               <thead>
                 <tr className="border-b border-[--hair]">

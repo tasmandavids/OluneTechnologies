@@ -55,7 +55,7 @@ export default function WelcomePage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-canvas p-4">
-      <div className="w-full max-w-sm rounded-2xl border border-[--hair] bg-surface p-8 shadow-xl">
+      <div className="box w-full max-w-sm rounded-2xl p-8">
         <h1 className="text-2xl font-black text-ink">Welcome to Olune</h1>
         <p className="mt-2 text-sm text-muted">
           Set a password so you can log in any time.

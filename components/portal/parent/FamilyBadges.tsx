@@ -17,7 +17,7 @@ export default function FamilyBadges({ badges }: { badges: ShowcaseBadge[] }) {
   const earnedCount = badges.filter((b) => b.earned).length;
 
   return (
-    <section className="rounded-2xl border border-[--hair] bg-surface p-5">
+    <section className="box rounded-2xl p-5">
       <div className="mb-4 flex items-baseline justify-between gap-3">
         <h2 className="text-xs font-semibold uppercase tracking-widest text-muted">
           {t("familyTitle", { earned: earnedCount, total: badges.length })}
