@@ -4,6 +4,7 @@
 //  static: origin is always derived from the incoming request host.
 // ============================================================================
 
+import { canonicalAppUrl } from "@/lib/app-url";
 import { CURRENCY_CODE } from "@/lib/currency";
 
 const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
@@ -12,15 +13,16 @@ const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
  * The origin Olune-brand pages actually serve a 200 on — the one URL Google
  * should index. Deliberately NOT derived from ROOT_DOMAIN: in production the
  * apex (olune.co.nz) 308-redirects to www, and a canonical pointing at a
- * redirect is a canonical Google has to second-guess. NEXT_PUBLIC_APP_URL is
- * already normalized to that host for OAuth, so reuse it.
+ * redirect is a canonical Google has to second-guess.
+ *
+ * Delegates to canonicalAppUrl() rather than reading NEXT_PUBLIC_APP_URL
+ * directly: that env var is operator-set and has been deployed as a bare host
+ * ("olune.co.nz", no scheme). Used verbatim it makes `new URL()` throw, and
+ * because the root layout's metadataBase is built from this value, that took
+ * down every route in the app. canonicalAppUrl() supplies the missing scheme
+ * and applies the same apex -> www rule OAuth callbacks already rely on.
  */
-export const CANONICAL_ORIGIN = (() => {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/+$/, "");
-  if (appUrl) return appUrl;
-  const isLocal = ROOT_DOMAIN === "localhost" || ROOT_DOMAIN.endsWith(".localhost");
-  return isLocal ? "http://localhost:3000" : `https://${ROOT_DOMAIN}`;
-})();
+export const CANONICAL_ORIGIN = canonicalAppUrl();
 
 /**
  * Absolute URL on the canonical marketing origin, ignoring the request host.
