@@ -47,6 +47,18 @@ html:has(#olune-landing-root) {
 @keyframes olSheet { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
 @keyframes olTick { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: none; } }
 
+/* ── Check-in card (verbatim from the "Checkin Card" export) ─────────────
+   ccSweep stands in for the design system's olune-sweep, which lives inside
+   the DS bundle rather than the token files. */
+@keyframes ccRing { from { transform: scale(0.55); opacity: 0.75; } to { transform: scale(2.1); opacity: 0; } }
+@keyframes ccBob { 0%, 100% { transform: translateY(-6px); } 50% { transform: translateY(6px); } }
+@keyframes ccHolo { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes ccSweep { 0% { transform: translateX(-120%); } 100% { transform: translateX(420%); } }
+
+.dcl-cc-flip:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -14px rgba(139, 124, 240, 0.62) !important; }
+.dcl-cc-flip:active { transform: translateY(0) scale(0.98); }
+.dcl-cc-tier:hover { transform: translateY(-6px); border-color: rgba(139, 124, 240, 0.46) !important; box-shadow: 0 34px 64px -38px rgba(139, 124, 240, 0.6) !important; }
+
 /* The phone's own scrollers are chromeless, like the device. */
 .dcl-ph-scroll { scrollbar-width: none; }
 .dcl-ph-scroll::-webkit-scrollbar { width: 0; height: 0; }
@@ -94,6 +106,8 @@ html:has(#olune-landing-root) {
   .dcl-stat-cell { border-left: none !important; padding-left: 0 !important; }
   .dcl-mobile-showcase { grid-template-columns: 1fr !important; justify-items: center; gap: 40px !important; }
   .dcl-mobile-showcase aside { width: 100%; max-width: 402px; }
+  .dcl-cc-split { grid-template-columns: 1fr !important; }
+  .dcl-cc-ladder { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
 
 @media (max-width: 460px) {
@@ -107,6 +121,7 @@ html:has(#olune-landing-root) {
   .dcl-bento-span { grid-column: span 1 !important; grid-row: span 1 !important; }
   .dcl-bento-feature-span { grid-column: span 1 !important; grid-row: span 2 !important; }
   .dcl-compare-row-grid { grid-template-columns: 1fr !important; gap: 4px !important; }
+  .dcl-cc-ladder { grid-template-columns: 1fr !important; }
 }
 
 /* ── reduced motion: freeze the ambient loops ──────────────────────────── */
