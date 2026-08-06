@@ -16,6 +16,8 @@ import { AttentionQueue } from "./AttentionQueue";
 import { QuickActions } from "./QuickActions";
 import { StaffToday } from "./StaffToday";
 import { TodayTimeline } from "./TodayTimeline";
+import { DashboardGrid } from "./DashboardGrid";
+import type { WidgetId } from "./widget-registry";
 import type { ScheduleClass, AttentionData, PulseStat, CashInDay } from "./types";
 import type { TeacherOption } from "@/app/portal/admin/classes/page";
 
@@ -28,6 +30,7 @@ export function AdminDashboard({
   cashInTotalCents,
   cashInPaymentCount,
   cashInDays,
+  savedLayout,
 }: {
   scheduleClasses: ScheduleClass[];
   teachers: TeacherOption[];
@@ -37,10 +40,36 @@ export function AdminDashboard({
   cashInTotalCents: number;
   cashInPaymentCount: number;
   cashInDays: CashInDay[];
+  savedLayout: unknown;
 }) {
   const t = useTranslations("admin.dashboard.header");
+  const tLayout = useTranslations("admin.dashboard.layout");
   const tGreeting = useTranslations("common.greeting");
   const locale = useLocale();
+
+  const widgets: Record<WidgetId, React.ReactNode> = {
+    attention: (
+      <GlassPanel className="h-full">
+        <AttentionQueue attention={attention} />
+      </GlassPanel>
+    ),
+    staff: (
+      <GlassPanel className="h-full">
+        <StaffToday scheduleClasses={scheduleClasses} teachers={teachers} todayDow={todayDow} />
+      </GlassPanel>
+    ),
+    timeline: (
+      <GlassPanel className="h-full">
+        <TodayTimeline scheduleClasses={scheduleClasses} todayDow={todayDow} />
+      </GlassPanel>
+    ),
+    cashin: <CashInCard totalCents={cashInTotalCents} paymentCount={cashInPaymentCount} days={cashInDays} />,
+    quickactions: (
+      <GlassPanel className="h-full">
+        <QuickActions />
+      </GlassPanel>
+    ),
+  };
 
   const greeting = (() => {
     const h = new Date().getHours();
@@ -71,29 +100,12 @@ export function AdminDashboard({
         <PulseRow pulse={pulse} />
       </motion.div>
 
-      <motion.div
-        variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
-        className="grid items-start gap-4 lg:grid-cols-[minmax(0,320px)_1fr_minmax(0,320px)]"
-      >
-        <div className="flex flex-col gap-4">
-          <GlassPanel>
-            <AttentionQueue attention={attention} />
-          </GlassPanel>
-          <GlassPanel>
-            <StaffToday scheduleClasses={scheduleClasses} teachers={teachers} todayDow={todayDow} />
-          </GlassPanel>
-        </div>
-
-        <GlassPanel>
-          <TodayTimeline scheduleClasses={scheduleClasses} todayDow={todayDow} />
-        </GlassPanel>
-
-        <div className="flex flex-col gap-4">
-          <CashInCard totalCents={cashInTotalCents} paymentCount={cashInPaymentCount} days={cashInDays} />
-          <GlassPanel>
-            <QuickActions />
-          </GlassPanel>
-        </div>
+      <motion.div variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}>
+        <DashboardGrid
+          savedLayout={savedLayout}
+          widgets={widgets}
+          labels={{ customize: tLayout("customize"), done: tLayout("done") }}
+        />
       </motion.div>
     </motion.div>
   );

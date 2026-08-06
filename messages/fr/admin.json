@@ -173,6 +173,10 @@
       "header": {
         "subhead": "{count, plural, =0 {Rien ne nécessite votre attention pour l'instant — tout tourne tout seul.} one {Une chose a besoin de vous aujourd'hui. Le reste tourne tout seul.} other {# choses ont besoin de vous aujourd'hui. Le reste tourne tout seul.}}"
       },
+      "layout": {
+        "customize": "Personnaliser la disposition",
+        "done": "Terminé"
+      },
       "pulse": {
         "occupancy": { "label": "Occupation" },
         "enrolled": { "label": "Inscrits" },
