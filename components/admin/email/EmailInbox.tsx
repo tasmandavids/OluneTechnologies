@@ -577,103 +577,75 @@ export function EmailInbox({
       )}
 
       <div className="flex min-h-0 flex-1 gap-3">
-        {/* Nav column — which inbox */}
-        <div className="hidden w-[204px] shrink-0 lg:flex">
+        {/* List column — inbox nav folded into the thread list */}
+        <div className="flex w-full min-w-[300px] shrink-0 lg:w-[384px]">
           <GlassPanel className="flex h-full w-full min-h-0 flex-col !p-0 overflow-hidden">
-            <div className="shrink-0 border-b border-[--hair] px-4 py-4">
-              <p className="font-display text-lg font-semibold tracking-tight text-ink">{t("title")}</p>
-              <p className="mt-0.5 text-[11px] uppercase tracking-widest text-muted">
-                {totalUnread > 0 ? t("unreadCount", { count: totalUnread }) : t("allCaughtUp")}
-              </p>
-            </div>
+            <div className="shrink-0 space-y-2.5 border-b border-[--hair] px-3.5 py-3">
+              <div className="flex items-center gap-2">
+                <div className="min-w-0">
+                  <p className="font-display text-lg font-semibold leading-tight tracking-tight text-ink">
+                    {t("title")}
+                  </p>
+                  <p className="mt-0.5 text-[10.5px] uppercase tracking-widest text-muted">
+                    {totalUnread > 0 ? t("unreadCount", { count: totalUnread }) : t("allCaughtUp")}
+                  </p>
+                </div>
+                <RippleButton variant="solid" sweep size="sm" className="ml-auto shrink-0" onClick={openCompose}>
+                  <IconPlus className="h-3.5 w-3.5" />
+                  {t("composeButton")}
+                </RippleButton>
+              </div>
 
-            <div className="shrink-0 px-3 pb-2 pt-3">
-              <RippleButton variant="solid" sweep className="w-full !justify-center" onClick={openCompose}>
-                <IconPlus className="h-4 w-4" />
-                {t("composeButton")}
-              </RippleButton>
-            </div>
-
-            <nav className="min-h-0 flex-1 overflow-y-auto px-2.5 pb-3">
-              <p className="mb-1.5 px-2 pt-2 text-[10.5px] font-semibold uppercase tracking-widest text-muted">
-                {t("inboxesSection")}
-              </p>
-              <div className="flex flex-col gap-0.5">
+              <div className="flex flex-wrap items-center gap-1.5">
                 {accounts.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedAccountId("all")}
-                    className="flex items-center justify-between gap-2 rounded-2xl px-2.5 py-2 text-left text-[13px] font-medium transition-colors"
-                    style={{
-                      color: selectedAccountId === "all" ? "var(--ink, var(--text))" : "var(--muted)",
-                      background: selectedAccountId === "all" ? "var(--t3)" : "transparent",
-                    }}
-                  >
-                    <span className="truncate">{t("allInboxes")}</span>
-                    {totalUnread > 0 && (
-                      <span className="shrink-0 text-[11px] font-semibold" style={{ color: "var(--brand-deep)" }}>
-                        {totalUnread}
-                      </span>
-                    )}
-                  </button>
+                  <QuietPill active={selectedAccountId === "all"} onClick={() => setSelectedAccountId("all")}>
+                    <span className="flex items-center gap-1.5">
+                      {t("allInboxes")}
+                      {totalUnread > 0 && <span className="opacity-70">{totalUnread}</span>}
+                    </span>
+                  </QuietPill>
                 )}
                 {accounts.map((a) => {
-                  const active = selectedAccountId === a.id;
                   const unread = unreadByAccount.get(a.id) ?? 0;
                   return (
-                    <div key={a.id} className="group relative">
-                      <button
-                        type="button"
+                    <span key={a.id} className="group relative inline-flex">
+                      <QuietPill
+                        active={selectedAccountId === a.id}
                         onClick={() => setSelectedAccountId(a.id)}
-                        title={a.email_address}
-                        className="flex w-full items-center gap-2 rounded-2xl px-2.5 py-2 text-left text-[13px] font-medium transition-colors"
-                        style={{
-                          color: active ? "var(--ink, var(--text))" : "var(--muted)",
-                          background: active ? "var(--t3)" : "transparent",
-                        }}
                       >
-                        <span
-                          className="h-1.5 w-1.5 shrink-0 rounded-full"
-                          style={{ background: a.sync_error ? "var(--error)" : "var(--success)" }}
-                        />
-                        <span className="min-w-0 flex-1 truncate pr-4">{a.email_address}</span>
-                        {unread > 0 && (
-                          <span className="shrink-0 text-[11px] font-semibold" style={{ color: "var(--brand-deep)" }}>
-                            {unread}
-                          </span>
-                        )}
-                      </button>
+                        <span className="flex items-center gap-1.5" title={a.email_address}>
+                          <span
+                            className="h-1.5 w-1.5 shrink-0 rounded-full"
+                            style={{ background: a.sync_error ? "var(--error)" : "var(--success)" }}
+                          />
+                          <span className="max-w-[140px] truncate">{a.email_address}</span>
+                          {unread > 0 && <span className="opacity-70">{unread}</span>}
+                        </span>
+                      </QuietPill>
                       <button
                         type="button"
                         onClick={() => disconnect(a.id)}
                         title={t("disconnectConfirm")}
-                        className="absolute right-1.5 top-1/2 hidden h-5 w-5 -translate-y-1/2 place-items-center rounded-full text-muted hover:text-red-500 group-hover:grid"
+                        className="absolute -right-1 -top-1 hidden h-4 w-4 place-items-center rounded-full border border-[--hair] text-muted shadow-sm hover:text-red-500 group-hover:grid"
+                        style={{ background: "var(--surface)" }}
                       >
-                        <IconX className="h-3 w-3" />
+                        <IconX className="h-2.5 w-2.5" />
                       </button>
-                    </div>
+                    </span>
                   );
                 })}
-              </div>
-
-              <div className="mt-3 border-t border-[--hair] pt-3">
-                <button
-                  type="button"
+                <RippleButton
+                  variant="quiet"
+                  size="sm"
                   onClick={() => setShowConnect(true)}
-                  className="flex w-full items-center gap-2 rounded-2xl px-2.5 py-2 text-left text-[12.5px] font-medium text-muted transition-colors hover:text-ink"
+                  title={t("connectMore")}
+                  aria-label={t("connectMore")}
+                  style={{ borderRadius: 999 }}
                 >
                   <IconPlus className="h-3.5 w-3.5" />
-                  {t("connectMore")}
-                </button>
+                </RippleButton>
               </div>
-            </nav>
-          </GlassPanel>
-        </div>
 
-        {/* List column — which thread */}
-        <div className="flex w-full min-w-[300px] shrink-0 lg:w-[360px]">
-          <GlassPanel className="flex h-full w-full min-h-0 flex-col !p-0 overflow-hidden">
-            <div className="shrink-0 space-y-2.5 border-b border-[--hair] px-3.5 py-3">
               <div className="flex items-center gap-2">
                 <label
                   className="flex flex-1 items-center gap-2 rounded-2xl px-3 py-2"
@@ -690,23 +662,6 @@ export function EmailInbox({
                 </label>
                 <RippleButton variant="glass" size="sm" onClick={refresh} disabled={pending}>
                   {pending ? tShared("syncing") : t("syncNow")}
-                </RippleButton>
-              </div>
-              <div className="flex items-center gap-1.5 lg:hidden">
-                <select
-                  value={selectedAccountId}
-                  onChange={(e) => setSelectedAccountId(e.target.value)}
-                  className="min-w-0 flex-1 rounded-lg border border-[--hair] bg-base px-2.5 py-1.5 text-xs text-ink"
-                >
-                  <option value="all">{t("allInboxes")}</option>
-                  {accounts.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {t("accountOption", { email: a.email_address, provider: providerLabel(a.provider) })}
-                    </option>
-                  ))}
-                </select>
-                <RippleButton variant="solid" size="sm" onClick={openCompose}>
-                  {t("composeButton")}
                 </RippleButton>
               </div>
               <div className="flex flex-wrap gap-1.5">
