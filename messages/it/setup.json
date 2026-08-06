@@ -12,6 +12,7 @@
       "profile": "Il tuo studio",
       "students": "Ballerini",
       "classes": "Corsi",
+      "pricing": "Prezzi",
       "tour": "Tour"
     },
     "actions": {
@@ -45,7 +46,8 @@
       "about": "Cosa rende speciale il tuo studio?",
       "aboutPlaceholder": "Danza classica per i più piccoli, squadre agonistiche, corsi aperti per adulti…",
       "stylesLabel": "Stili di danza offerti",
-      "stylesRequired": "Scegli almeno uno stile per continuare."
+      "stylesRequired": "Scegli almeno uno stile per continuare.",
+      "stylesHint": "Alimentano i suggerimenti di corsi, le pagine dei programmi del tuo sito e il modulo di contatto che vedono le famiglie."
     },
     "students": {
       "title": "Aggiungi i tuoi ballerini",
@@ -63,7 +65,8 @@
       "parentEmailPlaceholder": "E-mail del genitore",
       "addAnother": "+ Aggiungi un altro allievo",
       "linkParents": "Crea account genitore e collega le famiglie quando i dati del genitore sono presenti",
-      "import": "Importa {count, plural, one {# ballerino} other {# ballerini}}"
+      "import": "Importa {count, plural, one {# ballerino} other {# ballerini}}",
+      "portalNote": "Chi aggiungi riceve l'accesso al portale e può ricevere una tessera di check-in e i tuoi moduli."
     },
     "classes": {
       "title": "Costruisci il tuo orario",
@@ -78,7 +81,46 @@
       "pasteLabel": "Oppure incolla da un foglio di calcolo",
       "pastePlaceholder": "Corso\tStile\tGiorno\tInizio\tFine\tCapienza\tPrezzo\nDanza classica junior\tDanza classica\tLun\t16:00\t17:00\t15\t18",
       "detected": "{count, plural, one {# corso rilevato} other {# corsi rilevati}}",
-      "create": "Crea {count, plural, one {# corso} other {# corsi}}"
+      "create": "Crea {count, plural, one {# corso} other {# corsi}}",
+      "productsNote": "Ogni prezzo che inserisci diventa un prodotto del catalogo di fatturazione, così le fatture hanno subito IVA e codici contabili corretti."
+    },
+    "pricing": {
+      "title": "Come vuoi far pagare?",
+      "subtitle": "Scegli il modo in cui la tua scuola calcola davvero le rette: è il preventivo che riceve la famiglia all'iscrizione.",
+      "options": {
+        "per_class": {
+          "name": "A corso",
+          "body": "Ogni corso ha il suo prezzo. Chi frequenta due corsi paga due corsi.",
+          "example": "Lunedì {each} + mercoledì {each} = {both}."
+        },
+        "hours": {
+          "name": "A ore settimanali",
+          "body": "Un unico prezzo per le ore che un allievo fa ogni settimana. Scrivi tu l'intera tabella: nessun calcolo, nessuna percentuale.",
+          "example": "2 ore a settimana = {twoHours}. Un'ora in più e sono {threeHours}."
+        },
+        "per_class_combos": {
+          "name": "A corso, con pacchetti",
+          "body": "I corsi mantengono il loro prezzo e tu definisci le combinazioni che ne hanno uno solo.",
+          "example": "Lunedì e mercoledì insieme = {each}, non {both}."
+        }
+      },
+      "rateCard": {
+        "title": "Il tuo listino orario",
+        "description": "Quanto paga un allievo per le ore che fa ogni settimana. Scrivi i totali: qui non si calcola nulla da una percentuale.",
+        "hours": "Ore a settimana",
+        "theyPay": "Paga",
+        "addRow": "+ Aggiungi una riga",
+        "removeRow": "Rimuovi questa riga",
+        "overflowLabel": "Oltre l'ultima riga,",
+        "overflowHint": "per ogni ora in più. Lascia vuoto per applicare l'ultima riga a qualsiasi numero di ore.",
+        "previewTitle": "Quanto paga una famiglia"
+      },
+      "duplicateHours": "Due righe hanno lo stesso numero di ore. Modificane una.",
+      "perClassNote": "Ogni corso mantiene il prezzo che gli hai dato ed è quello che viene proposto alla famiglia all'iscrizione.",
+      "combosNote": "I corsi mantengono il loro prezzo. Definisci le combinazioni a prezzo unico in Contabilità → Prodotti.",
+      "changeLater": "Puoi cambiarlo quando vuoi in Contabilità → Prodotti.",
+      "save": "Salva e concludi",
+      "rateCardRequired": "Aggiungi almeno una riga al listino, oppure torna al prezzo per corso."
     },
     "tour": {
       "title": "{studioName} è pronto",
@@ -153,28 +195,44 @@
     },
     "tourFeatures": {
       "dashboard": {
-        "title": "Dashboard",
-        "body": "Iscrizioni, incassi e programma di oggi a colpo d'occhio."
+        "title": "Oggi",
+        "body": "I corsi di oggi, chi ha fatto il check-in, gli incassi e gli insoluti."
       },
       "classes": {
         "title": "Corsi",
-        "body": "Costruisci l'orario, imposta la capienza e gestisci le liste d'attesa."
+        "body": "Costruisci l'orario, imposta i posti e gestisci le liste d'attesa."
       },
       "students": {
-        "title": "Allievi e famiglie",
-        "body": "Elenchi, iscrizioni, note sui progressi e account genitore."
+        "title": "Persone",
+        "body": "Allievi, famiglie e staff in un unico elenco, con inviti al portale."
+      },
+      "products": {
+        "title": "Prodotti e prezzi",
+        "body": "Listino, quote dei corsi, carnet e pacchetti: un solo catalogo."
       },
       "billing": {
-        "title": "Fatturazione",
-        "body": "Fatture, pagamenti Stripe e quote trimestrali in NZD."
+        "title": "Contabilità",
+        "body": "Fatture, accrediti Stripe e Xero, in NZD."
       },
       "website": {
         "title": "Sito web",
-        "body": "Il tuo sito pubblico — corsi, iscrizioni e il tuo brand."
+        "body": "Il tuo sito pubblico: corsi, iscrizioni online e il tuo marchio."
+      },
+      "forms": {
+        "title": "Moduli",
+        "body": "Iscrizioni, regolamenti e liberatorie, firmati a schermo."
+      },
+      "checkin": {
+        "title": "Check-in",
+        "body": "Tessere NFC, pass Apple Wallet e presenze in sala in tempo reale."
+      },
+      "connections": {
+        "title": "Connessioni",
+        "body": "Stripe, Xero, email e calendari, collegati in Impostazioni."
       },
       "leads": {
         "title": "Contatti e messaggi",
-        "body": "Richieste di lezioni di prova e messaggistica bidirezionale con le famiglie."
+        "body": "Richieste di prova e messaggi con le famiglie."
       }
     },
     "regions": {
