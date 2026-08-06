@@ -86,7 +86,12 @@ export const RippleButton = forwardRef<HTMLButtonElement, RippleButtonProps>(fun
           className="pointer-events-none absolute inset-0 -translate-x-[130%] bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)] animate-[admin-sweep_4.6s_ease-in-out_infinite]"
         />
       )}
-      <span className="relative">{children}</span>
+      {/* Row-flex so icon + label sit side by side — Tailwind preflight makes
+          <svg> display:block, which would otherwise stack them. gap:inherit
+          picks up the button's own gap (including per-call overrides). */}
+      <span className="relative inline-flex items-center" style={{ gap: "inherit" }}>
+        {children}
+      </span>
     </button>
   );
 });
