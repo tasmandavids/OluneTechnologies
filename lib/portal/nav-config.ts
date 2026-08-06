@@ -20,15 +20,34 @@ export type NavSection = {
   items: NavItem[];
 };
 
-// 1.6.1 IA: one job-to-be-done = one door. 13 top-level items across 4 titled
-// sections (was 20 / 7). Old routes redirect to their new homes.
+// 1.6.1 IA: one job-to-be-done = one door. Old routes redirect to their new
+// homes.
+//
+// 1.6.3: sections now mirror the StudioRail spaces one for one, so the mobile
+// drawer and the desktop rail flyout tell the same story. Two items moved to
+// where people actually look for them: class passes is a front-desk scanner
+// like check-in (People, not Schedule), and the billing catalogue gets its own
+// door as Products (Money) now that pricing lives there.
 export const ADMIN_NAV: NavSection[] = [
   {
+    items: [{ href: "/portal/admin", labelKey: "nav.admin.dashboard", exact: true }],
+  },
+  {
+    titleKey: "nav.sections.people",
     items: [
-      { href: "/portal/admin", labelKey: "nav.admin.dashboard", exact: true },
+      { href: "/portal/admin/people", labelKey: "nav.admin.people" },
+      { href: "/portal/admin/leads", labelKey: "nav.admin.leads", module: "leads" },
+      { href: "/portal/admin/badges", labelKey: "nav.admin.badges", module: "badges" },
+      { href: "/portal/admin/checkin", labelKey: "nav.admin.checkin" },
+      { href: "/portal/admin/passes", labelKey: "nav.admin.passes", module: "passes" },
+      { href: "/portal/admin/forms", labelKey: "nav.admin.forms", module: "forms" },
+    ],
+  },
+  {
+    titleKey: "nav.sections.schedule",
+    items: [
       { href: "/portal/admin/classes", labelKey: "nav.admin.classes", module: "classes" },
       { href: "/portal/admin/events", labelKey: "nav.admin.events", module: "production" },
-      { href: "/portal/admin/passes", labelKey: "nav.admin.passes", module: "passes" },
     ],
   },
   {
@@ -39,25 +58,21 @@ export const ADMIN_NAV: NavSection[] = [
         labelKey: "nav.admin.staff",
         module: "staff",
         children: [
-          { href: "/portal/admin/substitutes", labelKey: "nav.admin.substitutes", module: "substitutes" },
           { href: "/portal/admin/availability", labelKey: "nav.admin.availability", module: "availability" },
+          { href: "/portal/admin/substitutes", labelKey: "nav.admin.substitutes", module: "substitutes" },
           { href: "/portal/admin/private-lessons", labelKey: "nav.admin.privateLessons", module: "privateLessons" },
         ],
       },
     ],
   },
   {
-    titleKey: "nav.sections.families",
-    items: [
-      { href: "/portal/admin/people", labelKey: "nav.admin.people" },
-      { href: "/portal/admin/badges", labelKey: "nav.admin.badges", module: "badges" },
-      { href: "/portal/admin/leads", labelKey: "nav.admin.leads", module: "leads" },
-      { href: "/portal/admin/checkin", labelKey: "nav.admin.checkin" },
-    ],
-  },
-  {
+    // Every item here is billing-gated, which is what lets the whole section
+    // disappear for a studio without the billing module.
     titleKey: "nav.sections.finance",
-    items: [{ href: "/portal/admin/money", labelKey: "nav.admin.money", module: "billing" }],
+    items: [
+      { href: "/portal/admin/money", labelKey: "nav.admin.money", module: "billing" },
+      { href: "/portal/admin/money?tab=products", labelKey: "nav.admin.products", module: "billing" },
+    ],
   },
   {
     titleKey: "nav.sections.digital",
@@ -100,6 +115,9 @@ export const OFFICE_NAV: NavSection[] = [
     titleKey: "nav.sections.communications",
     items: [{ href: "/portal/admin/messages", labelKey: "nav.admin.messages", module: "messaging" }],
   },
+  {
+    items: [{ href: "/portal/forms", labelKey: "nav.portal.forms", module: "forms" }],
+  },
 ];
 
 export const PORTAL_NAV: Record<Exclude<Role, "admin">, NavItem[]> = {
@@ -114,6 +132,9 @@ export const PORTAL_NAV: Record<Exclude<Role, "admin">, NavItem[]> = {
     { href: "/portal/teacher/private-lessons", labelKey: "nav.teacher.privateLessons", module: "privateLessons" },
     { href: "/portal/teacher/substitutes", labelKey: "nav.teacher.substitutes", module: "substitutes" },
     { href: "/portal/teacher/messages", labelKey: "nav.teacher.messages", module: "messaging" },
+    // Studio policies land on staff too, so the signing screen isn't a
+    // parents-only door any more.
+    { href: "/portal/forms", labelKey: "nav.portal.forms", module: "forms" },
     { href: "/portal/teacher/affiliations", labelKey: "nav.teacher.affiliations" },
     { href: "/settings/notifications", labelKey: "nav.teacher.notifications" },
   ],
@@ -134,6 +155,7 @@ export const PORTAL_NAV: Record<Exclude<Role, "admin">, NavItem[]> = {
   student: [
     { href: "/portal/student", labelKey: "nav.student.timetable", exact: true },
     { href: "/portal/student/progress", labelKey: "nav.student.progress", module: "progress" },
+    { href: "/portal/forms", labelKey: "nav.portal.forms", module: "forms" },
   ],
 };
 

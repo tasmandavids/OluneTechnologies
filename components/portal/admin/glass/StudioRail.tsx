@@ -2,16 +2,24 @@
 
 // ============================================================================
 //  StudioRail — glass floating rail nav for the admin/studio-owner shell.
-//  Same 7 spaces AdminRail used (today/people/schedule/money/inbox/studio/
-//  settings — the "1.6.1 IA"), restyled to the Claude Design glass language.
-//  Behavioural change from AdminRail: each icon is now a direct link to the
-//  space's primary destination (matches the design's rail, which is plain
-//  <Link>s). Hovering anywhere on the rail opens ONE workspace flyout
-//  listing every space's secondary destinations, so nothing that was
-//  reachable before (shop, students, parents, leads, badges, events,
-//  passes, substitutes, availability, private lessons, advertising, staff,
-//  support) loses its second path — it just moves from "click to reveal a
-//  per-icon menu" to "hover the rail to see everything at once".
+//  Each icon is a direct link to the space's primary destination; hovering
+//  anywhere on the rail opens ONE workspace flyout listing every space, so
+//  nothing loses its second path.
+//
+//  1.6.3 pass over the flyout:
+//    • The space heading is now a LINK, not dead text — the primary
+//      destination (students & families, classes, staff, money, website…) was
+//      previously reachable only by hitting the right 44px icon.
+//    • Every space is listed, including the ones with no children (Today,
+//      Settings), so the flyout is a complete map rather than a partial one.
+//    • Team is its own space. Staff used to hide under "Studio" (next to the
+//      website), and availability/substitutes/private lessons sat under
+//      Schedule — all four are "who's teaching", so they live together now.
+//    • Class passes moved to People: it is a front-desk scanner like check-in,
+//      not a timetable screen.
+//    • Products (the billing catalogue) has a direct link under Money.
+//  The grouping mirrors ADMIN_NAV's sections, which is what the mobile drawer
+//  renders — one IA, two surfaces.
 // ============================================================================
 
 import Link from "next/link";
@@ -30,6 +38,7 @@ import {
   IconSun,
   IconUsers,
   IconCalendarDays,
+  IconLanyard,
   IconWallet,
   IconInbox,
   IconGlobe,
@@ -42,6 +51,9 @@ type Space = {
   icon: typeof IconSun;
   primaryHref: string;
   subHrefs: string[];
+  /** Routes that light the icon up without appearing in the flyout — profile
+   *  pages and other leaves that have no nav entry of their own. */
+  alsoActive?: string[];
 };
 
 const SPACES: Space[] = [
@@ -52,42 +64,58 @@ const SPACES: Space[] = [
     icon: IconUsers,
     primaryHref: "/portal/admin/people",
     subHrefs: [
-      // /students and /parents keep only their [id] profile pages; the list
-      // routes redirect here, but the rail should still light up on a profile.
-      "/portal/admin/students",
-      "/portal/admin/parents",
       "/portal/admin/leads",
       "/portal/admin/badges",
       "/portal/admin/checkin",
+      "/portal/admin/passes",
+      "/portal/admin/forms",
     ],
+    // /students and /parents keep only their [id] profile pages; the list
+    // routes redirect to /people, but the rail should still light up there.
+    alsoActive: ["/portal/admin/students", "/portal/admin/parents"],
   },
   {
     id: "schedule",
     labelKey: "shell.rail.schedule",
     icon: IconCalendarDays,
     primaryHref: "/portal/admin/classes",
+    subHrefs: ["/portal/admin/events"],
+  },
+  {
+    id: "team",
+    labelKey: "shell.rail.team",
+    icon: IconLanyard,
+    primaryHref: "/portal/admin/staff",
     subHrefs: [
-      "/portal/admin/events",
-      "/portal/admin/passes",
-      "/portal/admin/substitutes",
       "/portal/admin/availability",
+      "/portal/admin/substitutes",
       "/portal/admin/private-lessons",
     ],
   },
-  { id: "money", labelKey: "shell.rail.money", icon: IconWallet, primaryHref: "/portal/admin/money", subHrefs: ["/portal/admin/shop"] },
+  {
+    id: "money",
+    labelKey: "shell.rail.money",
+    icon: IconWallet,
+    primaryHref: "/portal/admin/money",
+    subHrefs: ["/portal/admin/money?tab=products", "/portal/admin/shop"],
+  },
   { id: "inbox", labelKey: "shell.rail.inbox", icon: IconInbox, primaryHref: "/portal/admin/messages", subHrefs: ["/portal/admin/support"] },
   {
     id: "studio",
     labelKey: "shell.rail.studio",
     icon: IconGlobe,
     primaryHref: "/portal/admin/site",
-    subHrefs: ["/portal/admin/advertising", "/portal/admin/staff"],
+    subHrefs: ["/portal/admin/advertising"],
   },
   { id: "settings", labelKey: "shell.rail.settings", icon: IconSettings, primaryHref: "/portal/admin/settings", subHrefs: [] },
 ];
 
 function isActiveHref(pathname: string, item: NavItem): boolean {
-  return item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(item.href + "/");
+  // Tab links (…/money?tab=products) share a pathname with their parent, so
+  // they never claim the highlight on their own — the parent already has it.
+  const href = item.href.split("?")[0];
+  if (href !== item.href) return false;
+  return item.exact ? pathname === href : pathname === href || pathname.startsWith(href + "/");
 }
 
 function resolveSpace(space: Space, byHref: (href: string) => NavItem | undefined) {
@@ -176,7 +204,10 @@ export function StudioRail({
         <div className="relative flex min-h-0 flex-1 flex-col items-center gap-1.5 overflow-y-auto [scrollbar-width:none]">
           {resolved.map(({ space, r }) => {
             if (!r) return null;
-            const active = isActiveHref(pathname, r.primary) || r.subs.some((s) => isActiveHref(pathname, s));
+            const active =
+              isActiveHref(pathname, r.primary) ||
+              r.subs.some((s) => isActiveHref(pathname, s)) ||
+              (space.alsoActive ?? []).some((href) => pathname === href || pathname.startsWith(href + "/"));
             const Icon = space.icon;
             const label = t(space.labelKey as Parameters<typeof t>[0]);
             return (
@@ -294,15 +325,21 @@ export function StudioRail({
             <p className="mb-3.5 text-[9.5px] font-semibold uppercase tracking-[0.2em] text-muted">
               {t("shell.rail.workspace" as Parameters<typeof t>[0])}
             </p>
-            {resolved
-              .filter(({ r }) => r && r.subs.length > 0)
-              .map(({ space, r }) => (
-                <div key={space.id} className="mb-4">
-                  <p className="mb-1 flex items-center gap-2 px-1 text-[13px] font-semibold text-ink">
-                    <space.icon className="h-4 w-4 text-muted" strokeWidth={1.7} />
-                    {t(space.labelKey as Parameters<typeof t>[0])}
-                  </p>
-                  <div className="flex flex-col gap-px pl-6">
+            {resolved.map(({ space, r }) => (
+              <div key={space.id} className={r!.subs.length > 0 ? "mb-3.5" : "mb-1"}>
+                {/* The heading is the primary destination, labelled with its
+                    own nav name ("Students & families", not "People") so the
+                    flyout lists every door by the name it answers to. */}
+                <Link
+                  href={r!.primary.href}
+                  prefetch={false}
+                  className="-mx-1 flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] font-semibold text-ink transition hover:bg-[--glass2]"
+                >
+                  <space.icon className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.7} />
+                  {t(r!.primary.labelKey as Parameters<typeof t>[0])}
+                </Link>
+                {r!.subs.length > 0 && (
+                  <div className="mt-px flex flex-col gap-px pl-[26px]">
                     {r!.subs.map((sub) => (
                       <Link
                         key={sub.href}
@@ -314,8 +351,9 @@ export function StudioRail({
                       </Link>
                     ))}
                   </div>
-                </div>
-              ))}
+                )}
+              </div>
+            ))}
             <div className="border-t pt-3 text-[11.5px] leading-[1.5] text-muted" style={{ borderColor: "var(--hair)" }}>
               {t("shell.rail.everythingByTyping" as Parameters<typeof t>[0])}{" "}
               <span className="font-semibold text-ink">⌘K</span>

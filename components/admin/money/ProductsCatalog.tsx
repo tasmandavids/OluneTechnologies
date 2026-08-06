@@ -23,6 +23,7 @@ import {
   TAX_TREATMENTS,
   type BillingProduct,
   type LedgerProvider,
+  type PriceTier,
   type PricingModel,
   type ProductCategory,
   type RecurringInterval,
@@ -48,7 +49,7 @@ type CodeOption = { code: string; name: string };
 
 type TaxSettings = { pricesIncludeTax: boolean; gstRegistered: boolean; gstNumber: string | null };
 
-type TierDraft = { minQuantity: string; discountBp: string; unitDollars: string; mode: "discount" | "price" };
+type TierDraft = { minQuantity: string; unitDollars: string };
 type ComponentDraft = { componentProductId: string; quantity: string };
 type LedgerDraft = { provider: LedgerProvider; accountCode: string; itemCode: string; taxCode: string };
 
@@ -73,6 +74,13 @@ type Draft = {
   accountCode: string;
   itemCode: string;
   tiers: TierDraft[];
+  /**
+   * Percent-off tiers saved before the editor went price-only. They're shown
+   * read-only and carried straight back into the save payload: saveProductTiers
+   * deletes every tier before re-inserting, so a tier the editor doesn't render
+   * is a tier the next save destroys.
+   */
+  legacyPercentTiers: PriceTier[];
   components: ComponentDraft[];
   ledger: LedgerDraft[];
 };
@@ -101,6 +109,7 @@ function emptyDraft(): Draft {
     accountCode: "",
     itemCode: "",
     tiers: [],
+    legacyPercentTiers: [],
     components: [],
     ledger: [],
   };
@@ -127,12 +136,15 @@ function draftFromProduct(product: BillingProduct): Draft {
     taxRatePct: (product.taxRateBp / 100).toString(),
     accountCode: product.accountCode ?? "",
     itemCode: product.itemCode ?? "",
-    tiers: product.tiers.map((t) => ({
-      minQuantity: String(t.minQuantity),
-      discountBp: t.discountBp != null ? String(t.discountBp / 100) : "",
-      unitDollars: t.unitAmountCents != null ? (t.unitAmountCents / 100).toFixed(2) : "",
-      mode: t.unitAmountCents != null ? "price" : "discount",
-    })),
+    // A tier states a price or a discount, never both (0105 check constraint).
+    // Price tiers are editable; the discount ones survive untouched.
+    tiers: product.tiers
+      .filter((t) => t.unitAmountCents != null)
+      .map((t) => ({
+        minQuantity: String(t.minQuantity),
+        unitDollars: (t.unitAmountCents! / 100).toFixed(2),
+      })),
+    legacyPercentTiers: product.tiers.filter((t) => t.discountBp != null),
     components: product.components.map((c) => ({
       componentProductId: c.componentProductId,
       quantity: String(c.quantity),
@@ -268,22 +280,25 @@ export function ProductsCatalog({
 
       // Tiers, package contents and per-ledger overrides live in their own
       // tables, so they save alongside rather than inside the product write.
-      const tiers = draft.tiers
+      const priceTiers = draft.tiers
         .map((tier) => {
           const minQuantity = Number.parseFloat(tier.minQuantity);
           if (!Number.isFinite(minQuantity) || minQuantity <= 0) return null;
-          if (tier.mode === "price") {
-            const price = Number.parseFloat(tier.unitDollars);
-            if (!Number.isFinite(price) || price < 0) return null;
-            return { minQuantity, unitAmountCents: Math.round(price * 100) };
-          }
-          const pct = Number.parseFloat(tier.discountBp);
-          if (!Number.isFinite(pct) || pct <= 0) return null;
-          return { minQuantity, discountBp: Math.round(pct * 100) };
+          const price = Number.parseFloat(tier.unitDollars);
+          if (!Number.isFinite(price) || price < 0) return null;
+          return { minQuantity, unitAmountCents: Math.round(price * 100) };
         })
         .filter((tier): tier is NonNullable<typeof tier> => tier !== null);
 
-      const tierResult = await saveProductTiers(productId, tiers);
+      // saveProductTiers replaces the whole set, so anything the editor no
+      // longer renders has to be re-submitted or it's gone.
+      const tierResult = await saveProductTiers(productId, [
+        ...priceTiers,
+        ...draft.legacyPercentTiers.map((tier) => ({
+          minQuantity: tier.minQuantity,
+          discountBp: tier.discountBp!,
+        })),
+      ]);
       if (!tierResult.ok) {
         toast.error(tierResult.error);
         return;
@@ -710,8 +725,36 @@ export function ProductsCatalog({
               </Section>
 
               <Section title={t("sections.volume")} hint={t("hints.volume")}>
+                {draft.legacyPercentTiers.map((tier) => (
+                  <div
+                    key={tier.id}
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-muted"
+                    style={{ background: "var(--t3)" }}
+                  >
+                    <span className="flex-1">
+                      {t("tiers.legacyPercent", {
+                        from: tier.minQuantity,
+                        percent: (tier.discountBp ?? 0) / 100,
+                      })}
+                    </span>
+                    <button
+                      onClick={() =>
+                        update({
+                          legacyPercentTiers: draft.legacyPercentTiers.filter(
+                            (lt) => lt.id !== tier.id,
+                          ),
+                        })
+                      }
+                      className="text-sm text-muted"
+                      aria-label={t("tiers.remove")}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
                 {draft.tiers.map((tier, idx) => (
                   <div key={idx} className="flex items-center gap-2">
+                    <span className="text-xs text-muted">{t("tiers.from")}</span>
                     <input
                       type="number"
                       min="1"
@@ -727,34 +770,16 @@ export function ProductsCatalog({
                       className={`${fieldClass} w-20`}
                       style={fieldStyle}
                     />
-                    <select
-                      value={tier.mode}
-                      onChange={(e) =>
-                        update({
-                          tiers: draft.tiers.map((tr, i) =>
-                            i === idx ? { ...tr, mode: e.target.value as TierDraft["mode"] } : tr,
-                          ),
-                        })
-                      }
-                      className={`${fieldClass} w-32`}
-                      style={fieldStyle}
-                    >
-                      <option value="discount">{t("tiers.percentOff")}</option>
-                      <option value="price">{t("tiers.flatPrice")}</option>
-                    </select>
+                    <span className="text-xs text-muted">{t("tiers.priceEach")}</span>
                     <input
                       type="number"
                       min="0"
                       step="0.01"
-                      value={tier.mode === "price" ? tier.unitDollars : tier.discountBp}
+                      value={tier.unitDollars}
                       onChange={(e) =>
                         update({
                           tiers: draft.tiers.map((tr, i) =>
-                            i === idx
-                              ? tier.mode === "price"
-                                ? { ...tr, unitDollars: e.target.value }
-                                : { ...tr, discountBp: e.target.value }
-                              : tr,
+                            i === idx ? { ...tr, unitDollars: e.target.value } : tr,
                           ),
                         })
                       }
@@ -764,6 +789,7 @@ export function ProductsCatalog({
                     <button
                       onClick={() => update({ tiers: draft.tiers.filter((_, i) => i !== idx) })}
                       className="text-sm text-muted"
+                      aria-label={t("tiers.remove")}
                     >
                       ×
                     </button>
@@ -772,10 +798,7 @@ export function ProductsCatalog({
                 <button
                   onClick={() =>
                     update({
-                      tiers: [
-                        ...draft.tiers,
-                        { minQuantity: "2", discountBp: "10", unitDollars: "", mode: "discount" },
-                      ],
+                      tiers: [...draft.tiers, { minQuantity: "2", unitDollars: "" }],
                     })
                   }
                   className="text-xs font-semibold text-[--brand]"

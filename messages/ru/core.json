@@ -83,6 +83,7 @@
       "today": "Сегодня",
       "people": "Люди",
       "schedule": "Расписание",
+      "team": "Команда",
       "money": "Финансы",
       "inbox": "Входящие",
       "studio": "Студия",
@@ -138,23 +139,25 @@
   },
   "nav": {
     "sections": {
+      "people": "Люди",
+      "schedule": "Расписание",
       "teamManagement": "Команда",
       "clientManagement": "Клиенты",
       "finance": "Финансы",
       "digital": "Цифровое",
-      "communications": "Коммуникации",
-      "families": "Семьи"
+      "communications": "Коммуникации"
     },
     "admin": {
       "dashboard": "Панель",
       "classes": "Занятия",
       "events": "События",
       "staff": "Персонал",
-      "people": "Люди",
+      "people": "Ученики и семьи",
       "parents": "Родители",
       "students": "Ученики",
       "leads": "Заявки",
       "money": "Финансы",
+      "products": "Товары и услуги",
       "billing": "Счета",
       "accounting": "Учёт",
       "website": "Сайт",

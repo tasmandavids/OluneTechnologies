@@ -93,6 +93,19 @@ export function IconUsers(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** Staff lanyard — the Team space. Deliberately unlike IconUsers, which is the
+ *  People space: one is who you employ, the other is who you teach. */
+export function IconLanyard(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <rect x="4" y="7" width="16" height="13.5" rx="2.5" />
+      <path d="M9.5 7V5.6a2.5 2.5 0 0 1 5 0V7" />
+      <circle cx="12" cy="12.6" r="1.9" />
+      <path d="M8.7 17.6c.4-1.5 1.7-2.5 3.3-2.5s2.9 1 3.3 2.5" />
+    </svg>
+  );
+}
+
 export function IconCalendarDays(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base(props)}>

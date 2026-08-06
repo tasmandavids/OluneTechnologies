@@ -29,7 +29,6 @@ export type StarterProduct = {
   recurringInterval?: RecurringInterval;
   /** Codes of other starter products this package includes, with quantities. */
   components?: { code: string; quantity: number }[];
-  tiers?: { minQuantity: number; discountBp: number }[];
 };
 
 export const STARTER_CATALOG: StarterProduct[] = [
@@ -41,11 +40,6 @@ export const STARTER_CATALOG: StarterProduct[] = [
     pricingModel: "term",
     unitAmountCents: 22000,
     unitLabel: "term",
-    // The volume break families ask about: the more classes, the cheaper each.
-    tiers: [
-      { minQuantity: 2, discountBp: 1000 },
-      { minQuantity: 4, discountBp: 2000 },
-    ],
   },
   {
     code: "TUITION-WEEK",

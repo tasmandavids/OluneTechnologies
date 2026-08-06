@@ -83,6 +83,7 @@
       "today": "Aujourd'hui",
       "people": "Personnes",
       "schedule": "Planning",
+      "team": "Équipe",
       "money": "Finances",
       "inbox": "Boîte de réception",
       "studio": "Studio",
@@ -138,23 +139,25 @@
   },
   "nav": {
     "sections": {
+      "people": "Personnes",
+      "schedule": "Planning",
       "teamManagement": "Équipe",
       "clientManagement": "Gestion clients",
       "finance": "Finance",
       "digital": "Digital",
-      "communications": "Communications",
-      "families": "Familles"
+      "communications": "Communications"
     },
     "admin": {
       "dashboard": "Tableau de bord",
       "classes": "Cours",
       "events": "Événements",
       "staff": "Personnel",
-      "people": "Personnes",
+      "people": "Élèves et familles",
       "parents": "Parents",
       "students": "Élèves",
       "leads": "Prospects",
       "money": "Argent",
+      "products": "Produits",
       "billing": "Facturation",
       "accounting": "Comptabilité",
       "website": "Site web",

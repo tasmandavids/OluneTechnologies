@@ -83,6 +83,7 @@
       "today": "今日",
       "people": "学员",
       "schedule": "排课",
+      "team": "团队",
       "money": "财务",
       "inbox": "收件箱",
       "studio": "工作室",
@@ -138,23 +139,25 @@
   },
   "nav": {
     "sections": {
+      "people": "学员",
+      "schedule": "排课",
       "teamManagement": "团队",
       "clientManagement": "客户管理",
       "finance": "财务",
       "digital": "数字化",
-      "communications": "沟通",
-      "families": "家庭"
+      "communications": "沟通"
     },
     "admin": {
       "dashboard": "仪表盘",
       "classes": "课程",
       "events": "活动",
       "staff": "员工",
-      "people": "学员",
+      "people": "学员与家庭",
       "parents": "家长",
       "students": "学员",
       "leads": "潜在客户",
       "money": "财务",
+      "products": "商品与套餐",
       "billing": "账单",
       "accounting": "会计",
       "website": "网站",

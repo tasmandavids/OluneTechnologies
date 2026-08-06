@@ -1080,15 +1080,17 @@
           "code": "Your own SKU. Used on invoices and as the default item code.",
           "term": "Leave blank to keep this price for every term.",
           "package": "The package price is what the family pays. What's listed here is what it entitles them to.",
-          "volume": "Charge less as families take more. The highest matching tier wins.",
+          "volume": "From this many, each one costs this instead. The highest matching row wins.",
           "itemCode": "Only set this if the code already exists in your accounting system — an unknown item code makes the whole invoice fail to sync.",
           "accountingConnected": "Picked from your live {ledger} chart of accounts.",
           "accountingOffline": "Connect an accounting system in Settings to pick these from a list."
         },
         "tiers": {
           "add": "+ Add a volume tier",
-          "percentOff": "% off",
-          "flatPrice": "Flat price"
+          "from": "From",
+          "priceEach": "each costs",
+          "remove": "Remove this tier",
+          "legacyPercent": "From {from} · {percent}% off (set up before)"
         },
         "tax": {
           "standard": "Standard GST",

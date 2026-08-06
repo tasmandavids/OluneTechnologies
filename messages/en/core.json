@@ -83,6 +83,7 @@
       "today": "Today",
       "people": "People",
       "schedule": "Schedule",
+      "team": "Team",
       "money": "Money",
       "inbox": "Inbox",
       "studio": "Studio",
@@ -138,23 +139,25 @@
   },
   "nav": {
     "sections": {
+      "people": "People",
+      "schedule": "Schedule",
       "teamManagement": "Team",
       "clientManagement": "Client management",
       "finance": "Finance",
       "digital": "Digital",
-      "communications": "Communications",
-      "families": "Families"
+      "communications": "Communications"
     },
     "admin": {
       "dashboard": "Dashboard",
       "classes": "Classes",
       "events": "Events",
       "staff": "Staff",
-      "people": "People",
+      "people": "Students & families",
       "parents": "Parents",
       "students": "Students",
       "leads": "Leads",
       "money": "Money",
+      "products": "Products",
       "billing": "Billing",
       "accounting": "Accounting",
       "website": "Website",
@@ -169,7 +172,11 @@
       "inbox": "Inbox",
       "badges": "Badges",
       "passes": "Class passes",
-      "checkin": "Check-in"
+      "checkin": "Check-in",
+      "forms": "Form creation"
+    },
+    "portal": {
+      "forms": "Forms & policies"
     },
     "teacher": {
       "schedule": "Schedule & Roll",

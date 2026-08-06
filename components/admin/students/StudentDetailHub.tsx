@@ -314,8 +314,8 @@ function Detail({ label, value }: { label: string; value: string | null }) {
   );
 }
 
-/** Form answers arrive as free-form JSON — coerce the shapes the parent-facing
- *  FormsVault can produce (string, boolean checkbox, multi-select array). */
+/** Form answers arrive as free-form JSON — coerce the shapes the signing
+ *  screen can produce (string, boolean checkbox, multi-select array). */
 function formatAnswer(value: unknown, tCommon: (key: "yes" | "no") => string): string | null {
   if (value === null || value === undefined || value === "") return null;
   if (typeof value === "boolean") return value ? tCommon("yes") : tCommon("no");

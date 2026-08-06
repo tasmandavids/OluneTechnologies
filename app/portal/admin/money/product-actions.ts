@@ -428,22 +428,8 @@ export async function seedStarterCatalog(): Promise<
     byCode.set(String(row.code).toUpperCase(), row.id as string);
   }
 
-  // Tiers and package contents reference products by code, so they can only be
-  // wired up once every product above exists.
-  const tierRows = missing
-    .flatMap((p) =>
-      (p.tiers ?? []).map((tier, idx) => ({
-        product_id: byCode.get(p.code.toUpperCase()),
-        min_quantity: tier.minQuantity,
-        unit_amount_cents: null,
-        discount_bp: tier.discountBp,
-        sort_order: idx,
-      })),
-    )
-    .filter((r) => Boolean(r.product_id));
-
-  if (tierRows.length) await supabase.from("billing_price_tiers").insert(tierRows);
-
+  // Package contents reference products by code, so they can only be wired up
+  // once every product above exists.
   const componentRows = missing
     .flatMap((p) =>
       (p.components ?? []).map((component, idx) => ({
