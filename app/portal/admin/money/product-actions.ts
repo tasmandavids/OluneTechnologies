@@ -14,6 +14,9 @@ import { z } from "zod";
 import { getAdminStudio as getAdminStudioAccess } from "@/lib/portal/access";
 import { loadProduct } from "@/lib/billing/catalog";
 import { STARTER_CATALOG } from "@/lib/billing/starter-catalog";
+import { STARTER_HOUR_BANDS, STARTER_OVERFLOW_CENTS } from "@/lib/billing/hours-ladder";
+import { tuitionModelPreflight } from "@/lib/billing/tuition-model";
+import { TUITION_PRICING_MODELS } from "@/lib/billing/tuition-quote";
 import {
   LEDGER_PROVIDERS,
   PRICING_MODELS,
@@ -255,6 +258,218 @@ export async function saveProductTiers(
     );
     if (insErr) return { ok: false, error: insErr.message };
   }
+
+  revalidatePath("/portal/admin/money");
+  return { ok: true };
+}
+
+// ─── How the studio charges tuition ──────────────────────────────────────────
+
+const HOURS_LADDER_CODE = "TUITION-HOURS";
+
+export async function setTuitionPricingModel(
+  model: (typeof TUITION_PRICING_MODELS)[number],
+): Promise<ProductActionResult> {
+  if (!z.enum(TUITION_PRICING_MODELS).safeParse(model).success) {
+    return { ok: false, error: "Unknown pricing model." };
+  }
+
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
+
+  // Auto-pay plans bill one line per class from subscription_line_items. Under
+  // an hours ladder that charge lands on top of the ladder's, so the family
+  // pays twice. Rebuilding those generators for hours is separate work; until
+  // then the switch is refused rather than quietly double-charging.
+  if (model === "hours") {
+    const preflight = await tuitionModelPreflight(supabase, studioId);
+    if (preflight.activeSubscriptions > 0) {
+      return {
+        ok: false,
+        error:
+          "Auto-pay plans bill per class. Cancel or rebuild them before charging by hours.",
+      };
+    }
+  }
+
+  const { error: updErr } = await supabase
+    .from("studios")
+    .update({ tuition_pricing_model: model })
+    .eq("id", studioId);
+
+  if (updErr) return { ok: false, error: updErr.message };
+
+  revalidatePath("/portal/admin/money");
+  revalidatePath("/portal/admin/classes");
+  return { ok: true };
+}
+
+/**
+ * The studio's single hours-ladder product, created on first use.
+ *
+ * It exists so the one tuition line on an invoice has a name, a GST treatment
+ * and a ledger code like every other line — 0109's partial unique index keeps
+ * there being exactly one. Seeded with the starter rate card so the editor
+ * opens on something a studio can react to.
+ */
+export async function ensureHoursLadderProduct(): Promise<
+  { ok: true; productId: string } | { ok: false; error: string }
+> {
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
+
+  const { data: existing } = await supabase
+    .from("billing_products")
+    .select("id")
+    .eq("studio_id", studioId)
+    .eq("pricing_model", "hours_ladder")
+    .eq("active", true)
+    .maybeSingle();
+
+  if (existing?.id) return { ok: true, productId: existing.id as string };
+
+  // Same reasoning as seedStarterCatalog: arrive already coded rather than
+  // flagged as missing the moment the first invoice syncs.
+  const { data: connection } = await supabase
+    .from("xero_connections")
+    .select("settings")
+    .eq("studio_id", studioId)
+    .maybeSingle();
+  const salesAccountCode =
+    ((connection?.settings ?? {}) as { sales_account_code?: string }).sales_account_code ?? "200";
+
+  const { data: created, error: insErr } = await supabase
+    .from("billing_products")
+    .insert({
+      studio_id: studioId,
+      name: "Tuition",
+      code: HOURS_LADDER_CODE,
+      description: "Priced on the hours a dancer does each week.",
+      category: "tuition",
+      pricing_model: "hours_ladder",
+      unit_amount_cents: 0,
+      unit_label: "hrs/week",
+      overflow_rate_cents: STARTER_OVERFLOW_CENTS,
+      account_code: salesAccountCode,
+      sort_order: 0,
+    })
+    .select("id")
+    .single();
+
+  if (insErr || !created) {
+    return {
+      ok: false,
+      error: duplicateCodeError(insErr?.message ?? "")
+        ? `Rename or archive your existing ${HOURS_LADDER_CODE} product first.`
+        : insErr?.message ?? "Could not set up hourly pricing.",
+    };
+  }
+
+  const productId = created.id as string;
+
+  const { error: bandErr } = await supabase.from("billing_hour_bands").insert(
+    STARTER_HOUR_BANDS.map((band, idx) => ({
+      product_id: productId,
+      min_hours: band.minHours,
+      total_cents: band.totalCents,
+      sort_order: idx,
+    })),
+  );
+  if (bandErr) return { ok: false, error: bandErr.message };
+
+  revalidatePath("/portal/admin/money");
+  return { ok: true, productId };
+}
+
+const HourBandSchema = z.object({
+  minHours: z.number().positive().max(100),
+  totalCents: z.number().int().nonnegative().max(100_000_00),
+});
+
+export async function saveHoursRateCard(
+  bands: z.infer<typeof HourBandSchema>[],
+  overflowRateCents: number | null,
+): Promise<ProductActionResult> {
+  const parsed = z.array(HourBandSchema).max(30).safeParse(bands);
+  if (!parsed.success) return { ok: false, error: "Check the rate card and try again." };
+
+  const overflow = z
+    .number()
+    .int()
+    .nonnegative()
+    .max(100_000_00)
+    .nullable()
+    .safeParse(overflowRateCents);
+  if (!overflow.success) return { ok: false, error: "Check the per-hour rate and try again." };
+
+  // Rejected here as well as by the DB unique index, so the studio gets a
+  // sentence rather than a Postgres error.
+  const seen = new Set<number>();
+  for (const band of parsed.data) {
+    const key = Math.round(band.minHours * 100);
+    if (seen.has(key)) return { ok: false, error: "Two rows have the same number of hours." };
+    seen.add(key);
+  }
+
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
+
+  const ladder = await ensureHoursLadderProduct();
+  if (!ladder.ok) return ladder;
+
+  const { error: updErr } = await supabase
+    .from("billing_products")
+    .update({ overflow_rate_cents: overflow.data })
+    .eq("id", ladder.productId)
+    .eq("studio_id", studioId);
+  if (updErr) return { ok: false, error: updErr.message };
+
+  await supabase.from("billing_hour_bands").delete().eq("product_id", ladder.productId);
+
+  if (parsed.data.length) {
+    const { error: insErr } = await supabase.from("billing_hour_bands").insert(
+      parsed.data
+        .slice()
+        .sort((a, b) => a.minHours - b.minHours)
+        .map((band, idx) => ({
+          product_id: ladder.productId,
+          min_hours: band.minHours,
+          total_cents: band.totalCents,
+          sort_order: idx,
+        })),
+    );
+    if (insErr) return { ok: false, error: insErr.message };
+  }
+
+  revalidatePath("/portal/admin/money");
+  return { ok: true };
+}
+
+/** Fire this package automatically when a family's basket satisfies it. */
+export async function setProductAutoApply(
+  productId: string,
+  autoApply: boolean,
+): Promise<ProductActionResult> {
+  if (!z.string().uuid().safeParse(productId).success) {
+    return { ok: false, error: "Invalid product." };
+  }
+
+  const { error, supabase, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
+
+  const product = await loadProduct(supabase, studioId, productId);
+  if (!product) return { ok: false, error: "Product not found." };
+  if (autoApply && product.pricingModel !== "package") {
+    return { ok: false, error: "Only a combo can be applied automatically." };
+  }
+
+  const { error: updErr } = await supabase
+    .from("billing_products")
+    .update({ auto_apply: autoApply })
+    .eq("id", productId)
+    .eq("studio_id", studioId);
+
+  if (updErr) return { ok: false, error: updErr.message };
 
   revalidatePath("/portal/admin/money");
   return { ok: true };

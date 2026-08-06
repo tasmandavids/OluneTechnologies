@@ -31,12 +31,14 @@ import {
 } from "@/lib/billing/types";
 import { defaultUnitLabel, resolveTierPrice } from "@/lib/billing/pricing";
 import { splitTax } from "@/lib/billing/tax";
+import type { TuitionPricingModel } from "@/lib/billing/tuition-quote";
 import {
   createProduct,
   saveProductComponents,
   saveProductLedgerCodes,
   saveProductTiers,
   setProductActive,
+  setProductAutoApply,
   updateProduct,
   type ProductInput,
 } from "@/app/portal/admin/money/product-actions";
@@ -82,6 +84,8 @@ type Draft = {
    */
   legacyPercentTiers: PriceTier[];
   components: ComponentDraft[];
+  /** package only: fire this combo when a family's basket satisfies it. */
+  autoApply: boolean;
   ledger: LedgerDraft[];
 };
 
@@ -111,6 +115,7 @@ function emptyDraft(): Draft {
     tiers: [],
     legacyPercentTiers: [],
     components: [],
+    autoApply: false,
     ledger: [],
   };
 }
@@ -149,6 +154,7 @@ function draftFromProduct(product: BillingProduct): Draft {
       componentProductId: c.componentProductId,
       quantity: String(c.quantity),
     })),
+    autoApply: product.autoApply,
     ledger: OTHER_LEDGERS.map((provider) => {
       const existing = product.ledgerCodes.find((l) => l.provider === provider);
       return {
@@ -207,6 +213,7 @@ export function ProductsCatalog({
   itemOptions,
   ledgerName,
   otherLedgersConnected,
+  tuitionModel,
 }: {
   products: BillingProduct[];
   taxSettings: TaxSettings;
@@ -215,6 +222,7 @@ export function ProductsCatalog({
   itemOptions: CodeOption[] | null;
   ledgerName: string | null;
   otherLedgersConnected: boolean;
+  tuitionModel: TuitionPricingModel;
 }) {
   const t = useTranslations("admin.money.products");
   const [search, setSearch] = useState("");
@@ -225,6 +233,9 @@ export function ProductsCatalog({
   const visible = useMemo(() => {
     const query = search.trim().toLowerCase();
     return products.filter((p) => {
+      // The rate card has its own editor above; it isn't a product a studio
+      // sells, it's the studio's pricing model.
+      if (p.pricingModel === "hours_ladder") return false;
       if (!showArchived && !p.active) return false;
       if (!query) return true;
       return (
@@ -245,7 +256,9 @@ export function ProductsCatalog({
     return [...map.entries()];
   }, [visible]);
 
-  const packageCandidates = products.filter((p) => p.pricingModel !== "package" && p.active);
+  const packageCandidates = products.filter(
+    (p) => p.pricingModel !== "package" && p.pricingModel !== "hours_ladder" && p.active,
+  );
 
   function update(patch: Partial<Draft>) {
     setDraft((current) => (current ? { ...current, ...patch } : current));
@@ -320,6 +333,12 @@ export function ProductsCatalog({
           toast.error(componentResult.error);
           return;
         }
+
+        const autoApplyResult = await setProductAutoApply(productId, draft.autoApply);
+        if (!autoApplyResult.ok) {
+          toast.error(autoApplyResult.error);
+          return;
+        }
       }
 
       if (otherLedgersConnected) {
@@ -356,6 +375,30 @@ export function ProductsCatalog({
   }
 
   const fields = draft ? MODEL_FIELDS[draft.pricingModel] : null;
+
+  /**
+   * What this combo would save a family, live as the studio types it.
+   *
+   * A combo priced at or above what it replaces never fires (matchCombos
+   * refuses it), so the studio has to find that out here rather than from a
+   * parent who wasn't given the discount.
+   */
+  const comboSavingsCents = useMemo(() => {
+    if (!draft || draft.pricingModel !== "package") return null;
+
+    const priceCents = Math.round(Number.parseFloat(draft.priceDollars) * 100);
+    if (!Number.isFinite(priceCents)) return null;
+
+    let partsCents = 0;
+    for (const component of draft.components) {
+      const child = products.find((p) => p.id === component.componentProductId);
+      const quantity = Number.parseFloat(component.quantity);
+      if (!child || !Number.isFinite(quantity) || quantity <= 0) return null;
+      partsCents += child.unitAmountCents * quantity;
+    }
+
+    return partsCents > 0 ? partsCents - priceCents : null;
+  }, [draft, products]);
 
   return (
     <div className="mx-auto max-w-6xl space-y-5 p-6">
@@ -412,6 +455,15 @@ export function ProductsCatalog({
                style={{ borderColor: "var(--hair)" }}>
               {t(`categories.${category}`)}
             </p>
+            {/* These prices stop driving enrolment under an hours ladder, but
+                they still drive casual and drop-in bookings — so they're worth
+                keeping accurate, and must not be zeroed. */}
+            {tuitionModel === "hours" && category === "tuition" && (
+              <p className="border-b px-5 py-2 text-xs text-muted"
+                 style={{ borderColor: "var(--hair)", background: "var(--t3)" }}>
+                {t("hoursModeNote")}
+              </p>
+            )}
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-sm">
                 <tbody>
@@ -719,11 +771,44 @@ export function ProductsCatalog({
                       >
                         {t("fields.addIncluded")}
                       </button>
+
+                      {/* The combo trigger. Without it a package is something a
+                          studio picks by name; with it, a family selecting
+                          these classes is quoted the combo price instead of
+                          each class's own. */}
+                      <label className="flex items-start gap-2 pt-1 text-sm text-ink">
+                        <input
+                          type="checkbox"
+                          checked={draft.autoApply}
+                          onChange={(e) => update({ autoApply: e.target.checked })}
+                          className="mt-1"
+                        />
+                        <span>
+                          {t("fields.autoApply")}
+                          <span className="mt-0.5 block text-xs text-muted">
+                            {t("hints.autoApply")}
+                          </span>
+                        </span>
+                      </label>
+
+                      {draft.autoApply && comboSavingsCents != null && (
+                        <p
+                          className={`text-xs ${comboSavingsCents > 0 ? "text-muted" : "text-amber-600"}`}
+                        >
+                          {comboSavingsCents > 0
+                            ? t("hints.comboSaves", { amount: formatMoney(comboSavingsCents) })
+                            : t("hints.comboNeverFires")}
+                        </p>
+                      )}
                     </div>
                   </Field>
                 )}
               </Section>
 
+              {/* Volume tiers price one product bought several times. Under an
+                  hours ladder or a combo the total comes from elsewhere, so
+                  showing them would be offering a lever that does nothing. */}
+              {tuitionModel === "per_class" && (
               <Section title={t("sections.volume")} hint={t("hints.volume")}>
                 {draft.legacyPercentTiers.map((tier) => (
                   <div
@@ -806,6 +891,7 @@ export function ProductsCatalog({
                   {t("tiers.add")}
                 </button>
               </Section>
+              )}
 
               <Section title={t("sections.tax")}>
                 {!taxSettings.gstRegistered && (

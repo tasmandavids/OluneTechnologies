@@ -35,6 +35,24 @@ export type HoursLadder = {
   overflowRateCents: number | null;
 };
 
+/**
+ * What the rate card offers on first open.
+ *
+ * Round placeholders in the shape studios describe when asked how they charge —
+ * the same "meant to be edited, not recommended" philosophy as STARTER_CATALOG.
+ * A studio reacting to a table beats a studio staring at an empty grid.
+ */
+export const STARTER_HOUR_BANDS: HourBand[] = [
+  { minHours: 1.0, totalCents: 9500 },
+  { minHours: 1.5, totalCents: 13500 },
+  { minHours: 2.0, totalCents: 17000 },
+  { minHours: 3.0, totalCents: 23000 },
+  { minHours: 4.0, totalCents: 27000 },
+  { minHours: 5.0, totalCents: 29000 },
+];
+
+export const STARTER_OVERFLOW_CENTS = 2500;
+
 /** Hours round to 2dp — the DB column is numeric(5,2). */
 const HOURS_DP = 100;
 

@@ -1074,7 +1074,8 @@
           "accountCode": "Revenue account",
           "itemCode": "Item code",
           "customCode": "Something else…",
-          "otherLedgers": "Different codes in QuickBooks or MYOB?"
+          "otherLedgers": "Different codes in QuickBooks or MYOB?",
+          "autoApply": "Apply this automatically"
         },
         "hints": {
           "code": "Your own SKU. Used on invoices and as the default item code.",
@@ -1083,7 +1084,10 @@
           "volume": "From this many, each one costs this instead. The highest matching row wins.",
           "itemCode": "Only set this if the code already exists in your accounting system — an unknown item code makes the whole invoice fail to sync.",
           "accountingConnected": "Picked from your live {ledger} chart of accounts.",
-          "accountingOffline": "Connect an accounting system in Settings to pick these from a list."
+          "accountingOffline": "Connect an accounting system in Settings to pick these from a list.",
+          "autoApply": "When a family picks these classes, they're quoted this price instead of each class's own.",
+          "comboSaves": "Saves a family {amount} versus paying for each class.",
+          "comboNeverFires": "This costs the same or more than the classes it covers, so it will never be applied. Lower the price."
         },
         "tiers": {
           "add": "+ Add a volume tier",
@@ -1107,7 +1111,71 @@
         },
         "errors": {
           "incomplete": "Give the product a name, a code and a price."
+        },
+        "hoursModeNote": "Your studio charges by hours a week, so these prices don't set enrolment fees. They still apply to casual and drop-in bookings."
+      },
+      "tuitionModel": {
+        "title": "How you charge",
+        "description": "Pick one. Everything below only shows the settings this way of charging actually uses.",
+        "saved": "Pricing updated",
+        "badges": {
+          "simplest": "Simplest",
+          "studioPro": "Studio Pro style"
+        },
+        "options": {
+          "per_class": {
+            "name": "Per class",
+            "body": "Each class has its own price. A dancer in two classes pays for two classes.",
+            "example": "Intermediate Mon {each} + Wed {each} = {both}."
+          },
+          "hours": {
+            "name": "By hours a week",
+            "body": "One price for however many hours a week a dancer does. You type the whole table — no maths, no percentages.",
+            "example": "2 hours a week = {twoHours}. Add an hour, it's {threeHours}."
+          },
+          "per_class_combos": {
+            "name": "Per class, with combos",
+            "body": "Classes keep their own prices, and you name the combinations that get one price instead.",
+            "example": "Mon + Wed together = {each}, not {both}."
+          }
+        },
+        "confirm": {
+          "title": "Change to {model}?",
+          "body": "This changes how new enrolments are priced. Invoices you've already sent don't change.",
+          "betweenTerms": "Best changed between terms: tuition already paid per class this term won't count towards the hours table, so the first enrolment after switching charges the full amount.",
+          "confirm": "Change how I charge",
+          "cancel": "Keep what I have",
+          "saving": "Changing…"
+        },
+        "warnings": {
+          "noEndTime": "{count, plural, one {# class has} other {# classes have}} no finish time, so hours pricing counts them as zero.",
+          "fixInClasses": "Fix them in Classes"
         }
+      },
+      "rateCard": {
+        "title": "Your hourly rate card",
+        "description": "What a dancer pays for the hours they do each week. Type the totals — nothing here is worked out from a percentage.",
+        "columns": {
+          "hours": "Hours a week",
+          "theyPay": "They pay"
+        },
+        "addRow": "+ Add a row",
+        "removeRow": "Remove this row",
+        "overflow": {
+          "label": "Beyond the last row,",
+          "hint": "per extra hour. Leave blank to charge the last row however many hours they do."
+        },
+        "preview": {
+          "title": "What a family pays",
+          "sibling": "A second dancer in the family pays {pct}% less — 2.5 hrs would be {amount}."
+        },
+        "errors": {
+          "duplicateHours": "Two rows have the same number of hours. Change one of them."
+        },
+        "editProduct": "GST and accounting codes for this line live on the “{name}” product.",
+        "save": "Save rate card",
+        "saving": "Saving…",
+        "saved": "Rate card saved"
       }
     },
     "accounting": {
