@@ -1,7 +1,7 @@
 "use client";
 
 import { confirmDialog, toast } from "@/lib/feedback";
-import { useCallback, useEffect, useMemo, useState, useTransition, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type CSSProperties, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
@@ -138,24 +138,65 @@ function avatarStyle(size: number): CSSProperties {
 
 function EmailBody({ message }: { message: EmailMessageRow }) {
   const tShared = useTranslations("admin.shared");
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  const [frameHeight, setFrameHeight] = useState(280);
+
+  // Grow the frame to whatever the email actually needs so the message scrolls
+  // with the thread instead of being trapped in a nested scrollbar.
+  const fitFrame = useCallback(() => {
+    const doc = frameRef.current?.contentDocument;
+    if (!doc?.body) return;
+    const next = Math.max(doc.body.scrollHeight, doc.documentElement?.scrollHeight ?? 0);
+    if (next > 0) setFrameHeight(next);
+  }, []);
+
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame || !message.body_html) return;
+
+    let observer: ResizeObserver | null = null;
+    const attach = () => {
+      fitFrame();
+      const root = frame.contentDocument?.documentElement;
+      if (!root) return;
+      observer?.disconnect();
+      // Catches images and webfonts landing after first paint.
+      observer = new ResizeObserver(fitFrame);
+      observer.observe(root);
+    };
+
+    frame.addEventListener("load", attach);
+    attach();
+    window.addEventListener("resize", fitFrame);
+    return () => {
+      frame.removeEventListener("load", attach);
+      observer?.disconnect();
+      window.removeEventListener("resize", fitFrame);
+    };
+  }, [fitFrame, message.id, message.body_html]);
 
   if (message.body_html) {
     const wrappedHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><base target="_blank"><style>
-      body { margin: 0; padding: 24px; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 15px; line-height: 1.65; color: #111; }
+      html, body { margin: 0; }
+      body { padding: 20px 24px; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 15px; line-height: 1.65; color: #111; }
       img { max-width: 100%; height: auto; }
       a { color: #2563eb; }
     </style></head><body>${message.body_html}</body></html>`;
     return (
       <iframe
+        ref={frameRef}
         title={tShared("emailContentTitle")}
-        sandbox=""
+        // allow-same-origin (without allow-scripts) only exists so we can read
+        // the rendered height — no script ever runs inside the frame.
+        sandbox="allow-same-origin"
         srcDoc={wrappedHtml}
-        className="min-h-[28rem] w-full rounded-2xl border border-[--hair] bg-white shadow-sm"
+        style={{ height: frameHeight }}
+        className="w-full rounded-2xl border border-[--hair] bg-white shadow-sm"
       />
     );
   }
   return (
-    <div className="box min-h-[12rem] whitespace-pre-wrap rounded-2xl px-6 py-5 text-[15px] leading-relaxed text-ink">
+    <div className="box whitespace-pre-wrap rounded-2xl px-6 py-5 text-[15px] leading-relaxed text-ink">
       {message.body_text ?? tShared("noContent")}
     </div>
   );
@@ -222,6 +263,16 @@ export function EmailInbox({
   const [pending, startTransition] = useTransition();
   const [syncError, setSyncError] = useState<string | null>(null);
   const [initialSyncDone, setInitialSyncDone] = useState(!bannerConnected);
+
+  const replyRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-grow the reply box rather than parking three empty rows over the email.
+  useEffect(() => {
+    const el = replyRef.current;
+    if (!el) return;
+    el.style.height = "0px";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [draft, selectedThreadId]);
 
   const [composeOpen, setComposeOpen] = useState(false);
   const [composeAccountId, setComposeAccountId] = useState<string | null>(null);
@@ -483,7 +534,7 @@ export function EmailInbox({
         {/* List column — inbox nav folded into the thread list */}
         <div className="flex w-full min-w-[300px] shrink-0 lg:w-[384px]">
           <GlassPanel className="flex h-full w-full min-h-0 flex-col !p-0 overflow-hidden">
-            <div className="shrink-0 space-y-2.5 border-b border-[--hair] px-3.5 py-3">
+            <div className="shrink-0 space-y-2 border-b border-[--hair] px-3.5 py-2.5">
               <div className="flex items-center gap-2">
                 <div className="min-w-0">
                   <p className="font-display text-lg font-semibold leading-tight tracking-tight text-ink">
@@ -695,10 +746,10 @@ export function EmailInbox({
               <div className="grid flex-1 place-items-center text-sm text-muted">{tShared("loadingConversation")}</div>
             ) : (
               <>
-                <div className="shrink-0 border-b border-[--hair] px-5 py-4">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1 space-y-2">
-                      <h2 className="font-display text-xl font-semibold tracking-tight text-ink">
+                <div className="shrink-0 border-b border-[--hair] px-5 py-2.5">
+                  <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <h2 className="font-display text-lg font-semibold leading-snug tracking-tight text-ink">
                         {activeThread?.subject ?? tShared("conversation")}
                       </h2>
                       <div className="flex flex-wrap items-center gap-1.5">
@@ -730,15 +781,15 @@ export function EmailInbox({
                     </RippleButton>
                   </div>
                   {activeThread?.summary && (
-                    <div className="mt-3 rounded-2xl border border-brand/20 bg-brand/5 px-4 py-3">
+                    <div className="mt-2 max-h-32 overflow-y-auto rounded-2xl border border-brand/20 bg-brand/5 px-4 py-2.5">
                       <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-widest text-brand">{tShared("summary")}</p>
                       <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink">{activeThread.summary}</p>
                     </div>
                   )}
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-4 py-6 lg:px-8">
-                  <div className="mx-auto flex max-w-3xl flex-col gap-6">
+                <div className="flex-1 overflow-y-auto px-3 py-4 lg:px-5">
+                  <div className="mx-auto flex max-w-4xl flex-col gap-4">
                     {messages.map((msg) => {
                       const contact = resolveContact(msg.from_address, contacts);
                       return (
@@ -750,7 +801,7 @@ export function EmailInbox({
                             background: msg.is_outbound ? "color-mix(in srgb, var(--brand) 5%, var(--surface))" : "var(--surface)",
                           }}
                         >
-                          <header className="flex flex-wrap items-start justify-between gap-3 border-b border-[--hair]/70 px-5 py-3.5">
+                          <header className="flex flex-wrap items-start justify-between gap-3 border-b border-[--hair]/70 px-5 py-2.5">
                             <div className="flex items-center gap-2.5">
                               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl text-xs font-bold" style={avatarStyle(32)}>
                                 {initialsFromLabel(contact?.label ?? msg.from_name ?? msg.from_address ?? "?")}
@@ -768,9 +819,9 @@ export function EmailInbox({
                             </div>
                             <time className="text-xs text-muted">{formatFullWhen(msg.sent_at, locale)}</time>
                           </header>
-                          <div className="px-4 py-4 sm:px-5">
+                          <div className="px-2.5 py-2.5 sm:px-3">
                             {msg.subject && msg.subject !== activeThread?.subject && (
-                              <p className="mb-3 text-sm font-medium text-muted">{msg.subject}</p>
+                              <p className="mb-2 px-1.5 text-sm font-medium text-muted">{msg.subject}</p>
                             )}
                             <EmailBody message={msg} />
                           </div>
@@ -780,33 +831,33 @@ export function EmailInbox({
                   </div>
                 </div>
 
-                <div className="shrink-0 border-t border-[--hair] px-4 py-3.5 lg:px-6">
-                  <div className="mx-auto flex max-w-3xl flex-col gap-2.5">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-[10.5px] font-semibold uppercase tracking-widest text-muted">{t("quickReplies")}</span>
-                      {QUICK_REPLIES.map((qr) => (
-                        <RippleButton key={qr.label} variant="glass" size="sm" onClick={() => setDraft(qr.text)}>
-                          {qr.label}
-                        </RippleButton>
-                      ))}
-                    </div>
-                    <div className="rounded-2xl px-3.5 py-3" style={GLASS_ROW}>
+                {/* Composer stays one line tall until there's something to say —
+                    every pixel it gives back goes to the email above it. */}
+                <div className="shrink-0 border-t border-[--hair] px-3 py-2.5 lg:px-5">
+                  <div className="mx-auto flex max-w-4xl flex-col gap-2">
+                    <div className="rounded-2xl px-3.5 py-2.5" style={GLASS_ROW}>
                       <textarea
+                        ref={replyRef}
                         value={draft}
                         onChange={(e) => setDraft(e.target.value)}
                         placeholder={t("replyPlaceholder")}
-                        rows={3}
-                        className="w-full resize-none border-none bg-transparent text-sm text-ink outline-none placeholder:text-muted"
+                        rows={1}
+                        className="block max-h-[30vh] w-full resize-none border-none bg-transparent text-sm leading-relaxed text-ink outline-none placeholder:text-muted"
                       />
-                      <div className="flex items-center gap-2.5 border-t pt-2" style={{ borderColor: "var(--t2)" }}>
-                        <span className="flex items-center gap-1.5 text-[11px] text-muted">
+                      <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 border-t pt-2" style={{ borderColor: "var(--t2)" }}>
+                        {!draft.trim() &&
+                          QUICK_REPLIES.map((qr) => (
+                            <RippleButton key={qr.label} variant="glass" size="sm" onClick={() => setDraft(qr.text)}>
+                              {qr.label}
+                            </RippleButton>
+                          ))}
+                        <span className="ml-auto flex items-center gap-1.5 text-[11px] text-muted">
                           <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
                           {activeAccount && t("sendsFrom", { email: activeAccount.email_address })}
                         </span>
                         <RippleButton
                           variant="solid"
                           size="sm"
-                          className="ml-auto"
                           onClick={sendReply}
                           disabled={sending || !draft.trim()}
                         >

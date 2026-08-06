@@ -45,10 +45,13 @@ export default async function InboxPage({
   const tab = canEmail && params.tab === "email" ? "email" : "messages";
   const t = await getTranslations("admin.inbox");
 
+  // The admin shell reserves 70px of bottom padding for every page; the inbox is
+  // a full-height app pane, so it claims most of that back (leaving a 26px
+  // gutter matching the shell's side padding) and runs to the bottom of the view.
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="-mb-[44px] flex h-[calc(100%+44px)] min-h-0 flex-col">
       {canEmail && (
-        <div className="mb-3 flex w-fit shrink-0 items-center gap-1.5 rounded-2xl border bg-surface p-1.5" style={{ borderColor: "var(--hair)" }}>
+        <div className="mb-2.5 flex w-fit shrink-0 items-center gap-1.5 rounded-2xl border bg-surface p-1" style={{ borderColor: "var(--hair)" }}>
           {(
             [
               { id: "messages", href: "/portal/admin/messages", label: t("tabs.messages") },
