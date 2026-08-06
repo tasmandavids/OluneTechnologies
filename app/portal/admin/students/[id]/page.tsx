@@ -14,6 +14,7 @@ import ProgressTracker, {
 import DeleteStudentButton from "@/components/admin/students/DeleteStudentButton";
 import StudentSchedulePanel from "@/components/admin/students/StudentSchedulePanel";
 import BadgeAwarder from "@/components/portal/shared/BadgeAwarder";
+import { IssueCardButton, type CurrentCard, type CardStatus } from "@/components/portal/admin/checkin/IssueCardButton";
 import type { ScheduleEntry } from "@/lib/students/schedule-types";
 import { getWeekRange } from "@/lib/staff/week";
 import { fetchBadgeCatalogue, fetchProfileBadges } from "@/lib/portal/badges-data";
@@ -38,7 +39,7 @@ export default async function StudentDetailPage({
   const t = await getTranslations("admin.students.detail");
   const tShared = await getTranslations("admin.shared");
 
-  const [studentRes, progressRes, scheduleRes] = await Promise.all([
+  const [studentRes, progressRes, scheduleRes, cardRes] = await Promise.all([
     supabase
       .from("profiles")
       .select(
@@ -76,6 +77,15 @@ export default async function StudentDetailPage({
       .eq("student_id", id)
       .order("entry_date")
       .order("start_time"),
+
+    supabase
+      .from("nfc_cards")
+      .select("id, status")
+      .eq("student_id", id)
+      .neq("status", "revoked")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
 
   if (studentRes.error || !studentRes.data) notFound();
@@ -146,6 +156,10 @@ export default async function StudentDetailPage({
       ])
     : [[], [], [], []];
 
+  const currentCard: CurrentCard = cardRes.data
+    ? { id: cardRes.data.id as string, status: cardRes.data.status as CardStatus }
+    : null;
+
   void DAY_SHORT;
 
   return (
@@ -208,6 +222,10 @@ export default async function StudentDetailPage({
         entries={scheduleEntries}
         weekStart={weekStart}
       />
+
+      <section className="rounded-2xl border p-5" style={{ borderColor: "var(--hair)" }}>
+        <IssueCardButton studentId={student.id} currentCard={currentCard} />
+      </section>
 
       <DeleteStudentButton studentId={student.id} studentName={student.name} />
     </div>

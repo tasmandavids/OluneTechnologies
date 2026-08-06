@@ -12,6 +12,7 @@ import {
 } from "@/components/admin/dashboard/types";
 import type { TeacherOption } from "@/app/portal/admin/classes/page";
 import { AdminDashboard } from "@/components/admin/dashboard/AdminDashboard";
+import { listWhosIn } from "@/lib/checkin/roster";
 
 const DOW_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -36,6 +37,7 @@ export default async function AdminDashboardPage() {
     leadsRes,
     cashInRes,
     dashboardLayoutRes,
+    buildingRoster,
   ] = await Promise.all([
       supabase
         .from("profiles")
@@ -90,6 +92,8 @@ export default async function AdminDashboardPage() {
         .select("layout")
         .eq("studio_id", studioId)
         .maybeSingle(),
+
+      listWhosIn(supabase, studioId),
     ]);
 
   const classRows = capacityRes.data ?? [];
@@ -262,6 +266,7 @@ export default async function AdminDashboardPage() {
       cashInTotalCents={cashInTotalCents}
       cashInPaymentCount={cashInRows.length}
       cashInDays={cashInDays}
+      buildingCount={buildingRoster.length}
       savedLayout={dashboardLayoutRes.data?.layout ?? null}
     />
   );

@@ -168,7 +168,8 @@
       "privateLessons": "Private lessons",
       "inbox": "Inbox",
       "badges": "Badges",
-      "passes": "Class passes"
+      "passes": "Class passes",
+      "checkin": "Check-in"
     },
     "teacher": {
       "schedule": "Schedule & Roll",

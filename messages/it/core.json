@@ -166,7 +166,8 @@
       "substitutes": "Sostituzioni",
       "availability": "Disponibilità insegnanti",
       "inbox": "Posta in arrivo",
-      "passes": "Pass classe"
+      "passes": "Pass classe",
+      "checkin": "Check-in"
     },
     "teacher": {
       "schedule": "Orario e presenze",

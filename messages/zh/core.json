@@ -166,7 +166,8 @@
       "substitutes": "代课",
       "availability": "教师可用时间",
       "inbox": "收件箱",
-      "passes": "课程通行证"
+      "passes": "课程通行证",
+      "checkin": "签到"
     },
     "teacher": {
       "schedule": "课程表与点名",
