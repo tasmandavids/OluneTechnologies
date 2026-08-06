@@ -286,7 +286,7 @@ export function Step1SelectClass({
 
   // Suggested classes: other days of a linked recurring series the dancer is
   // already enrolled in (or has just selected) — same recurringGroupId, so
-  // they'd be billed as "Included" per lib/enrollment-billing.ts.
+  // they'd be billed as "Included" per lib/billing/tuition-quote.ts.
   const activeClassIds = new Set((selectedChild?.classes ?? []).map((c) => c.id));
   const relevantGroupIds = new Set(
     [

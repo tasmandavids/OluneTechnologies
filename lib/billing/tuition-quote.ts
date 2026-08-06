@@ -2,8 +2,8 @@
 //  What a dancer is charged for the classes they're enrolling in.
 //
 //  One function, three models, both sides of the wire. Until now the "second
-//  night of a linked series is free" rule was written three times — in
-//  lib/enrollment-billing.ts against the database, again in Step1SelectClass's
+//  night of a linked series is free" rule was written three times — once
+//  against the database in the enrolment path, again in Step1SelectClass's
 //  running total, and a third time in EnrollModal's quote loop — which is three
 //  places for the parent's preview and the invoice to drift apart. This is the
 //  one place, and it's pure, so the browser and the server run the same code.
@@ -225,9 +225,9 @@ function sumHours(classes: QuoteClass[]): number {
  * `existing` must EXCLUDE every class in `adding`. The enrol flow inserts all
  * the enrollment rows before billing runs, so a naive "what are they already
  * in" read includes the classes being paid for — which zeroes the charge in
- * per-class mode and makes the hours top-up $0. This is the same trap
- * batchEnrollmentBillableCents documents; the caller has to do the excluding
- * because only it knows the batch.
+ * per-class mode and makes the hours top-up $0. The caller has to do the
+ * excluding because only it knows the batch — see loadExistingClasses in
+ * lib/billing/tuition-invoice.ts.
  */
 export function quoteTuition(input: TuitionQuoteInput): TuitionQuote {
   const { model, adding, existing } = input;

@@ -6,7 +6,7 @@
 //  fetches, that one decides.
 //
 //  Everything here is member-readable under RLS — studios (0002),
-//  billing_products and billing_hour_bands (0105, 0109) — so a parent's
+//  billing_products and billing_hour_bands (0105, 0110) — so a parent's
 //  enrolment quote can load it under their own session. Prices still never
 //  come from the client; only the studio's own rows.
 // ============================================================================

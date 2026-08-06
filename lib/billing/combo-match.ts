@@ -12,9 +12,9 @@
 //  This file is only the part that was missing: deciding which ones fire.
 //
 //  Matching is on PRODUCTS, not class names — the same discipline
-//  lib/enrollment-billing.ts applies to recurring groups. Two classes an admin
-//  happened to name "Intermediate" are not a statement about price; a studio
-//  saying "these two products, $299" is.
+//  lib/billing/tuition-quote.ts applies to recurring groups. Two classes an
+//  admin happened to name "Intermediate" are not a statement about price; a
+//  studio saying "these two products, $299" is.
 //
 //  Pure by design: no Supabase, no server-only imports, so the parent's live
 //  basket total and the invoice are computed by the same code.

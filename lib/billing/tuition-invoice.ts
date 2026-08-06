@@ -42,7 +42,7 @@ function toQuoteClass(row: ClassPriceRow): QuoteClass {
  * inserts every selected class's enrollment row as active before billing runs,
  * so a plain "what are they in" read includes the classes being paid for right
  * now — which zeroes every day of a linked series in per-class mode, and makes
- * an hours top-up $0. Same trap batchEnrollmentBillableCents documents.
+ * an hours top-up $0.
  */
 async function loadExistingClasses(
   supabase: SupabaseClient,

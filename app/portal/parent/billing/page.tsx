@@ -123,7 +123,7 @@ export default async function ParentBillingPage() {
   // A linked recurring series (e.g. a Mon/Wed/Fri programme created together,
   // sharing one recurring_group_id) can run on multiple days as separate
   // class rows, but the family pays once per group — mirrors the billing
-  // rule in lib/enrollment-billing.ts. Without this dedup, each day would
+  // rule in lib/billing/tuition-quote.ts. Without this dedup, each day would
   // show its own "set up auto-pay" card and a parent could accidentally
   // create two live subscriptions for one programme. Classes are never
   // merged just for sharing a name — only an explicit recurring_group_id

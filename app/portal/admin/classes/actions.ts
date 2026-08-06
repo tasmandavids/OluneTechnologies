@@ -380,7 +380,7 @@ export async function createRecurringClasses(input: unknown): Promise<ActionResu
   const groupId = crypto.randomUUID();
 
   // One product for the whole series — a Mon/Wed/Fri Ballet is one thing the
-  // family buys, and lib/enrollment-billing.ts already bills a series once.
+  // family buys, and lib/billing/tuition-quote.ts already bills a series once.
   const billing = await resolveBilling(supabase, studioId, d.name, d.billing);
   if (!billing.ok) return { ok: false, error: billing.error };
 

@@ -128,7 +128,7 @@ export async function createEnrollmentSubscription(
 
   // A programme (e.g. "Intermediate") can run on multiple days as separate
   // class rows, but the family only pays once per programme — mirrors the
-  // enrollment invoicing rule in lib/enrollment-billing.ts. Block a second
+  // enrollment invoicing rule in lib/billing/tuition-quote.ts. Block a second
   // live subscription for the same programme, however it was reached.
   const { data: existingSubs } = await supabase
     .from("subscriptions")

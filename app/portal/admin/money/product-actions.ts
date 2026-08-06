@@ -308,7 +308,7 @@ export async function setTuitionPricingModel(
  * The studio's single hours-ladder product, created on first use.
  *
  * It exists so the one tuition line on an invoice has a name, a GST treatment
- * and a ledger code like every other line — 0109's partial unique index keeps
+ * and a ledger code like every other line — 0110's partial unique index keeps
  * there being exactly one. Seeded with the starter rate card so the editor
  * opens on something a studio can react to.
  */

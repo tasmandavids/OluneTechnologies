@@ -1,5 +1,5 @@
 -- ============================================================================
---  0109_tuition_pricing_models.sql
+--  0110_tuition_pricing_models.sql
 --
 --  0105 gave every class a catalogue price. It did not give a studio a way to
 --  say "two of these together cost one price". A studio pricing Intermediate at

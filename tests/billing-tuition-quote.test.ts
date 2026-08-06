@@ -27,15 +27,17 @@ const ladder = normaliseLadder(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Parity with lib/enrollment-billing.ts
+//  per_class — the rules live studios are already priced under.
 //
-//  quoteTuition's per_class branch replaces batchEnrollmentBillableCents in the
-//  enrolment path. Every scenario below is ported from
-//  tests/enrollment-billing.test.ts and must produce the same cents, or live
-//  studios get re-priced by a change that was supposed to leave them alone.
+//  These were enforced by lib/enrollment-billing.ts, a Supabase-level module
+//  quoteTuition replaced in the enrolment path and which has since been
+//  deleted. This block is now the only specification of the behaviour: the
+//  cents below are what real invoices have been issued for, so a change that
+//  moves any of them re-prices existing families. Treat a failure here as "the
+//  change is wrong", not "the expectation is stale".
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("quoteTuition — per_class parity", () => {
+describe("quoteTuition — per_class", () => {
   const quote = (adding: QuoteClass[], existing: QuoteClass[] = []) =>
     quoteTuition({ model: "per_class", adding, existing });
 
