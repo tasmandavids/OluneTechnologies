@@ -15,6 +15,7 @@ import { getTranslations } from "@/lib/i18n/server";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import { OverviewTab } from "./overview-tab";
 import { InvoicesTab } from "./invoices-tab";
+import { ProductsTab } from "./products-tab";
 import { CollectionsTab } from "./collections-tab";
 import { PlansTab } from "./plans-tab";
 import { PayoutsTab } from "./payouts-tab";
@@ -24,6 +25,7 @@ import { LedgerTab } from "./ledger-tab";
 const TABS = [
   "overview",
   "invoices",
+  "products",
   "collections",
   "plans",
   "ledger",
@@ -102,6 +104,7 @@ export default async function MoneyPage({
 
       {tab === "overview" && <OverviewTab />}
       {tab === "invoices" && <InvoicesTab initialInvoiceId={params.invoice ?? null} />}
+      {tab === "products" && <ProductsTab />}
       {tab === "collections" && <CollectionsTab />}
       {tab === "plans" && <PlansTab />}
       {tab === "ledger" && <LedgerTab />}

@@ -38,6 +38,7 @@ import { InvoiceDetailModal } from "@/components/admin/billing/InvoiceDetailModa
 import { InvoiceTemplatesModal } from "@/components/admin/billing/InvoiceTemplatesModal";
 import {
   LineItemRows,
+  type LineProductOption,
   emptyLineItem,
   fromInvoiceLineItems,
   lineItemsTotalCents,
@@ -106,12 +107,14 @@ function defaultDueDate() {
 function CreateInvoiceModal({
   parents,
   templates,
+  products,
   onClose,
   onCreated,
   onManageTemplates,
 }: {
   parents: ParentOption[];
   templates: InvoiceTemplate[];
+  products: LineProductOption[];
   onClose: () => void;
   onCreated: () => void;
   onManageTemplates: () => void;
@@ -319,6 +322,7 @@ function CreateInvoiceModal({
                 <LineItemRows
                   items={items}
                   onChange={setItems}
+                  products={products}
                   labels={{
                     description: t("detailModal.itemDescription"),
                     quantity: t("detailModal.qty"),
@@ -326,6 +330,7 @@ function CreateInvoiceModal({
                     addLine: t("detailModal.addLine"),
                     remove: tCommon("delete"),
                     total: tCommon("total"),
+                    product: t("detailModal.customLine"),
                   }}
                 />
               </div>
@@ -643,6 +648,7 @@ export function BillingDashboard({
   totalOutstandingCents,
   overdueCount,
   templates: initialTemplates,
+  products,
   initialInvoiceId = null,
 }: {
   invoices: InvoiceRow[];
@@ -657,6 +663,8 @@ export function BillingDashboard({
   totalOutstandingCents: number;
   overdueCount: number;
   templates: InvoiceTemplate[];
+  /** Catalogue entries offered per line when itemizing an invoice. */
+  products: LineProductOption[];
   initialInvoiceId?: string | null;
 }) {
   const t = useTranslations("admin.billing");
@@ -796,6 +804,7 @@ export function BillingDashboard({
         <CreateInvoiceModal
           parents={parents}
           templates={templates}
+          products={products}
           onClose={() => setShowCreate(false)}
           onCreated={refresh}
           onManageTemplates={() => setShowTemplates(true)}

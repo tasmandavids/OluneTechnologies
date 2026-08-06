@@ -8,6 +8,8 @@
 //  of hand-rolling Intl formatters or hardcoding currency strings.
 // ============================================================================
 
+import { splitTax } from "./billing/tax";
+
 /** Stripe charge currency (lowercase ISO-4217, as Stripe expects). */
 export const CURRENCY = "nzd" as const;
 
@@ -32,7 +34,11 @@ export function formatMoney(cents: number, opts?: Intl.NumberFormatOptions): str
 /**
  * GST component embedded in a GST-inclusive gross amount (integer cents).
  * For 15% inclusive GST: gst = gross − gross / 1.15.
+ *
+ * Kept as the shorthand for the default NZ case. Anything that needs
+ * GST-exclusive pricing, zero-rated supplies, or a studio that isn't GST
+ * registered should call splitTax directly.
  */
 export function gstComponentCents(grossCents: number): number {
-  return Math.round(grossCents - grossCents / (1 + GST_RATE));
+  return splitTax(grossCents, { inclusive: true, taxRateBp: GST_RATE * 10_000 }).taxCents;
 }

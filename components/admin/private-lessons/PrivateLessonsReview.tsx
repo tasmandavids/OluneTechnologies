@@ -4,8 +4,11 @@ import { useMemo, useState, useTransition } from "react";
 import { billPrivateLesson } from "@/app/portal/admin/private-lessons/actions";
 import {
   type AdminBooking,
+  type LessonRate,
   type PrivateLessonStatus,
 } from "@/lib/private-lessons/types";
+import { applyUnitRules, hoursBetween } from "@/lib/billing/pricing";
+import { formatMoney } from "@/lib/currency";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const STATUS_STYLES: Record<PrivateLessonStatus, string> = {
@@ -45,7 +48,20 @@ function defaultDueDate() {
   return d.toISOString().slice(0, 10);
 }
 
-export default function PrivateLessonsReview({ bookings }: { bookings: AdminBooking[] }) {
+/** Hours actually billable for a booking, after the product's minimum and rounding. */
+function billableHours(booking: AdminBooking, rate: LessonRate | null): number {
+  const raw = hoursBetween(booking.startTime, booking.endTime);
+  if (!rate) return raw;
+  return applyUnitRules(raw, { minUnits: rate.minUnits, incrementUnits: rate.incrementUnits });
+}
+
+export default function PrivateLessonsReview({
+  bookings,
+  rate,
+}: {
+  bookings: AdminBooking[];
+  rate: LessonRate | null;
+}) {
   const [filter, setFilter] = useState<FilterId>("toBill");
   const [billing, setBilling] = useState<AdminBooking | null>(null);
   const [amount, setAmount] = useState("");
@@ -68,7 +84,11 @@ export default function PrivateLessonsReview({ bookings }: { bookings: AdminBook
 
   function openBill(b: AdminBooking) {
     setBilling(b);
-    setAmount("");
+    // Pre-priced from the studio's hourly lesson product so the common case is
+    // a single click; the admin can still overwrite it to discount.
+    setAmount(
+      rate ? ((rate.unitAmountCents * billableHours(b, rate)) / 100).toFixed(2) : "",
+    );
     setDueDate(defaultDueDate());
     setError(null);
   }
@@ -82,7 +102,12 @@ export default function PrivateLessonsReview({ bookings }: { bookings: AdminBook
     }
     setError(null);
     startTransition(async () => {
-      const res = await billPrivateLesson({ bookingId: billing.id, amountDollars, dueDate });
+      const res = await billPrivateLesson({
+        bookingId: billing.id,
+        amountDollars,
+        dueDate,
+        productId: rate?.productId,
+      });
       if (res?.error) {
         setError(res.error);
         return;
@@ -196,6 +221,12 @@ export default function PrivateLessonsReview({ bookings }: { bookings: AdminBook
                 <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">
                   Amount (NZD)
                 </span>
+                {rate && (
+                  <span className="block text-xs text-base-content/50">
+                    {rate.name} · {formatMoney(rate.unitAmountCents)}/hour ×{" "}
+                    {billableHours(billing, rate)}h
+                  </span>
+                )}
                 <input
                   type="number"
                   min="0"

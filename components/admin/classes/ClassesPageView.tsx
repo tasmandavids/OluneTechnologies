@@ -13,6 +13,7 @@ import { ScheduleBoard } from "@/components/admin/dashboard/ScheduleBoard";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import type { ClassRow, TeacherOption } from "@/app/portal/admin/classes/page";
 import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-accounts";
+import type { ClassProductOption } from "./ClassEditPanel";
 
 type View = "list" | "schedule";
 
@@ -22,6 +23,7 @@ export function ClassesPageView({
   teachers,
   xeroAccounts,
   xeroItems,
+  products,
   readOnly = false,
 }: {
   studioId: string;
@@ -29,6 +31,7 @@ export function ClassesPageView({
   teachers: TeacherOption[];
   xeroAccounts: XeroAccountOption[];
   xeroItems: XeroItemOption[];
+  products: ClassProductOption[];
   readOnly?: boolean;
 }) {
   const t = useTranslations("admin.classes");
@@ -61,6 +64,7 @@ export function ClassesPageView({
           teachers={teachers}
           xeroAccounts={xeroAccounts}
           xeroItems={xeroItems}
+          products={products}
           readOnly={readOnly}
         />
       ) : (

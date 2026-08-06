@@ -176,8 +176,24 @@ describe("processStripeEvent class-pass payments", () => {
 
   it("marks a reserved pass paid and mirrors the sale into invoice, line item, payment, notification, and Xero sync", async () => {
     const supabase = new SupabaseFake();
+    // The pass carries its catalogue product (0105), so the invoice takes its
+    // name, ledger codes and tax treatment from there rather than a constant.
     supabase.queue("class_passes", "update", {
-      data: [{ id: "pass_1", studio_id: "studio_1", student_id: "student_1" }],
+      data: [
+        {
+          id: "pass_1",
+          studio_id: "studio_1",
+          student_id: "student_1",
+          product_id: "prod_pass",
+          product: {
+            name: "Casual class pass",
+            account_code: CLASS_PASS_XERO_ACCOUNT_CODE,
+            item_code: null,
+            tax_treatment: "standard",
+            tax_rate_bp: 1500,
+          },
+        },
+      ],
     });
     supabase.queue("invoices", "insert", { data: { id: "invoice_1" } });
 
@@ -218,12 +234,16 @@ describe("processStripeEvent class-pass payments", () => {
         invoice_id: "invoice_1",
         item_type: "custom",
         reference_id: "pass_1",
-        description: "Adult ballet class pass",
+        product_id: "prod_pass",
+        description: "Casual class pass",
         quantity: 1,
         unit_cents: 2500,
         line_total_cents: 2500,
         sort_order: 0,
         account_code: CLASS_PASS_XERO_ACCOUNT_CODE,
+        item_code: null,
+        tax_treatment: "standard",
+        tax_rate_bp: 1500,
       },
     });
     expect(supabase.operations).toContainEqual({

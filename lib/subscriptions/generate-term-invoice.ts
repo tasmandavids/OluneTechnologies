@@ -35,7 +35,7 @@ export async function generateSubscriptionTermInvoice(
 
   const { data: lines } = await supabase
     .from("subscription_line_items")
-    .select("item_type, reference_id, description, quantity, unit_monthly_cents, line_total_cents, sort_order")
+    .select("item_type, reference_id, product_id, description, quantity, unit_monthly_cents, line_total_cents, sort_order, product:billing_products ( account_code, item_code, tax_treatment, tax_rate_bp )")
     .eq("subscription_id", subscriptionId)
     .order("sort_order");
 

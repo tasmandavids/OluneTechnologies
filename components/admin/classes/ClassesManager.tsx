@@ -9,7 +9,7 @@ import type { ClassRow, TeacherOption } from "@/app/portal/admin/classes/page";
 import type { XeroAccountOption, XeroItemOption } from "@/lib/xero/chart-of-accounts";
 import { ClassDetailPanel } from "@/components/admin/classes/ClassDetailPanel";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { ClassEditPanel } from "@/components/admin/classes/ClassEditPanel";
+import { ClassEditPanel, type ClassProductOption } from "@/components/admin/classes/ClassEditPanel";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import { formatMoney } from "@/lib/currency";
 import { useFormatTimeShort } from "@/lib/i18n/client";
@@ -200,12 +200,14 @@ export default function ClassesManager({
   teachers,
   xeroAccounts,
   xeroItems,
+  products,
   readOnly = false,
 }: {
   classes: ClassRow[];
   teachers: TeacherOption[];
   xeroAccounts: XeroAccountOption[];
   xeroItems: XeroItemOption[];
+  products: ClassProductOption[];
   readOnly?: boolean;
 }) {
   const t = useTranslations("admin.classes");
@@ -357,6 +359,7 @@ export default function ClassesManager({
             allClasses={classes}
             xeroAccounts={xeroAccounts}
             xeroItems={xeroItems}
+            products={products}
             onClose={() => setPanel(null)}
           />
         )}

@@ -13,8 +13,43 @@ import {
 import { loadStudioXeroClient } from "./client";
 import { formatInvoiceNumber } from "@/lib/invoices/format-invoice-number";
 import { dollarsFromCents } from "./reports";
+import { toXeroLineItems } from "./line-items";
+import { xeroTaxType } from "@/lib/accounting/line-codes";
+import { resolveAccountingProvider } from "@/lib/accounting/provider";
 import type { XeroConnectionSettings, XeroSyncSourceType } from "./types";
 import { DEFAULT_XERO_SETTINGS } from "./types";
+
+/**
+ * Xero client for PUSH paths only, gated on Xero actually being the studio's
+ * authoritative ledger.
+ *
+ * lib/accounting/provider.ts has always been able to answer this, but nothing
+ * called it — every push went straight to Xero. That's invisible until a studio
+ * connects both Xero and QuickBooks and pins QuickBooks in Settings, at which
+ * point Olune would keep writing invoices into the ledger the studio told it
+ * not to use. Read paths (P&L, reports) deliberately stay ungated: showing a
+ * still-connected Xero org's numbers is harmless.
+ */
+async function loadXeroPushClient(
+  supabase: SupabaseClient,
+  studioId: string,
+  redirectUri: string,
+): Promise<Awaited<ReturnType<typeof loadStudioXeroClient>>> {
+  const active = await resolveAccountingProvider(supabase, studioId);
+  if (active && active.provider !== "xero") return null;
+  return loadStudioXeroClient(supabase, studioId, redirectUri);
+}
+
+/**
+ * Xero's lineAmountTypes is per-invoice, not per-line — a mixed
+ * inclusive/exclusive invoice is inexpressible. The studio's pricing posture is
+ * frozen onto invoices.tax_inclusive at creation (0105) and read back here, so
+ * an invoice always syncs under the convention it was priced with even if the
+ * studio flips the setting later.
+ */
+function lineAmountTypeFor(taxInclusive: boolean): LineAmountTypes {
+  return taxInclusive ? LineAmountTypes.Inclusive : LineAmountTypes.Exclusive;
+}
 
 type SyncResult = { ok: true; xeroInvoiceId: string } | { ok: false; error: string };
 
@@ -171,6 +206,7 @@ async function createOutstandingInvoice(
   reference: string,
   dueDate: string,
   issueDate: string,
+  taxInclusive: boolean,
 ): Promise<string> {
   const invoicePayload: Invoice = {
     type: Invoice.TypeEnum.ACCREC,
@@ -183,7 +219,7 @@ async function createOutstandingInvoice(
     // otherwise Xero auto-assigns its own separate sequence and the two
     // systems show different numbers for the same invoice.
     invoiceNumber: reference,
-    lineAmountTypes: LineAmountTypes.Inclusive,
+    lineAmountTypes: lineAmountTypeFor(taxInclusive),
     // Draft, not Authorised: keeps it out of Xero reporting/emailable-to-contact
     // until a bookkeeper reviews it, so nobody in Xero can send the customer a
     // copy that looks different from the one Olune already sent them.
@@ -243,6 +279,7 @@ async function createPaidInvoice(
   lineItems: LineItem[],
   reference: string,
   amountCents: number,
+  taxInclusive: boolean,
 ): Promise<string> {
   const today = new Date().toISOString().slice(0, 10);
   const invoicePayload: Invoice = {
@@ -255,7 +292,7 @@ async function createPaidInvoice(
     // See createOutstandingInvoice — keep Xero's own invoiceNumber aligned
     // with Olune's reference instead of letting Xero auto-assign its own.
     invoiceNumber: reference,
-    lineAmountTypes: LineAmountTypes.Inclusive,
+    lineAmountTypes: lineAmountTypeFor(taxInclusive),
     status: Invoice.StatusEnum.AUTHORISED,
     currencyCode: CurrencyCode.NZD,
   };
@@ -285,13 +322,17 @@ async function loadInvoiceRecord(
   lineItems: LineItem[];
   /** True when lineItems came from real invoice_line_items rows, not a synthesized fallback. */
   hasLineItems: boolean;
+  /** Frozen at creation — which lineAmountTypes this invoice was priced under. */
+  taxInclusive: boolean;
 }> {
   const { data: inv } = await supabase
     .from("invoices")
     .select(`
       id, studio_id, payer_id, amount_cents, due_date, issued_at, xero_invoice_id, invoice_number, description,
+      tax_inclusive,
       student:profiles!student_id ( full_name ),
-      invoice_line_items ( description, quantity, unit_cents, sort_order, account_code, item_code )
+      studio:studios!studio_id ( gst_registered ),
+      invoice_line_items ( description, quantity, unit_cents, sort_order, account_code, item_code, tax_treatment, tax_rate_bp )
     `)
     .eq("id", invoiceId)
     .single();
@@ -303,46 +344,16 @@ async function loadInvoiceRecord(
     (inv.description as string | null)?.trim() ||
     (student?.full_name ? `Tuition & fees — ${student.full_name}` : "Tuition & fees");
 
-  const rawLineItems = (
-    (inv.invoice_line_items ?? []) as {
-      description: string;
-      quantity: number;
-      unit_cents: number;
-      sort_order: number;
-      account_code: string | null;
-      item_code: string | null;
-    }[]
-  )
-    .slice()
-    .sort((a, b) => a.sort_order - b.sort_order);
+  const studio = inv.studio as unknown as { gst_registered: boolean | null } | null;
 
-  // Mirror each real invoice_line_items row into Xero — never flatten an
-  // itemized invoice into one generic line, or the copy in Xero silently
-  // stops matching what the parent was actually billed for. Leave
-  // accountCode unset here (rather than hardcoding the studio default) so
-  // callers' `li.accountCode ?? cfg.sales_account_code ?? DEFAULT...` fallback
-  // chain can actually take effect for a line item with its own code.
-  // itemCode (a Xero Products & Services item, distinct from the ledger
-  // account) is only ever set when present — Xero rejects an itemCode that
-  // doesn't exist in its catalog, so never send a placeholder.
-  const lineItems: LineItem[] =
-    rawLineItems.length > 0
-      ? rawLineItems.map((li) => ({
-          description: li.description,
-          quantity: li.quantity,
-          unitAmount: dollarsFromCents(li.unit_cents),
-          accountCode: li.account_code ?? undefined,
-          itemCode: li.item_code ?? undefined,
-          taxType: "OUTPUT2",
-        }))
-      : [
-          {
-            description: fallbackDescription,
-            quantity: 1,
-            unitAmount: dollarsFromCents(inv.amount_cents as number),
-            taxType: "OUTPUT2",
-          },
-        ];
+  const { lineItems, hasLineItems } = toXeroLineItems(
+    (inv.invoice_line_items ?? []) as Parameters<typeof toXeroLineItems>[0],
+    {
+      gstRegistered: studio?.gst_registered !== false,
+      fallbackDescription,
+      fallbackAmountCents: inv.amount_cents as number,
+    },
+  );
 
   return {
     studioId: inv.studio_id as string,
@@ -354,14 +365,77 @@ async function loadInvoiceRecord(
     reference: formatInvoiceNumber(inv.invoice_number as number),
     lineDescription: fallbackDescription,
     lineItems,
-    hasLineItems: rawLineItems.length > 0,
+    hasLineItems,
+    taxInclusive: (inv.tax_inclusive as boolean | null) !== false,
   };
 }
 
-async function loadInvoiceSale(
+type SaleRecord = {
+  studioId: string;
+  payerId: string;
+  amountCents: number;
+  lineItems: LineItem[];
+  reference: string;
+  taxInclusive: boolean;
+};
+
+/**
+ * Orders and tickets aren't `invoices` rows, so they have no frozen
+ * tax_inclusive/gst_registered to read back — take the studio's current
+ * posture instead. Both sync at the moment of sale, so "current" is correct.
+ */
+async function loadStudioTaxPosture(
   supabase: SupabaseClient,
-  invoiceId: string,
-): Promise<{ studioId: string; payerId: string; amountCents: number; lineItems: LineItem[]; reference: string }> {
+  studioId: string,
+): Promise<{ taxInclusive: boolean; gstRegistered: boolean }> {
+  const { data } = await supabase
+    .from("studios")
+    .select("prices_include_tax, gst_registered")
+    .eq("id", studioId)
+    .maybeSingle();
+
+  return {
+    taxInclusive: (data?.prices_include_tax as boolean | null) !== false,
+    gstRegistered: (data?.gst_registered as boolean | null) !== false,
+  };
+}
+
+/** Studio behind an order or ticket, needed before its Xero connection loads. */
+async function resolveSaleStudioId(
+  supabase: SupabaseClient,
+  sourceType: XeroSyncSourceType,
+  sourceId: string,
+): Promise<string> {
+  if (sourceType === "order") {
+    const { data } = await supabase.from("orders").select("studio_id").eq("id", sourceId).single();
+    if (!data) throw new Error("Order not found");
+    return data.studio_id as string;
+  }
+
+  const { data } = await supabase
+    .from("event_tickets")
+    .select("events ( studio_id )")
+    .eq("id", sourceId)
+    .single();
+  const event = data?.events as unknown as { studio_id: string } | null;
+  if (!event) throw new Error("Event not found");
+  return event.studio_id;
+}
+
+async function loadSalesAccountCode(
+  supabase: SupabaseClient,
+  studioId: string,
+): Promise<string | null> {
+  const { data } = await supabase
+    .from("xero_connections")
+    .select("settings")
+    .eq("studio_id", studioId)
+    .maybeSingle();
+
+  return settings(data?.settings).sales_account_code ?? null;
+}
+
+async function loadInvoiceSale(supabase: SupabaseClient, invoiceId: string): Promise<SaleRecord> {
   const inv = await loadInvoiceRecord(supabase, invoiceId);
   if (inv.xeroInvoiceId) throw new Error("Already synced");
 
@@ -371,6 +445,7 @@ async function loadInvoiceSale(
     amountCents: inv.amountCents,
     reference: inv.reference,
     lineItems: inv.lineItems,
+    taxInclusive: inv.taxInclusive,
   };
 }
 
@@ -378,7 +453,7 @@ async function loadOrderSale(
   supabase: SupabaseClient,
   orderId: string,
   salesAccountCode: string,
-): Promise<{ studioId: string; payerId: string; amountCents: number; lineItems: LineItem[]; reference: string }> {
+): Promise<SaleRecord> {
   const { data: order } = await supabase
     .from("orders")
     .select("id, studio_id, user_id, total_cents, xero_invoice_id")
@@ -388,19 +463,31 @@ async function loadOrderSale(
   if (!order) throw new Error("Order not found");
   if (order.xero_invoice_id) throw new Error("Already synced");
 
+  const posture = await loadStudioTaxPosture(supabase, order.studio_id as string);
+
+  // A shop item only carries a billing_product_id once the studio wants its
+  // merch revenue coded separately; until then it falls back to the studio's
+  // sales account, same as before.
   const { data: items } = await supabase
     .from("order_items")
-    .select("qty, unit_price, products ( name )")
+    .select("qty, unit_price, products ( name, catalogue:billing_products ( account_code, item_code, tax_treatment ) )")
     .eq("order_id", orderId);
 
+  type OrderProduct = {
+    name: string;
+    catalogue: { account_code: string | null; item_code: string | null; tax_treatment: string | null } | null;
+  };
+
   const lineItems: LineItem[] = (items ?? []).map((item) => {
-    const product = item.products as unknown as { name: string } | null;
+    const product = item.products as unknown as OrderProduct | null;
+    const catalogue = product?.catalogue ?? null;
     return {
       description: product?.name ?? "Merchandise",
       quantity: item.qty,
       unitAmount: dollarsFromCents(item.unit_price),
-      accountCode: salesAccountCode,
-      taxType: "OUTPUT2",
+      accountCode: catalogue?.account_code ?? salesAccountCode,
+      itemCode: catalogue?.item_code ?? undefined,
+      taxType: xeroTaxType(catalogue?.tax_treatment as never, posture.gstRegistered),
     };
   });
 
@@ -410,7 +497,7 @@ async function loadOrderSale(
       quantity: 1,
       unitAmount: dollarsFromCents(order.total_cents),
       accountCode: salesAccountCode,
-      taxType: "OUTPUT2",
+      taxType: xeroTaxType("standard", posture.gstRegistered),
     });
   }
 
@@ -420,6 +507,7 @@ async function loadOrderSale(
     amountCents: order.total_cents,
     reference: `ORD-${order.id.slice(0, 8)}`,
     lineItems,
+    taxInclusive: posture.taxInclusive,
   };
 }
 
@@ -427,7 +515,7 @@ async function loadTicketSale(
   supabase: SupabaseClient,
   ticketId: string,
   salesAccountCode: string,
-): Promise<{ studioId: string; payerId: string; amountCents: number; lineItems: LineItem[]; reference: string }> {
+): Promise<SaleRecord> {
   const { data: ticket } = await supabase
     .from("event_tickets")
     .select(`
@@ -443,18 +531,21 @@ async function loadTicketSale(
   const event = ticket.events as unknown as { studio_id: string; title: string } | null;
   if (!event) throw new Error("Event not found");
 
+  const posture = await loadStudioTaxPosture(supabase, event.studio_id);
+
   return {
     studioId: event.studio_id,
     payerId: ticket.user_id,
     amountCents: ticket.total_cents,
     reference: `TKT-${ticket.id.slice(0, 8)}`,
+    taxInclusive: posture.taxInclusive,
     lineItems: [
       {
         description: `${event.title} — event ticket${ticket.quantity > 1 ? ` ×${ticket.quantity}` : ""}`,
         quantity: 1,
         unitAmount: dollarsFromCents(ticket.total_cents),
         accountCode: salesAccountCode,
-        taxType: "OUTPUT2",
+        taxType: xeroTaxType("standard", posture.gstRegistered),
       },
     ],
   };
@@ -482,7 +573,7 @@ async function syncInvoicePaymentToXero(
     return { ok: true, xeroInvoiceId: record.xeroInvoiceId };
   }
 
-  const loaded = await loadStudioXeroClient(supabase, record.studioId, redirectUri);
+  const loaded = await loadXeroPushClient(supabase, record.studioId, redirectUri);
   if (!loaded) return { ok: false, error: "Xero not connected" };
 
   const cfg = settings(loaded.connection.settings);
@@ -536,7 +627,7 @@ export async function syncOutstandingInvoiceToXero(
       return { ok: true, xeroInvoiceId: idempotency.xeroInvoiceId };
     }
 
-    const loaded = await loadStudioXeroClient(supabase, record.studioId, redirectUri);
+    const loaded = await loadXeroPushClient(supabase, record.studioId, redirectUri);
     if (!loaded) return { ok: false, error: "Xero not connected" };
 
     const cfg = settings(loaded.connection.settings);
@@ -563,6 +654,7 @@ export async function syncOutstandingInvoiceToXero(
       record.reference,
       dueDate,
       issueDate,
+      record.taxInclusive,
     );
 
     await supabase.from("invoices").update({ xero_invoice_id: xeroInvoiceId }).eq("id", invoiceId);
@@ -608,7 +700,7 @@ export async function authoriseOutstandingInvoiceInXero(
     const record = await loadInvoiceRecord(supabase, invoiceId);
     if (!record.xeroInvoiceId) return { ok: true };
 
-    const loaded = await loadStudioXeroClient(supabase, record.studioId, redirectUri);
+    const loaded = await loadXeroPushClient(supabase, record.studioId, redirectUri);
     if (!loaded) return { ok: false, error: "Xero not connected" };
 
     const cfg = settings(loaded.connection.settings);
@@ -645,7 +737,7 @@ export async function updateOutstandingInvoiceInXero(
     const record = await loadInvoiceRecord(supabase, invoiceId);
     if (!record.xeroInvoiceId) return { ok: true };
 
-    const loaded = await loadStudioXeroClient(supabase, record.studioId, redirectUri);
+    const loaded = await loadXeroPushClient(supabase, record.studioId, redirectUri);
     if (!loaded) return { ok: false, error: "Xero not connected" };
 
     const cfg = settings(loaded.connection.settings);
@@ -675,7 +767,7 @@ export async function updateOutstandingInvoiceInXero(
           dueDate,
           reference: record.reference,
           invoiceNumber: record.reference,
-          lineAmountTypes: LineAmountTypes.Inclusive,
+          lineAmountTypes: lineAmountTypeFor(record.taxInclusive),
         },
       ],
     } as Invoices);
@@ -706,23 +798,30 @@ export async function syncSaleToXero(
       }
     }
 
-    let sale:
-      | Awaited<ReturnType<typeof loadInvoiceSale>>
-      | Awaited<ReturnType<typeof loadOrderSale>>
-      | Awaited<ReturnType<typeof loadTicketSale>>;
+    let sale: SaleRecord;
 
     if (sourceType === "invoice") {
       sale = await loadInvoiceSale(supabase, sourceId);
-    } else if (sourceType === "order") {
-      sale = await loadOrderSale(supabase, sourceId, DEFAULT_XERO_SETTINGS.sales_account_code!);
     } else {
-      sale = await loadTicketSale(supabase, sourceId, DEFAULT_XERO_SETTINGS.sales_account_code!);
+      // The studio's own configured sales account, not the package default —
+      // passing DEFAULT_XERO_SETTINGS here used to stamp "200" onto every order
+      // and ticket line, and because the line then had a code, the
+      // `?? cfg.sales_account_code` fallback below could never correct it.
+      const studioId = await resolveSaleStudioId(supabase, sourceType, sourceId);
+      const salesAccountCode =
+        (await loadSalesAccountCode(supabase, studioId)) ??
+        DEFAULT_XERO_SETTINGS.sales_account_code!;
+
+      sale =
+        sourceType === "order"
+          ? await loadOrderSale(supabase, sourceId, salesAccountCode)
+          : await loadTicketSale(supabase, sourceId, salesAccountCode);
     }
 
     const idempotency = await ensureSyncLog(supabase, sale.studioId, sourceType, sourceId);
     if (idempotency.skip) return { ok: true, xeroInvoiceId: idempotency.xeroInvoiceId };
 
-    const loaded = await loadStudioXeroClient(supabase, sale.studioId, redirectUri);
+    const loaded = await loadXeroPushClient(supabase, sale.studioId, redirectUri);
     if (!loaded) return { ok: false, error: "Xero not connected" };
 
     const cfg = settings(loaded.connection.settings);
@@ -739,6 +838,7 @@ export async function syncSaleToXero(
       })),
       sale.reference,
       sale.amountCents,
+      sale.taxInclusive,
     );
 
     const table = sourceType === "invoice" ? "invoices" : sourceType === "order" ? "orders" : "event_tickets";
@@ -816,7 +916,7 @@ export async function syncRefundToXero(
 
   if (!xeroInvoiceId || !studioId || !payerId) return;
 
-  const loaded = await loadStudioXeroClient(supabase, studioId, redirectUri);
+  const loaded = await loadXeroPushClient(supabase, studioId, redirectUri);
   if (!loaded) return;
 
   const contact = await resolveContact(supabase, loaded, payerId);
@@ -864,7 +964,7 @@ export async function voidInvoiceInXero(
 
   if (!xeroInvoiceId) return { ok: true };
 
-  const loaded = await loadStudioXeroClient(supabase, record.studioId, redirectUri);
+  const loaded = await loadXeroPushClient(supabase, record.studioId, redirectUri);
   if (!loaded) return { ok: false, error: "Xero not connected" };
 
   const cfg = settings(loaded.connection.settings);

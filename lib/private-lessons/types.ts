@@ -56,6 +56,18 @@ export type AdminBooking = {
   invoiceStatus: string | null;
 };
 
+/**
+ * The studio's hourly private-lesson product, so the admin billing dialog can
+ * pre-price a booking from its duration instead of asking for a number.
+ */
+export type LessonRate = {
+  productId: string;
+  name: string;
+  unitAmountCents: number;
+  minUnits: number | null;
+  incrementUnits: number | null;
+};
+
 /** A studio teacher a parent can book, with their weekly availability. */
 export type BookableTeacher = {
   id: string;

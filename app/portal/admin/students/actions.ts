@@ -10,8 +10,10 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStudioOpsStudio } from "@/lib/portal/access";
-import { gstComponentCents } from "@/lib/currency";
+import { loadStudioTaxSettings } from "@/lib/billing/catalog";
+import { totalInvoice } from "@/lib/billing/tax";
 import { batchEnrollmentBillableCents } from "@/lib/enrollment-billing";
+import { loadStudioClassPrices } from "@/lib/enrollment-class-price";
 import { siblingDiscountedCents } from "@/lib/discounts";
 import { studioLocalYmdOffset } from "@/lib/date/studio-date";
 import { xeroSyncOutstandingInvoice } from "@/lib/xero/webhook-sync";
@@ -517,10 +519,21 @@ export async function createDraftInvoiceFromEnrollments(
     applySiblingDiscount = false;
   }
 
+  // Catalogue is the source of truth for price, ledger codes and tax treatment;
+  // the class row only still supplies name and recurring-group linkage.
+  const priceRows = await loadStudioClassPrices(
+    supabase,
+    studioId,
+    classes.map((c) => c.id),
+  );
+
   const baseCentsByClassId = await batchEnrollmentBillableCents(
     supabase,
     studentId,
-    classes.map((c) => ({ classId: c.id, priceCents: c.price_cents ?? 0 })),
+    classes.map((c) => ({
+      classId: c.id,
+      priceCents: priceRows.get(c.id)?.priceCents ?? c.price_cents ?? 0,
+    })),
   );
 
   const charges: { classId: string; className: string; chargeCents: number }[] = [];
@@ -538,7 +551,34 @@ export async function createDraftInvoiceFromEnrollments(
   }
 
   const dueDate = studioLocalYmdOffset(7);
-  const totalCents = charges.reduce((sum, c) => sum + c.chargeCents, 0);
+  const taxSettings = await loadStudioTaxSettings(supabase, studioId);
+
+  const lines = charges.map((c, idx) => {
+    const priced = priceRows.get(c.classId);
+    return {
+      item_type: "class",
+      reference_id: c.classId,
+      product_id: priced?.productId ?? null,
+      description: c.className,
+      quantity: 1,
+      unit_cents: c.chargeCents,
+      line_total_cents: c.chargeCents,
+      sort_order: idx,
+      account_code: priced?.accountCode ?? null,
+      item_code: priced?.itemCode ?? null,
+      tax_treatment: priced?.taxTreatment ?? "standard",
+      tax_rate_bp: priced?.taxRateBp ?? 1500,
+    };
+  });
+
+  const totals = totalInvoice(
+    lines.map((l) => ({
+      lineTotalCents: l.line_total_cents,
+      taxTreatment: l.tax_treatment,
+      taxRateBp: l.tax_rate_bp,
+    })),
+    { inclusive: taxSettings.pricesIncludeTax, registered: taxSettings.gstRegistered },
+  );
 
   const { data: invoice, error: invErr } = await supabase
     .from("invoices")
@@ -546,8 +586,10 @@ export async function createDraftInvoiceFromEnrollments(
       studio_id: studioId,
       payer_id: payerId,
       student_id: studentId,
-      amount_cents: totalCents,
-      gst_cents: gstComponentCents(totalCents),
+      amount_cents: totals.totalCents,
+      subtotal_cents: totals.subtotalCents,
+      gst_cents: totals.taxCents,
+      tax_inclusive: taxSettings.pricesIncludeTax,
       status: "draft",
       due_date: dueDate,
       issued_at: null,
@@ -558,23 +600,10 @@ export async function createDraftInvoiceFromEnrollments(
   if (invErr || !invoice) return { ok: false, error: invErr?.message ?? "Could not create invoice." };
 
   const invoiceId = invoice.id as string;
-  const accountCodeByClassId = new Map(classes.map((c) => [c.id, c.xero_account_code]));
-  const itemCodeByClassId = new Map(classes.map((c) => [c.id, c.xero_item_code]));
 
-  const { error: lineItemsErr } = await supabase.from("invoice_line_items").insert(
-    charges.map((c, idx) => ({
-      invoice_id: invoiceId,
-      item_type: "class",
-      reference_id: c.classId,
-      description: c.className,
-      quantity: 1,
-      unit_cents: c.chargeCents,
-      line_total_cents: c.chargeCents,
-      sort_order: idx,
-      account_code: accountCodeByClassId.get(c.classId) ?? null,
-      item_code: itemCodeByClassId.get(c.classId) ?? null,
-    })),
-  );
+  const { error: lineItemsErr } = await supabase
+    .from("invoice_line_items")
+    .insert(lines.map((l) => ({ ...l, invoice_id: invoiceId })));
   if (lineItemsErr) return { ok: false, error: lineItemsErr.message };
 
   const xero = await xeroSyncOutstandingInvoice(supabase, invoiceId, {

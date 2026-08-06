@@ -14,6 +14,7 @@ import {
 import { signOut } from "@/app/portal/actions";
 import PortalEmbed from "@/components/admin/PortalEmbed";
 import BillingPeriodSettings, { type StudioTermInfo } from "@/components/admin/BillingPeriodSettings";
+import TaxSettings, { type StudioTaxInfo } from "@/components/admin/TaxSettings";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 
 const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
@@ -47,6 +48,7 @@ type StudioInfo = {
   registrationEnabled: boolean;
   registrationRoles: string[];
   billingPeriod: "monthly" | "termly";
+  tax: StudioTaxInfo;
 };
 
 // Shared field chrome for the glass shell — matches the frosted inputs used
@@ -418,6 +420,10 @@ export default function AdminSettings({
                 <SaveStatus status={retailStatus} savedLabel={tShared("saved")} />
               </div>
               <Toggle checked={retailDiscount} onChange={onToggleRetail} disabled={retailPending} />
+            </div>
+
+            <div className="border-t pt-5" style={{ borderColor: "var(--hair)" }}>
+              <TaxSettings tax={studio.tax} />
             </div>
 
             <div className="border-t pt-5" style={{ borderColor: "var(--hair)" }}>

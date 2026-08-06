@@ -173,6 +173,55 @@ export async function updateStudioTimezone(input: unknown): Promise<SettingsResu
 }
 
 // ─── Billing period (monthly vs. termly) ──────────────────────────────────────
+// GST posture is a studio fact, not a per-product one. Xero's lineAmountTypes
+// is a property of the invoice rather than the line, so a mixed
+// inclusive/exclusive invoice can't be expressed at all — the studio picks one
+// convention and every catalogue price is read under it. Per-product treatment
+// (standard / zero-rated / exempt) lives in Money → Products.
+
+const TaxSettingsSchema = z.object({
+  pricesIncludeTax: z.boolean(),
+  gstRegistered: z.boolean(),
+  gstNumber: z.string().trim().max(20).optional(),
+});
+
+export async function updateTaxSettings(input: unknown): Promise<SettingsResult> {
+  const parsed = TaxSettingsSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not signed in." };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("studio_id, role")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.studio_id) return { ok: false, error: "No studio found." };
+  if (profile.role !== "admin") return { ok: false, error: "Only admins can change studio settings." };
+
+  const { error } = await supabase
+    .from("studios")
+    .update({
+      prices_include_tax: parsed.data.pricesIncludeTax,
+      gst_registered: parsed.data.gstRegistered,
+      gst_number: parsed.data.gstNumber || null,
+    })
+    .eq("id", profile.studio_id);
+
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/portal/admin/settings");
+  revalidatePath("/portal/admin/money");
+  return { ok: true };
+}
+
 // Studios that invoice per-term (e.g. 4 terms/year) instead of monthly need
 // their own term calendar — the subscription-invoices cron reads this instead
 // of assuming every studio bills on the 1st of the month.

@@ -6,7 +6,8 @@
 
 import { requirePortalSession } from "@/lib/portal/session";
 import PrivateLessonsReview from "@/components/admin/private-lessons/PrivateLessonsReview";
-import type { AdminBooking } from "@/lib/private-lessons/types";
+import { loadProductByCode } from "@/lib/billing/catalog";
+import type { AdminBooking, LessonRate } from "@/lib/private-lessons/types";
 
 type Row = {
   id: string;
@@ -26,6 +27,17 @@ type Row = {
 
 export default async function AdminPrivateLessonsPage() {
   const { supabase, studioId } = await requirePortalSession();
+
+  const rateProduct = await loadProductByCode(supabase, studioId, "PRIVATE-HR");
+  const rate: LessonRate | null = rateProduct
+    ? {
+        productId: rateProduct.id,
+        name: rateProduct.name,
+        unitAmountCents: rateProduct.unitAmountCents,
+        minUnits: rateProduct.minUnits,
+        incrementUnits: rateProduct.incrementUnits,
+      }
+    : null;
 
   const { data } = await supabase
     .from("private_lesson_bookings")
@@ -56,5 +68,5 @@ export default async function AdminPrivateLessonsPage() {
     invoiceStatus: r.invoice?.status ?? null,
   }));
 
-  return <PrivateLessonsReview bookings={bookings} />;
+  return <PrivateLessonsReview bookings={bookings} rate={rate} />;
 }

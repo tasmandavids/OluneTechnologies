@@ -36,13 +36,18 @@ export const ACCOUNTING_CAPABILITIES: Record<
   AccountingProviderCapabilities
 > = {
   xero: { id: "xero", name: "Xero", syncSupported: true, lineItemCoding: true },
+  // lineItemCoding is true for all three now: the billing catalogue (0105)
+  // stores account/item codes provider-neutrally, with per-provider overrides
+  // in billing_product_ledger_codes, so a studio can code its products for
+  // QuickBooks or MYOB today. syncSupported stays false — the codes are
+  // captured and ready, but nothing pushes them yet.
   quickbooks: {
     id: "quickbooks",
     name: "QuickBooks Online",
     syncSupported: false,
-    lineItemCoding: false,
+    lineItemCoding: true,
   },
-  myob: { id: "myob", name: "MYOB Business", syncSupported: false, lineItemCoding: false },
+  myob: { id: "myob", name: "MYOB Business", syncSupported: false, lineItemCoding: true },
 };
 
 export type ActiveAccountingProvider = {

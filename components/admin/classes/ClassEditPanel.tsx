@@ -56,9 +56,20 @@ type FormState = {
   endTime: string;
   capacity: number;
   priceCents: number;
+  productId: string;
   teacherId: string;
   xeroAccountCode: string;
   xeroItemCode: string;
+};
+
+/** Catalogue entries a class can bill against. */
+export type ClassProductOption = {
+  id: string;
+  name: string;
+  code: string;
+  unitAmountCents: number;
+  accountCode: string | null;
+  itemCode: string | null;
 };
 
 const EMPTY_FORM: FormState = {
@@ -72,6 +83,7 @@ const EMPTY_FORM: FormState = {
   endTime: "17:00",
   capacity: 20,
   priceCents: 0,
+  productId: "",
   teacherId: "",
   xeroAccountCode: "",
   xeroItemCode: "",
@@ -89,6 +101,7 @@ function formFromClass(c: ClassRow): FormState {
     endTime: c.endTime?.slice(0, 5) ?? "",
     capacity: c.capacity,
     priceCents: c.priceCents,
+    productId: c.productId ?? "",
     teacherId: c.teacherId ?? "",
     xeroAccountCode: c.xeroAccountCode ?? "",
     xeroItemCode: c.xeroItemCode ?? "",
@@ -153,6 +166,7 @@ export function ClassEditPanel({
   allClasses = [],
   xeroAccounts = [],
   xeroItems = [],
+  products = [],
   onClose,
 }: {
   mode: "create" | "edit";
@@ -161,6 +175,7 @@ export function ClassEditPanel({
   allClasses?: ClassRow[];
   xeroAccounts?: XeroAccountOption[];
   xeroItems?: XeroItemOption[];
+  products?: ClassProductOption[];
   onClose: () => void;
 }) {
   const t = useTranslations("admin.classes.form");
@@ -237,6 +252,7 @@ export function ClassEditPanel({
       endTime: form.endTime || undefined,
       capacity: form.capacity,
       priceCents: form.priceCents,
+      productId: form.productId || undefined,
       teacherId: form.teacherId || undefined,
       xeroAccountCode: form.xeroAccountCode || undefined,
       xeroItemCode: form.xeroItemCode || undefined,
@@ -397,6 +413,42 @@ export function ClassEditPanel({
               />
             </div>
             <div>
+              <Label>{products.length > 0 ? t("product") : t("priceCents")}</Label>
+              {products.length > 0 ? (
+                <Select
+                  value={form.productId}
+                  onChange={(v) => {
+                    const product = products.find((p) => p.id === v);
+                    setForm((f) => ({
+                      ...f,
+                      productId: v,
+                      // Keep price_cents in step for the class_capacity view and
+                      // the Stripe price sync, which still read it.
+                      priceCents: product ? product.unitAmountCents : f.priceCents,
+                    }));
+                  }}
+                >
+                  <option value="">{t("productCustom")}</option>
+                  {products.map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {product.name} — {(product.unitAmountCents / 100).toFixed(2)}
+                    </option>
+                  ))}
+                </Select>
+              ) : (
+                <Input
+                  type="number"
+                  value={form.priceCents}
+                  onChange={(v) => set("priceCents", Number(v))}
+                  min={0}
+                  placeholder={t("pricePlaceholder")}
+                />
+              )}
+            </div>
+          </div>
+
+          {products.length > 0 && !form.productId && (
+            <div>
               <Label>{t("priceCents")}</Label>
               <Input
                 type="number"
@@ -406,7 +458,7 @@ export function ClassEditPanel({
                 placeholder={t("pricePlaceholder")}
               />
             </div>
-          </div>
+          )}
 
           <div>
             <Label>{t("teacher")}</Label>
@@ -464,7 +516,7 @@ export function ClassEditPanel({
           {/* Accounting is a back-office concern — tucked behind a closed
               disclosure, and only when Xero is actually connected (the option
               lists are empty otherwise). */}
-          {(xeroAccounts.length > 0 || xeroItems.length > 0) && (
+          {!form.productId && (xeroAccounts.length > 0 || xeroItems.length > 0) && (
             <details className="box rounded-xl">
               <summary className="cursor-pointer select-none px-4 py-3 text-[0.68rem] font-semibold uppercase tracking-wider text-muted">
                 {t("xeroSection")}

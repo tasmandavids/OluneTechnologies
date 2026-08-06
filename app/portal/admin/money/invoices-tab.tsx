@@ -8,6 +8,9 @@
 import { requirePortalSession } from "@/lib/portal/session";
 import { getTranslations } from "@/lib/i18n/server";
 import { BillingDashboard } from "@/components/admin/billing/BillingDashboard";
+import type { LineProductOption } from "@/components/admin/billing/InvoiceLineItemsEditor";
+import { loadStudioProducts } from "@/lib/billing/catalog";
+import { defaultUnitLabel } from "@/lib/billing/pricing";
 import type {
   BillingSubscriptionRow,
   InvoiceLineItem,
@@ -182,6 +185,19 @@ export async function InvoicesTab({ initialInvoiceId }: { initialInvoiceId: stri
     mapInvoice(inv as Record<string, unknown>, lineItemsByInvoice),
   );
 
+  // Active catalogue entries, so an admin itemizing an invoice can pick a
+  // product instead of retyping its name, price and codes every time.
+  const catalogue = await loadStudioProducts(supabase, studioId);
+  const products: LineProductOption[] = catalogue
+    .filter((p) => p.pricingModel !== "package")
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      code: p.code,
+      unitAmountCents: p.unitAmountCents,
+      unitLabel: defaultUnitLabel(p),
+    }));
+
   const templates: InvoiceTemplate[] = (templatesRes.data ?? []).map((tpl) => {
     const rawLines = (tpl.invoice_template_line_items ?? []) as Record<string, unknown>[];
     return {
@@ -303,6 +319,7 @@ export async function InvoicesTab({ initialInvoiceId }: { initialInvoiceId: stri
       totalOutstandingCents={totalOutstandingCents}
       overdueCount={overdueCount}
       templates={templates}
+      products={products}
       initialInvoiceId={initialInvoiceId}
     />
   );

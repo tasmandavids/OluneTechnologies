@@ -1,9 +1,13 @@
 // ============================================================================
-//  POST /api/passes/purchase — buy a $25 single adult ballet class pass.
+//  POST /api/passes/purchase — buy a single drop-in class pass.
 //  Buyer must be an existing, logged-in self-managed adult student. Generates
 //  a QR code (base64 PNG) encoding an opaque redemption token, then creates a
 //  Stripe PaymentIntent (returns clientSecret). Confirmation of payment is
 //  webhook-driven (see lib/webhooks/process-stripe-event.ts).
+//
+//  The price is the studio's own PASS-DROPIN catalogue product, not a constant
+//  — and it's read here server-side rather than accepted from the client, which
+//  RLS (0107) then re-checks against the same product row.
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
@@ -12,7 +16,8 @@ import QRCode from "qrcode";
 import { CURRENCY } from "@/lib/currency";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveTransferData } from "@/lib/stripe/connect";
-import { CLASS_PASS_PRICE_CENTS } from "@/lib/passes/constants";
+import { loadProductByCode } from "@/lib/billing/catalog";
+import { CLASS_PASS_PRODUCT_CODE } from "@/lib/passes/constants";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -37,13 +42,22 @@ export async function POST(req: NextRequest) {
 
   const studioId = profile.studio_id as string;
 
+  const passProduct = await loadProductByCode(supabase, studioId, CLASS_PASS_PRODUCT_CODE);
+  if (!passProduct) {
+    return NextResponse.json(
+      { error: "This studio isn't selling class passes yet." },
+      { status: 409 },
+    );
+  }
+
   // Insert first so the DB mints qr_token, then build the QR payload around it.
   const { data: pass, error: insertErr } = await supabase
     .from("class_passes")
     .insert({
       studio_id: studioId,
       student_id: user.id,
-      price_cents: CLASS_PASS_PRICE_CENTS,
+      product_id: passProduct.id,
+      price_cents: passProduct.unitAmountCents,
       currency: CURRENCY,
       status: "reserved",
     })
@@ -67,7 +81,7 @@ export async function POST(req: NextRequest) {
   const customerId = await getOrCreateStripeCustomer(supabase, user.id, studioId);
 
   const intent = await stripe.paymentIntents.create({
-    amount: CLASS_PASS_PRICE_CENTS,
+    amount: passProduct.unitAmountCents,
     currency: CURRENCY,
     customer: customerId,
     metadata: {

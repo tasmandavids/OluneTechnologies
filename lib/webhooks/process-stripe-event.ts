@@ -11,6 +11,8 @@
 import type Stripe from "stripe";
 import type { ServiceSupabase } from "@/lib/webhooks/service-supabase";
 import { CURRENCY, gstComponentCents } from "@/lib/currency";
+import { loadStudioTaxSettings } from "@/lib/billing/catalog";
+import { splitTax } from "@/lib/billing/tax";
 import { recordTermInstallmentPaid } from "@/lib/term-payment-plan-service";
 import {
   classifyPaymentIntent,
@@ -166,7 +168,9 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           .eq("id", target.passId)
           .eq("stripe_payment_intent_id", intent.id)
           .eq("status", "reserved")
-          .select("id, studio_id, student_id");
+          .select(
+            "id, studio_id, student_id, product_id, product:billing_products ( name, account_code, item_code, tax_treatment, tax_rate_bp )",
+          );
 
         if (error || !updated?.length) {
           console.warn(
@@ -178,6 +182,28 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
         const pass = updated[0];
         const nowIso = new Date().toISOString();
 
+        // Description, ledger codes and tax treatment come from the pass
+        // product the student actually bought, so a studio that renamed or
+        // re-coded its drop-in pass sees that on the invoice.
+        const passProduct = pass.product as unknown as {
+          name: string | null;
+          account_code: string | null;
+          item_code: string | null;
+          tax_treatment: string | null;
+          tax_rate_bp: number | null;
+        } | null;
+
+        const passLabel = passProduct?.name ?? "Class pass";
+        const taxTreatment = passProduct?.tax_treatment ?? "standard";
+        const taxRateBp = Number(passProduct?.tax_rate_bp ?? 1500);
+        const taxSettings = await loadStudioTaxSettings(supabase, pass.studio_id as string);
+        const totals = splitTax(intent.amount_received, {
+          inclusive: taxSettings.pricesIncludeTax,
+          taxRateBp,
+          treatment: taxTreatment as never,
+          registered: taxSettings.gstRegistered,
+        });
+
         // A pass sale is a real invoice (not just a payments-ledger row like
         // tickets/orders) so it reports correctly in accounting — classified
         // under the studio's chart-of-accounts code for class-pass revenue.
@@ -187,14 +213,18 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
             studio_id: pass.studio_id,
             payer_id: pass.student_id,
             student_id: pass.student_id,
+            // Stripe already took this amount, so it is the total by
+            // definition — never re-derive it from the tax split.
             amount_cents: intent.amount_received,
-            gst_cents: gstComponentCents(intent.amount_received),
+            subtotal_cents: totals.subtotalCents,
+            gst_cents: totals.taxCents,
+            tax_inclusive: taxSettings.pricesIncludeTax,
             status: "paid",
             due_date: nowIso.slice(0, 10),
             issued_at: nowIso,
             paid_at: nowIso,
             stripe_payment_intent_id: intent.id,
-            description: "Adult ballet class pass",
+            description: passLabel,
           })
           .select("id")
           .single();
@@ -208,12 +238,16 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
             invoice_id: newInvoice.id,
             item_type: "custom",
             reference_id: pass.id,
-            description: "Adult ballet class pass",
+            product_id: pass.product_id ?? null,
+            description: passLabel,
             quantity: 1,
             unit_cents: intent.amount_received,
             line_total_cents: intent.amount_received,
             sort_order: 0,
-            account_code: CLASS_PASS_XERO_ACCOUNT_CODE,
+            account_code: passProduct?.account_code ?? CLASS_PASS_XERO_ACCOUNT_CODE,
+            item_code: passProduct?.item_code ?? null,
+            tax_treatment: taxTreatment,
+            tax_rate_bp: taxRateBp,
           });
           await supabase.from("class_passes").update({ invoice_id: newInvoice.id }).eq("id", pass.id);
         }
@@ -226,7 +260,7 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           currency: intent.currency,
           stripe_payment_intent_id: intent.id,
           status: "succeeded",
-          description: "Adult ballet class pass",
+          description: passLabel,
         });
 
         await supabase.from("notifications").insert({
@@ -234,7 +268,7 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           user_id: pass.student_id,
           type: "class_pass_paid",
           title: "Your class pass is ready",
-          body: "Show the QR code at the studio to redeem it for any single adult ballet class.",
+          body: "Show the QR code at the studio to redeem it.",
           link: "/portal/student",
         });
 

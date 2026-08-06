@@ -43,6 +43,13 @@ const ClassSchema = z.object({
   endTime:    z.string().regex(/^\d{2}:\d{2}$/, "Use HH:MM format").optional().or(z.literal("")),
   capacity:   z.coerce.number().int().min(1).max(500),
   priceCents: z.coerce.number().int().min(0),
+  /**
+   * Catalogue product this class bills against. When set it is the source of
+   * truth for price, ledger codes and tax treatment; price_cents is still
+   * written so the class_capacity view and the Stripe price sync keep working
+   * until they're migrated off it.
+   */
+  productId:  z.string().uuid().optional().or(z.literal("")),
   teacherId:  z.string().uuid().optional().or(z.literal("")),
   xeroAccountCode: z.string().max(20).optional().or(z.literal("")),
   xeroItemCode: z.string().max(30).optional().or(z.literal("")),
@@ -196,6 +203,7 @@ export async function createClass(input: unknown): Promise<ActionResult> {
     end_time:    d.endTime || null,
     capacity:    d.capacity,
     price_cents: d.priceCents,
+    product_id:  d.productId || null,
     teacher_id:  d.teacherId || null,
     xero_account_code: d.xeroAccountCode || null,
     xero_item_code: d.xeroItemCode || null,
@@ -238,6 +246,7 @@ export async function updateClass(
       end_time:    d.endTime || null,
       capacity:    d.capacity,
       price_cents: d.priceCents,
+      product_id:  d.productId || null,
       teacher_id:  d.teacherId || null,
       xero_account_code: d.xeroAccountCode || null,
       xero_item_code: d.xeroItemCode || null,
@@ -286,6 +295,7 @@ export async function createRecurringClasses(input: unknown): Promise<ActionResu
     end_time:           d.endTime || null,
     capacity:           d.capacity,
     price_cents:        d.priceCents,
+    product_id:         d.productId || null,
     teacher_id:         d.teacherId || null,
     xero_account_code:  d.xeroAccountCode || null,
     xero_item_code:     d.xeroItemCode || null,

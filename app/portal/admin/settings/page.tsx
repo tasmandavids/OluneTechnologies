@@ -23,7 +23,7 @@ export default async function SettingsPage() {
   const { data: studio } = profile?.studio_id
     ? await supabase
         .from("studios")
-        .select("id, name, slug, custom_domain, status, created_at, sibling_discount_pct, family_discount_on_retail, timezone, registration_enabled, registration_roles, billing_period")
+        .select("id, name, slug, custom_domain, status, created_at, sibling_discount_pct, family_discount_on_retail, timezone, registration_enabled, registration_roles, billing_period, prices_include_tax, gst_registered, gst_number")
         .eq("id", profile.studio_id)
         .single()
     : { data: null };
@@ -66,6 +66,11 @@ export default async function SettingsPage() {
               registrationEnabled: studio.registration_enabled ?? false,
               registrationRoles: (studio.registration_roles as string[]) ?? ["parent", "student"],
               billingPeriod: (studio.billing_period as "monthly" | "termly") ?? "monthly",
+              tax: {
+                pricesIncludeTax: studio.prices_include_tax !== false,
+                gstRegistered: studio.gst_registered !== false,
+                gstNumber: (studio.gst_number as string | null) ?? null,
+              },
             }
           : null
       }

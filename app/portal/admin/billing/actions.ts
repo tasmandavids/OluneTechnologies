@@ -3,7 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { CURRENCY, gstComponentCents } from "@/lib/currency";
+import { CURRENCY } from "@/lib/currency";
+import { loadProducts, loadStudioTaxSettings } from "@/lib/billing/catalog";
+import { defaultUnitLabel } from "@/lib/billing/pricing";
+import { splitTax, totalInvoice } from "@/lib/billing/tax";
+import type { BillingProduct, LedgerProvider, TaxTreatment } from "@/lib/billing/types";
+import { resolveLineCodes, type LineCodeDefaults } from "@/lib/accounting/line-codes";
+import { resolveAccountingProvider } from "@/lib/accounting/provider";
 import { stripe } from "@/lib/stripe";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveTransferData } from "@/lib/stripe/connect";
@@ -31,8 +37,12 @@ async function getAdminStudio() {
 
 const InvoiceLineItemInputSchema = z.object({
   description: z.string().trim().min(1).max(200),
-  quantity: z.number().int().positive().max(999),
+  // Fractional since the catalogue added hourly products — 1.5 hours has to
+  // mean 1.5 hours. Capped at 3dp to match invoice_line_items.quantity.
+  quantity: z.number().positive().max(999).multipleOf(0.001),
   unitDollars: z.number().nonnegative().max(100_000),
+  /** Set when the line came from the catalogue rather than free text. */
+  productId: z.string().uuid().optional(),
 });
 
 export type InvoiceLineItemInput = z.infer<typeof InvoiceLineItemInputSchema>;
@@ -49,19 +59,81 @@ const CreateInvoiceSchema = z.object({
 
 export type CreateInvoiceInput = z.infer<typeof CreateInvoiceSchema>;
 
-function lineItemRows(invoiceId: string, lineItems: InvoiceLineItemInput[]) {
+/**
+ * Build the rows to insert, freezing each line's catalogue coding.
+ *
+ * `products` is keyed by product id and already tenant-scoped by the caller —
+ * a client-supplied productId that isn't in the map simply contributes no
+ * codes, it can never pull in another studio's product.
+ */
+function lineItemRows(
+  invoiceId: string,
+  lineItems: InvoiceLineItemInput[],
+  products: Map<string, BillingProduct>,
+  defaults: LineCodeDefaults,
+  provider: LedgerProvider | null,
+) {
   return lineItems.map((li, idx) => {
     const unitCents = Math.round(li.unitDollars * 100);
+    const product = li.productId ? products.get(li.productId) ?? null : null;
+    const codes = product
+      ? resolveLineCodes(product, provider, defaults)
+      : null;
+
     return {
       invoice_id: invoiceId,
-      item_type: "custom",
+      item_type: product ? "product" : "custom",
+      product_id: product?.id ?? null,
       description: li.description,
       quantity: li.quantity,
       unit_cents: unitCents,
-      line_total_cents: unitCents * li.quantity,
+      line_total_cents: Math.round(unitCents * li.quantity),
       sort_order: idx,
+      account_code: codes?.accountCode ?? null,
+      item_code: codes?.itemCode ?? null,
+      tax_treatment: codes?.taxTreatment ?? "standard",
+      tax_rate_bp: codes?.taxRateBp ?? 1500,
+      unit_label: product ? defaultUnitLabel(product) : null,
     };
   });
+}
+
+/** Loads everything the freeze needs: catalogue rows, ledger defaults, tax posture. */
+async function invoicePricingContext(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  studioId: string,
+  lineItems: InvoiceLineItemInput[] | undefined,
+) {
+  const [products, taxSettings, active, connection] = await Promise.all([
+    loadProducts(supabase, studioId, (lineItems ?? []).map((li) => li.productId ?? "")),
+    loadStudioTaxSettings(supabase, studioId),
+    resolveAccountingProvider(supabase, studioId),
+    supabase.from("xero_connections").select("settings").eq("studio_id", studioId).maybeSingle(),
+  ]);
+
+  const settings = (connection.data?.settings ?? {}) as { sales_account_code?: string };
+
+  return {
+    products,
+    taxSettings,
+    provider: active?.provider ?? null,
+    defaults: { salesAccountCode: settings.sales_account_code ?? null } satisfies LineCodeDefaults,
+  };
+}
+
+/** Invoice header totals derived from the frozen lines, never from the client. */
+function invoiceTotals(
+  rows: ReturnType<typeof lineItemRows>,
+  taxSettings: { pricesIncludeTax: boolean; gstRegistered: boolean },
+) {
+  return totalInvoice(
+    rows.map((r) => ({
+      lineTotalCents: r.line_total_cents,
+      taxTreatment: r.tax_treatment as TaxTreatment,
+      taxRateBp: r.tax_rate_bp,
+    })),
+    { inclusive: taxSettings.pricesIncludeTax, registered: taxSettings.gstRegistered },
+  );
 }
 
 function invoiceSentNotification(
@@ -126,7 +198,6 @@ export async function createInvoice(
   if (error || !studioId) return { ok: false, error: error ?? t("unknown") };
 
   const { payerId, studentId, amountDollars, dueDate, description, sendNow, lineItems } = parsed.data;
-  const amountCents = Math.round(amountDollars * 100);
 
   const { data: payer } = await supabase
     .from("profiles")
@@ -151,14 +222,41 @@ export async function createInvoice(
   const now = new Date().toISOString();
   const trimmedDescription = description?.trim() || null;
 
+  const { products, taxSettings, provider, defaults } = await invoicePricingContext(
+    supabase,
+    studioId,
+    lineItems,
+  );
+
+  // The header total is DERIVED from the lines whenever there are lines.
+  // It used to be taken straight from the client's amountDollars alongside a
+  // separate lineItems array, so a mismatched payload produced an invoice whose
+  // header silently disagreed with its own detail — updateInvoice always got
+  // this right, createInvoice didn't.
+  const rows =
+    lineItems && lineItems.length > 0
+      ? lineItemRows("", lineItems, products, defaults, provider)
+      : [];
+
+  const totals =
+    rows.length > 0
+      ? invoiceTotals(rows, taxSettings)
+      : splitTax(Math.round(amountDollars * 100), {
+          inclusive: taxSettings.pricesIncludeTax,
+          taxRateBp: 1500,
+          registered: taxSettings.gstRegistered,
+        });
+
   const { data: invoice, error: invErr } = await supabase
     .from("invoices")
     .insert({
       studio_id: studioId,
       payer_id: payerId,
       student_id: studentId ?? null,
-      amount_cents: amountCents,
-      gst_cents: gstComponentCents(amountCents),
+      amount_cents: totals.totalCents,
+      subtotal_cents: totals.subtotalCents,
+      gst_cents: totals.taxCents,
+      tax_inclusive: taxSettings.pricesIncludeTax,
       status,
       description: trimmedDescription,
       due_date: dueDate,
@@ -169,8 +267,12 @@ export async function createInvoice(
 
   if (invErr || !invoice) return { ok: false, error: invErr?.message ?? t("couldNotCreateInvoice") };
 
-  if (lineItems && lineItems.length > 0) {
-    await supabase.from("invoice_line_items").insert(lineItemRows(invoice.id as string, lineItems));
+  const amountCents = totals.totalCents;
+
+  if (rows.length > 0) {
+    await supabase
+      .from("invoice_line_items")
+      .insert(rows.map((r) => ({ ...r, invoice_id: invoice.id as string })));
   }
 
   const label = trimmedDescription || "Studio invoice";
@@ -515,17 +617,33 @@ export async function updateInvoice(
   if (dueDate !== undefined) updates.due_date = dueDate;
   if (description !== undefined) updates.description = description.trim() || null;
 
+  const { products, taxSettings, provider, defaults } = await invoicePricingContext(
+    supabase,
+    studioId,
+    lineItems,
+  );
+
+  const rows =
+    lineItems !== undefined
+      ? lineItemRows(invoiceId, lineItems, products, defaults, provider)
+      : [];
+
   if (lineItems !== undefined) {
-    const amountCents = lineItems.reduce(
-      (sum, li) => sum + Math.round(li.unitDollars * 100) * li.quantity,
-      0,
-    );
-    updates.amount_cents = amountCents;
-    updates.gst_cents = gstComponentCents(amountCents);
+    const totals = invoiceTotals(rows, taxSettings);
+    updates.amount_cents = totals.totalCents;
+    updates.subtotal_cents = totals.subtotalCents;
+    updates.gst_cents = totals.taxCents;
+    updates.tax_inclusive = taxSettings.pricesIncludeTax;
   } else if (amountDollars !== undefined) {
-    const amountCents = Math.round(amountDollars * 100);
-    updates.amount_cents = amountCents;
-    updates.gst_cents = gstComponentCents(amountCents);
+    const totals = splitTax(Math.round(amountDollars * 100), {
+      inclusive: taxSettings.pricesIncludeTax,
+      taxRateBp: 1500,
+      registered: taxSettings.gstRegistered,
+    });
+    updates.amount_cents = totals.totalCents;
+    updates.subtotal_cents = totals.subtotalCents;
+    updates.gst_cents = totals.taxCents;
+    updates.tax_inclusive = taxSettings.pricesIncludeTax;
   }
 
   if (Object.keys(updates).length > 0) {
@@ -535,8 +653,8 @@ export async function updateInvoice(
 
   if (changingAmount) {
     await supabase.from("invoice_line_items").delete().eq("invoice_id", invoiceId);
-    if (lineItems !== undefined) {
-      await supabase.from("invoice_line_items").insert(lineItemRows(invoiceId, lineItems));
+    if (rows.length > 0) {
+      await supabase.from("invoice_line_items").insert(rows);
     }
   }
 

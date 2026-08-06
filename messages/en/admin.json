@@ -401,7 +401,9 @@
         "seriesOptionGroupLabel": "{name} · {count} classes",
         "seriesLinkButton": "Link to series",
         "seriesLinking": "Linking…",
-        "xeroSection": "Accounting (Xero)"
+        "xeroSection": "Accounting (Xero)",
+        "product": "Price from",
+        "productCustom": "Custom price"
       },
       "delete": {
         "title": "Delete \"{name}\"?",
@@ -807,7 +809,8 @@
         "amountLabel": "Amount (NZD)",
         "invalidLineItemsError": "Each line needs a description, quantity, and unit price.",
         "validAmountError": "Enter a valid amount.",
-        "xeroSyncError": "Saved, but Xero sync failed: {error}"
+        "xeroSyncError": "Saved, but Xero sync failed: {error}",
+        "customLine": "Custom line"
       },
       "send": "Send",
       "sendXeroSyncError": "Invoice sent, but Xero sync failed: {error}",
@@ -828,7 +831,8 @@
         "ledger": "Ledger",
         "reconcile": "Reconcile",
         "payouts": "Payouts",
-        "reports": "Reports"
+        "reports": "Reports",
+        "products": "Products"
       },
       "comingSoon": {
         "title": "Coming soon",
@@ -958,6 +962,124 @@
         "title": "Bank reconciliation isn't built yet",
         "body": "Matching your bank feed against invoices and payouts line-by-line is coming to Olune.",
         "note": "Invoice status already syncs automatically with Xero — see Reports for that."
+      },
+      "products": {
+        "title": "Products & pricing",
+        "subtitle": "Everything your studio sells — fees, passes, hourly rates, packages — with the accounting codes they post to.",
+        "newProduct": "New product",
+        "searchPlaceholder": "Search products…",
+        "showArchived": "Show archived",
+        "archive": "Archive",
+        "restore": "Restore",
+        "archived": "Archived",
+        "noCode": "No code",
+        "save": "Save product",
+        "saving": "Saving…",
+        "saved": "Product updated.",
+        "created": "Product created.",
+        "cancel": "Cancel",
+        "editTitle": "Edit product",
+        "newTitle": "New product",
+        "empty": {
+          "title": "No products yet",
+          "body": "Set up a starter catalogue with the usual term fees, casual classes, passes, private lessons and registration fees — then edit the prices to match your studio.",
+          "seed": "Set up a starter catalogue",
+          "seeding": "Setting up…",
+          "manual": "Add one myself"
+        },
+        "categories": {
+          "tuition": "Tuition",
+          "fee": "Fees",
+          "pass": "Passes",
+          "hire": "Hire",
+          "retail": "Retail",
+          "other": "Other"
+        },
+        "models": {
+          "one_off": "One-off fee",
+          "hourly": "Per hour",
+          "per_session": "Per session",
+          "pass": "Pass (multi-use)",
+          "recurring": "Recurring",
+          "term": "Per term",
+          "package": "Package"
+        },
+        "intervals": {
+          "week": "Week",
+          "fortnight": "Fortnight",
+          "month": "Month",
+          "term": "Term",
+          "year": "Year"
+        },
+        "ledgers": {
+          "xero": "Xero",
+          "quickbooks": "QuickBooks Online",
+          "myob": "MYOB Business"
+        },
+        "sections": {
+          "basics": "Basics",
+          "pricing": "How it's priced",
+          "volume": "Volume pricing",
+          "tax": "GST",
+          "accounting": "Accounting"
+        },
+        "fields": {
+          "name": "Name",
+          "code": "Code",
+          "category": "Category",
+          "description": "Description",
+          "pricingModel": "Pricing model",
+          "priceInclusive": "Price (GST inclusive)",
+          "priceExclusive": "Price (excluding GST)",
+          "unitLabel": "Unit",
+          "minUnits": "Minimum",
+          "incrementUnits": "Rounds to",
+          "creditCount": "Classes included",
+          "creditExpiryDays": "Expires after (days)",
+          "recurringInterval": "Bills every",
+          "recurringIntervalCount": "Number of periods",
+          "term": "Term",
+          "anyTerm": "Any term",
+          "included": "Included in this package",
+          "addIncluded": "+ Add an included product",
+          "chooseProduct": "Choose a product…",
+          "taxTreatment": "GST treatment",
+          "taxRate": "GST rate (%)",
+          "accountCode": "Revenue account",
+          "itemCode": "Item code",
+          "customCode": "Something else…",
+          "otherLedgers": "Different codes in QuickBooks or MYOB?"
+        },
+        "hints": {
+          "code": "Your own SKU. Used on invoices and as the default item code.",
+          "term": "Leave blank to keep this price for every term.",
+          "package": "The package price is what the family pays. What's listed here is what it entitles them to.",
+          "volume": "Charge less as families take more. The highest matching tier wins.",
+          "itemCode": "Only set this if the code already exists in your accounting system — an unknown item code makes the whole invoice fail to sync.",
+          "accountingConnected": "Picked from your live {ledger} chart of accounts.",
+          "accountingOffline": "Connect an accounting system in Settings to pick these from a list."
+        },
+        "tiers": {
+          "add": "+ Add a volume tier",
+          "percentOff": "% off",
+          "flatPrice": "Flat price"
+        },
+        "tax": {
+          "standard": "Standard GST",
+          "zero_rated": "Zero-rated",
+          "exempt": "No GST",
+          "inclusiveBadge": "GST incl",
+          "exclusiveBadge": "GST excl",
+          "zeroRatedBadge": "Zero-rated",
+          "exemptBadge": "No GST",
+          "subtotal": "Subtotal",
+          "tax": "GST",
+          "total": "Total",
+          "notRegistered": "This studio isn't GST registered, so nothing here charges GST. Change that in Settings."
+        },
+        "errors": {
+          "incomplete": "Give the product a name, a code and a price."
+        }
       }
     },
     "accounting": {
@@ -1537,6 +1659,21 @@
         "needAttention": "Need attention",
         "available": "In the catalog",
         "manage": "Manage connections"
+      },
+      "tax": {
+        "title": "GST",
+        "description": "How your prices are quoted. This applies to every product, because an invoice can only be one or the other.",
+        "registered": "This studio is registered for GST",
+        "pricing": "Prices are entered as",
+        "inclusive": "GST inclusive",
+        "exclusive": "Excluding GST",
+        "pricingHint": "GST inclusive is the usual New Zealand convention — the price you show is the price families pay.",
+        "gstNumber": "GST number",
+        "save": "Save GST settings",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "productsHint": "Zero-rated or exempt items are set per product in",
+        "productsLink": "Money → Products"
       }
     },
     "branding": {

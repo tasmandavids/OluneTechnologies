@@ -42,6 +42,8 @@ function periodEndFromSubscription(sub: Stripe.Subscription): string | null {
 const LineSchema = z.object({
   itemType: z.enum(["class", "product", "discount", "adjustment"]),
   referenceId: z.string().uuid().optional(),
+  /** Catalogue product this line bills against, when it came from Products. */
+  productId: z.string().uuid().optional(),
   description: z.string().min(1).max(200),
   quantity: z.number().int().positive().max(99),
   unitMonthlyCents: z.number().int(),
@@ -182,6 +184,10 @@ export async function createAdminSubscription(
       subscription_id: subscriptionId,
       item_type: line.itemType,
       reference_id: line.referenceId ?? null,
+      // Freezes nothing by itself — the codes are read through this link at
+      // invoice-generation time, so re-coding a product updates future
+      // invoices while already-issued ones keep their frozen copy.
+      product_id: line.productId ?? null,
       description: line.description,
       quantity: line.quantity,
       unit_monthly_cents: line.unitMonthlyCents,

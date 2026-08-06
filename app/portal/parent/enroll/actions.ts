@@ -8,7 +8,9 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { CURRENCY, gstComponentCents } from "@/lib/currency";
+import { CURRENCY } from "@/lib/currency";
+import { loadStudioTaxSettings } from "@/lib/billing/catalog";
+import { totalInvoice } from "@/lib/billing/tax";
 import { siblingDiscountedCents } from "@/lib/discounts";
 import { enrollmentBillableCents, batchEnrollmentBillableCents } from "@/lib/enrollment-billing";
 import { loadStudioClassPrice, loadStudioClassPrices } from "@/lib/enrollment-class-price";
@@ -98,8 +100,8 @@ async function assertStudentAccess(
 // ─── Get available classes ───────────────────────────────────────────────────
 
 export async function getAvailableClasses(): Promise<ActionResult<AvailableClass[]>> {
-  const { error, supabase } = await getEnrollmentContext();
-  if (error) return { ok: false, error };
+  const { error, supabase, studioId } = await getEnrollmentContext();
+  if (error || !studioId) return { ok: false, error: error ?? "No studio found." };
 
   const { data, error: dbErr } = await supabase
     .from("class_capacity")
@@ -109,28 +111,26 @@ export async function getAvailableClasses(): Promise<ActionResult<AvailableClass
 
   if (dbErr) return { ok: false, error: dbErr.message };
 
-  // Also fetch prices + recurring-group linkage from classes table
+  // Prices come from the same server-authoritative loader the enrolment charge
+  // uses, so the quote a parent sees can't drift from what they're billed.
   const ids = (data ?? []).map((r) => r.id as string);
-  const { data: priceData } = await supabase
-    .from("classes")
-    .select("id, price_cents, recurring_group_id")
-    .in("id", ids);
+  const priceRows = await loadStudioClassPrices(supabase, studioId, ids);
 
-  const priceMap = new Map((priceData ?? []).map((r) => [r.id, r.price_cents as number]));
-  const groupMap = new Map((priceData ?? []).map((r) => [r.id, r.recurring_group_id as string | null]));
-
-  const classes: AvailableClass[] = (data ?? []).map((r) => ({
-    id: r.id as string,
-    name: r.name as string,
-    discipline: r.discipline as string | null,
-    level: r.level as string | null,
-    dayOfWeek: r.day_of_week as number | null,
-    startTime: r.start_time ? (r.start_time as string).slice(0, 5) : null,
-    capacity: Number(r.capacity ?? 0),
-    enrolled: Number(r.enrolled ?? 0),
-    priceCents: priceMap.get(r.id as string) ?? 0,
-    recurringGroupId: groupMap.get(r.id as string) ?? null,
-  }));
+  const classes: AvailableClass[] = (data ?? []).map((r) => {
+    const priced = priceRows.get(r.id as string);
+    return {
+      id: r.id as string,
+      name: r.name as string,
+      discipline: r.discipline as string | null,
+      level: r.level as string | null,
+      dayOfWeek: r.day_of_week as number | null,
+      startTime: r.start_time ? (r.start_time as string).slice(0, 5) : null,
+      capacity: Number(r.capacity ?? 0),
+      enrolled: Number(r.enrolled ?? 0),
+      priceCents: priced?.priceCents ?? 0,
+      recurringGroupId: priced?.recurringGroupId ?? null,
+    };
+  });
 
   return { ok: true, data: classes };
 }
@@ -376,9 +376,44 @@ async function insertEnrollmentInvoice(
   t: Awaited<ReturnType<typeof getTranslations>>,
 ) {
   const dueDate = studioLocalYmdOffset(7);
-
-  const totalCents = charges.reduce((sum, c) => sum + c.chargeCents, 0);
   const now = new Date().toISOString();
+
+  // Ledger codes and tax treatment come from each class's catalogue product
+  // and get frozen onto the line, so re-pricing or re-coding that product
+  // later can't rewrite an invoice the parent has already been sent.
+  const priceRows = await loadStudioClassPrices(
+    supabase,
+    studioId,
+    charges.map((c) => c.classId),
+  );
+  const taxSettings = await loadStudioTaxSettings(supabase, studioId);
+
+  const lines = charges.map((c, idx) => {
+    const priced = priceRows.get(c.classId);
+    return {
+      item_type: "class",
+      reference_id: c.classId,
+      product_id: priced?.productId ?? null,
+      description: c.className,
+      quantity: 1,
+      unit_cents: c.chargeCents,
+      line_total_cents: c.chargeCents,
+      sort_order: idx,
+      account_code: priced?.accountCode ?? null,
+      item_code: priced?.itemCode ?? null,
+      tax_treatment: priced?.taxTreatment ?? "standard",
+      tax_rate_bp: priced?.taxRateBp ?? 1500,
+    };
+  });
+
+  const totals = totalInvoice(
+    lines.map((l) => ({
+      lineTotalCents: l.line_total_cents,
+      taxTreatment: l.tax_treatment,
+      taxRateBp: l.tax_rate_bp,
+    })),
+    { inclusive: taxSettings.pricesIncludeTax, registered: taxSettings.gstRegistered },
+  );
 
   const { data: invoice, error: invErr } = await supabase
     .from("invoices")
@@ -386,8 +421,10 @@ async function insertEnrollmentInvoice(
       studio_id: studioId,
       payer_id: userId,
       student_id: studentId,
-      amount_cents: totalCents,
-      gst_cents: gstComponentCents(totalCents),
+      amount_cents: totals.totalCents,
+      subtotal_cents: totals.subtotalCents,
+      gst_cents: totals.taxCents,
+      tax_inclusive: taxSettings.pricesIncludeTax,
       status: sendNow ? "sent" : "draft",
       due_date: dueDate,
       issued_at: sendNow ? now : null,
@@ -401,31 +438,9 @@ async function insertEnrollmentInvoice(
 
   const invoiceId = invoice.id as string;
 
-  const { data: classRows } = await supabase
-    .from("classes")
-    .select("id, xero_account_code, xero_item_code")
-    .in("id", charges.map((c) => c.classId));
-  const accountCodeByClassId = new Map(
-    (classRows ?? []).map((c) => [c.id as string, c.xero_account_code as string | null]),
-  );
-  const itemCodeByClassId = new Map(
-    (classRows ?? []).map((c) => [c.id as string, c.xero_item_code as string | null]),
-  );
-
-  const { error: lineItemsErr } = await supabase.from("invoice_line_items").insert(
-    charges.map((c, idx) => ({
-      invoice_id: invoiceId,
-      item_type: "class",
-      reference_id: c.classId,
-      description: c.className,
-      quantity: 1,
-      unit_cents: c.chargeCents,
-      line_total_cents: c.chargeCents,
-      sort_order: idx,
-      account_code: accountCodeByClassId.get(c.classId) ?? null,
-      item_code: itemCodeByClassId.get(c.classId) ?? null,
-    })),
-  );
+  const { error: lineItemsErr } = await supabase
+    .from("invoice_line_items")
+    .insert(lines.map((l) => ({ ...l, invoice_id: invoiceId })));
 
   if (lineItemsErr) {
     return { ok: false as const, error: lineItemsErr.message };
