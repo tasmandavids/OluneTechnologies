@@ -166,7 +166,8 @@
       "substitutes": "Remplaçants",
       "availability": "Disponibilités des profs",
       "inbox": "Boîte de réception",
-      "passes": "Pass classe"
+      "passes": "Pass classe",
+      "checkin": "Enregistrement"
     },
     "teacher": {
       "schedule": "Planning et présence",

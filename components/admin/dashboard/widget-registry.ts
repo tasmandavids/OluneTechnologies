@@ -6,7 +6,7 @@
 //  skipped, so widget rearrangement here doesn't break old saved layouts.
 // ============================================================================
 
-export type WidgetId = "attention" | "staff" | "timeline" | "cashin" | "quickactions";
+export type WidgetId = "attention" | "staff" | "timeline" | "cashin" | "quickactions" | "checkin";
 
 export interface WidgetLayoutItem {
   i: WidgetId;
@@ -26,6 +26,7 @@ export const DEFAULT_DASHBOARD_LAYOUT: WidgetLayoutItem[] = [
   { i: "timeline", x: 4, y: 0, w: 4, h: 520 },
   { i: "cashin", x: 8, y: 0, w: 4, h: 240 },
   { i: "quickactions", x: 8, y: 1, w: 4, h: 280 },
+  { i: "checkin", x: 0, y: 2, w: 4, h: 200 },
 ];
 
 export const DASHBOARD_GRID_COLS = 12;

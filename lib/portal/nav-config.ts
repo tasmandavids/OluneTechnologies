@@ -54,6 +54,7 @@ export const ADMIN_NAV: NavSection[] = [
       { href: "/portal/admin/students", labelKey: "nav.admin.students" },
       { href: "/portal/admin/badges", labelKey: "nav.admin.badges", module: "badges" },
       { href: "/portal/admin/leads", labelKey: "nav.admin.leads", module: "leads" },
+      { href: "/portal/admin/checkin", labelKey: "nav.admin.checkin" },
     ],
   },
   {

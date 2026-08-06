@@ -16,6 +16,7 @@ import { AttentionQueue } from "./AttentionQueue";
 import { QuickActions } from "./QuickActions";
 import { StaffToday } from "./StaffToday";
 import { TodayTimeline } from "./TodayTimeline";
+import { BuildingCountWidget } from "./BuildingCountWidget";
 import { DashboardGrid } from "./DashboardGrid";
 import type { WidgetId } from "./widget-registry";
 import type { ScheduleClass, AttentionData, PulseStat, CashInDay } from "./types";
@@ -30,6 +31,7 @@ export function AdminDashboard({
   cashInTotalCents,
   cashInPaymentCount,
   cashInDays,
+  buildingCount,
   savedLayout,
 }: {
   scheduleClasses: ScheduleClass[];
@@ -40,6 +42,7 @@ export function AdminDashboard({
   cashInTotalCents: number;
   cashInPaymentCount: number;
   cashInDays: CashInDay[];
+  buildingCount: number;
   savedLayout: unknown;
 }) {
   const t = useTranslations("admin.dashboard.header");
@@ -67,6 +70,11 @@ export function AdminDashboard({
     quickactions: (
       <GlassPanel className="h-full">
         <QuickActions />
+      </GlassPanel>
+    ),
+    checkin: (
+      <GlassPanel className="h-full">
+        <BuildingCountWidget count={buildingCount} />
       </GlassPanel>
     ),
   };

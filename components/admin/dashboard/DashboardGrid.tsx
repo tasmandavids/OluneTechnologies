@@ -32,7 +32,7 @@ import {
 } from "./widget-registry";
 import { IconLayoutGrid, IconGrip, IconCheck } from "./icons";
 
-const WIDGET_ORDER: WidgetId[] = ["attention", "staff", "timeline", "cashin", "quickactions"];
+const WIDGET_ORDER: WidgetId[] = ["attention", "staff", "timeline", "cashin", "quickactions", "checkin"];
 
 /** Column gutter between widgets. */
 const GRID_GUTTER = 16;

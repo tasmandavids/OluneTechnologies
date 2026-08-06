@@ -51,7 +51,13 @@ const SPACES: Space[] = [
     labelKey: "shell.rail.people",
     icon: IconUsers,
     primaryHref: "/portal/admin/people",
-    subHrefs: ["/portal/admin/students", "/portal/admin/parents", "/portal/admin/leads", "/portal/admin/badges"],
+    subHrefs: [
+      "/portal/admin/students",
+      "/portal/admin/parents",
+      "/portal/admin/leads",
+      "/portal/admin/badges",
+      "/portal/admin/checkin",
+    ],
   },
   {
     id: "schedule",
