@@ -2,12 +2,36 @@
 //  /join — Tenant-scoped open registration (parent vs adult student).
 // ============================================================================
 
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { resolveStudio, slugFromHost } from "@/lib/tenant";
+import { originForHost } from "@/lib/seo";
 import { JoinStudioFlow } from "@/components/join/JoinStudioFlow";
 import { getStudioRegistrationInfo } from "@/app/join/actions";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const host = (await headers()).get("host");
+  const studio = await resolveStudio(host);
+  const slug = studio?.slug ?? slugFromHost(host);
+  if (!slug) return { robots: { index: false, follow: false } };
+
+  const studioInfo = await getStudioRegistrationInfo(slug);
+  // Registration closed renders a dead-end notice — nothing worth indexing.
+  if (!studioInfo?.registration_enabled) return { robots: { index: false, follow: false } };
+
+  const title = `Join ${studioInfo.name}`;
+  const description = `Register online with ${studioInfo.name} — set up your account and enrol in classes.`;
+  const url = `${originForHost(host)}/join`;
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url },
+  };
+}
 
 export default async function JoinPage() {
   const host = (await headers()).get("host");

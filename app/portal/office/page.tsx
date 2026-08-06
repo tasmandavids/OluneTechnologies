@@ -57,8 +57,7 @@ export default async function OfficeHomePage() {
   const todayStudio = studioShiftsRes.data ?? [];
 
   const quickLinks = [
-    { href: "/portal/admin/parents", label: tNav("parents") },
-    { href: "/portal/admin/students", label: tNav("students") },
+    { href: "/portal/admin/people", label: tNav("people") },
     { href: "/portal/admin/leads", label: tNav("leads") },
     { href: "/portal/admin/classes", label: tNav("classes") },
     { href: "/portal/admin/messages", label: tNav("messages") },

@@ -8,12 +8,13 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { CardPageClient } from "@/components/marketing/landing/CardPageClient";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { originForHost } from "@/lib/seo";
+import { originForHost, rootUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "The Olune check-in card",
   description:
     "One tap at the door: arrival and departure logged, parents notified, attendance done. The NFC membership card changes material — bronze to diamond — as a family's years with the studio add up.",
+  alternates: { canonical: rootUrl("/card") },
 };
 
 export default async function CardPage() {

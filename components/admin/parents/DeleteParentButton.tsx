@@ -29,7 +29,7 @@ export default function DeleteParentButton({
         return;
       }
       toast.success(tShared("deleted"));
-      router.push("/portal/admin/parents");
+      router.push("/portal/admin/people?tab=families");
       router.refresh();
     });
   };

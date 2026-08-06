@@ -267,6 +267,10 @@ export default function OluneLanding() {
   const [introStage, setIntroStage] = useState(0);
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
   const [priceProgress, setPriceProgress] = useState(0);
+  // Gates the count-up. False on the server and until the animation actually
+  // arms, so the real prices — not $0 — are what ships in the HTML and what a
+  // crawler (which never scrolls) reads.
+  const [counting, setCounting] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
 
   const motion: MotionIntensity = reduceMotion ? "off" : "cinematic";
@@ -274,6 +278,7 @@ export default function OluneLanding() {
   motionRef.current = motion;
 
   const sectionEls = useRef<Record<string, HTMLElement | null>>({});
+  const pricingEl = useRef<HTMLElement | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const navSentinel = useRef<HTMLDivElement | null>(null);
   const heroLayer = useRef<HTMLDivElement | null>(null);
@@ -284,6 +289,7 @@ export default function OluneLanding() {
     if (cuStarted.current) return;
     cuStarted.current = true;
     if (motionRef.current === "off") { setPriceProgress(1); return; }
+    setCounting(true);
     const t0 = performance.now();
     const dur = 1300;
     const tick = (now: number) => {
@@ -302,6 +308,13 @@ export default function OluneLanding() {
     }
   }, []);
 
+  // Pricing needs both the shared reveal observer and its own early count-up
+  // observer, so it gets a combined ref.
+  const pricingSectionRef = useCallback((el: HTMLElement | null) => {
+    pricingEl.current = el;
+    sectionRef("pricing")(el);
+  }, [sectionRef]);
+
   useEffect(() => {
     const m = window.matchMedia("(prefers-reduced-motion: reduce)");
     const on = () => setReduceMotion(m.matches);
@@ -317,7 +330,6 @@ export default function OluneLanding() {
           const key = Object.keys(sectionEls.current).find((k) => sectionEls.current[k] === entry.target);
           if (key) {
             setRevealed((s) => (s[key] ? s : { ...s, [key]: true }));
-            if (key === "pricing") startCountUp();
           }
           obs.unobserve(entry.target);
         }
@@ -325,6 +337,30 @@ export default function OluneLanding() {
     }, { threshold: 0.16, rootMargin: "0px 0px -6% 0px" });
     observerRef.current = obs;
     Object.values(sectionEls.current).forEach((el) => { if (el) obs.observe(el); });
+    return () => obs.disconnect();
+  }, []);
+
+  // Price count-up arms well before the section reaches the viewport, so the
+  // drop from the real price back to $0 always happens off screen. Never
+  // firing (a crawler, or a visitor who never scrolls that far) simply leaves
+  // the real prices on screen.
+  useEffect(() => {
+    const el = pricingEl.current;
+    if (!el) return;
+    const obs = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (!entry.isIntersecting) return;
+      obs.disconnect();
+      // Deep-linked straight to #pricing: the cards are already on screen, so
+      // counting up would just flash the real price away and back.
+      if (entry.boundingClientRect.top < window.innerHeight) {
+        cuStarted.current = true;
+        setPriceProgress(1);
+        return;
+      }
+      startCountUp();
+    }, { rootMargin: "0px 0px 60% 0px" });
+    obs.observe(el);
     return () => obs.disconnect();
   }, [startCountUp]);
 
@@ -465,7 +501,7 @@ export default function OluneLanding() {
     body: t(`everyday.items.${k}.body`),
   }));
 
-  const pp = motion === "off" ? 1 : priceProgress;
+  const pp = counting ? priceProgress : 1;
   const pricingTiers = ([
     { key: "solo", target: 19, highlight: false },
     { key: "studio", target: 49, highlight: true },
@@ -923,7 +959,7 @@ export default function OluneLanding() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" ref={sectionRef("pricing")} className="dcl-section" style={{ ...sectionStyle("#f7f6fb"), boxShadow: "0 -34px 70px -38px rgba(26,21,53,0.2)" }}>
+      <section id="pricing" ref={pricingSectionRef} className="dcl-section" style={{ ...sectionStyle("#f7f6fb"), boxShadow: "0 -34px 70px -38px rgba(26,21,53,0.2)" }}>
         <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>{DECOR_A.map((s, i) => <div key={i} style={s} />)}</div>
         <div style={{ maxWidth: 1120, margin: "0 auto 60px", textAlign: "center", position: "relative", zIndex: 2, ...reveal("pricing", 0, "up") }}>
           <div style={{ ...eyebrowStyle, justifyContent: "center" }}><span style={accentDotStyle} />{t("pricingSection.eyebrow")}</div>

@@ -22,7 +22,7 @@ function profileHref(role: Role, id: string): string | null {
     case "student":
       return `/portal/admin/students/${id}`;
     case "parent":
-      return `/portal/admin/parents`;
+      return `/portal/admin/people?tab=families`;
     case "teacher":
     case "office":
       return `/portal/admin/staff/${id}`;

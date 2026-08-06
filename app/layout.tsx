@@ -16,9 +16,8 @@ import { FeedbackHost } from "@/components/ui/FeedbackHost";
 import { MotionProvider } from "@/components/ui/MotionProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import { rootUrl } from "@/lib/seo";
 import type { CSSProperties } from "react";
-
-const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
 
 // Brand-correct fallback metadata. Routes that need their own title/
 // description/canonical (homepage, [siteSlug] pages, faq, team) set them via
@@ -28,7 +27,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = t("title");
   const description = t("description");
   return {
-    metadataBase: new URL(`https://${ROOT_DOMAIN}`),
+    // Canonical host, not the apex — relative metadata URLs (opengraph-image,
+    // twitter-image) resolve against this, and the apex only 308s to www.
+    metadataBase: new URL(rootUrl()),
     title: { default: title, template: "%s · Olune" },
     description,
     openGraph: {

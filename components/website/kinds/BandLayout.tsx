@@ -1,10 +1,18 @@
 import type { LayoutHeroProps } from "@/lib/website/types";
+import { Art, Wordmark } from "../Art";
 
-export function BandLayout({ accent, studioName, headline, tagline, eyebrow }: LayoutHeroProps) {
+const BANDS = (accent: string) => [
+  { flex: 1, fallback: `color-mix(in srgb, ${accent} 82%, #000)` },
+  { flex: 1.6, fallback: `linear-gradient(120deg, color-mix(in srgb, ${accent} 34%, #e7e3db), color-mix(in srgb, ${accent} 10%, #f4f1ea))` },
+  { flex: 1, fallback: `color-mix(in srgb, ${accent} 45%, #fff)` },
+  { flex: 0.6, fallback: `color-mix(in srgb, ${accent} 18%, #fff)` },
+];
+
+export function BandLayout({ accent, studioName, headline, tagline, eyebrow, logoUrl, images }: LayoutHeroProps) {
   return (
     <div style={{ minHeight: 900 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "38px 56px", background: accent, color: "#fff" }}>
-        <div style={{ fontSize: 27, fontFamily: "var(--font-display)" }}>{studioName}</div>
+        <Wordmark logoUrl={logoUrl} studioName={studioName} height={34} style={{ fontSize: 27, fontFamily: "var(--font-display)" }} />
         <div style={{ display: "flex", gap: 28, fontSize: 18, opacity: 0.9, fontFamily: "var(--font-body)" }}>
           <span>Classes</span><span>Timetable</span><span>About</span><span>Contact</span>
         </div>
@@ -17,10 +25,9 @@ export function BandLayout({ accent, studioName, headline, tagline, eyebrow }: L
         </div>
       </div>
       <div style={{ display: "flex", gap: 0, height: 270 }}>
-        <div style={{ flex: 1, background: `color-mix(in srgb, ${accent} 82%, #000)` }} />
-        <div style={{ flex: 1.6, background: `linear-gradient(120deg, color-mix(in srgb, ${accent} 34%, #e7e3db), color-mix(in srgb, ${accent} 10%, #f4f1ea))` }} />
-        <div style={{ flex: 1, background: `color-mix(in srgb, ${accent} 45%, #fff)` }} />
-        <div style={{ flex: 0.6, background: `color-mix(in srgb, ${accent} 18%, #fff)` }} />
+        {BANDS(accent).map((band, i) => (
+          <Art key={i} src={images[i]} alt={`${studioName} photo ${i + 1}`} fallback={band.fallback} style={{ flex: band.flex }} />
+        ))}
       </div>
       <div style={{ display: "flex", gap: 14, padding: "34px 56px", fontSize: 19, fontFamily: "var(--font-body)" }}>
         <div style={{ padding: "14px 26px", borderRadius: 10, color: "#fff", background: accent }}>Mon · Ballet 4.30</div>

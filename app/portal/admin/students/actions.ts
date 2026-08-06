@@ -52,6 +52,7 @@ export async function enrollStudent(input: unknown): Promise<ActionResult> {
 
   if (!rpcErr && atomicRows?.[0]) {
     revalidatePath("/portal/admin/students");
+    revalidatePath("/portal/admin/people");
     revalidatePath("/portal/admin/classes");
     revalidatePath("/portal/admin");
     return { ok: true };
@@ -89,6 +90,7 @@ export async function enrollStudent(input: unknown): Promise<ActionResult> {
   if (dbError) return { ok: false, error: dbError.message };
 
   revalidatePath("/portal/admin/students");
+  revalidatePath("/portal/admin/people");
   revalidatePath("/portal/admin/classes");
   revalidatePath("/portal/admin");
   return { ok: true };
@@ -115,6 +117,7 @@ export async function unenrollStudent(
   if (dbError) return { ok: false, error: dbError.message };
 
   revalidatePath("/portal/admin/students");
+  revalidatePath("/portal/admin/people");
   revalidatePath("/portal/admin/classes");
   revalidatePath("/portal/admin");
   return { ok: true };
@@ -146,6 +149,7 @@ export async function dropEnrollment(
   if (dbError) return { ok: false, error: dbError.message };
 
   revalidatePath("/portal/admin/students");
+  revalidatePath("/portal/admin/people");
   revalidatePath("/portal/admin/classes");
   revalidatePath("/portal/admin");
   return { ok: true };
@@ -223,6 +227,7 @@ export async function addStudent(input: unknown): Promise<ActionResult> {
   );
 
   revalidatePath("/portal/admin/students");
+  revalidatePath("/portal/admin/people");
   return { ok: true };
 }
 
@@ -275,6 +280,7 @@ export async function deleteStudent(studentId: string): Promise<ActionResult> {
   if (deleteErr) return { ok: false, error: deleteErr.message };
 
   revalidatePath("/portal/admin/students");
+  revalidatePath("/portal/admin/people");
   revalidatePath("/portal/admin/classes");
   return { ok: true };
 }
@@ -332,6 +338,7 @@ export async function updateStudent(input: unknown): Promise<ActionResult> {
   if (updateErr) return { ok: false, error: updateErr.message };
 
   revalidatePath("/portal/admin/students");
+  revalidatePath("/portal/admin/people");
   revalidatePath(`/portal/admin/students/${id}`);
   return { ok: true };
 }
@@ -370,6 +377,7 @@ export async function bulkUpdateStudents(
   }
 
   revalidatePath("/portal/admin/students");
+  revalidatePath("/portal/admin/people");
   return { ok: true, updated };
 }
 
@@ -424,6 +432,7 @@ export async function bulkDeleteStudents(input: unknown): Promise<BulkDeleteResu
   }
 
   revalidatePath("/portal/admin/students");
+  revalidatePath("/portal/admin/people");
   revalidatePath("/portal/admin/classes");
   return { ok: true, deleted, failures };
 }
@@ -573,6 +582,7 @@ export async function createDraftInvoiceFromEnrollments(
   });
 
   revalidatePath("/portal/admin/students");
+  revalidatePath("/portal/admin/people");
   revalidatePath("/portal/admin/money");
   return { ok: true, invoiceId, xeroError: xero.ok ? undefined : xero.error };
 }

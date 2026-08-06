@@ -11,6 +11,10 @@ export type PeopleStudentRow = {
   id: string;
   name: string | null;
   initials: string;
+  email: string | null;
+  phone: string | null;
+  /** Every active class name — `programme` is the collapsed display label. */
+  classNames: string[];
   programme: string | null;
   attendancePercent: number | null; // null = studio has no attendance data at all
   balanceCents: number;

@@ -20,6 +20,10 @@ export type WebsiteSection = {
   visible: boolean;
   headline?: string;
   body?: string;
+  /** Public `site-images` URLs. Most sections use `images[0]` as the single
+   *  feature image beside the copy; `gallery` renders the whole list as a
+   *  mosaic. See SECTION_IMAGE_MAX in lib/website/images.ts. */
+  images?: string[];
 };
 
 export type WebsiteStatus = "draft" | "published";
@@ -39,6 +43,10 @@ export type WebsiteConfig = {
   tagline: string;
   eyebrow: string;
   logoUrl: string | null;
+  /** Hero art, one entry per slot the chosen template kind exposes (see
+   *  HERO_SLOTS). Sparse — an empty/absent entry falls back to the
+   *  accent-derived gradient the template shipped with. */
+  heroImages: string[];
   sections: WebsiteSection[];
   status: WebsiteStatus;
   publishedAt: string | null;
@@ -55,6 +63,11 @@ export type LayoutHeroProps = {
   headline: string;
   tagline: string;
   eyebrow: string;
+  /** Uploaded logo, drawn in place of the studio-name wordmark when present. */
+  logoUrl: string | null;
+  /** Hero art per slot — index into HERO_SLOTS[kind]. Missing entries fall
+   *  back to each slot's gradient. */
+  images: string[];
 };
 
 /** Everything SiteRenderer needs to draw a page, independent of persistence. */
@@ -71,6 +84,8 @@ export type SiteRenderProps = {
   eyebrow: string;
   sections: WebsiteSection[];
   density: number;
+  logoUrl?: string | null;
+  heroImages?: string[];
   /** Render scale (1 = full-size public page, <1 = thumbnail/preview). */
   scale?: number;
 };

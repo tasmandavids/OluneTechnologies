@@ -115,6 +115,8 @@ export default async function HomePage({
           eyebrow={config.eyebrow}
           sections={config.sections}
           density={config.density}
+          logoUrl={config.logoUrl}
+          heroImages={config.heroImages}
         />
       </>
     );

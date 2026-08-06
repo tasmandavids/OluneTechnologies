@@ -2,18 +2,35 @@
 
 // ============================================================================
 //  PeopleView — Students / Families / Leads segmented directory. One row
-//  expands at a time. Each tab links out to its full manager (/students,
-//  /parents, /leads) for bulk actions, enrollment, and the leads Kanban.
+//  expands at a time. Since the standalone /students and /parents rosters were
+//  retired, this screen also carries their toolbars: search + filters, add
+//  student, add family, invite all, mass email, and bulk edit/delete.
 // ============================================================================
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { AnimatePresence } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import { onGlowMove, onGlowLeave } from "@/components/portal/admin/glass/useMicroInteractions";
+import { confirmDialog } from "@/lib/feedback";
+import AddStudentPanel from "@/components/admin/students/AddStudentPanel";
+import BulkEditStudentsPanel from "@/components/admin/students/BulkEditStudentsPanel";
+import AddFamilyPanel from "@/components/admin/parents/AddFamilyPanel";
+import MassEmailParentsPanel, { type ClassOption } from "@/components/admin/parents/MassEmailParentsPanel";
+import { bulkDeleteStudents, createDraftInvoiceFromEnrollments } from "@/app/portal/admin/students/actions";
+import { bulkInviteMembers } from "@/app/portal/admin/parents/actions";
+import type { ParentRow, StudentOption } from "@/lib/parents/types";
 import type { PeopleStudentRow, PeopleFamilyRow, PeopleLeadRow } from "./types";
 
-type Tab = "students" | "families" | "leads";
+export type PeopleTab = "students" | "families" | "leads";
+
+type StudentFilter = "all" | "overdue" | "new" | "unenrolled";
+type FamilyFilter = "all" | "owing" | "noChildren";
+type LeadFilter = "all" | PeopleLeadRow["status"];
+
+const LEAD_STATUSES: PeopleLeadRow["status"][] = ["new", "contacted", "trial", "converted", "lost"];
 
 function attendanceColor(pct: number): string {
   if (pct >= 88) return "var(--brand)";
@@ -21,29 +38,260 @@ function attendanceColor(pct: number): string {
   return "var(--muted)";
 }
 
+const matches = (haystack: (string | null | undefined)[], needle: string) =>
+  haystack.some((v) => (v ?? "").toLowerCase().includes(needle));
+
+// ─── shared chrome ───────────────────────────────────────────────────────────
+
+const CONTROL_STYLE = {
+  background: "var(--glass)",
+  borderColor: "var(--edge)",
+  color: "var(--ink, var(--text))",
+} as const;
+
+function SearchInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+  return (
+    <input
+      type="search"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full min-w-[200px] flex-1 rounded-[12px] border px-3.5 py-2 text-[12.5px] text-ink outline-none transition-colors placeholder:text-muted focus:border-[--ring] sm:max-w-[320px]"
+      style={CONTROL_STYLE}
+    />
+  );
+}
+
+function FilterSelect<T extends string>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: { value: T; label: string }[];
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value as T)}
+      className="rounded-[12px] border px-3 py-2 text-[12.5px] font-medium text-ink outline-none transition-colors focus:border-[--ring]"
+      style={CONTROL_STYLE}
+    >
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function ToolbarButton({
+  onClick,
+  children,
+  disabled,
+  primary,
+}: {
+  onClick: () => void;
+  children: React.ReactNode;
+  disabled?: boolean;
+  primary?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="rounded-[12px] border px-3.5 py-2 text-[12.5px] font-semibold transition-colors disabled:opacity-50"
+      style={
+        primary
+          ? { background: "var(--brand)", borderColor: "var(--brand)", color: "#fff" }
+          : CONTROL_STYLE
+      }
+    >
+      {children}
+    </button>
+  );
+}
+
+function NoMatches({ label }: { label: string }) {
+  return (
+    <GlassPanel>
+      <p className="py-6 text-center text-sm text-muted">{label}</p>
+    </GlassPanel>
+  );
+}
+
+// ─── main ────────────────────────────────────────────────────────────────────
+
 export function PeopleView({
   students,
   families,
   leads,
   studioTracksAttendance,
+  parentRows,
+  studentOptions,
+  classOptions,
+  canMassEmail,
+  initialTab = "students",
 }: {
   students: PeopleStudentRow[];
   families: PeopleFamilyRow[];
   leads: PeopleLeadRow[];
   studioTracksAttendance: boolean;
+  parentRows: ParentRow[];
+  studentOptions: StudentOption[];
+  classOptions: ClassOption[];
+  canMassEmail: boolean;
+  initialTab?: PeopleTab;
 }) {
   const t = useTranslations("admin.people");
+  const tStudents = useTranslations("admin.students");
+  const tParents = useTranslations("admin.parents");
+  const tShared = useTranslations("admin.shared");
   const locale = useLocale();
-  const [tab, setTab] = useState<Tab>("students");
+  const router = useRouter();
+
+  const [tab, setTab] = useState<PeopleTab>(initialTab);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [studentFilter, setStudentFilter] = useState<StudentFilter>("all");
+  const [classFilter, setClassFilter] = useState("all");
+  const [familyFilter, setFamilyFilter] = useState<FamilyFilter>("all");
+  const [leadFilter, setLeadFilter] = useState<LeadFilter>("all");
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [showAddStudent, setShowAddStudent] = useState(false);
+  const [showBulkEdit, setShowBulkEdit] = useState(false);
+  const [showAddFamily, setShowAddFamily] = useState(false);
+  const [showMassEmail, setShowMassEmail] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startAction] = useTransition();
 
   const currency = useMemo(
     () => new Intl.NumberFormat(locale, { style: "currency", currency: "NZD", maximumFractionDigits: 0 }),
     [locale],
   );
 
-  const counts: Record<Tab, number> = { students: students.length, families: families.length, leads: leads.length };
+  const needle = query.trim().toLowerCase();
+
+  const allClassNames = useMemo(
+    () => [...new Set(students.flatMap((s) => s.classNames))].sort((a, b) => a.localeCompare(b)),
+    [students],
+  );
+
+  const visibleStudents = useMemo(
+    () =>
+      students.filter((s) => {
+        if (needle && !matches([s.name, s.email, s.phone, s.guardianName, ...s.classNames], needle)) return false;
+        if (classFilter !== "all" && !s.classNames.includes(classFilter)) return false;
+        if (studentFilter === "overdue" && s.flag !== "overdue") return false;
+        if (studentFilter === "new" && s.flag !== "new") return false;
+        if (studentFilter === "unenrolled" && s.classNames.length > 0) return false;
+        return true;
+      }),
+    [students, needle, classFilter, studentFilter],
+  );
+
+  const visibleFamilies = useMemo(
+    () =>
+      families.filter((f) => {
+        if (needle && !matches([f.name, f.email, f.phone, ...f.childrenNames], needle)) return false;
+        if (familyFilter === "owing" && f.balanceCents <= 0) return false;
+        if (familyFilter === "noChildren" && f.childrenNames.length > 0) return false;
+        return true;
+      }),
+    [families, needle, familyFilter],
+  );
+
+  const visibleLeads = useMemo(
+    () =>
+      leads.filter((l) => {
+        if (needle && !matches([l.name, l.email, l.phone, l.source, l.notes], needle)) return false;
+        if (leadFilter !== "all" && l.status !== leadFilter) return false;
+        return true;
+      }),
+    [leads, needle, leadFilter],
+  );
+
+  const counts: Record<PeopleTab, number> = { students: students.length, families: families.length, leads: leads.length };
   const totalRecords = students.length + families.length + leads.length;
+  const shownCount = tab === "students" ? visibleStudents.length : tab === "families" ? visibleFamilies.length : visibleLeads.length;
+  const totalForTab = counts[tab];
+  const isFiltered =
+    needle.length > 0 ||
+    (tab === "students" && (studentFilter !== "all" || classFilter !== "all")) ||
+    (tab === "families" && familyFilter !== "all") ||
+    (tab === "leads" && leadFilter !== "all");
+
+  const selectedStudents = useMemo(
+    () => students.filter((s) => selectedIds.includes(s.id)),
+    [students, selectedIds],
+  );
+  const allShownSelected = visibleStudents.length > 0 && visibleStudents.every((s) => selectedIds.includes(s.id));
+
+  const switchTab = (next: PeopleTab) => {
+    setTab(next);
+    setOpenId(null);
+    setSelectedIds([]);
+    setNotice(null);
+    setError(null);
+  };
+
+  const clearFilters = () => {
+    setQuery("");
+    setStudentFilter("all");
+    setClassFilter("all");
+    setFamilyFilter("all");
+    setLeadFilter("all");
+  };
+
+  const toggleSelectAll = () => {
+    if (allShownSelected) {
+      const shown = new Set(visibleStudents.map((s) => s.id));
+      setSelectedIds((prev) => prev.filter((id) => !shown.has(id)));
+    } else {
+      setSelectedIds([...new Set([...selectedIds, ...visibleStudents.map((s) => s.id)])]);
+    }
+  };
+
+  const bulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!(await confirmDialog({ title: tStudents("deleteSelectedConfirm", { count: selectedIds.length }), destructive: true }))) return;
+    setNotice(null);
+    setError(null);
+    startAction(async () => {
+      const result = await bulkDeleteStudents({ studentIds: selectedIds });
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      if (result.failures.length > 0) {
+        setNotice(tStudents("bulkDeletePartial", { deleted: result.deleted, failed: result.failures.length }));
+        setSelectedIds(result.failures.map((f) => f.id));
+      } else {
+        setNotice(tStudents("bulkDeleteSuccess", { count: result.deleted }));
+        setSelectedIds([]);
+      }
+      router.refresh();
+    });
+  };
+
+  const inviteAll = async () => {
+    if (!(await confirmDialog({ title: t("invite.confirm") }))) return;
+    setNotice(null);
+    setError(null);
+    startAction(async () => {
+      const res = await bulkInviteMembers();
+      if (!res.ok) {
+        setError(res.error);
+        return;
+      }
+      setNotice(t("invite.result", { sent: res.sent, skipped: res.skipped, failed: res.failed }));
+    });
+  };
 
   return (
     <div className="mx-auto max-w-[1180px] py-2">
@@ -62,10 +310,7 @@ export function PeopleView({
             <button
               key={k}
               type="button"
-              onClick={() => {
-                setTab(k);
-                setOpenId(null);
-              }}
+              onClick={() => switchTab(k)}
               className="rounded-[10px] px-3.5 py-2 text-[12.5px] font-semibold transition-all"
               style={{
                 color: tab === k ? "var(--ink, var(--text))" : "var(--muted)",
@@ -79,21 +324,194 @@ export function PeopleView({
         </div>
       </div>
 
-      {tab === "students" && (
-        <StudentsTable students={students} currency={currency} openId={openId} setOpenId={setOpenId} studioTracksAttendance={studioTracksAttendance} />
-      )}
-      {tab === "families" && <FamiliesTable families={families} currency={currency} openId={openId} setOpenId={setOpenId} />}
-      {tab === "leads" && <LeadsTable leads={leads} openId={openId} setOpenId={setOpenId} />}
+      {/* ── toolbar: search · filters · actions ─────────────────────────── */}
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <SearchInput value={query} onChange={setQuery} placeholder={t(`search.${tab}`)} />
 
-      <p className="mt-4 text-[11.5px] text-muted">
-        {t("openManagerHint")}{" "}
-        <Link href={tab === "students" ? "/portal/admin/students" : tab === "families" ? "/portal/admin/parents" : "/portal/admin/leads"} className="font-semibold text-ink hover:underline">
-          {t(`openManager.${tab}`)} →
-        </Link>
-      </p>
+        {tab === "students" && (
+          <>
+            {allClassNames.length > 0 && (
+              <FilterSelect
+                value={classFilter}
+                onChange={setClassFilter}
+                options={[
+                  { value: "all", label: t("filters.allClasses") },
+                  ...allClassNames.map((c) => ({ value: c, label: c })),
+                ]}
+              />
+            )}
+            <FilterSelect
+              value={studentFilter}
+              onChange={setStudentFilter}
+              options={[
+                { value: "all", label: t("filters.allStudents") },
+                { value: "overdue", label: t("filters.overdue") },
+                { value: "new", label: t("filters.recentlyJoined") },
+                { value: "unenrolled", label: t("filters.unenrolled") },
+              ]}
+            />
+          </>
+        )}
+
+        {tab === "families" && (
+          <FilterSelect
+            value={familyFilter}
+            onChange={setFamilyFilter}
+            options={[
+              { value: "all", label: t("filters.allFamilies") },
+              { value: "owing", label: t("filters.owing") },
+              { value: "noChildren", label: t("filters.noChildren") },
+            ]}
+          />
+        )}
+
+        {tab === "leads" && (
+          <FilterSelect
+            value={leadFilter}
+            onChange={setLeadFilter}
+            options={[
+              { value: "all", label: t("filters.allLeads") },
+              ...LEAD_STATUSES.map((s) => ({ value: s, label: t(`leads.status.${s}`) })),
+            ]}
+          />
+        )}
+
+        {isFiltered && (
+          <button type="button" onClick={clearFilters} className="text-[12px] font-semibold text-muted transition-colors hover:text-ink">
+            {t("filters.clear")}
+          </button>
+        )}
+
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          {tab === "students" && (
+            <ToolbarButton onClick={() => setShowAddStudent(true)} primary>
+              {tStudents("addStudent")}
+            </ToolbarButton>
+          )}
+          {tab === "families" && (
+            <>
+              {canMassEmail && (
+                <ToolbarButton onClick={() => setShowMassEmail(true)}>{tParents("massEmail.button")}</ToolbarButton>
+              )}
+              <ToolbarButton onClick={inviteAll} disabled={pending}>
+                {pending ? t("invite.sending") : t("invite.button")}
+              </ToolbarButton>
+              <ToolbarButton onClick={() => setShowAddFamily(true)} primary>
+                {tParents("addFamilyButton")}
+              </ToolbarButton>
+            </>
+          )}
+          {tab === "leads" && (
+            <Link
+              href="/portal/admin/leads"
+              className="rounded-[12px] border px-3.5 py-2 text-[12.5px] font-semibold transition-colors"
+              style={CONTROL_STYLE}
+            >
+              {t("leads.openBoard")}
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {isFiltered && (
+        <p className="mb-2.5 text-[11.5px] text-muted">{t("showing", { shown: shownCount, total: totalForTab })}</p>
+      )}
+
+      {/* ── students bulk bar ────────────────────────────────────────────── */}
+      {tab === "students" && selectedIds.length > 0 && (
+        <div
+          className="mb-2.5 flex flex-wrap items-center gap-2.5 rounded-[14px] border px-3.5 py-2.5"
+          style={{ background: "var(--t2)", borderColor: "var(--tb)" }}
+        >
+          <span className="text-[12.5px] font-semibold text-ink">{tStudents("selectedCount", { count: selectedIds.length })}</span>
+          <ToolbarButton onClick={() => setShowBulkEdit(true)}>{tStudents("editProfiles")}</ToolbarButton>
+          <button
+            type="button"
+            onClick={bulkDelete}
+            disabled={pending}
+            className="rounded-[12px] border border-red-400/40 px-3.5 py-2 text-[12.5px] font-semibold text-red-500 transition-colors hover:bg-red-400/10 disabled:opacity-50"
+          >
+            {pending ? tShared("deleting") : tStudents("deleteSelected")}
+          </button>
+          <button type="button" onClick={() => setSelectedIds([])} className="ml-auto text-[12px] text-muted hover:text-ink">
+            {tStudents("clearSelection")}
+          </button>
+        </div>
+      )}
+
+      {notice && (
+        <p className="mb-2.5 rounded-[12px] border px-3.5 py-2 text-[12px] text-ink" style={{ background: "var(--t1)", borderColor: "var(--tb)" }}>
+          {notice}
+        </p>
+      )}
+      {error && (
+        <p className="mb-2.5 rounded-[12px] border border-red-400/30 bg-red-400/10 px-3.5 py-2 text-[12px] text-red-500">{error}</p>
+      )}
+
+      {tab === "students" &&
+        (students.length === 0 ? (
+          <NoMatches label={t("empty.students")} />
+        ) : visibleStudents.length === 0 ? (
+          <NoMatches label={t("noMatches.students")} />
+        ) : (
+          <StudentsTable
+            students={visibleStudents}
+            currency={currency}
+            openId={openId}
+            setOpenId={setOpenId}
+            studioTracksAttendance={studioTracksAttendance}
+            selectedIds={selectedIds}
+            onToggle={(id) => setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))}
+            allShownSelected={allShownSelected}
+            onToggleAll={toggleSelectAll}
+          />
+        ))}
+
+      {tab === "families" &&
+        (families.length === 0 ? (
+          <NoMatches label={t("empty.families")} />
+        ) : visibleFamilies.length === 0 ? (
+          <NoMatches label={t("noMatches.families")} />
+        ) : (
+          <FamiliesTable families={visibleFamilies} currency={currency} openId={openId} setOpenId={setOpenId} />
+        ))}
+
+      {tab === "leads" &&
+        (leads.length === 0 ? (
+          <NoMatches label={t("empty.leads")} />
+        ) : visibleLeads.length === 0 ? (
+          <NoMatches label={t("noMatches.leads")} />
+        ) : (
+          <LeadsTable leads={visibleLeads} openId={openId} setOpenId={setOpenId} />
+        ))}
+
+      <AnimatePresence>
+        {showAddStudent && <AddStudentPanel onClose={() => setShowAddStudent(false)} />}
+        {showBulkEdit && selectedStudents.length > 0 && (
+          <BulkEditStudentsPanel
+            students={selectedStudents}
+            onClose={() => setShowBulkEdit(false)}
+            onSaved={() => {
+              setNotice(tStudents("bulkUpdateSuccess", { count: selectedStudents.length }));
+              setSelectedIds([]);
+            }}
+          />
+        )}
+        {showAddFamily && <AddFamilyPanel students={studentOptions} onClose={() => setShowAddFamily(false)} />}
+        {showMassEmail && (
+          <MassEmailParentsPanel
+            parents={parentRows}
+            classes={classOptions}
+            onClose={() => setShowMassEmail(false)}
+            onResult={setNotice}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+
+// ─── students ────────────────────────────────────────────────────────────────
 
 function StudentsTable({
   students,
@@ -101,94 +519,117 @@ function StudentsTable({
   openId,
   setOpenId,
   studioTracksAttendance,
+  selectedIds,
+  onToggle,
+  allShownSelected,
+  onToggleAll,
 }: {
   students: PeopleStudentRow[];
   currency: Intl.NumberFormat;
   openId: string | null;
   setOpenId: (id: string | null) => void;
   studioTracksAttendance: boolean;
+  selectedIds: string[];
+  onToggle: (id: string) => void;
+  allShownSelected: boolean;
+  onToggleAll: () => void;
 }) {
   const t = useTranslations("admin.people");
+  const tStudents = useTranslations("admin.students");
   const locale = useLocale();
   const dateFmt = useMemo(() => new Intl.DateTimeFormat(locale, { month: "short", year: "numeric" }), [locale]);
 
-  if (students.length === 0) {
-    return (
-      <GlassPanel>
-        <p className="py-6 text-center text-sm text-muted">{t("empty.students")}</p>
-      </GlassPanel>
-    );
-  }
+  const COLS = "grid-cols-[26px_2.1fr_1.3fr_92px_108px_28px]";
 
   return (
     <div
       className="overflow-hidden rounded-[22px] border"
       style={{ background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass)", borderColor: "var(--edge)", backdropFilter: "blur(var(--blur))" }}
     >
-      <div className="grid grid-cols-[26px_2.1fr_1.3fr_92px_108px_28px] items-center gap-3.5 border-b px-[18px] py-[11px] text-[9px] font-semibold uppercase tracking-[0.14em] text-muted" style={{ borderColor: "var(--hair)" }}>
-        <span />
-        <span>{t("columns.name")}</span>
-        <span>{t("columns.programme")}</span>
-        <span>{t("columns.attendance")}</span>
-        <span className="text-right">{t("columns.balance")}</span>
-        <span />
+      <div className="grid grid-cols-[24px_1fr] items-center gap-2 border-b px-[18px] py-[11px]" style={{ borderColor: "var(--hair)" }}>
+        <input
+          type="checkbox"
+          checked={allShownSelected}
+          onChange={onToggleAll}
+          aria-label={tStudents("selectAll")}
+          className="h-3.5 w-3.5 accent-[--brand]"
+        />
+        <div className={`grid ${COLS} items-center gap-3.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-muted`}>
+          <span />
+          <span>{t("columns.name")}</span>
+          <span>{t("columns.programme")}</span>
+          <span>{t("columns.attendance")}</span>
+          <span className="text-right">{t("columns.balance")}</span>
+          <span />
+        </div>
       </div>
       {students.map((s) => {
         const open = openId === s.id;
         return (
           <div key={s.id} className="border-b last:border-b-0" style={{ borderColor: "var(--hair)" }}>
-            <button
-              type="button"
-              onMouseMove={onGlowMove}
-              onMouseLeave={onGlowLeave}
-              onClick={() => setOpenId(open ? null : s.id)}
-              className="relative grid w-full grid-cols-[26px_2.1fr_1.3fr_92px_108px_28px] items-center gap-3.5 overflow-hidden px-[18px] py-[9px] text-left transition-colors"
+            <div
+              className="grid grid-cols-[24px_1fr] items-center gap-2 px-[18px]"
               style={{ background: open ? "var(--glass2)" : "transparent" }}
             >
-              <div
-                className="pointer-events-none absolute inset-0 transition-opacity duration-[1300ms] ease-out"
-                style={{
-                  opacity: "var(--glow-o, 0)",
-                  background: "radial-gradient(260px circle at var(--mx, -300px) var(--my, -300px), var(--t2), transparent 70%)",
-                }}
+              <input
+                type="checkbox"
+                checked={selectedIds.includes(s.id)}
+                onChange={() => onToggle(s.id)}
+                aria-label={s.name ?? t("unnamed")}
+                className="h-3.5 w-3.5 accent-[--brand]"
               />
-              <span
-                className="relative grid h-[26px] w-[26px] place-items-center rounded-[9px] text-[9.5px] font-bold text-white"
-                style={{ background: "linear-gradient(150deg, var(--tg), var(--brand))" }}
+              <button
+                type="button"
+                onMouseMove={onGlowMove}
+                onMouseLeave={onGlowLeave}
+                onClick={() => setOpenId(open ? null : s.id)}
+                className={`relative grid w-full ${COLS} items-center gap-3.5 overflow-hidden py-[9px] text-left transition-colors`}
               >
-                {s.initials}
-              </span>
-              <span className="relative flex min-w-0 items-center gap-2">
-                <span className="truncate text-[13px] font-semibold text-ink">{s.name ?? t("unnamed")}</span>
-                {s.flag && (
-                  <span
-                    className="shrink-0 rounded-[5px] px-[5px] py-[3px] text-[8.5px] font-bold uppercase tracking-[0.1em]"
-                    style={{ background: "var(--t2)", border: "1px solid var(--tb)", color: "var(--ink, var(--text))" }}
-                  >
-                    {t(`flag.${s.flag}`)}
-                  </span>
-                )}
-              </span>
-              <span className="relative truncate text-[12.5px] text-muted">{s.programme ?? t("noProgramme")}</span>
-              <span className="relative flex items-center gap-1.5">
-                {s.attendancePercent === null ? (
-                  <span className="text-[11px] text-muted">{t("noAttendance")}</span>
-                ) : (
-                  <>
-                    <span className="h-1 w-[34px] overflow-hidden rounded-full" style={{ background: "var(--hair)" }}>
-                      <span className="block h-full rounded-full" style={{ width: `${s.attendancePercent}%`, background: attendanceColor(s.attendancePercent) }} />
+                <div
+                  className="pointer-events-none absolute inset-0 transition-opacity duration-[1300ms] ease-out"
+                  style={{
+                    opacity: "var(--glow-o, 0)",
+                    background: "radial-gradient(260px circle at var(--mx, -300px) var(--my, -300px), var(--t2), transparent 70%)",
+                  }}
+                />
+                <span
+                  className="relative grid h-[26px] w-[26px] place-items-center rounded-[9px] text-[9.5px] font-bold text-white"
+                  style={{ background: "linear-gradient(150deg, var(--tg), var(--brand))" }}
+                >
+                  {s.initials}
+                </span>
+                <span className="relative flex min-w-0 items-center gap-2">
+                  <span className="truncate text-[13px] font-semibold text-ink">{s.name ?? t("unnamed")}</span>
+                  {s.flag && (
+                    <span
+                      className="shrink-0 rounded-[5px] px-[5px] py-[3px] text-[8.5px] font-bold uppercase tracking-[0.1em]"
+                      style={{ background: "var(--t2)", border: "1px solid var(--tb)", color: "var(--ink, var(--text))" }}
+                    >
+                      {t(`flag.${s.flag}`)}
                     </span>
-                    <span className="text-[11px] tabular-nums text-muted">{s.attendancePercent}%</span>
-                  </>
-                )}
-              </span>
-              <span className="relative text-right font-display text-[13px] tabular-nums" style={{ color: s.balanceCents > 0 ? "#dc2626" : "var(--muted)" }}>
-                {s.balanceCents > 0 ? currency.format(s.balanceCents / 100) : "—"}
-              </span>
-              <span className="relative text-center text-[13px] text-muted transition-transform" style={{ transform: open ? "rotate(90deg)" : "none" }}>
-                ›
-              </span>
-            </button>
+                  )}
+                </span>
+                <span className="relative truncate text-[12.5px] text-muted">{s.programme ?? t("noProgramme")}</span>
+                <span className="relative flex items-center gap-1.5">
+                  {s.attendancePercent === null ? (
+                    <span className="text-[11px] text-muted">{t("noAttendance")}</span>
+                  ) : (
+                    <>
+                      <span className="h-1 w-[34px] overflow-hidden rounded-full" style={{ background: "var(--hair)" }}>
+                        <span className="block h-full rounded-full" style={{ width: `${s.attendancePercent}%`, background: attendanceColor(s.attendancePercent) }} />
+                      </span>
+                      <span className="text-[11px] tabular-nums text-muted">{s.attendancePercent}%</span>
+                    </>
+                  )}
+                </span>
+                <span className="relative text-right font-display text-[13px] tabular-nums" style={{ color: s.balanceCents > 0 ? "#dc2626" : "var(--muted)" }}>
+                  {s.balanceCents > 0 ? currency.format(s.balanceCents / 100) : "—"}
+                </span>
+                <span className="relative text-center text-[13px] text-muted transition-transform" style={{ transform: open ? "rotate(90deg)" : "none" }}>
+                  ›
+                </span>
+              </button>
+            </div>
             {open && (
               <div className="grid grid-cols-1 gap-4 px-[18px] pb-5 pt-1 sm:grid-cols-3" style={{ background: "linear-gradient(var(--t1), transparent)" }}>
                 <div>
@@ -236,6 +677,7 @@ function StudentsTable({
                         {t("actions.chasePayment")}
                       </Link>
                     )}
+                    {s.classNames.length > 0 && <DraftInvoiceButton studentId={s.id} />}
                   </div>
                 </div>
               </div>
@@ -246,6 +688,51 @@ function StudentsTable({
     </div>
   );
 }
+
+/** Raises a draft invoice from a student's active enrollments. The retired
+ *  student slide-over was this action's only entry point. */
+function DraftInvoiceButton({ studentId }: { studentId: string }) {
+  const t = useTranslations("admin.students.panel");
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
+
+  const run = () => {
+    setResult(null);
+    start(async () => {
+      const res = await createDraftInvoiceFromEnrollments(studentId);
+      if (!res.ok) {
+        setResult({ ok: false, message: res.error });
+        return;
+      }
+      setResult(
+        res.xeroError
+          ? { ok: false, message: t("draftInvoiceXeroError", { error: res.xeroError }) }
+          : { ok: true, message: t("draftInvoiceCreated") },
+      );
+      router.refresh();
+    });
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={run}
+        disabled={pending}
+        className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-[--t2] disabled:opacity-50"
+        style={{ borderColor: "var(--ring)" }}
+      >
+        {t("createDraftInvoice")}
+      </button>
+      {result && (
+        <p className={`w-full text-[11px] ${result.ok ? "text-muted" : "text-red-500"}`}>{result.message}</p>
+      )}
+    </>
+  );
+}
+
+// ─── families ────────────────────────────────────────────────────────────────
 
 function FamiliesTable({
   families,
@@ -259,14 +746,6 @@ function FamiliesTable({
   setOpenId: (id: string | null) => void;
 }) {
   const t = useTranslations("admin.people");
-
-  if (families.length === 0) {
-    return (
-      <GlassPanel>
-        <p className="py-6 text-center text-sm text-muted">{t("empty.families")}</p>
-      </GlassPanel>
-    );
-  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -311,6 +790,8 @@ function FamiliesTable({
   );
 }
 
+// ─── leads ───────────────────────────────────────────────────────────────────
+
 function LeadsTable({
   leads,
   openId,
@@ -323,14 +804,6 @@ function LeadsTable({
   const t = useTranslations("admin.people");
   const locale = useLocale();
   const dateFmt = useMemo(() => new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }), [locale]);
-
-  if (leads.length === 0) {
-    return (
-      <GlassPanel>
-        <p className="py-6 text-center text-sm text-muted">{t("empty.leads")}</p>
-      </GlassPanel>
-    );
-  }
 
   return (
     <div className="flex flex-col gap-2">

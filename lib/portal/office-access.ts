@@ -3,6 +3,7 @@ import type { Role } from "@/lib/types";
 /** Admin routes office staff may access (client ops + messages + read-only classes). */
 export const OFFICE_ALLOWED_PREFIXES = [
   "/portal/office",
+  "/portal/admin/people",
   "/portal/admin/parents",
   "/portal/admin/students",
   "/portal/admin/leads",

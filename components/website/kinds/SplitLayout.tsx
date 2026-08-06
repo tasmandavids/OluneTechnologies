@@ -1,10 +1,12 @@
 import type { LayoutHeroProps } from "@/lib/website/types";
+import { Art, Wordmark } from "../Art";
 
-export function SplitLayout({ accent, studioName, headline, tagline, eyebrow }: LayoutHeroProps) {
+export function SplitLayout({ accent, studioName, headline, tagline, eyebrow, logoUrl, images }: LayoutHeroProps) {
+  const hero = images[0];
   return (
     <div style={{ display: "flex", minHeight: 900, alignItems: "stretch" }}>
       <div style={{ flex: "0 0 49%", padding: "56px 60px", display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box" }}>
-        <div style={{ fontSize: 30, letterSpacing: "-0.02em", fontFamily: "var(--font-display)" }}>{studioName}</div>
+        <Wordmark logoUrl={logoUrl} studioName={studioName} height={38} style={{ fontSize: 30, letterSpacing: "-0.02em", fontFamily: "var(--font-display)" }} />
         <div>
           <div style={{ fontSize: 16, letterSpacing: ".24em", textTransform: "uppercase", marginBottom: 26, fontFamily: "var(--font-body)", color: accent }}>{eyebrow}</div>
           <div style={{ fontSize: 100, lineHeight: 0.94, letterSpacing: "-0.03em", fontWeight: 400, fontFamily: "var(--font-display)" }}>{headline}</div>
@@ -18,12 +20,22 @@ export function SplitLayout({ accent, studioName, headline, tagline, eyebrow }: 
           <span>Classes</span><span>Timetable</span><span>About</span><span>Contact</span>
         </div>
       </div>
-      <div style={{ flex: 1, position: "relative", background: `linear-gradient(160deg, color-mix(in srgb, ${accent} 32%, #e8e4dc), color-mix(in srgb, ${accent} 8%, #f5f2ec))` }}>
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ width: 190, height: 190, borderRadius: "50%", background: "rgba(255,255,255,.55)", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: 0, bottom: 0, left: "36%", right: "-36%", borderRadius: "50%", background: `color-mix(in srgb, ${accent} 62%, #ffffff)` }} />
+      <div style={{ flex: 1, position: "relative" }}>
+        <Art
+          src={hero}
+          alt={`${studioName} hero`}
+          fallback={`linear-gradient(160deg, color-mix(in srgb, ${accent} 32%, #e8e4dc), color-mix(in srgb, ${accent} 8%, #f5f2ec))`}
+          style={{ position: "absolute", inset: 0 }}
+        />
+        {/* The template's abstract mark — only shown while the slot is empty,
+            so it reads as placeholder art rather than an overlay on a photo. */}
+        {!hero && (
+          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ width: 190, height: 190, borderRadius: "50%", background: "rgba(255,255,255,.55)", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, bottom: 0, left: "36%", right: "-36%", borderRadius: "50%", background: `color-mix(in srgb, ${accent} 62%, #ffffff)` }} />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

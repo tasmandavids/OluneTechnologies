@@ -1,10 +1,23 @@
 import type { LayoutHeroProps } from "@/lib/website/types";
+import { Art, Wordmark } from "../Art";
 
-export function PosterLayout({ accent, studioName, headline, tagline, eyebrow }: LayoutHeroProps) {
+export function PosterLayout({ accent, studioName, headline, tagline, eyebrow, logoUrl, images }: LayoutHeroProps) {
+  const hero = images[0];
   return (
-    <div style={{ minHeight: 900, position: "relative", background: `linear-gradient(180deg, color-mix(in srgb, ${accent} 26%, #e9e5de), color-mix(in srgb, ${accent} 58%, #2b2733))` }}>
+    <div style={{ minHeight: 900, position: "relative" }}>
+      <Art
+        src={hero}
+        alt={`${studioName} hero`}
+        fallback={`linear-gradient(180deg, color-mix(in srgb, ${accent} 26%, #e9e5de), color-mix(in srgb, ${accent} 58%, #2b2733))`}
+        style={{ position: "absolute", inset: 0 }}
+      />
+      {/* Type sits directly on the photo, so a real image needs a scrim to
+          keep the white text legible; the gradient placeholder already is one. */}
+      {hero && (
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(10,10,14,.42) 0%, rgba(10,10,14,.15) 38%, rgba(10,10,14,.72) 100%)" }} />
+      )}
       <div style={{ position: "absolute", top: 44, left: 56, right: 56, display: "flex", alignItems: "center", justifyContent: "space-between", color: "#fff" }}>
-        <div style={{ fontSize: 26, letterSpacing: ".02em", fontFamily: "var(--font-display)" }}>{studioName}</div>
+        <Wordmark logoUrl={logoUrl} studioName={studioName} height={34} style={{ fontSize: 26, letterSpacing: ".02em", fontFamily: "var(--font-display)" }} />
         <div style={{ display: "flex", gap: 30, fontSize: 18, opacity: 0.85, fontFamily: "var(--font-body)" }}>
           <span>Classes</span><span>Timetable</span><span>About</span><span>Contact</span>
         </div>

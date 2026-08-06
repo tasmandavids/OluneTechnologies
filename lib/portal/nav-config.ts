@@ -50,8 +50,6 @@ export const ADMIN_NAV: NavSection[] = [
     titleKey: "nav.sections.families",
     items: [
       { href: "/portal/admin/people", labelKey: "nav.admin.people" },
-      { href: "/portal/admin/parents", labelKey: "nav.admin.parents" },
-      { href: "/portal/admin/students", labelKey: "nav.admin.students" },
       { href: "/portal/admin/badges", labelKey: "nav.admin.badges", module: "badges" },
       { href: "/portal/admin/leads", labelKey: "nav.admin.leads", module: "leads" },
       { href: "/portal/admin/checkin", labelKey: "nav.admin.checkin" },
@@ -93,8 +91,7 @@ export const OFFICE_NAV: NavSection[] = [
   {
     titleKey: "nav.sections.clientManagement",
     items: [
-      { href: "/portal/admin/parents", labelKey: "nav.admin.parents" },
-      { href: "/portal/admin/students", labelKey: "nav.admin.students" },
+      { href: "/portal/admin/people", labelKey: "nav.admin.people" },
       { href: "/portal/admin/leads", labelKey: "nav.admin.leads", module: "leads" },
       { href: "/portal/admin/classes", labelKey: "nav.admin.classes", module: "classes" },
     ],

@@ -178,9 +178,15 @@
         "done": "Fatto"
       },
       "pulse": {
-        "occupancy": { "label": "Occupazione" },
-        "enrolled": { "label": "Iscritti" },
-        "collected": { "label": "Incassato" }
+        "occupancy": {
+          "label": "Occupazione"
+        },
+        "enrolled": {
+          "label": "Iscritti"
+        },
+        "collected": {
+          "label": "Incassato"
+        }
       },
       "cashIn": {
         "title": "Incassato, 7 giorni",
@@ -252,12 +258,24 @@
     "people": {
       "eyebrow": "Persone · {count, plural, one {# scheda} other {# schede}}",
       "title": "Un solo database, nessuna porta.",
-      "tabs": { "students": "Studenti", "families": "Famiglie", "leads": "Contatti" },
-      "columns": { "name": "Nome", "programme": "Corso", "attendance": "Presenza", "balance": "Saldo" },
+      "tabs": {
+        "students": "Studenti",
+        "families": "Famiglie",
+        "leads": "Contatti"
+      },
+      "columns": {
+        "name": "Nome",
+        "programme": "Corso",
+        "attendance": "Presenza",
+        "balance": "Saldo"
+      },
       "unnamed": "Senza nome",
       "noProgramme": "Non iscritto",
       "noAttendance": "Non monitorata",
-      "flag": { "overdue": "Scaduto", "new": "Nuovo" },
+      "flag": {
+        "overdue": "Scaduto",
+        "new": "Nuovo"
+      },
       "empty": {
         "students": "Ancora nessuno studente.",
         "families": "Ancora nessuna famiglia.",
@@ -295,11 +313,34 @@
           "lost": "Perso"
         }
       },
-      "openManagerHint": "Serve gestione di massa, iscrizioni o la bacheca pipeline?",
-      "openManager": {
-        "students": "Apri gestione studenti",
-        "families": "Apri gestione famiglie",
-        "leads": "Apri bacheca contatti"
+      "search": {
+        "students": "Cerca studenti per nome, e-mail, tutore o corso…",
+        "families": "Cerca famiglie per nome, e-mail, telefono o figlio…",
+        "leads": "Cerca contatti per nome, e-mail, telefono o origine…"
+      },
+      "filters": {
+        "allClasses": "Tutti i corsi",
+        "allStudents": "Tutti gli studenti",
+        "overdue": "Saldo scaduto",
+        "recentlyJoined": "Iscritti di recente",
+        "unenrolled": "Non iscritti",
+        "allFamilies": "Tutte le famiglie",
+        "owing": "Con importo dovuto",
+        "noChildren": "Nessun figlio collegato",
+        "allLeads": "Tutti gli stati",
+        "clear": "Cancella filtri"
+      },
+      "showing": "Visualizzati {shown} di {total}",
+      "noMatches": {
+        "students": "Nessuno studente corrisponde alla ricerca.",
+        "families": "Nessuna famiglia corrisponde alla ricerca.",
+        "leads": "Nessun contatto corrisponde alla ricerca."
+      },
+      "invite": {
+        "button": "Invita tutti",
+        "sending": "Invio degli inviti…",
+        "confirm": "Inviare l’e-mail di invito a tutti i genitori e studenti che non hanno mai effettuato l’accesso?",
+        "result": "Inviti inviati: {sent}. Già attivi: {skipped}. Non riusciti: {failed}."
       }
     },
     "classes": {
@@ -433,7 +474,29 @@
       },
       "detail": {
         "back": "← Torniamo agli studenti",
+        "tabs": {
+          "progress": "Progressi",
+          "schedule": "Orario",
+          "badges": "Badge",
+          "information": "Informazioni"
+        },
         "noContactOnFile": "Nessun contatto in archivio",
+        "badges": {
+          "empty": "Nessun catalogo di badge è ancora configurato per questo studio."
+        },
+        "information": {
+          "contactDetails": "Recapiti",
+          "classes": "Corsi",
+          "guardians": "Tutori",
+          "noGuardians": "Nessun tutore collegato per ora.",
+          "primaryContact": "Contatto principale",
+          "viewProfile": "Vedi profilo",
+          "medical": "Moduli medici e consensi",
+          "noForms": "Nessun modulo è ancora stato compilato per questo studente.",
+          "signedOn": "Firmato il {date}",
+          "notSigned": "Non firmato",
+          "card": "Tessera di check-in"
+        },
         "dangerZone": "Zona pericolosa",
         "deleteDescription": "Rimuove definitivamente questo studente, le iscrizioni e la cronologia dei progressi. Questa azione non può essere annullata.",
         "deleteStudent": "Elimina studente",
@@ -744,7 +807,11 @@
           "pending": "+ {amount} in sospeso",
           "notConnectedTitle": "Non ancora connesso",
           "connectCta": "Connetti Stripe per un saldo in tempo reale",
-          "range": { "7d": "7g", "30d": "30g", "12m": "12m" }
+          "range": {
+            "7d": "7g",
+            "30d": "30g",
+            "12m": "12m"
+          }
         },
         "overdueQueue": {
           "title": "Coda scaduti",
@@ -829,7 +896,10 @@
       "ledger": {
         "title": "Registro",
         "subtitle": "Ogni pagamento e rimborso reale registrato in Olune, in ordine — non un registro manuale modificabile.",
-        "stats": { "net": "Totale netto", "count": "Transazioni" },
+        "stats": {
+          "net": "Totale netto",
+          "count": "Transazioni"
+        },
         "empty": {
           "title": "Nessuna transazione ancora",
           "body": "Pagamenti e rimborsi appariranno qui man mano che avvengono."

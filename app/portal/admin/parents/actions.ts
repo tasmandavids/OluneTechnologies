@@ -48,6 +48,7 @@ const AddFamilySchema = z.object({
 
 const PARENT_PATHS = [
   "/portal/admin/parents",
+  "/portal/admin/people",
   "/portal/admin/money",
 ];
 

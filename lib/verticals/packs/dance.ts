@@ -84,7 +84,7 @@ export const dancePack: VerticalPack = {
     tour: [
       { id: "dashboard", href: "/portal/admin", emoji: "📊" },
       { id: "classes", href: "/portal/admin/classes", emoji: "🩰" },
-      { id: "students", href: "/portal/admin/students", emoji: "👨‍👩‍👧" },
+      { id: "students", href: "/portal/admin/people", emoji: "👨‍👩‍👧" },
       { id: "billing", href: "/portal/admin/money", emoji: "💳" },
       { id: "website", href: "/portal/admin/site", emoji: "🌐" },
       { id: "leads", href: "/portal/admin/leads", emoji: "✉️" },
