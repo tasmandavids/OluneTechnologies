@@ -64,7 +64,7 @@ export const TIERS: Tier[] = [
   {
     key: "bronze", name: "Bronze", rank: "1", years: "3 years", badge: "Bronze · 3 yrs",
     tagline: "Three years in. The first card that isn’t plastic.",
-    blurb: "Earned at the third enrolment anniversary. Warm brushed bronze, matte back, one guest pass a term.",
+    blurb: "Earned at the third enrolment anniversary. Warm brushed bronze, matte back, reissued the day it unlocks.",
     since: "2023", id: "Ellerslie", number: "4021 8890 1147", taps: "184",
     next: "Silver at five years — 1 yr 4 mo to go.",
     tapNote: "Bronze: two guest passes left this year.",
@@ -74,7 +74,7 @@ export const TIERS: Tier[] = [
   {
     key: "silver", name: "Silver", rank: "2", years: "5 years", badge: "Silver · 5 yrs",
     tagline: "Five years. Cool metal, sharper edge.",
-    blurb: "Polished silver with a mirrored bevel. Booking opens five days early — enough to keep the good slot.",
+    blurb: "Polished silver with a mirrored bevel. Cool where bronze was warm, and it catches the light at the door.",
     since: "2021", id: "Ellerslie", number: "4021 8890 2036", taps: "296",
     next: "Gold at eight years — 2 yr 7 mo to go.",
     tapNote: "Silver: booking opens 5 days before general release.",
@@ -84,7 +84,7 @@ export const TIERS: Tier[] = [
   {
     key: "gold", name: "Gold", rank: "3", years: "8 years", badge: "Gold · 8 yrs",
     tagline: "Eight years. Warm, deep, unmistakable.",
-    blurb: "Struck gold with a hairline guilloche. A private lesson every year and a seat kept at every concert.",
+    blurb: "Struck gold with a hairline guilloche. Eight years is longer than most families stay anywhere.",
     since: "2018", id: "Ellerslie", number: "4021 8890 3312", taps: "451",
     next: "Platinum at twelve years — 3 yr 2 mo to go.",
     tapNote: "Gold: your reserved concert seat is held until 7:15 pm.",
@@ -94,7 +94,7 @@ export const TIERS: Tier[] = [
   {
     key: "platinum", name: "Platinum", rank: "4", years: "12 years", badge: "Platinum · 12 yrs",
     tagline: "Twelve years. Quiet, heavy, cold to the touch.",
-    blurb: "Sandblasted platinum on midnight. First-look enrolment every term and studio hours of your own.",
+    blurb: "Sandblasted platinum on midnight. Heavier in the hand, quieter in the light, twelve years in the making.",
     since: "2014", id: "Ellerslie", number: "4021 8890 4488", taps: "612",
     next: "Diamond at fifteen years — by invitation, 2 yr 9 mo to go.",
     tapNote: "Platinum: 1 h 40 m of private studio time left this month.",
@@ -106,7 +106,7 @@ export const TIERS: Tier[] = [
     tagline: "Fifteen years. The studio’s own eclipse, in glass.",
     blurb: "Faceted glass over midnight, refracting the moon. Issued by the studio director, never requested.",
     since: "2011", id: "Ellerslie", number: "4021 8890 0001", taps: "823",
-    next: "The top of the ladder. A term on the house renews each August.",
+    next: "The top of the ladder. There is nothing after Diamond.",
     tapNote: "Diamond: this term is on the house. Nothing to pay.",
     perks: ["By invitation — fifteen years with the studio", "Named on the studio wall", "Standing front-row concert seats", "A term on the house, every year"],
     m: ["#0b0a14", "#332f5c", "#928de6"], fx: "#e8e5ff", ct: "#f7f5ff", prism: 1,
@@ -345,7 +345,7 @@ export function TierDetail({ tier }: { tier: Tier }) {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <span style={{ ...MICRO, color: MUTED }}>What comes with it</span>
+        <span style={{ ...MICRO, color: MUTED }}>What this studio gives it</span>
         <div>
           {tier.perks.map((perk) => (
             <div key={perk} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "11px 0", borderTop: `1px solid ${HAIR}` }}>
@@ -354,6 +354,9 @@ export function TierDetail({ tier }: { tier: Tier }) {
             </div>
           ))}
         </div>
+        <p style={{ margin: 0, fontSize: 13, lineHeight: 1.55, color: MUTED, textWrap: "pretty" }}>
+          One studio&rsquo;s list, as an example. Olune counts the years and issues the card &mdash; what each tier is worth is yours to set.
+        </p>
       </div>
 
       <div style={{ marginTop: "auto", padding: 16, borderRadius: 16, background: T1, border: `1px solid ${TB}`, display: "flex", flexDirection: "column", gap: 8 }}>
