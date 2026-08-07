@@ -28,11 +28,27 @@ git pull origin main
 npm run setup:all
 ```
 
-## Option C — Supabase SQL Editor (no CLI)
+## No Supabase CLI installed?
 
-1. Open [Supabase SQL Editor](https://supabase.com/dashboard/project/wnoxcwihrzbxvogvmhqv/sql/new)
-2. Paste the contents of `supabase/RUN_IN_DASHBOARD.sql` → **Run**
-3. Then locally: `npm run seed:platform-admin` (needs service role key in `.env.local`)
+Use **Option A** — GitHub Actions runs the CLI for you, so nothing needs to be
+installed locally.
+
+Do **not** apply migrations by hand in the SQL Editor. Migrations run in order and
+record themselves in `supabase_migrations.schema_migrations`; pasting DDL skips that
+bookkeeping, so the repo and the database silently diverge and `npm run db:verify`
+can no longer tell you the truth.
+
+To seed the test admin on its own (service role key in `.env.local`):
+
+```bash
+npm run seed:platform-admin
+```
+
+## Checking the database matches the repo
+
+```bash
+npm run db:verify
+```
 
 ## Test login (after seed)
 
