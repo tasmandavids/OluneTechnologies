@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { processStripeEvent } from "@/lib/webhooks/process-stripe-event";
 import { CLASS_PASS_XERO_ACCOUNT_CODE } from "@/lib/passes/constants";
 import { xeroSyncAfterPayment, xeroSyncAfterRefund } from "@/lib/xero/webhook-sync";
+import { dispatchStudioEvent } from "@/lib/integrations/events";
 
 vi.mock("@/lib/xero/webhook-sync", () => ({
   xeroSyncAfterPayment: vi.fn(),
@@ -16,6 +17,10 @@ vi.mock("@/lib/term-payment-plan-service", () => ({
 
 vi.mock("@/lib/stripe/connect", () => ({
   syncStripeAccountStatus: vi.fn(),
+}));
+
+vi.mock("@/lib/integrations/events", () => ({
+  dispatchStudioEvent: vi.fn(),
 }));
 
 type Operation =
@@ -291,5 +296,135 @@ describe("processStripeEvent class-pass payments", () => {
     expect(passRefundUpdate).toSatisfy((operation: Operation) => hasFilter(operation, "status", "paid"));
     expect(passRefundUpdate).not.toSatisfy((operation: Operation) => hasFilter(operation, "status", "redeemed"));
     expect(xeroSyncAfterRefund).toHaveBeenCalledWith(supabase, "invoice", "invoice_1", 2500);
+  });
+});
+
+// ============================================================================
+//  Outbound events for shop orders and event tickets.
+//
+//  The bug this guards against: until 2026-08-07 these two branches finalised
+//  the sale and emitted nothing, so a studio's Zapier or webhook automation saw
+//  enrolments and invoices but silently never saw a shop order or a ticket. A
+//  silent omission has no error to notice, so it needs a test rather than a
+//  code reading.
+//
+//  Both paths must survive an intent created BEFORE studio_id was stamped on
+//  metadata — those are still in flight in Stripe — which is why the fallback
+//  to the row is exercised here alongside the metadata case.
+// ============================================================================
+
+describe("processStripeEvent order and ticket dispatch", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("emits payment.succeeded for a shop order using metadata's studio", async () => {
+    const supabase = new SupabaseFake();
+    supabase.queue("orders", "update", { data: [{ id: "ord_1", studio_id: "studio_row" }] });
+
+    await processStripeEvent(
+      paymentIntentSucceeded({ order_id: "ord_1", studio_id: "studio_meta" }),
+      supabase as never,
+    );
+
+    expect(dispatchStudioEvent).toHaveBeenCalledWith({
+      type: "payment.succeeded",
+      studioId: "studio_meta",
+      data: {
+        source: "order",
+        orderId: "ord_1",
+        amountCents: 2500,
+        currency: "nzd",
+        paymentIntentId: "pi_class_pass_1",
+      },
+    });
+  });
+
+  it("falls back to the order row when the intent predates the metadata stamp", async () => {
+    const supabase = new SupabaseFake();
+    supabase.queue("orders", "update", { data: [{ id: "ord_1", studio_id: "studio_row" }] });
+
+    await processStripeEvent(paymentIntentSucceeded({ order_id: "ord_1" }), supabase as never);
+
+    expect(dispatchStudioEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "payment.succeeded", studioId: "studio_row" }),
+    );
+  });
+
+  it("does not emit when an order's studio cannot be resolved at all", async () => {
+    // Dispatch needs a studio to find endpoints; guessing would post one
+    // studio's payment to another's webhook.
+    const supabase = new SupabaseFake();
+    supabase.queue("orders", "update", { data: [{ id: "ord_1", studio_id: null }] });
+
+    await processStripeEvent(paymentIntentSucceeded({ order_id: "ord_1" }), supabase as never);
+
+    expect(dispatchStudioEvent).not.toHaveBeenCalled();
+  });
+
+  it("does not emit when the order update matched no row", async () => {
+    // A PI mismatch means we never marked it paid — emitting would tell the
+    // studio money arrived for an order we did not finalise.
+    const supabase = new SupabaseFake();
+    supabase.queue("orders", "update", { data: [] });
+
+    await processStripeEvent(
+      paymentIntentSucceeded({ order_id: "ord_1", studio_id: "studio_meta" }),
+      supabase as never,
+    );
+
+    expect(dispatchStudioEvent).not.toHaveBeenCalled();
+  });
+
+  it("emits payment.succeeded for a ticket, resolving the studio via its event", async () => {
+    const supabase = new SupabaseFake();
+    supabase.queue("events", "select", { data: { studio_id: "studio_from_event" } });
+
+    await processStripeEvent(
+      paymentIntentSucceeded({ event_id: "ev_1", user_id: "u_1" }),
+      supabase as never,
+    );
+
+    expect(dispatchStudioEvent).toHaveBeenCalledWith({
+      type: "payment.succeeded",
+      studioId: "studio_from_event",
+      data: {
+        source: "ticket",
+        eventId: "ev_1",
+        amountCents: 2500,
+        currency: "nzd",
+        paymentIntentId: "pi_class_pass_1",
+      },
+    });
+  });
+
+  it("skips the event lookup when a ticket intent carries its studio", async () => {
+    const supabase = new SupabaseFake();
+
+    await processStripeEvent(
+      paymentIntentSucceeded({ event_id: "ev_1", studio_id: "studio_meta" }),
+      supabase as never,
+    );
+
+    expect(dispatchStudioEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ studioId: "studio_meta" }),
+    );
+    expect(supabase.operations.some((operation) => operation.table === "events")).toBe(false);
+  });
+
+  it("carries no personal detail in either payload", async () => {
+    // Rule 3 in lib/integrations/events.ts — the endpoint is the studio's, but
+    // it is still off our infrastructure. user_id is in the intent metadata and
+    // must not be forwarded.
+    const supabase = new SupabaseFake();
+    supabase.queue("orders", "update", { data: [{ id: "ord_1", studio_id: "studio_1" }] });
+
+    await processStripeEvent(
+      paymentIntentSucceeded({ order_id: "ord_1", user_id: "u_secret" }),
+      supabase as never,
+    );
+
+    const payload = JSON.stringify(vi.mocked(dispatchStudioEvent).mock.calls[0]?.[0]);
+    expect(payload).not.toContain("u_secret");
   });
 });

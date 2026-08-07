@@ -64,6 +64,14 @@ describe("classifyPaymentIntent", () => {
     expect(classifyPaymentIntent({ order_id: "ord_1" })).toEqual({
       kind: "order",
       orderId: "ord_1",
+      // Absent on intents created before studio_id was stamped; the webhook
+      // falls back to the order row.
+      studioId: null,
+    });
+    expect(classifyPaymentIntent({ order_id: "ord_1", studio_id: "st_1" })).toEqual({
+      kind: "order",
+      orderId: "ord_1",
+      studioId: "st_1",
     });
     // invoice wins when both present
     expect(classifyPaymentIntent({ invoice_id: "inv_1", order_id: "ord_1" }).kind).toBe(
@@ -72,15 +80,18 @@ describe("classifyPaymentIntent", () => {
   });
 
   it("classifies a ticket payment with optional user_id", () => {
-    expect(classifyPaymentIntent({ event_id: "ev_1", user_id: "u_1" })).toEqual({
+    expect(classifyPaymentIntent({ event_id: "ev_1", user_id: "u_1", studio_id: "st_1" })).toEqual({
       kind: "ticket",
       eventId: "ev_1",
       userId: "u_1",
+      studioId: "st_1",
     });
     expect(classifyPaymentIntent({ event_id: "ev_1" })).toEqual({
       kind: "ticket",
       eventId: "ev_1",
       userId: null,
+      // Absent on older intents; the webhook falls back to the owning event.
+      studioId: null,
     });
   });
 
@@ -96,6 +107,13 @@ describe("classifyPaymentIntent", () => {
     expect(classifyPaymentIntent({ invoice_id: "  ", order_id: "ord_9" })).toEqual({
       kind: "order",
       orderId: "ord_9",
+      studioId: null,
+    });
+    // a whitespace-only studio_id must not be dispatched as a studio
+    expect(classifyPaymentIntent({ order_id: "ord_9", studio_id: " " })).toEqual({
+      kind: "order",
+      orderId: "ord_9",
+      studioId: null,
     });
   });
 });

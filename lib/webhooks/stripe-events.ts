@@ -27,8 +27,8 @@ export type PaymentIntentTarget =
       studioId: string | null;
       payerId: string | null;
     }
-  | { kind: "order"; orderId: string }
-  | { kind: "ticket"; eventId: string; userId: string | null }
+  | { kind: "order"; orderId: string; studioId: string | null }
+  | { kind: "ticket"; eventId: string; userId: string | null; studioId: string | null }
   | { kind: "class_pass"; passId: string; userId: string | null }
   | { kind: "none" };
 
@@ -69,8 +69,18 @@ export function classifyPaymentIntent(
       payerId: nonEmpty(m.supabase_user_id) ?? nonEmpty(m.user_id),
     };
   }
-  if (orderId) return { kind: "order", orderId };
-  if (eventId) return { kind: "ticket", eventId, userId: nonEmpty(m.user_id) };
+  // studio_id is stamped at creation, but only from 2026-08-07 — an intent
+  // created before that is still in flight, so the route falls back to the row
+  // it is already updating rather than dropping the event.
+  if (orderId) return { kind: "order", orderId, studioId: nonEmpty(m.studio_id) };
+  if (eventId) {
+    return {
+      kind: "ticket",
+      eventId,
+      userId: nonEmpty(m.user_id),
+      studioId: nonEmpty(m.studio_id),
+    };
+  }
   if (passId) return { kind: "class_pass", passId, userId: nonEmpty(m.user_id) };
   return { kind: "none" };
 }

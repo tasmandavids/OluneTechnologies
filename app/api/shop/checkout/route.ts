@@ -106,7 +106,9 @@ export async function POST(req: NextRequest) {
     amount:   totalCents,
     currency: CURRENCY,
     customer: customerId,
-    metadata: { order_id: order.id, user_id: user.id },
+    // studio_id lets the webhook dispatch payment.succeeded without re-reading
+    // the order to find out whose studio it was.
+    metadata: { order_id: order.id, user_id: user.id, studio_id: profile.studio_id as string },
     transfer_data: await resolveTransferData(supabase, profile.studio_id as string),
   });
 

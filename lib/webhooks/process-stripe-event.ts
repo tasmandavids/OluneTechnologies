@@ -36,9 +36,14 @@ import { dispatchStudioEvent } from "@/lib/integrations/events";
 /**
  * Notify the studio's own Zapier / webhook endpoints that money moved.
  *
- * Only fired where we already hold the studio id — orders and event tickets
- * carry neither a studio in their PaymentIntent metadata nor a cheap lookup
- * here, so they don't emit yet. Dispatch is fire-and-forget by contract, so
+ * Every kind of payment emits, so a studio's automation doesn't quietly miss
+ * shop orders and ticket sales the way it did before 2026-08-07. Callers pass
+ * the studio id from PaymentIntent metadata where it exists and from the row
+ * they just updated where it doesn't.
+ *
+ * Still silent when the studio id can't be resolved at all: a dispatch needs
+ * one to find the studio's endpoints, and inventing a fallback would send a
+ * studio someone else's payment. Dispatch is fire-and-forget by contract, so
  * this never delays acknowledging the Stripe webhook.
  */
 function emitPaymentEvent(
@@ -163,7 +168,9 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           })
           .eq("id", target.orderId)
           .eq("stripe_payment_intent_id", intent.id)
-          .select("id");
+          // studio_id costs nothing here — the update already returns the row —
+          // and covers intents created before studio_id was stamped on metadata.
+          .select("id, studio_id");
 
         if (orderUpdateErr || !updatedOrders?.length) {
           console.warn(
@@ -173,6 +180,18 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
         }
 
         await xeroSyncAfterPayment(supabase, "order", target.orderId);
+
+        emitPaymentEvent(
+          "payment.succeeded",
+          target.studioId ?? (updatedOrders[0]?.studio_id as string | null),
+          {
+            source: "order",
+            orderId: target.orderId,
+            amountCents: intent.amount_received,
+            currency: intent.currency,
+            paymentIntentId: intent.id,
+          },
+        );
 
         console.log(`[stripe-webhook] payment_intent.succeeded — order ${target.orderId} marked paid`);
         break;
@@ -191,6 +210,27 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
         await q;
 
         await xeroSyncTicketByPaymentIntent(supabase, target.eventId, intent.id, target.userId);
+
+        // Unlike the order branch there is no studio_id on event_tickets, so an
+        // intent predating the metadata stamp needs the owning event. Primary
+        // key lookup, and only when the metadata is absent.
+        let ticketStudioId = target.studioId;
+        if (!ticketStudioId) {
+          const { data: owningEvent } = await supabase
+            .from("events")
+            .select("studio_id")
+            .eq("id", target.eventId)
+            .maybeSingle();
+          ticketStudioId = (owningEvent?.studio_id as string | undefined) ?? null;
+        }
+
+        emitPaymentEvent("payment.succeeded", ticketStudioId, {
+          source: "ticket",
+          eventId: target.eventId,
+          amountCents: intent.amount_received,
+          currency: intent.currency,
+          paymentIntentId: intent.id,
+        });
 
         console.log(`[stripe-webhook] payment_intent.succeeded — event ticket (${target.eventId}) marked paid`);
         break;

@@ -134,6 +134,8 @@ export async function POST(req: NextRequest) {
       event_id: event.id,
       user_id:  user.id,
       quantity: String(quantity),
+      // Saves the webhook a lookup on `events` to dispatch payment.succeeded.
+      studio_id: event.studio_id as string,
     },
     transfer_data: await resolveTransferData(supabase, event.studio_id as string),
   });
