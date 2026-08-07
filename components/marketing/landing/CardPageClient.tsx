@@ -108,7 +108,7 @@ export function CardPageClient() {
               <h2 style={{ ...h2Style, marginTop: 14 }}>The ladder.</h2>
             </div>
             <span style={{ fontSize: 15, color: "rgba(26,21,53,0.6)", maxWidth: 380 }}>
-              Years counted from a member&rsquo;s first enrolled term. Cards reissue automatically.
+              Years counted from a member&rsquo;s first enrolled term. Cards reissue automatically. What a tier is worth is set by the studio, not by Olune.
             </span>
           </div>
           <TierLadder index={i} onSelect={setI} />
