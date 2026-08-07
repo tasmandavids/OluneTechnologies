@@ -8,9 +8,10 @@ echo ""
 
 bash scripts/db-sync.sh "$@" || {
   echo ""
-  echo "Remote/local sync failed. If you lack CLI credentials, either:"
-  echo "  1. Add GitHub secrets and run the 'Supabase Database Sync' workflow, or"
-  echo "  2. Paste supabase/RUN_IN_DASHBOARD.sql into Supabase → SQL Editor"
+  echo "Remote/local sync failed. If you lack CLI credentials:"
+  echo "  Add GitHub secrets and run the 'Supabase Database Sync' workflow"
+  echo "  (see docs/SETUP_DATABASE.md). Do not paste migrations into the"
+  echo "  SQL Editor by hand — that desyncs the migration history."
   exit 1
 }
 
