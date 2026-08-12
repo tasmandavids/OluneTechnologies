@@ -31,7 +31,7 @@ const SOURCE = "en";
 const MODULES = [
   "core", "errors", "onboarding", "setup", "marketing", "enrol", "join",
   "programmes", "admin", "parent", "portal", "teacher", "student",
-  "platform", "site", "payments", "office",
+  "platform", "site", "payments", "office", "timeclock", "plan",
 ];
 
 /**

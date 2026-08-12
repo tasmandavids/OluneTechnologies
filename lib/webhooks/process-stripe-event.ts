@@ -32,6 +32,11 @@ import { syncStripeAccountStatus } from "@/lib/stripe/connect";
 import { CLASS_PASS_XERO_ACCOUNT_CODE } from "@/lib/passes/constants";
 import { refundPaidClassPassesForPaymentIntent } from "@/lib/passes/refunds";
 import { dispatchStudioEvent } from "@/lib/integrations/events";
+import {
+  SHARED_EVENT_TYPES,
+  handleStudioPlanEvent,
+  studioForPlanEvent,
+} from "@/lib/plans/webhook";
 
 /**
  * Notify the studio's own Zapier / webhook endpoints that money moved.
@@ -56,6 +61,21 @@ function emitPaymentEvent(
 }
 
 export async function processStripeEvent(event: Stripe.Event, supabase: ServiceSupabase): Promise<void> {
+  // ── Olune's own billing gets first refusal ────────────────────────────────
+  // Studios paying Olune (0119) produce customer.subscription.* and invoice.*
+  // events on this same endpoint, indistinguishable by type from a studio
+  // charging a parent on auto-pay. Claiming them here keeps an Olune
+  // subscription charge out of the invoice.paid branch below, which would
+  // otherwise mirror it into some studio's invoices/payments tables and sync it
+  // to their Xero ledger. See lib/plans/webhook.ts.
+  if (SHARED_EVENT_TYPES.includes(event.type)) {
+    const planStudioId = await studioForPlanEvent(event, supabase);
+    if (planStudioId) {
+      await handleStudioPlanEvent(event, planStudioId, supabase);
+      return;
+    }
+  }
+
   switch (event.type) {
     case "payment_intent.succeeded": {
       const intent = event.data.object as Stripe.PaymentIntent;

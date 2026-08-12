@@ -1,0 +1,115 @@
+{
+  "plan": {
+    "page": {
+      "title": "您的 Olune 套餐",
+      "subtitle": "当前套餐、费用，以及如何更换。"
+    },
+    "banner": {
+      "title": "{days, plural, other {试用还剩 # 天}}",
+      "titleUnknown": "您正在免费试用",
+      "body": "随时可以选择套餐，在此之前不会产生任何费用。",
+      "cta": "选择套餐"
+    },
+    "interval": {
+      "monthly": "按月",
+      "annual": "按年",
+      "saving": "按年付费可省两个月。"
+    },
+    "mostPopular": "最多人选择",
+    "perMonth": "/月",
+    "perYear": "/年",
+    "choosePlan": "选择此套餐",
+    "currentPlan": "当前套餐",
+    "opening": "正在打开…",
+    "manageBilling": "管理账单",
+    "moreModules": "{count, plural, other {另有 # 项}}",
+    "unlimitedStudents": "所有套餐均不限学员人数。我们不会因为您做大而多收费。",
+    "modules": {
+      "classes": "课程排期",
+      "attendance": "考勤与点名",
+      "billing": "开票与收款",
+      "messaging": "消息沟通",
+      "leads": "线索与咨询",
+      "forms": "表单与免责声明",
+      "staff": "员工档案与考勤打卡",
+      "availability": "教师可授课时间",
+      "substitutes": "代课安排",
+      "privateLessons": "私教课",
+      "site": "网站与社媒发布",
+      "shop": "在线商店",
+      "passes": "课时卡",
+      "badges": "徽章与奖励",
+      "progress": "学员进度",
+      "production": "汇报演出",
+      "costumes": "服装管理",
+      "fixtures": "赛程与成绩",
+      "competitions": "比赛与考级",
+      "skills": "技能体系",
+      "venues": "多场地管理"
+    },
+    "plans": {
+      "solo": {
+        "name": "个人版",
+        "tagline": "一位老师，一份课表",
+        "body": "开课、点名、收款。独立老师真正会用到的功能，多余的一概没有。"
+      },
+      "studio": {
+        "name": "工作室版",
+        "tagline": "一个团队，一个前台",
+        "body": "当有人替您授课、当您要接触尚未报名的人时，才真正用得上的那些功能。"
+      },
+      "scale": {
+        "name": "旗舰版",
+        "tagline": "多场地、多项目",
+        "body": "Olune 的全部模块，包括您所在领域特有的比赛、汇演、技能体系与场地管理。"
+      }
+    },
+    "status": {
+      "trialing": "免费试用",
+      "active": "生效中",
+      "past_due": "扣款失败",
+      "canceled": "已取消",
+      "comped": "免费赠送"
+    },
+    "current": {
+      "heading": "当前套餐",
+      "status": "状态",
+      "comped": "由 Olune 赠送",
+      "trialEnds": "试用于 {date} 结束",
+      "daysLeft": "{days, plural, other {还剩 # 天}}",
+      "renewsOn": "{date} 续费",
+      "endsOn": "可用至 {date}",
+      "portalHint": "通过 Stripe 更新银行卡、下载发票或取消订阅。"
+    },
+    "choose": {
+      "trialHeading": "选择套餐",
+      "changeHeading": "更换套餐",
+      "body": "随时可换。Stripe 会在当天按比例结算差额。"
+    },
+    "locked": {
+      "othersUnaffected": "老师、家长和学员都不受影响，您的网站、预约和报名也照常运行。",
+      "contactSupport": "该机构已被 Olune 暂停。请联系客服恢复访问。",
+      "trial_expired": {
+        "title": "免费试用已结束",
+        "body": "您的机构和其中的数据都原封不动。选择套餐即可继续使用。"
+      },
+      "payment_failed": {
+        "title": "扣款未能成功",
+        "body": "上一次付款失败了。更新银行卡后即可立即恢复。",
+        "orUpdateCard": "已经有套餐了？直接更新银行卡即可。"
+      },
+      "canceled": {
+        "title": "订阅已结束",
+        "body": "没有任何数据被删除。想继续时随时选择套餐。"
+      },
+      "suspended": {
+        "title": "该机构已暂停",
+        "body": "访问是由 Olune 暂停的，与付款无关。"
+      }
+    },
+    "errors": {
+      "checkoutFailed": "无法打开结账页面，请重试。",
+      "portalFailed": "无法打开账单管理页面，请重试。"
+    }
+  }
+}

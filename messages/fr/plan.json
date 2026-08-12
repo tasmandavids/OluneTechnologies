@@ -1,0 +1,115 @@
+{
+  "plan": {
+    "page": {
+      "title": "Votre formule Olune",
+      "subtitle": "Ce que vous avez, ce que ça coûte et comment en changer."
+    },
+    "banner": {
+      "title": "{days, plural, one {# jour restant dans votre essai} other {# jours restants dans votre essai}}",
+      "titleUnknown": "Vous êtes en essai gratuit",
+      "body": "Choisissez une formule quand vous voulez — rien n'est débité avant.",
+      "cta": "Choisir une formule"
+    },
+    "interval": {
+      "monthly": "Mensuel",
+      "annual": "Annuel",
+      "saving": "Deux mois offerts en facturation annuelle."
+    },
+    "mostPopular": "Le plus choisi",
+    "perMonth": "/mois",
+    "perYear": "/an",
+    "choosePlan": "Choisir cette formule",
+    "currentPlan": "Votre formule actuelle",
+    "opening": "Ouverture…",
+    "manageBilling": "Gérer la facturation",
+    "moreModules": "{count, plural, one {et # de plus} other {et # de plus}}",
+    "unlimitedStudents": "Toutes les formules incluent un nombre illimité d'élèves. Grandir ne vous coûte rien de plus.",
+    "modules": {
+      "classes": "Planification des cours",
+      "attendance": "Présences et feuilles d'appel",
+      "billing": "Facturation et paiements",
+      "messaging": "Messagerie",
+      "leads": "Prospects et demandes",
+      "forms": "Formulaires et décharges",
+      "staff": "Dossiers du personnel et pointeuse",
+      "availability": "Disponibilité des professeurs",
+      "substitutes": "Remplacements",
+      "privateLessons": "Cours particuliers",
+      "site": "Site web et publication sociale",
+      "shop": "Boutique en ligne",
+      "passes": "Cartes de cours",
+      "badges": "Badges et récompenses",
+      "progress": "Progression des élèves",
+      "production": "Galas et spectacles",
+      "costumes": "Gestion des costumes",
+      "fixtures": "Rencontres et résultats",
+      "competitions": "Compétitions et passages de grade",
+      "skills": "Référentiels de compétences",
+      "venues": "Plusieurs sites"
+    },
+    "plans": {
+      "solo": {
+        "name": "Solo",
+        "tagline": "Un professeur, un planning",
+        "body": "Gérez vos cours, faites l'appel et soyez payé. Tout ce dont un professeur indépendant se sert vraiment, et rien d'autre."
+      },
+      "studio": {
+        "name": "Studio",
+        "tagline": "Une équipe et un accueil",
+        "body": "Ajoute ce qui ne compte qu'à partir du moment où quelqu'un d'autre enseigne pour vous, et où vous parlez à des gens pas encore inscrits."
+      },
+      "scale": {
+        "name": "Scale",
+        "tagline": "Plusieurs sites, plusieurs programmes",
+        "body": "Tous les modules d'Olune, y compris ceux propres à votre activité — compétitions, galas, référentiels, sites."
+      }
+    },
+    "status": {
+      "trialing": "Essai gratuit",
+      "active": "Actif",
+      "past_due": "Paiement refusé",
+      "canceled": "Résilié",
+      "comped": "Offert"
+    },
+    "current": {
+      "heading": "Formule actuelle",
+      "status": "État",
+      "comped": "Offert par Olune",
+      "trialEnds": "Essai terminé le {date}",
+      "daysLeft": "{days, plural, one {# jour restant} other {# jours restants}}",
+      "renewsOn": "Renouvellement le {date}",
+      "endsOn": "Accès jusqu'au {date}",
+      "portalHint": "Modifiez votre carte, téléchargez vos factures ou résiliez via Stripe."
+    },
+    "choose": {
+      "trialHeading": "Choisir une formule",
+      "changeHeading": "Changer de formule",
+      "body": "Changez quand vous voulez. Stripe calcule la différence au prorata le jour même."
+    },
+    "locked": {
+      "othersUnaffected": "Vos professeurs, parents et élèves ne sont pas concernés, et votre site, vos réservations et vos inscriptions restent en ligne.",
+      "contactSupport": "Ce studio a été suspendu par Olune. Contactez le support pour rétablir l'accès.",
+      "trial_expired": {
+        "title": "Votre essai gratuit est terminé",
+        "body": "Votre studio et tout ce qu'il contient sont exactement là où vous les avez laissés. Choisissez une formule pour y revenir."
+      },
+      "payment_failed": {
+        "title": "Nous n'avons pas pu encaisser votre paiement",
+        "body": "Votre dernier paiement a échoué. Mettez votre carte à jour et vous reprenez aussitôt.",
+        "orUpdateCard": "Vous avez déjà une formule ? Corrigez plutôt votre carte."
+      },
+      "canceled": {
+        "title": "Votre abonnement a pris fin",
+        "body": "Rien n'a été supprimé. Choisissez une formule dès que vous souhaitez reprendre."
+      },
+      "suspended": {
+        "title": "Ce studio est suspendu",
+        "body": "L'accès a été mis en pause par Olune, et non à cause d'un problème de paiement."
+      }
+    },
+    "errors": {
+      "checkoutFailed": "Impossible d'ouvrir le paiement. Réessayez.",
+      "portalFailed": "Impossible d'ouvrir votre espace de facturation. Réessayez."
+    }
+  }
+}

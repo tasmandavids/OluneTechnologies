@@ -1,0 +1,89 @@
+{
+  "timeclock": {
+    "title": "考勤打卡",
+    "clockedInSince": "已上班，自 {time} 起",
+    "notClockedIn": "尚未打卡",
+    "viaCard": "刷卡",
+    "onTheClock": "已工作",
+    "thisWeek": "本周",
+    "working": "处理中…",
+    "clockIn": "上班打卡",
+    "clockOut": "下班打卡",
+    "addNote": "添加备注",
+    "notePlaceholder": "这段时间做了什么？（选填）",
+    "weekTotal": "本周共 {total}",
+    "rostered": "排班 {total}",
+    "overRoster": "比排班多 {amount}",
+    "underRoster": "比排班少 {amount}",
+    "openShift": "进行中",
+    "approved": "已审批",
+    "admin": {
+      "tabTitle": "工时表",
+      "range": "{from} 至 {to}",
+      "summary": "共 {total}，{count} 条记录",
+      "openCount": "{count} 条仍未结束",
+      "pendingOnly": "仅显示待审批",
+      "addEntry": "新增记录",
+      "approveSelected": "审批所选（{count}）",
+      "selectAll": "全选",
+      "selectNone": "取消选择",
+      "selectEntry": "选择此记录",
+      "empty": "此期间没有工时记录。",
+      "unknownStaff": "未知员工",
+      "openEnd": "仍在上班",
+      "approve": "审批",
+      "unapprove": "撤销审批",
+      "edit": "编辑",
+      "delete": "删除",
+      "save": "保存",
+      "cancel": "取消",
+      "stillOpen": "仍进行中",
+      "notRostered": "未排班",
+      "onRoster": "符合排班",
+      "overBy": "多 {amount}",
+      "underBy": "少 {amount}",
+      "source": {
+        "portal": "门户",
+        "nfc": "刷卡",
+        "manual": "手动录入"
+      },
+      "hourType": {
+        "regular": "正常工时",
+        "overtime": "加班",
+        "holiday": "法定假日",
+        "sick": "病假",
+        "vacation": "年假",
+        "unpaid": "无薪"
+      },
+      "fields": {
+        "staff": "员工",
+        "date": "日期",
+        "start": "开始",
+        "end": "结束",
+        "hourType": "工时类型",
+        "note": "备注"
+      },
+      "errors": {
+        "needStart": "请填写日期和开始时间。",
+        "needStaffAndStart": "请选择员工，并填写日期和开始时间。"
+      },
+      "rates": {
+        "title": "薪资费率",
+        "subtitle": "按生效日期记录。新费率不会重新计算已审批的工时表。",
+        "empty": "尚未设置费率，此员工的工时暂时无法计算金额。",
+        "perHour": "每小时",
+        "from": "自 {date} 起",
+        "current": "当前",
+        "remove": "移除",
+        "add": "添加费率",
+        "fields": {
+          "amount": "小时费率",
+          "effectiveFrom": "生效日期"
+        },
+        "errors": {
+          "needAmountAndDate": "请填写小时费率及其生效日期。"
+        }
+      }
+    }
+  }
+}

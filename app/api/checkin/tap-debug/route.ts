@@ -48,5 +48,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json({ ok: true, direction: result.direction, tappedAt: result.tappedAt });
+  return NextResponse.json({
+    ok: true,
+    direction: result.direction,
+    tappedAt: result.tappedAt,
+    cardKind: result.cardKind,
+    clock: result.clock,
+  });
 }

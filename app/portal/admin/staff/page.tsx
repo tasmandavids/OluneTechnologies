@@ -6,6 +6,7 @@ import { requirePortalSession } from "@/lib/portal/session";
 import { getBrandingCached } from "@/lib/branding";
 import StaffManager from "@/components/admin/staff/StaffManager";
 import { getWeekRange, addWeeks } from "@/lib/staff/week";
+import { getStudioTimesheets } from "@/lib/timeclock/queries";
 import type {
   StaffPortalRole,
   StaffRow,
@@ -38,7 +39,12 @@ export default async function StaffPage() {
   const shiftRangeStart = addWeeks(weekStart, -8);
   const shiftRangeEnd = addWeeks(weekEnd, 8);
 
-  const [profilesRes, shiftsRes, classesRes, branding] = await Promise.all([
+  // Four weeks back: long enough to cover a fortnightly pay run plus the one
+  // that slipped, short enough that the queue is a to-do list and not an
+  // archive. Approved entries come too so the tab can show what was signed off.
+  const timesheetRange = { from: addWeeks(weekStart, -4), to: addWeeks(weekEnd, 1) };
+
+  const [profilesRes, shiftsRes, classesRes, branding, timesheets] = await Promise.all([
     supabase
       .from("profiles")
       .select(`
@@ -68,6 +74,8 @@ export default async function StaffPage() {
       .not("teacher_id", "is", null),
 
     getBrandingCached(studioId ?? ""),
+
+    getStudioTimesheets(supabase, studioId ?? "", { ...timesheetRange, includeApproved: true }),
   ]);
 
   const managerIds = new Set<string>();
@@ -178,6 +186,8 @@ export default async function StaffPage() {
       locations={locations}
       weekStart={weekStart}
       loadError={profilesRes.error?.message ?? null}
+      timesheets={timesheets}
+      timesheetRange={timesheetRange}
     />
   );
 }

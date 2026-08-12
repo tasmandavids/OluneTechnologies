@@ -15,6 +15,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { studioLocalYmd } from "@/lib/date/studio-date";
 import { isTapDirection, nextDirection, type TapDirection } from "@/lib/checkin/direction";
+import { applyStaffTapToClock, type ClockOutcome } from "@/lib/timeclock/nfc";
 
 export type TapFailureReason =
   | "unknown_card"
@@ -26,8 +27,25 @@ export type TapFailureReason =
   | "insert_failed";
 
 export type TapResult =
-  | { ok: true; studentId: string; direction: TapDirection; tappedAt: string }
+  | {
+      ok: true;
+      studentId: string;
+      direction: TapDirection;
+      tappedAt: string;
+      /** 'staff' taps also move the timesheet — see `clock`. */
+      cardKind: CardKind;
+      /**
+       * Timesheet outcome for a staff tap, null for a student tap.
+       *
+       * Present even when the clock write failed: the tap itself succeeded and
+       * the person is on the safety register either way. A reader UI shows this
+       * as secondary information, never as a tap failure.
+       */
+      clock: ClockOutcome | null;
+    }
   | { ok: false; reason: TapFailureReason };
+
+export type CardKind = "student" | "staff";
 
 const STATUS_REASON: Record<string, TapFailureReason> = {
   pending: "card_pending",
@@ -63,7 +81,7 @@ export async function performTap(
 ): Promise<TapResult> {
   const { data: card } = await admin
     .from("nfc_cards")
-    .select("id, studio_id, student_id, status")
+    .select("id, studio_id, student_id, status, card_kind")
     .eq("token", params.cardToken)
     .maybeSingle();
 
@@ -111,5 +129,36 @@ export async function performTap(
 
   if (error || !inserted) return { ok: false, reason: "insert_failed" };
 
-  return { ok: true, studentId: card.student_id, direction, tappedAt: inserted.tapped_at };
+  // The safety register is now written and the tap has succeeded. Everything
+  // below is additive: a staff card also moves the timesheet, and a failure
+  // there must not turn a successful tap into a failed one — see
+  // lib/timeclock/nfc.ts.
+  const cardKind: CardKind = card.card_kind === "staff" ? "staff" : "student";
+  let clock: ClockOutcome | null = null;
+  if (cardKind === "staff") {
+    // Caught, not propagated. The tap row above is already committed — letting
+    // a timesheet error escape would return a failure for a tap that WAS
+    // recorded, and the door reader would tell someone standing in the building
+    // that they aren't checked in.
+    try {
+      clock = await applyStaffTapToClock(admin, {
+        studioId: card.studio_id,
+        staffId: card.student_id,
+        direction,
+        timezone,
+        at: new Date(inserted.tapped_at),
+      });
+    } catch {
+      clock = "failed";
+    }
+  }
+
+  return {
+    ok: true,
+    studentId: card.student_id,
+    direction,
+    tappedAt: inserted.tapped_at,
+    cardKind,
+    clock,
+  };
 }

@@ -95,7 +95,12 @@ export const ADMIN_NAV: NavSection[] = [
     ],
   },
   {
-    items: [{ href: "/portal/admin/settings", labelKey: "nav.admin.settings" }],
+    items: [
+      { href: "/portal/admin/settings", labelKey: "nav.admin.settings" },
+      // Ungated deliberately: the page that fixes a lapsed subscription must
+      // never be hidden by a module the lapse took away.
+      { href: "/portal/admin/plan", labelKey: "nav.admin.plan" },
+    ],
   },
 ];
 
@@ -251,6 +256,7 @@ export const PLATFORM_NAV: NavItem[] = [
   { href: "/platform/messages", labelKey: "nav.platform.supportInbox" },
   { href: "/platform/tasks", labelKey: "nav.platform.opsTasks" },
   { href: "/platform/features", labelKey: "nav.platform.featureFlags" },
+  { href: "/platform/plans", labelKey: "nav.platform.plans" },
   { href: "/platform/badges", labelKey: "nav.platform.badges" },
   { href: "/platform/announcements", labelKey: "nav.platform.announcements" },
   { href: "/platform/settings", labelKey: "nav.platform.settings" },

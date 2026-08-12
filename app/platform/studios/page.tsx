@@ -1,6 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { StudiosManager } from "@/components/platform/StudiosManager";
-import type { PlatformStudioSummary } from "@/lib/platform/types";
+import type { PlatformStudioPlan, PlatformStudioSummary } from "@/lib/platform/types";
 
 export default async function PlatformStudiosPage() {
   const admin = createAdminClient();
@@ -12,7 +12,7 @@ export default async function PlatformStudiosPage() {
 
   const studioIds = (studios ?? []).map((s) => s.id);
 
-  const [adminsRes, studentsRes, stripeRes, xeroRes] = await Promise.all([
+  const [adminsRes, studentsRes, stripeRes, xeroRes, plansRes] = await Promise.all([
     admin
       .from("profiles")
       .select("studio_id, full_name, email")
@@ -30,6 +30,10 @@ export default async function PlatformStudiosPage() {
     admin
       .from("xero_connections")
       .select("studio_id")
+      .in("studio_id", studioIds.length ? studioIds : ["00000000-0000-0000-0000-000000000000"]),
+    admin
+      .from("studio_subscriptions")
+      .select("studio_id, plan_key, status, trial_ends_at, current_period_end, comped")
       .in("studio_id", studioIds.length ? studioIds : ["00000000-0000-0000-0000-000000000000"]),
   ]);
 
@@ -54,6 +58,18 @@ export default async function PlatformStudiosPage() {
 
   const xeroConnectedStudios = new Set((xeroRes.data ?? []).map((row) => row.studio_id));
 
+  const planByStudio = new Map<string, PlatformStudioPlan>();
+  for (const row of plansRes.data ?? []) {
+    if (!row.studio_id) continue;
+    planByStudio.set(row.studio_id, {
+      key: row.plan_key as string,
+      status: row.status as string,
+      trialEndsAt: (row.trial_ends_at as string | null) ?? null,
+      currentPeriodEnd: (row.current_period_end as string | null) ?? null,
+      comped: row.comped === true,
+    });
+  }
+
   const summaries: PlatformStudioSummary[] = (studios ?? []).map((s) => {
     const owner = adminByStudio.get(s.id);
     return {
@@ -70,6 +86,7 @@ export default async function PlatformStudiosPage() {
       stripeConnected: stripeByStudio.get(s.id) ?? false,
       xeroConnected: xeroConnectedStudios.has(s.id),
       vertical: (s.vertical as string | null) ?? "dance",
+      plan: planByStudio.get(s.id) ?? null,
     };
   });
 

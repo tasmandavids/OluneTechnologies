@@ -8,6 +8,8 @@ import {
   updateStudioStatus,
   deleteStudio,
   updateStudioVertical,
+  setStudioComped,
+  extendStudioTrial,
 } from "@/app/platform/studios/actions";
 
 const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
@@ -68,6 +70,39 @@ export function StudiosManager({
     });
   }
 
+  function toggleComp(studio: PlatformStudioSummary) {
+    const comped = !studio.plan?.comped;
+    const reason = comped
+      ? (window.prompt(t("plan.compReasonPrompt", { name: studio.name })) ?? "")
+      : "";
+    // An empty string from Cancel is indistinguishable from an empty answer, so
+    // treat both as "don't".
+    if (comped && !reason.trim()) return;
+
+    startTransition(async () => {
+      const res = await setStudioComped({ studioId: studio.id, comped, reason: reason.trim() });
+      if (res.ok) {
+        setItems((p) =>
+          p.map((s) =>
+            s.id === studio.id && s.plan
+              ? { ...s, plan: { ...s.plan, comped, status: comped ? "comped" : "trialing" } }
+              : s,
+          ),
+        );
+      }
+      setStatusMsg(res.ok ? t("updated") : res.error);
+      setTimeout(() => setStatusMsg(null), 3000);
+    });
+  }
+
+  function extendTrial(studio: PlatformStudioSummary) {
+    startTransition(async () => {
+      const res = await extendStudioTrial({ studioId: studio.id, days: 14 });
+      setStatusMsg(res.ok ? t("plan.trialExtended") : res.error);
+      setTimeout(() => setStatusMsg(null), 3000);
+    });
+  }
+
   function remove(studio: PlatformStudioSummary) {
     const typed = window.prompt(t("confirmDelete", { name: studio.name }));
     if (typed !== studio.name) return;
@@ -111,6 +146,7 @@ export function StudiosManager({
               <th className="p-4">{t("tableOwner")}</th>
               <th className="p-4">{t("tableStudents")}</th>
               <th className="p-4">Vertical</th>
+              <th className="p-4">{t("plan.column")}</th>
               <th className="p-4">{t("tableStatus")}</th>
               <th className="p-4">{t("tableJoined")}</th>
               <th className="p-4">{t("tableActions")}</th>
@@ -172,6 +208,41 @@ export function StudiosManager({
                     </select>
                   ) : (
                     <span className="text-xs text-muted">{s.vertical}</span>
+                  )}
+                </td>
+                <td className="p-4">
+                  {s.plan ? (
+                    <>
+                      <p className="font-semibold text-ink">{s.plan.key}</p>
+                      <p className="text-xs text-muted">
+                        {t(`plan.status.${s.plan.status}`)}
+                        {s.plan.status === "trialing" && s.plan.trialEndsAt
+                          ? ` · ${new Date(s.plan.trialEndsAt).toLocaleDateString(locale)}`
+                          : ""}
+                      </p>
+                      <div className="mt-1.5 flex flex-wrap gap-1.5">
+                        <button
+                          onClick={() => toggleComp(s)}
+                          disabled={pending}
+                          className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide hover:border-brand"
+                        >
+                          {s.plan.comped ? t("plan.uncomp") : t("plan.comp")}
+                        </button>
+                        {s.plan.status !== "active" && !s.plan.comped && (
+                          <button
+                            onClick={() => extendTrial(s)}
+                            disabled={pending}
+                            className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide hover:border-brand"
+                          >
+                            {t("plan.extend")}
+                          </button>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    // After the 0119 backfill every studio has a row, so a gap
+                    // here is a real anomaly rather than an empty state.
+                    <span className="text-xs font-semibold text-red-600">{t("plan.missing")}</span>
                   )}
                 </td>
                 <td className="p-4">

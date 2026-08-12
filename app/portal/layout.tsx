@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PortalShell } from "@/components/portal/PortalShell";
 import { PlatformAnnouncementsBanner } from "@/components/admin/PlatformAnnouncementsBanner";
 import { SetupResumeBanner } from "@/components/setup/SetupResumeBanner";
+import { TrialBanner } from "@/components/plans/TrialBanner";
 import { getBrandingCached } from "@/lib/branding";
 import { getEntitlementsCached } from "@/lib/portal/entitlements";
 import {
@@ -20,6 +21,9 @@ import {
 } from "@/lib/portal/nav-config";
 import { resolvePortalTheme } from "@/lib/portal/resolve-portal-theme";
 import { fetchStudioSetupState, setupBlocksPortal, setupNeedsBanner } from "@/lib/setup/server";
+import { loadStudioSubscription, planAccessFor } from "@/lib/plans/server";
+import { isLocked, needsTrialBanner } from "@/lib/plans/gate";
+import { isBillingRole } from "@/lib/plans/roles";
 import { showAffiliationsNav } from "@/lib/account/memberships";
 import { resolveEffectiveStudioId } from "@/lib/portal/access";
 import type { AccountKind } from "@/lib/account/kinds";
@@ -63,13 +67,14 @@ export default async function PortalLayout({
     entitlements,
     tCommon,
     portalTheme,
+    subscription,
   ] = await Promise.all([
     supabase
       .from("studio_memberships")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id)
       .eq("status", "active"),
-    supabase.from("studios").select("name, kind").eq("id", studioId).single(),
+    supabase.from("studios").select("name, kind, status").eq("id", studioId).single(),
     profile.role === "admin"
       ? fetchStudioSetupState(supabase, studioId)
       : Promise.resolve({ state: null }),
@@ -86,9 +91,14 @@ export default async function PortalLayout({
     getEntitlementsCached(studioId),
     getTranslations("common"),
     resolvePortalTheme(),
+    // Only the people who can do something about a lapsed bill pay the cost of
+    // reading it. Teachers, parents and students skip the query entirely.
+    isBillingRole(profile.role as Role)
+      ? loadStudioSubscription(supabase, studioId)
+      : Promise.resolve(null),
   ]);
 
-  const studio = activeStudioRes.data as { name: string; kind: string } | null;
+  const studio = activeStudioRes.data as { name: string; kind: string; status: string } | null;
   const isStudioOwner =
     accountKind === "studio_owner" || (accountKind === null && studio?.kind !== "instructor");
   const isAdmin = profile.role === "admin" && isStudioOwner;
@@ -96,6 +106,17 @@ export default async function PortalLayout({
   const setupState = setupResult.state;
   if (isAdmin && setupState && setupBlocksPortal(setupState)) {
     redirect("/setup");
+  }
+
+  // ── Paywall ───────────────────────────────────────────────────────────────
+  // Admin and office only, by design: a lapsed Olune bill is between Olune and
+  // the studio owner, and taking a parent's enrolment or a teacher's register
+  // offline over it would make Olune the villain in someone else's
+  // relationship. /plan/locked lives outside this layout, which is the only
+  // thing keeping this from being a redirect loop — same reason /setup does.
+  const planAccess = planAccessFor(subscription, studio?.status ?? null);
+  if (isBillingRole(profile.role as Role) && isLocked(planAccess)) {
+    redirect("/plan/locked");
   }
 
   const announcements = (announcementsResult.data ?? [])
@@ -133,6 +154,9 @@ export default async function PortalLayout({
       officeNav={buildOfficeNav(entitlements)}
       roleNav={roleNav}
     >
+      {needsTrialBanner(planAccess) && (
+        <TrialBanner daysLeft={planAccess.daysLeft} urgent={planAccess.state === "trial_ending"} />
+      )}
       {isAdmin && setupState && setupNeedsBanner(setupState) && (
         <SetupResumeBanner
           setupStep={setupState.setupStep}

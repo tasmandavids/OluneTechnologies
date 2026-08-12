@@ -6,6 +6,8 @@
 import { createClient } from "@/lib/supabase/server";
 import TeacherSchedule from "@/components/portal/teacher/TeacherSchedule";
 import { studioLocalYmd } from "@/lib/date/studio-date";
+import { getClockState } from "@/lib/timeclock/queries";
+import { resolveEffectiveStudioId } from "@/lib/portal/access";
 
 export type TeacherClass = {
   id: string;
@@ -36,7 +38,11 @@ export default async function TeacherPortal() {
   const todayDow = new Date(`${today}T12:00:00Z`).getUTCDay();
 
   const [profileRes, classesRes, invoicesRes, clientsRes] = await Promise.all([
-    supabase.from("profiles").select("full_name, account_kind").eq("id", user!.id).single(),
+    supabase
+      .from("profiles")
+      .select("full_name, account_kind, studio_id, active_studio_id")
+      .eq("id", user!.id)
+      .single(),
 
     supabase
       .from("classes")
@@ -111,6 +117,12 @@ export default async function TeacherPortal() {
 
   const isInstructor = profileRes.data?.account_kind === "instructor";
 
+  // No studio means no employer to clock in for — a marketplace instructor
+  // invoices instead. Skipping the read also skips a query for every one of
+  // them, on the busiest screen in the teacher portal.
+  const studioId = profileRes.data ? resolveEffectiveStudioId(profileRes.data) : null;
+  const clockState = studioId ? await getClockState(supabase, user!.id) : null;
+
   const incomeSummary = isInstructor ? {
     paidCents: (invoicesRes.data ?? []).filter((i) => i.status === "paid").reduce((s, i) => s + (i.amount_cents as number), 0),
     outstandingCents: (invoicesRes.data ?? []).filter((i) => ["draft", "sent"].includes(i.status as string)).reduce((s, i) => s + (i.amount_cents as number), 0),
@@ -125,6 +137,7 @@ export default async function TeacherPortal() {
       todayDate={today}
       isInstructor={isInstructor}
       incomeSummary={incomeSummary}
+      clockState={clockState}
     />
   );
 }

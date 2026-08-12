@@ -41,7 +41,23 @@
       "noMatch": "没有符合此筛选条件的工作室。",
       "delete": "删除",
       "deleted": "已删除",
-      "confirmDelete": "输入 \"{name}\" 以永久删除此工作室及其所有数据。此操作无法撤销。"
+      "confirmDelete": "输入 \"{name}\" 以永久删除此工作室及其所有数据。此操作无法撤销。",
+      "plan": {
+        "column": "Olune 套餐",
+        "comp": "设为免费",
+        "uncomp": "取消免费",
+        "extend": "+14 天",
+        "trialExtended": "试用已延长 14 天",
+        "missing": "没有订阅记录",
+        "compReasonPrompt": "为什么给 {name} 免费？原因会记录在该机构下。",
+        "status": {
+          "trialing": "免费试用",
+          "active": "生效中",
+          "past_due": "扣款失败",
+          "canceled": "已取消",
+          "comped": "免费赠送"
+        }
+      }
     },
     "owners": {
       "title": "企业所有者",
@@ -161,6 +177,19 @@
       "active": "已启用",
       "inactive": "已隐藏",
       "save": "保存"
+    },
+    "plans": {
+      "title": "套餐价格",
+      "subtitle": "各套餐与计费周期对应的 Stripe Price ID。测试模式与正式模式生成的 ID 不同，因此需按环境分别填写。套餐的价格与所含功能在代码中设定，不在此处。",
+      "emptyWarning": "当前环境尚未配置任何 Stripe 价格，在配置完成前无法发起结账。",
+      "interval": {
+        "month": "按月",
+        "year": "按年"
+      },
+      "moduleCount": "{count, plural, other {# 个模块}}",
+      "save": "保存",
+      "saved": "已保存",
+      "notSet": "尚未设置，该套餐暂时无法购买。"
     }
   }
 }

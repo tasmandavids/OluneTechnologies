@@ -41,7 +41,23 @@
       "noMatch": "Aucun studio ne correspond à ce filtre.",
       "delete": "Supprimer",
       "deleted": "Supprimé",
-      "confirmDelete": "Tapez \"{name}\" pour supprimer définitivement ce studio et toutes ses données. Cette action est irréversible."
+      "confirmDelete": "Tapez \"{name}\" pour supprimer définitivement ce studio et toutes ses données. Cette action est irréversible.",
+      "plan": {
+        "column": "Formule Olune",
+        "comp": "Offrir",
+        "uncomp": "Fin de l'offre",
+        "extend": "+14 jours",
+        "trialExtended": "Essai prolongé de 14 jours",
+        "missing": "Aucun abonnement enregistré",
+        "compReasonPrompt": "Pourquoi offrir {name} ? La raison est enregistrée sur le studio.",
+        "status": {
+          "trialing": "Essai gratuit",
+          "active": "Actif",
+          "past_due": "Paiement refusé",
+          "canceled": "Résilié",
+          "comped": "Offert"
+        }
+      }
     },
     "owners": {
       "title": "Propriétaires",
@@ -161,6 +177,19 @@
       "active": "Actif",
       "inactive": "Masqué",
       "save": "Enregistrer"
+    },
+    "plans": {
+      "title": "Tarifs des formules",
+      "subtitle": "Identifiants Stripe Price pour chaque formule et périodicité. Les modes test et production génèrent des identifiants différents : ils sont donc propres à chaque environnement. Le prix et le contenu d'une formule sont définis dans le code, pas ici.",
+      "emptyWarning": "Aucun prix Stripe n'est encore configuré dans cet environnement — le paiement refusera de démarrer tant que ce ne sera pas fait.",
+      "interval": {
+        "month": "Mensuel",
+        "year": "Annuel"
+      },
+      "moduleCount": "{count, plural, one {# module} other {# modules}}",
+      "save": "Enregistrer",
+      "saved": "Enregistré",
+      "notSet": "Non défini — cette formule ne peut pas encore être achetée."
     }
   }
 }

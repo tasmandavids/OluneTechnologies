@@ -11,8 +11,14 @@
 //      only), nothing sent.
 //    • A channel with no recipient address, or a provider that isn't configured
 //      (no API keys) → treated as terminal for that channel (won't retry).
-//    • A real send error → left queued and retried on the next pass, up to
-//      MAX_ATTEMPTS, after which it's marked delivered with the last error kept.
+//    • A real send error → left queued with a `next_attempt_at` set from the
+//      backoff schedule in lib/notify/backoff.ts, and retried once that time
+//      passes. After the budget is exhausted (~4h20m across 5 attempts) it's
+//      marked delivered with the last error kept.
+//
+//  This route is safe to run frequently: the batch is bounded, every write is
+//  keyed by row id, and a row waiting out a backoff is skipped rather than
+//  re-sent. It is scheduled every 5 minutes.
 //
 //  Auth: `Authorization: Bearer <CRON_SECRET>` or `?secret=<CRON_SECRET>`.
 //  Fails closed in production when CRON_SECRET is unset. Service-role client.
@@ -32,10 +38,10 @@ import {
   type DeliverableNotification,
 } from "@/lib/notify/messages";
 import { sendEmail, sendSms } from "@/lib/notify/providers";
+import { nextAttemptAt } from "@/lib/notify/backoff";
 
 export const dynamic = "force-dynamic";
 
-const MAX_ATTEMPTS = 3;
 const DEFAULT_BATCH = 200;
 
 type ProfileContact = { id: string; email: string | null; phone: string | null };
@@ -70,11 +76,22 @@ export async function GET(req: NextRequest) {
     gaveUp: 0,
   };
 
-  // 1. Pull the un-delivered queue (oldest first).
+  // 1. Pull the un-delivered queue that is due now (oldest first).
+  //
+  //    `next_attempt_at` (0117) is null until a row first fails, so a fresh
+  //    notification is always due. A row waiting out a backoff is skipped by
+  //    value rather than by a separate query — see lib/notify/backoff.ts.
+  //
+  //    nullsFirst matters: never-attempted rows must sort ahead of rows already
+  //    carrying failures, or a provider outage would fill the batch with its
+  //    own retries and starve new notifications behind them.
+  const dueBeforeIso = new Date().toISOString();
   const { data: rows, error: fetchErr } = await supabase
     .from("notifications")
     .select("id, type, title, body, link, user_id, studio_id, delivery_attempts")
     .is("delivered_at", null)
+    .or(`next_attempt_at.is.null,next_attempt_at.lte.${dueBeforeIso}`)
+    .order("next_attempt_at", { ascending: true, nullsFirst: true })
     .order("sent_at", { ascending: true })
     .limit(batch);
 
@@ -179,11 +196,17 @@ export async function GET(req: NextRequest) {
 
     if (!retryable) {
       update.delivered_at = nowIso;
-    } else if (attempts >= MAX_ATTEMPTS) {
-      update.delivered_at = nowIso; // give up; keep last error for inspection.
-      summary.gaveUp += 1;
     } else {
-      summary.failedRetained += 1; // leave queued for the next pass.
+      // Schedule the retry rather than relying on "the next pass" — at a
+      // 5-minute cadence that would burn the whole budget inside a blip.
+      const retryAt = nextAttemptAt(attempts);
+      if (retryAt === null) {
+        update.delivered_at = nowIso; // budget exhausted; keep last error.
+        summary.gaveUp += 1;
+      } else {
+        update.next_attempt_at = retryAt.toISOString();
+        summary.failedRetained += 1;
+      }
     }
 
     await supabase.from("notifications").update(update).eq("id", row.id);

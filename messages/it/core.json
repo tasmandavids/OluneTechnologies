@@ -173,7 +173,8 @@
       "checkin": "Check-in",
       "privateLessons": "Lezioni private",
       "badges": "Badge",
-      "forms": "Creazione moduli"
+      "forms": "Creazione moduli",
+      "plan": "Piano e fatturazione"
     },
     "teacher": {
       "schedule": "Orario e presenze",
@@ -221,7 +222,8 @@
       "auditLog": "Registro audit",
       "consoleTitle": "Piattaforma Olune",
       "consoleSubtitle": "Console operatore",
-      "badges": "Catalogo badge"
+      "badges": "Catalogo badge",
+      "plans": "Prezzi dei piani"
     },
     "shared": {
       "notifications": "Notifiche"

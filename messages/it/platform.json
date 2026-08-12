@@ -41,7 +41,23 @@
       "noMatch": "Nessuno studio corrisponde a questo filtro.",
       "delete": "Elimina",
       "deleted": "Eliminato",
-      "confirmDelete": "Digita \"{name}\" per eliminare definitivamente questo studio e tutti i suoi dati. Questa azione non può essere annullata."
+      "confirmDelete": "Digita \"{name}\" per eliminare definitivamente questo studio e tutti i suoi dati. Questa azione non può essere annullata.",
+      "plan": {
+        "column": "Piano Olune",
+        "comp": "Omaggio",
+        "uncomp": "Fine omaggio",
+        "extend": "+14 giorni",
+        "trialExtended": "Prova prolungata di 14 giorni",
+        "missing": "Nessun abbonamento registrato",
+        "compReasonPrompt": "Perché offrire {name}? La motivazione resta registrata sulla struttura.",
+        "status": {
+          "trialing": "Prova gratuita",
+          "active": "Attivo",
+          "past_due": "Pagamento non riuscito",
+          "canceled": "Disdetto",
+          "comped": "In omaggio"
+        }
+      }
     },
     "owners": {
       "title": "Proprietari",
@@ -161,6 +177,19 @@
       "active": "Attivo",
       "inactive": "Nascosto",
       "save": "Salva"
+    },
+    "plans": {
+      "title": "Prezzi dei piani",
+      "subtitle": "Id Stripe Price per ogni piano e periodicità. La modalità di test e quella live generano id diversi, quindi valgono per singolo ambiente. Quanto costa un piano e cosa sblocca si imposta nel codice, non qui.",
+      "emptyWarning": "In questo ambiente non è ancora configurato nessun prezzo Stripe: il pagamento non potrà partire finché non lo sarà.",
+      "interval": {
+        "month": "Mensile",
+        "year": "Annuale"
+      },
+      "moduleCount": "{count, plural, one {# modulo} other {# moduli}}",
+      "save": "Salva",
+      "saved": "Salvato",
+      "notSet": "Non impostato: questo piano non è ancora acquistabile."
     }
   }
 }

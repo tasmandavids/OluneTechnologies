@@ -29,6 +29,22 @@ export type PlatformStudioSummary = {
   xeroConnected: boolean;
   /** Which activity vertical this tenant runs. Drives its pack and modules. */
   vertical: string;
+  /**
+   * Olune's own subscription with this studio (0119). Null only if the row is
+   * missing, which after the 0119 backfill means something is wrong.
+   *
+   * Note this is a different axis from `status` above: `status` is the
+   * operator's suspend switch, this is whether they're paying.
+   */
+  plan: PlatformStudioPlan | null;
+};
+
+export type PlatformStudioPlan = {
+  key: string;
+  status: string;
+  trialEndsAt: string | null;
+  currentPeriodEnd: string | null;
+  comped: boolean;
 };
 
 export type PlatformOwner = {

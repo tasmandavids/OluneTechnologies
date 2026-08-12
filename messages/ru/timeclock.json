@@ -1,0 +1,89 @@
+{
+  "timeclock": {
+    "title": "Учёт рабочего времени",
+    "clockedInSince": "На смене с {time}",
+    "notClockedIn": "Смена не начата",
+    "viaCard": "Карта",
+    "onTheClock": "Прошло",
+    "thisWeek": "На этой неделе",
+    "working": "Выполняется…",
+    "clockIn": "Начать смену",
+    "clockOut": "Завершить смену",
+    "addNote": "Добавить заметку",
+    "notePlaceholder": "Над чем вы работали? (необязательно)",
+    "weekTotal": "{total} на этой неделе",
+    "rostered": "{total} по графику",
+    "overRoster": "{amount} сверх графика",
+    "underRoster": "{amount} меньше графика",
+    "openShift": "Открыта",
+    "approved": "Утверждено",
+    "admin": {
+      "tabTitle": "Табели",
+      "range": "С {from} по {to}",
+      "summary": "{total} — записей: {count}",
+      "openCount": "ещё открыто: {count}",
+      "pendingOnly": "Только ожидающие утверждения",
+      "addEntry": "Добавить запись",
+      "approveSelected": "Утвердить выбранные ({count})",
+      "selectAll": "Выбрать все",
+      "selectNone": "Снять выделение",
+      "selectEntry": "Выбрать эту запись",
+      "empty": "За этот период часы не зафиксированы.",
+      "unknownStaff": "Неизвестный сотрудник",
+      "openEnd": "смена ещё идёт",
+      "approve": "Утвердить",
+      "unapprove": "Отменить утверждение",
+      "edit": "Изменить",
+      "delete": "Удалить",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "stillOpen": "Ещё открыта",
+      "notRostered": "Нет в графике",
+      "onRoster": "По графику",
+      "overBy": "на {amount} больше",
+      "underBy": "на {amount} меньше",
+      "source": {
+        "portal": "Портал",
+        "nfc": "Карта",
+        "manual": "Добавлено вручную"
+      },
+      "hourType": {
+        "regular": "Обычные",
+        "overtime": "Сверхурочные",
+        "holiday": "Праздничный день",
+        "sick": "Больничный",
+        "vacation": "Отпуск",
+        "unpaid": "Без оплаты"
+      },
+      "fields": {
+        "staff": "Сотрудник",
+        "date": "Дата",
+        "start": "Начало",
+        "end": "Окончание",
+        "hourType": "Тип часов",
+        "note": "Заметка"
+      },
+      "errors": {
+        "needStart": "Укажите дату и время начала.",
+        "needStaffAndStart": "Выберите сотрудника, дату и время начала."
+      },
+      "rates": {
+        "title": "Ставки оплаты",
+        "subtitle": "С датой вступления в силу. Новая ставка не пересчитывает уже утверждённые табели.",
+        "empty": "Ставка не задана — часы этого сотрудника пока нельзя оценить в деньгах.",
+        "perHour": "в час",
+        "from": "с {date}",
+        "current": "Текущая",
+        "remove": "Удалить",
+        "add": "Добавить ставку",
+        "fields": {
+          "amount": "Часовая ставка",
+          "effectiveFrom": "Действует с"
+        },
+        "errors": {
+          "needAmountAndDate": "Укажите часовую ставку и дату начала её действия."
+        }
+      }
+    }
+  }
+}

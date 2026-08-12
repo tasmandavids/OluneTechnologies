@@ -4,6 +4,7 @@ const MESSAGE_MODULES = [
   "core",
   "errors",
   "onboarding",
+  "plan",
   "setup",
   "marketing",
   "enrol",
@@ -18,6 +19,7 @@ const MESSAGE_MODULES = [
   "site",
   "payments",
   "office",
+  "timeclock",
 ] as const;
 
 function deepMerge(

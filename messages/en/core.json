@@ -173,7 +173,8 @@
       "badges": "Badges",
       "passes": "Class passes",
       "checkin": "Check-in",
-      "forms": "Form creation"
+      "forms": "Form creation",
+      "plan": "Plan & billing"
     },
     "portal": {
       "forms": "Forms & policies"
@@ -224,7 +225,8 @@
       "auditLog": "Audit log",
       "consoleTitle": "Olune Platform",
       "consoleSubtitle": "Operator console",
-      "badges": "Badge catalogue"
+      "badges": "Badge catalogue",
+      "plans": "Plan prices"
     },
     "shared": {
       "notifications": "Notification settings"

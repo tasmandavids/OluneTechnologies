@@ -41,7 +41,23 @@
       "noMatch": "No studios match this filter.",
       "delete": "Delete",
       "deleted": "Deleted",
-      "confirmDelete": "Type \"{name}\" to permanently delete this studio and all its data. This cannot be undone."
+      "confirmDelete": "Type \"{name}\" to permanently delete this studio and all its data. This cannot be undone.",
+      "plan": {
+        "column": "Olune plan",
+        "comp": "Comp",
+        "uncomp": "End comp",
+        "extend": "+14 days",
+        "trialExtended": "Trial extended by 14 days",
+        "missing": "No subscription row",
+        "compReasonPrompt": "Why is {name} being comped? This is recorded against the studio.",
+        "status": {
+          "trialing": "Free trial",
+          "active": "Active",
+          "past_due": "Payment failed",
+          "canceled": "Cancelled",
+          "comped": "Complimentary"
+        }
+      }
     },
     "owners": {
       "title": "Business owners",
@@ -161,6 +177,19 @@
       "active": "Active",
       "inactive": "Hidden",
       "save": "Save"
+    },
+    "plans": {
+      "title": "Plan prices",
+      "subtitle": "Stripe Price ids for each plan and interval. Test mode and live mode issue different ids, so these are per-environment. What a plan costs and unlocks is set in code, not here.",
+      "emptyWarning": "No Stripe prices are configured in this environment yet — checkout will refuse to start until they are.",
+      "interval": {
+        "month": "Monthly",
+        "year": "Annual"
+      },
+      "moduleCount": "{count, plural, one {# module} other {# modules}}",
+      "save": "Save",
+      "saved": "Saved",
+      "notSet": "Not set — this plan can't be bought yet."
     }
   }
 }

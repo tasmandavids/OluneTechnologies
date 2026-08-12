@@ -6,8 +6,10 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import AddStaffPanel from "@/components/admin/staff/AddStaffPanel";
 import StaffCalendar from "@/components/admin/staff/StaffCalendar";
+import TimesheetQueue from "@/components/admin/staff/TimesheetQueue";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import type { StaffOption, StaffRow, StaffShift, TeachingBlock } from "@/lib/staff/types";
+import type { ManagedTimesheet } from "@/lib/timeclock/types";
 
 function initials(name: string | null) {
   if (!name) return "?";
@@ -79,6 +81,8 @@ export default function StaffManager({
   locations,
   weekStart,
   loadError,
+  timesheets,
+  timesheetRange,
 }: {
   staff: StaffRow[];
   shifts: StaffShift[];
@@ -88,11 +92,16 @@ export default function StaffManager({
   locations: string[];
   weekStart: string;
   loadError?: string | null;
+  timesheets: ManagedTimesheet[];
+  timesheetRange: { from: string; to: string };
 }) {
   const t = useTranslations("admin.staff");
-  const [activeTab, setActiveTab] = useState<"roster" | "calendar">("roster");
+  const tClock = useTranslations("timeclock.admin");
+  const [activeTab, setActiveTab] = useState<"roster" | "calendar" | "timesheets">("roster");
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
+
+  const pendingCount = timesheets.filter((entry) => !entry.approvedAt).length;
 
   const filtered = staff.filter(
     (s) =>
@@ -130,21 +139,35 @@ export default function StaffManager({
       )}
 
       <div className="flex gap-1 rounded-xl border border-[--hair] bg-base p-1 w-fit">
-        {(["roster", "calendar"] as const).map((tab) => (
+        {(["roster", "calendar", "timesheets"] as const).map((tab) => (
           <button
             key={tab}
             type="button"
             onClick={() => setActiveTab(tab)}
-            className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
               activeTab === tab ? "bg-surface text-ink shadow-sm" : "text-muted hover:text-ink"
             }`}
           >
-            {t(`tabs.${tab}`)}
+            {/* Timesheets is the one tab whose strings live in the timeclock
+                namespace — admin.json is machine-generated per locale. */}
+            {tab === "timesheets" ? tClock("tabTitle") : t(`tabs.${tab}`)}
+            {tab === "timesheets" && pendingCount > 0 && (
+              <span className="rounded-full bg-brand/15 px-1.5 py-0.5 text-[0.55rem] font-bold tabular-nums text-brand">
+                {pendingCount}
+              </span>
+            )}
           </button>
         ))}
       </div>
 
-      {activeTab === "roster" ? (
+      {activeTab === "timesheets" ? (
+        <TimesheetQueue
+          entries={timesheets}
+          staffOptions={staffOptions}
+          rangeStart={timesheetRange.from}
+          rangeEnd={timesheetRange.to}
+        />
+      ) : activeTab === "roster" ? (
         <>
           <input
             type="search"

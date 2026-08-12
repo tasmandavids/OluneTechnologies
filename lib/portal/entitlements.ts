@@ -25,14 +25,20 @@ import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { createPublicClient } from "@/lib/supabase/public";
 import { getPack, DEFAULT_VERTICAL } from "@/lib/verticals/registry";
+import { isPlanKey, planAllows, type PlanKey } from "@/lib/plans/catalog";
 import type { ModuleKey, VerticalKey, VerticalPack, Vocabulary } from "@/lib/verticals/types";
 
 /**
- * Reserved. Plan-based entitlement is a separate workstream — there is no
- * plan column, no tiers and no application_fee_amount today. The slot exists
- * so wiring it later is one line in `allows()` rather than a refactor.
+ * The studio's paid tier. Null means unresolved, which allows everything —
+ * see planAllows() in lib/plans/catalog.ts for why that direction is the safe
+ * one.
+ *
+ * Read from `studios.plan_key`, a mirror of studio_subscriptions.plan_key kept
+ * in sync by a trigger (0119). The mirror exists because this loader runs on
+ * the ANON client — it also serves published studio sites, which have no
+ * session — and the billing table is admin-only by design.
  */
-export type PlanKey = string;
+export type { PlanKey } from "@/lib/plans/catalog";
 
 export type Entitlements = {
   studioId: string;
@@ -60,8 +66,18 @@ function forced(metadata: unknown): boolean {
 async function loadEntitlements(studioId: string): Promise<Entitlements> {
   const supabase = createPublicClient();
 
-  const [studioRes, moduleRes, flagRes, vocabRes] = await Promise.all([
+  const [studioRes, planRes, moduleRes, flagRes, vocabRes] = await Promise.all([
     supabase.from("studios").select("vertical").eq("id", studioId).single(),
+    // A SEPARATE select, not `select("vertical, plan_key")`, and the separation
+    // is load-bearing. PostgREST rejects the WHOLE query when one column is
+    // unknown, so folding plan_key into the line above means that on any
+    // deploy where the code is live before 0119 has been applied — which is
+    // every Vercel deploy, since the migration is a manual step afterwards —
+    // `vertical` comes back null too and EVERY studio silently falls back to
+    // the dance pack. Failing independently costs nothing (same round trip,
+    // run in parallel) and turns a vertical-wide incident into a null plan,
+    // which planAllows() already treats as "allow everything".
+    supabase.from("studios").select("plan_key").eq("id", studioId).single(),
     supabase.from("studio_modules").select("module_key, enabled").eq("studio_id", studioId),
     supabase
       .from("platform_feature_flags")
@@ -76,6 +92,14 @@ async function loadEntitlements(studioId: string): Promise<Entitlements> {
 
   const vertical = (studioRes.data?.vertical as VerticalKey | undefined) ?? DEFAULT_VERTICAL;
   const pack = getPack(vertical);
+
+  // Null when the column is absent (pre-0119), unreadable, or holds something
+  // this deploy doesn't know — planAllows() treats that as "allow", so a schema
+  // surprise degrades to the pre-0119 behaviour rather than stripping a paying
+  // studio's features.
+  const plan: PlanKey | null = isPlanKey(planRes.data?.plan_key)
+    ? planRes.data.plan_key
+    : null;
 
   const optIn = new Map<string, boolean>(
     (moduleRes.data ?? []).map((r) => [r.module_key as string, r.enabled as boolean]),
@@ -111,6 +135,10 @@ async function loadEntitlements(studioId: string): Promise<Entitlements> {
     if (optIn.get(key) === false) continue;
     // A flag row can withhold it: studio row beats global row, absent = allow.
     if (flag && !flag.enabled && !forced(flag.metadata)) continue;
+    // The paid tier. Applied last and to everything above it, including a
+    // forced studio flag — an operator turning on a module for a studio should
+    // not also be a silent free upgrade to a tier they aren't paying for.
+    if (!planAllows(plan, key)) continue;
 
     modules.add(key);
   }
@@ -123,7 +151,7 @@ async function loadEntitlements(studioId: string): Promise<Entitlements> {
     }
   }
 
-  return { studioId, vertical, pack, modules, plan: null, vocabulary };
+  return { studioId, vertical, pack, modules, plan, vocabulary };
 }
 
 /** Invalidates one studio's entitlements. */

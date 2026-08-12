@@ -6,6 +6,7 @@ import { notFound, redirect } from "next/navigation";
 import { requirePortalSession } from "@/lib/portal/session";
 import { getBrandingCached } from "@/lib/branding";
 import StaffDetailHub from "@/components/admin/staff/StaffDetailHub";
+import type { PayRateRow } from "@/components/admin/staff/PayRatesPanel";
 import type { StaffDetail, StaffOption, StaffPortalRole, StaffShift } from "@/lib/staff/types";
 
 type StaffMemberRow = {
@@ -31,7 +32,7 @@ export default async function StaffDetailPage({
   if (role !== "admin") redirect("/portal/office");
   if (!studioId) notFound();
 
-  const [profileRes, shiftsRes, allStaffRes, branding] = await Promise.all([
+  const [profileRes, shiftsRes, allStaffRes, branding, ratesRes] = await Promise.all([
     supabase
       .from("profiles")
       .select(`
@@ -62,6 +63,14 @@ export default async function StaffDetailPage({
       .order("full_name"),
 
     getBrandingCached(studioId),
+
+    // Admin-only by RLS (0118) — there is no self-read policy on this table.
+    supabase
+      .from("staff_pay_rates")
+      .select("id, effective_from, rate_cents, currency")
+      .eq("studio_id", studioId)
+      .eq("staff_id", id)
+      .order("effective_from", { ascending: false }),
   ]);
 
   if (profileRes.error || !profileRes.data) notFound();
@@ -123,12 +132,20 @@ export default async function StaffDetailPage({
 
   const locations = (branding?.siteSettings?.locations ?? []).map((l) => l.name);
 
+  const payRates: PayRateRow[] = (ratesRes.data ?? []).map((r) => ({
+    id: r.id as string,
+    effectiveFrom: r.effective_from as string,
+    rateCents: r.rate_cents as number,
+    currency: r.currency as string,
+  }));
+
   return (
     <StaffDetailHub
       staff={staffMember}
       shifts={shifts}
       managerOptions={managerOptions}
       locations={locations}
+      payRates={payRates}
     />
   );
 }

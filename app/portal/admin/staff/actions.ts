@@ -397,3 +397,343 @@ export async function deleteStaffMember(id: string): Promise<ActionResult> {
   revalidateStaffPaths();
   return { ok: true };
 }
+
+// ============================================================================
+//  TIME CLOCK — manager actions (0118)
+//
+//  Approving, correcting and back-dating a timesheet are manager powers; the
+//  staff member's own clock lives in app/portal/timeclock/actions.ts and can do
+//  none of these. Each action below re-derives the studio from the session and
+//  scopes every write to it, so a forged entry id from another studio matches
+//  nothing rather than being trusted.
+// ============================================================================
+
+const TIMECLOCK_PATHS = ["/portal/admin/staff", "/portal/teacher", "/portal/office"];
+
+function revalidateTimeclockPaths(staffId?: string) {
+  for (const path of TIMECLOCK_PATHS) revalidatePath(path);
+  if (staffId) revalidatePath(`/portal/admin/staff/${staffId}`);
+}
+
+const HOUR_TYPES = ["regular", "overtime", "holiday", "sick", "vacation", "unpaid"] as const;
+
+const TimeEntrySchema = z.object({
+  staffId: z.string().uuid(),
+  entryDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  clockInAt: z.string().datetime(),
+  clockOutAt: z.string().datetime().nullable().optional(),
+  hourType: z.enum(HOUR_TYPES).default("regular"),
+  locationName: z.string().max(120).optional().or(z.literal("")),
+  department: z.string().max(120).optional().or(z.literal("")),
+  note: z.string().max(500).optional().or(z.literal("")),
+});
+
+/** Approve one entry. Idempotent-ish: re-approving simply restamps it. */
+export async function approveTimeEntry(id: string): Promise<ActionResult> {
+  const { error, studioId, userId } = await getAdminStudio();
+  if (error || !studioId || !userId) return { ok: false, error: error ?? "No studio." };
+
+  const admin = createAdminClient();
+
+  // An open shift has no hours to sign off — 0118 rejects it with a check
+  // violation, and a manager deserves a better sentence than that.
+  const { data: entry } = await admin
+    .from("staff_time_entries")
+    .select("id, staff_id, clock_out_at")
+    .eq("id", id)
+    .eq("studio_id", studioId)
+    .maybeSingle();
+
+  if (!entry) return { ok: false, error: "Timesheet entry not found." };
+  if (!entry.clock_out_at) {
+    return { ok: false, error: "This shift is still open — clock it out before approving." };
+  }
+
+  const { error: updateErr } = await admin
+    .from("staff_time_entries")
+    .update({ approved_by: userId, approved_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("studio_id", studioId);
+
+  if (updateErr) return { ok: false, error: updateErr.message };
+
+  revalidateTimeclockPaths(entry.staff_id as string);
+  return { ok: true, id };
+}
+
+/** Approve a batch — the queue's whole point is not clicking forty buttons. */
+export async function approveTimeEntries(ids: string[]): Promise<ActionResult> {
+  const { error, studioId, userId } = await getAdminStudio();
+  if (error || !studioId || !userId) return { ok: false, error: error ?? "No studio." };
+  if (ids.length === 0) return { ok: false, error: "Nothing selected." };
+
+  const admin = createAdminClient();
+
+  // Open shifts are filtered out rather than failing the batch: approving
+  // eleven of twelve entries and saying so beats approving none of them.
+  const { data: closed } = await admin
+    .from("staff_time_entries")
+    .select("id")
+    .in("id", ids)
+    .eq("studio_id", studioId)
+    .not("clock_out_at", "is", null);
+
+  const approvable = (closed ?? []).map((e) => e.id as string);
+  if (approvable.length === 0) {
+    return { ok: false, error: "Those shifts are still open — clock them out before approving." };
+  }
+
+  const { error: updateErr } = await admin
+    .from("staff_time_entries")
+    .update({ approved_by: userId, approved_at: new Date().toISOString() })
+    .in("id", approvable)
+    .eq("studio_id", studioId);
+
+  if (updateErr) return { ok: false, error: updateErr.message };
+
+  revalidateTimeclockPaths();
+  return { ok: true };
+}
+
+/** Reopen an approved entry so it can be corrected. */
+export async function unapproveTimeEntry(id: string): Promise<ActionResult> {
+  const { error, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "No studio." };
+
+  const admin = createAdminClient();
+  const { error: updateErr } = await admin
+    .from("staff_time_entries")
+    .update({ approved_by: null, approved_at: null })
+    .eq("id", id)
+    .eq("studio_id", studioId);
+
+  if (updateErr) return { ok: false, error: updateErr.message };
+
+  revalidateTimeclockPaths();
+  return { ok: true, id };
+}
+
+/**
+ * Add a shift by hand — the missed clock-in, which is the single most common
+ * thing a manager has to fix. `source = 'manual'` and `created_by` keep it
+ * distinguishable from something the staff member actually clocked.
+ */
+export async function createTimeEntry(
+  input: z.infer<typeof TimeEntrySchema>,
+): Promise<ActionResult> {
+  const { error, studioId, userId } = await getAdminStudio();
+  if (error || !studioId || !userId) return { ok: false, error: error ?? "No studio." };
+
+  const parsed = TimeEntrySchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+  const data = parsed.data;
+
+  if (data.clockOutAt && Date.parse(data.clockOutAt) <= Date.parse(data.clockInAt)) {
+    return { ok: false, error: "Clock-out must be after clock-in." };
+  }
+
+  const admin = createAdminClient();
+
+  // The staff member must belong to this studio — the id arrives from a form.
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("id", data.staffId)
+    .eq("studio_id", studioId)
+    .in("role", ["teacher", "office", "admin"])
+    .maybeSingle();
+
+  if (!profile) return { ok: false, error: "Staff member not found." };
+
+  const { data: row, error: insertErr } = await admin
+    .from("staff_time_entries")
+    .insert({
+      studio_id: studioId,
+      staff_id: data.staffId,
+      entry_date: data.entryDate,
+      clock_in_at: data.clockInAt,
+      clock_out_at: data.clockOutAt || null,
+      hour_type: data.hourType,
+      source: "manual",
+      location_name: data.locationName || null,
+      department: data.department || null,
+      note: data.note || null,
+      created_by: userId,
+    })
+    .select("id")
+    .single();
+
+  if (insertErr) {
+    // The one-open-shift-per-staff index. Adding a second open entry by hand
+    // is how a timesheet quietly doubles.
+    if (insertErr.code === "23505") {
+      return { ok: false, error: "That staff member already has an open shift." };
+    }
+    return { ok: false, error: insertErr.message };
+  }
+
+  revalidateTimeclockPaths(data.staffId);
+  return { ok: true, id: row.id };
+}
+
+/**
+ * Correct an entry. Refuses while approved — a manager unapproves first, so
+ * that "this was signed off and then changed" is never silent.
+ */
+export async function updateTimeEntry(
+  id: string,
+  input: Partial<z.infer<typeof TimeEntrySchema>>,
+): Promise<ActionResult> {
+  const { error, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "No studio." };
+
+  const parsed = TimeEntrySchema.partial().safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+  const data = parsed.data;
+
+  const admin = createAdminClient();
+  const { data: existing } = await admin
+    .from("staff_time_entries")
+    .select("id, staff_id, clock_in_at, clock_out_at, approved_at")
+    .eq("id", id)
+    .eq("studio_id", studioId)
+    .maybeSingle();
+
+  if (!existing) return { ok: false, error: "Timesheet entry not found." };
+  if (existing.approved_at) {
+    return { ok: false, error: "Unapprove this entry before editing it." };
+  }
+
+  const clockInAt = data.clockInAt ?? (existing.clock_in_at as string);
+  const clockOutAt =
+    data.clockOutAt !== undefined ? data.clockOutAt : (existing.clock_out_at as string | null);
+
+  if (clockOutAt && Date.parse(clockOutAt) <= Date.parse(clockInAt)) {
+    return { ok: false, error: "Clock-out must be after clock-in." };
+  }
+
+  const { error: updateErr } = await admin
+    .from("staff_time_entries")
+    .update({
+      ...(data.entryDate ? { entry_date: data.entryDate } : {}),
+      clock_in_at: clockInAt,
+      clock_out_at: clockOutAt,
+      ...(data.hourType ? { hour_type: data.hourType } : {}),
+      ...(data.locationName !== undefined ? { location_name: data.locationName || null } : {}),
+      ...(data.department !== undefined ? { department: data.department || null } : {}),
+      ...(data.note !== undefined ? { note: data.note || null } : {}),
+    })
+    .eq("id", id)
+    .eq("studio_id", studioId);
+
+  if (updateErr) return { ok: false, error: updateErr.message };
+
+  revalidateTimeclockPaths(existing.staff_id as string);
+  return { ok: true, id };
+}
+
+export async function deleteTimeEntry(id: string): Promise<ActionResult> {
+  const { error, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "No studio." };
+
+  const admin = createAdminClient();
+  const { data: existing } = await admin
+    .from("staff_time_entries")
+    .select("id, approved_at")
+    .eq("id", id)
+    .eq("studio_id", studioId)
+    .maybeSingle();
+
+  if (!existing) return { ok: false, error: "Timesheet entry not found." };
+  if (existing.approved_at) {
+    return { ok: false, error: "Unapprove this entry before deleting it." };
+  }
+
+  const { error: deleteErr } = await admin
+    .from("staff_time_entries")
+    .delete()
+    .eq("id", id)
+    .eq("studio_id", studioId);
+
+  if (deleteErr) return { ok: false, error: deleteErr.message };
+
+  revalidateTimeclockPaths();
+  return { ok: true };
+}
+
+// ─── Pay rates ──────────────────────────────────────────────────────────────
+
+const PayRateSchema = z.object({
+  staffId: z.string().uuid(),
+  effectiveFrom: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  /** Whole cents. The form collects dollars; conversion happens client-side. */
+  rateCents: z.number().int().min(0).max(100_000_00),
+  currency: z.string().length(3).default("NZD"),
+});
+
+/**
+ * Set the rate in force from a date. Upserts on (staff_id, effective_from) so
+ * fixing a typo in today's rate doesn't leave two rows fighting over the day.
+ */
+export async function setPayRate(input: z.infer<typeof PayRateSchema>): Promise<ActionResult> {
+  const { error, studioId, userId } = await getAdminStudio();
+  if (error || !studioId || !userId) return { ok: false, error: error ?? "No studio." };
+
+  const parsed = PayRateSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+  const data = parsed.data;
+
+  const admin = createAdminClient();
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("id", data.staffId)
+    .eq("studio_id", studioId)
+    .maybeSingle();
+
+  if (!profile) return { ok: false, error: "Staff member not found." };
+
+  const { data: row, error: upsertErr } = await admin
+    .from("staff_pay_rates")
+    .upsert(
+      {
+        studio_id: studioId,
+        staff_id: data.staffId,
+        effective_from: data.effectiveFrom,
+        rate_cents: data.rateCents,
+        currency: data.currency,
+        created_by: userId,
+      },
+      { onConflict: "staff_id,effective_from" },
+    )
+    .select("id")
+    .single();
+
+  if (upsertErr) return { ok: false, error: upsertErr.message };
+
+  revalidateTimeclockPaths(data.staffId);
+  return { ok: true, id: row.id };
+}
+
+export async function deletePayRate(id: string): Promise<ActionResult> {
+  const { error, studioId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "No studio." };
+
+  const admin = createAdminClient();
+  const { error: deleteErr } = await admin
+    .from("staff_pay_rates")
+    .delete()
+    .eq("id", id)
+    .eq("studio_id", studioId);
+
+  if (deleteErr) return { ok: false, error: deleteErr.message };
+
+  revalidateTimeclockPaths();
+  return { ok: true };
+}

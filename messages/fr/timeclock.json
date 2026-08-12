@@ -1,0 +1,89 @@
+{
+  "timeclock": {
+    "title": "Pointeuse",
+    "clockedInSince": "En service depuis {time}",
+    "notClockedIn": "Pas pointé",
+    "viaCard": "Badge",
+    "onTheClock": "Écoulé",
+    "thisWeek": "Cette semaine",
+    "working": "En cours…",
+    "clockIn": "Pointer l'arrivée",
+    "clockOut": "Pointer la sortie",
+    "addNote": "Ajouter une note",
+    "notePlaceholder": "Sur quoi avez-vous travaillé ? (facultatif)",
+    "weekTotal": "{total} cette semaine",
+    "rostered": "{total} planifiées",
+    "overRoster": "{amount} de plus que prévu",
+    "underRoster": "{amount} de moins que prévu",
+    "openShift": "En cours",
+    "approved": "Validé",
+    "admin": {
+      "tabTitle": "Feuilles de temps",
+      "range": "Du {from} au {to}",
+      "summary": "{total} sur {count} entrées",
+      "openCount": "{count} encore en cours",
+      "pendingOnly": "À valider uniquement",
+      "addEntry": "Ajouter une entrée",
+      "approveSelected": "Valider la sélection ({count})",
+      "selectAll": "Tout sélectionner",
+      "selectNone": "Effacer la sélection",
+      "selectEntry": "Sélectionner cette entrée",
+      "empty": "Aucune heure enregistrée sur cette période.",
+      "unknownStaff": "Membre du personnel inconnu",
+      "openEnd": "toujours en service",
+      "approve": "Valider",
+      "unapprove": "Annuler la validation",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "stillOpen": "Toujours en cours",
+      "notRostered": "Non planifié",
+      "onRoster": "Conforme au planning",
+      "overBy": "{amount} de plus",
+      "underBy": "{amount} de moins",
+      "source": {
+        "portal": "Portail",
+        "nfc": "Badge",
+        "manual": "Saisie manuelle"
+      },
+      "hourType": {
+        "regular": "Normales",
+        "overtime": "Heures supplémentaires",
+        "holiday": "Jour férié",
+        "sick": "Congé maladie",
+        "vacation": "Congés payés",
+        "unpaid": "Non rémunérées"
+      },
+      "fields": {
+        "staff": "Membre du personnel",
+        "date": "Date",
+        "start": "Début",
+        "end": "Fin",
+        "hourType": "Type d'heures",
+        "note": "Note"
+      },
+      "errors": {
+        "needStart": "Une date et une heure de début sont requises.",
+        "needStaffAndStart": "Choisissez un membre du personnel, une date et une heure de début."
+      },
+      "rates": {
+        "title": "Taux horaires",
+        "subtitle": "Datés d’effet. Un nouveau taux ne recalcule jamais les feuilles de temps déjà validées.",
+        "empty": "Aucun taux enregistré — impossible de chiffrer les heures de cette personne.",
+        "perHour": "de l’heure",
+        "from": "à partir du {date}",
+        "current": "Actuel",
+        "remove": "Supprimer",
+        "add": "Ajouter un taux",
+        "fields": {
+          "amount": "Taux horaire",
+          "effectiveFrom": "En vigueur à partir du"
+        },
+        "errors": {
+          "needAmountAndDate": "Saisissez un taux horaire et sa date de prise d’effet."
+        }
+      }
+    }
+  }
+}

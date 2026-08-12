@@ -21,6 +21,15 @@
 //  the correct local day for studios in any timezone.
 //
 //  Requires env: SUPABASE_SERVICE_ROLE_KEY, CRON_SECRET.
+//
+//  CADENCE — THIS ROUTE MUST STAY DAILY.
+//  When the other crons moved to sub-daily schedules this one deliberately did
+//  not. It GENERATES notifications for a whole local day (every enrollee of
+//  tomorrow's classes, every birthday today) and has no dedupe: there is no
+//  uniqueness constraint on (user_id, type, day) and no check for an existing
+//  row. Running it twice in one local day sends every parent the same class
+//  reminder twice. Delivery frequency is /api/cron/deliver-notifications' job,
+//  and that one is safe to run often — this one is not.
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";

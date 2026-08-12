@@ -47,5 +47,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json({ ok: true, direction: result.direction, tappedAt: result.tappedAt });
+  // `cardKind`/`clock` let a reader show "Clocked in 9:02am" for a staff card.
+  // `clock` is advisory: a staff tap whose timesheet write failed is still a
+  // successful tap, because the safety register is what the hardware is for.
+  return NextResponse.json({
+    ok: true,
+    direction: result.direction,
+    tappedAt: result.tappedAt,
+    cardKind: result.cardKind,
+    clock: result.clock,
+  });
 }

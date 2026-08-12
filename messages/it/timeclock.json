@@ -1,0 +1,89 @@
+{
+  "timeclock": {
+    "title": "Timbratura",
+    "clockedInSince": "In servizio dalle {time}",
+    "notClockedIn": "Non hai timbrato",
+    "viaCard": "Tessera",
+    "onTheClock": "Finora",
+    "thisWeek": "Questa settimana",
+    "working": "Attendere…",
+    "clockIn": "Timbra entrata",
+    "clockOut": "Timbra uscita",
+    "addNote": "Aggiungi una nota",
+    "notePlaceholder": "A cosa hai lavorato? (facoltativo)",
+    "weekTotal": "{total} questa settimana",
+    "rostered": "{total} pianificate",
+    "overRoster": "{amount} in più del previsto",
+    "underRoster": "{amount} in meno del previsto",
+    "openShift": "Aperto",
+    "approved": "Approvato",
+    "admin": {
+      "tabTitle": "Fogli ore",
+      "range": "Dal {from} al {to}",
+      "summary": "{total} su {count} voci",
+      "openCount": "{count} ancora aperti",
+      "pendingOnly": "Solo da approvare",
+      "addEntry": "Aggiungi una voce",
+      "approveSelected": "Approva selezionati ({count})",
+      "selectAll": "Seleziona tutto",
+      "selectNone": "Annulla selezione",
+      "selectEntry": "Seleziona questa voce",
+      "empty": "Nessuna ora registrata in questo periodo.",
+      "unknownStaff": "Membro dello staff sconosciuto",
+      "openEnd": "ancora in servizio",
+      "approve": "Approva",
+      "unapprove": "Annulla approvazione",
+      "edit": "Modifica",
+      "delete": "Elimina",
+      "save": "Salva",
+      "cancel": "Annulla",
+      "stillOpen": "Ancora aperto",
+      "notRostered": "Non pianificato",
+      "onRoster": "In linea con il piano",
+      "overBy": "{amount} in più",
+      "underBy": "{amount} in meno",
+      "source": {
+        "portal": "Portale",
+        "nfc": "Tessera",
+        "manual": "Inserito a mano"
+      },
+      "hourType": {
+        "regular": "Ordinarie",
+        "overtime": "Straordinari",
+        "holiday": "Festività",
+        "sick": "Malattia",
+        "vacation": "Ferie",
+        "unpaid": "Non retribuite"
+      },
+      "fields": {
+        "staff": "Membro dello staff",
+        "date": "Data",
+        "start": "Inizio",
+        "end": "Fine",
+        "hourType": "Tipo di ore",
+        "note": "Nota"
+      },
+      "errors": {
+        "needStart": "Sono necessarie una data e un'ora di inizio.",
+        "needStaffAndStart": "Scegli un membro dello staff, una data e un'ora di inizio."
+      },
+      "rates": {
+        "title": "Tariffe orarie",
+        "subtitle": "Con data di decorrenza. Una nuova tariffa non ricalcola i fogli ore già approvati.",
+        "empty": "Nessuna tariffa registrata — le ore di questa persona non sono ancora valorizzabili.",
+        "perHour": "all’ora",
+        "from": "dal {date}",
+        "current": "Attuale",
+        "remove": "Rimuovi",
+        "add": "Aggiungi tariffa",
+        "fields": {
+          "amount": "Tariffa oraria",
+          "effectiveFrom": "In vigore dal"
+        },
+        "errors": {
+          "needAmountAndDate": "Inserisci una tariffa oraria e la data di decorrenza."
+        }
+      }
+    }
+  }
+}

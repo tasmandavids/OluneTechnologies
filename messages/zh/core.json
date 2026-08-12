@@ -173,7 +173,8 @@
       "checkin": "签到",
       "privateLessons": "私教课",
       "badges": "徽章",
-      "forms": "表单创建"
+      "forms": "表单创建",
+      "plan": "套餐与账单"
     },
     "teacher": {
       "schedule": "课程表与点名",
@@ -221,7 +222,8 @@
       "auditLog": "审计日志",
       "consoleTitle": "Olune 平台",
       "consoleSubtitle": "运营者控制台",
-      "badges": "徽章目录"
+      "badges": "徽章目录",
+      "plans": "套餐价格"
     },
     "shared": {
       "notifications": "通知设置"

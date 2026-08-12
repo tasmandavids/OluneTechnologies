@@ -1,7 +1,19 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTenantStudioId } from "@/lib/portal/tenant-studio";
+import { loadPlanAccessForStudio } from "@/lib/plans/server";
+import { isLocked } from "@/lib/plans/gate";
 import type { Role } from "@/lib/types";
+
+/**
+ * Error string returned when the studio's Olune subscription has lapsed.
+ *
+ * Every getAdminStudio()/getStudioOpsStudio() caller already branches on
+ * `error`, so the paywall surfaces through 25 action files without touching
+ * any of them — the callers just start seeing a different sentence.
+ */
+export const PLAN_LOCKED_ERROR =
+  "Your Olune subscription is not active. Visit Settings → Plan to restore access.";
 
 export type StudioAccess = {
   error: string | null;
@@ -23,7 +35,17 @@ export function resolveEffectiveStudioId(profile: {
   return (profile.active_studio_id as string | null) ?? profile.studio_id;
 }
 
-async function getStudioAccess(allowed: (role: Role) => boolean): Promise<StudioAccess> {
+/**
+ * @param allowed       Which roles this helper is for.
+ * @param skipPlanGate  Set only by the plan pages themselves. A locked studio
+ *                      has to be able to reach the screen that takes their
+ *                      money, so the one surface that fixes the lock cannot be
+ *                      behind it.
+ */
+async function getStudioAccess(
+  allowed: (role: Role) => boolean,
+  skipPlanGate = false,
+): Promise<StudioAccess> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -68,6 +90,21 @@ async function getStudioAccess(allowed: (role: Role) => boolean): Promise<Studio
     };
   }
 
+  // ── The paywall ───────────────────────────────────────────────────────────
+  // Enforced here rather than only in the portal layout because a layout
+  // redirect is a UX boundary, not a security one: server actions are still
+  // reachable by a crafted POST from a session that never renders a page.
+  // Everything downstream of this line is an admin or office write, which is
+  // exactly the set the paywall is meant to stop — teachers, parents and
+  // students resolve through getParentStudio()/getPortalSession() and are
+  // untouched, as is the studio's public site.
+  if (!skipPlanGate) {
+    const access = await loadPlanAccessForStudio(supabase, studioId);
+    if (isLocked(access)) {
+      return { error: PLAN_LOCKED_ERROR, supabase, studioId: null, userId: user.id, role };
+    }
+  }
+
   return {
     error: null,
     supabase,
@@ -80,6 +117,16 @@ async function getStudioAccess(allowed: (role: Role) => boolean): Promise<Studio
 /** Studio admin only — billing, staff HR, settings, etc. */
 export async function getAdminStudio(): Promise<StudioAccess> {
   return getStudioAccess((role) => role === "admin");
+}
+
+/**
+ * Studio admin, with the paywall deliberately bypassed.
+ *
+ * Only the plan pages may use this. Anything else calling it is a hole in the
+ * gate, not a convenience.
+ */
+export async function getAdminStudioForBilling(): Promise<StudioAccess> {
+  return getStudioAccess((role) => role === "admin", true);
 }
 
 /** Front-desk + studio admin — parents, students, leads, messages, classes. */

@@ -1,0 +1,115 @@
+{
+  "plan": {
+    "page": {
+      "title": "Your Olune plan",
+      "subtitle": "What you're on, what it costs, and how to change it."
+    },
+    "banner": {
+      "title": "{days, plural, one {# day left in your trial} other {# days left in your trial}}",
+      "titleUnknown": "You're on a free trial",
+      "body": "Choose a plan any time — nothing is charged until you do.",
+      "cta": "Choose a plan"
+    },
+    "interval": {
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "saving": "Two months free on annual billing."
+    },
+    "mostPopular": "Most popular",
+    "perMonth": "/mo",
+    "perYear": "/yr",
+    "choosePlan": "Choose this plan",
+    "currentPlan": "Your current plan",
+    "opening": "Opening…",
+    "manageBilling": "Manage billing",
+    "moreModules": "{count, plural, one {and # more} other {and # more}}",
+    "unlimitedStudents": "Every plan includes unlimited students. We don't charge you for growing.",
+    "modules": {
+      "classes": "Class scheduling",
+      "attendance": "Attendance & registers",
+      "billing": "Invoicing & payments",
+      "messaging": "Messaging",
+      "leads": "Leads & enquiries",
+      "forms": "Forms & waivers",
+      "staff": "Staff records & time clock",
+      "availability": "Teacher availability",
+      "substitutes": "Substitute cover",
+      "privateLessons": "Private lessons",
+      "site": "Website & social posting",
+      "shop": "Online shop",
+      "passes": "Class passes",
+      "badges": "Badges & rewards",
+      "progress": "Student progress",
+      "production": "Recitals & productions",
+      "costumes": "Costume management",
+      "fixtures": "Fixtures & results",
+      "competitions": "Competitions & gradings",
+      "skills": "Skill frameworks",
+      "venues": "Multiple venues"
+    },
+    "plans": {
+      "solo": {
+        "name": "Solo",
+        "tagline": "One teacher, one timetable",
+        "body": "Run your classes, take the register and get paid. Everything a sole-trader teacher actually uses, and nothing else."
+      },
+      "studio": {
+        "name": "Studio",
+        "tagline": "A team and a front desk",
+        "body": "Adds the things that only matter once someone else is teaching for you, and once you're talking to people who haven't enrolled yet."
+      },
+      "scale": {
+        "name": "Scale",
+        "tagline": "Multi-venue, multi-programme",
+        "body": "Every module Olune has, including the ones your activity adds — competitions, recitals, skill frameworks, venues."
+      }
+    },
+    "status": {
+      "trialing": "Free trial",
+      "active": "Active",
+      "past_due": "Payment failed",
+      "canceled": "Cancelled",
+      "comped": "Complimentary"
+    },
+    "current": {
+      "heading": "Current plan",
+      "status": "Status",
+      "comped": "On the house",
+      "trialEnds": "Trial ends {date}",
+      "daysLeft": "{days, plural, one {# day left} other {# days left}}",
+      "renewsOn": "Renews {date}",
+      "endsOn": "Access ends {date}",
+      "portalHint": "Update your card, download invoices or cancel through Stripe."
+    },
+    "choose": {
+      "trialHeading": "Choose a plan",
+      "changeHeading": "Change plan",
+      "body": "Switch any time. Stripe prorates the difference on the same day."
+    },
+    "locked": {
+      "othersUnaffected": "Your teachers, parents and students are unaffected, and your website, bookings and enrolments are still live.",
+      "contactSupport": "This studio has been suspended by Olune. Please contact support to restore access.",
+      "trial_expired": {
+        "title": "Your free trial has ended",
+        "body": "Your studio and everything in it is exactly where you left it. Choose a plan to get back in."
+      },
+      "payment_failed": {
+        "title": "We couldn't take your payment",
+        "body": "Your last payment didn't go through. Update your card and you'll be straight back in.",
+        "orUpdateCard": "Already have a plan? Fix your card instead."
+      },
+      "canceled": {
+        "title": "Your subscription has ended",
+        "body": "Nothing has been deleted. Choose a plan whenever you're ready to pick it back up."
+      },
+      "suspended": {
+        "title": "This studio is suspended",
+        "body": "Access has been paused by Olune rather than by a billing problem."
+      }
+    },
+    "errors": {
+      "checkoutFailed": "We couldn't start checkout. Please try again.",
+      "portalFailed": "We couldn't open your billing portal. Please try again."
+    }
+  }
+}

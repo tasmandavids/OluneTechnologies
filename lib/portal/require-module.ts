@@ -42,6 +42,7 @@ export class ModuleUnavailableError extends Error {
   }
 }
 
+
 type Resolved = { entitlements: Entitlements; role: Role | null };
 
 async function resolveCurrent(): Promise<Resolved | null> {
@@ -83,6 +84,12 @@ export async function requireModule(key: ModuleKey): Promise<Entitlements> {
 /**
  * Server-action guard. Throws rather than redirecting — a redirect inside a
  * mutation would look like success to the caller.
+ *
+ * Deliberately carries NO paywall check. This guard is reached by parent-facing
+ * actions too (app/portal/parent/recital/actions.ts), and an unpaid Olune bill
+ * must never break a family's enrolment. The paywall is enforced one layer up,
+ * in getAdminStudio()/getStudioOpsStudio() (lib/portal/access.ts), which is
+ * where "this caller is the studio's admin or office" is already decided.
  */
 export async function assertModule(key: ModuleKey): Promise<Entitlements> {
   const resolved = await resolveCurrent();

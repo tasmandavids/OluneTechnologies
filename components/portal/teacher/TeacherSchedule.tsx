@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { useFullDayNames, useTimeGreeting, useFormatTimeShort } from "@/lib/i18n/client";
 import { markAttendance } from "@/app/portal/teacher/actions";
+import TimeClockCard from "@/components/portal/timeclock/TimeClockCard";
+import type { ClockState } from "@/lib/timeclock/types";
 import type { TeacherClass } from "@/app/portal/teacher/page";
 
 type AttStatus = "present" | "absent" | "late" | "excused" | null;
@@ -234,6 +236,7 @@ export default function TeacherSchedule({
   todayDate,
   isInstructor = false,
   incomeSummary,
+  clockState = null,
 }: {
   teacherName: string | null;
   classes: TeacherClass[];
@@ -242,6 +245,10 @@ export default function TeacherSchedule({
   dayNames?: string[];
   isInstructor?: boolean;
   incomeSummary?: { paidCents: number; outstandingCents: number; privateClients: number } | null;
+  /** Null for a teacher with no studio — a marketplace instructor has no shift
+   *  to record here, and the clock would only offer them an action that the
+   *  server action would then refuse. */
+  clockState?: ClockState | null;
 }) {
   const t = useTranslations("teacher.schedule");
   const locale = useLocale();
@@ -279,6 +286,12 @@ export default function TeacherSchedule({
           })}
         </p>
       </motion.header>
+
+      {clockState && (
+        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+          <TimeClockCard state={clockState} />
+        </motion.div>
+      )}
 
       <motion.section variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
         <h2 className="mb-3 text-xs uppercase tracking-widest text-muted">

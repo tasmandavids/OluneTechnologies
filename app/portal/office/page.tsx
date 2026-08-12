@@ -8,6 +8,8 @@ import { getWeekRange } from "@/lib/staff/week";
 import { formatTimeShort } from "@/lib/i18n/format";
 import { getTranslations, getLocale } from "@/lib/i18n/server";
 import { studioLocalYmd } from "@/lib/date/studio-date";
+import { getClockState } from "@/lib/timeclock/queries";
+import TimeClockCard from "@/components/portal/timeclock/TimeClockCard";
 
 export default async function OfficeHomePage() {
   const { supabase, studioId, userId, role } = await requirePortalSession();
@@ -25,7 +27,7 @@ export default async function OfficeHomePage() {
   const today = studioLocalYmd();
   const { weekStart, weekEnd } = getWeekRange();
 
-  const [profileRes, shiftsRes, studioShiftsRes] = await Promise.all([
+  const [profileRes, shiftsRes, studioShiftsRes, clockState] = await Promise.all([
     supabase
       .from("profiles")
       .select("full_name")
@@ -51,6 +53,8 @@ export default async function OfficeHomePage() {
       .eq("studio_id", studioId ?? "")
       .eq("shift_date", today)
       .order("start_time"),
+
+    getClockState(supabase, userId),
   ]);
 
   const myShifts = shiftsRes.data ?? [];
@@ -75,6 +79,8 @@ export default async function OfficeHomePage() {
           {t("weekOf", { date: today, weekStart })}
         </p>
       </div>
+
+      <TimeClockCard state={clockState} />
 
       <section className="box rounded-2xl p-5">
         <h2 className="mb-3 text-lg font-bold text-ink">{t("upcomingShifts")}</h2>

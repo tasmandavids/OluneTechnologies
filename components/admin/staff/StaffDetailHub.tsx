@@ -26,6 +26,7 @@ import { EMPLOYMENT_TYPES, STAFF_PORTAL_ROLES, WORK_LOCATIONS } from "@/lib/staf
 import { formatTimeShort } from "@/lib/i18n/format";
 import { useLocale } from "next-intl";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
+import PayRatesPanel, { type PayRateRow } from "@/components/admin/staff/PayRatesPanel";
 
 type Tab = "profile" | "employment" | "contract" | "shifts";
 
@@ -34,11 +35,13 @@ export default function StaffDetailHub({
   shifts,
   managerOptions,
   locations,
+  payRates = [],
 }: {
   staff: StaffDetail;
   shifts: StaffShift[];
   managerOptions: StaffOption[];
   locations: string[];
+  payRates?: PayRateRow[];
 }) {
   const t = useTranslations("admin.staff.detail");
   const tStaff = useTranslations("admin.staff");
@@ -448,6 +451,7 @@ export default function StaffDetailHub({
       )}
 
       {tab === "contract" && (
+        <div className="space-y-4">
         <GlassPanel className="space-y-4 !p-5">
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase text-muted">
@@ -483,6 +487,16 @@ export default function StaffDetailHub({
             {pending ? tShared("saving") : tCommon("save")}
           </button>
         </GlassPanel>
+
+        {/* Rates sit beside the free-text pay notes rather than replacing
+            them: 0118 makes staff_pay_rates the source of truth for money,
+            and studios keep real prose ("reviews in April") in the notes. */}
+        <PayRatesPanel
+          staffId={staff.id}
+          rates={payRates}
+          onSaved={() => router.refresh()}
+        />
+        </div>
       )}
 
       {tab === "shifts" && (
