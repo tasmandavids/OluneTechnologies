@@ -3,18 +3,18 @@
     "hero": {
       "titleLine1": "Gestisci tutto lo studio.",
       "titleLine2": "Addio al caos.",
-      "subtitle": "Progetti, finanze e siti client live in un unico posto — l'amministrazione si gestisce da sola e recuperi il tuo tempo.",
+      "subtitle": "Iscrizioni, orari, presenze e quote in un unico posto — l'amministrazione si gestisce da sola e le tue serate tornano tue.",
       "seeInAction": "Guardalo in azione",
-      "quote": "Basta destreggiarsi tra sei strumenti, tre fogli di calcolo e un sito sempre indietro di un aggiornamento.",
+      "quote": "Basta registri di carta, basta rincorrere le quote, basta orari sparsi in tre fogli di calcolo diversi.",
       "marquee": {
-        "projects": "Progetti",
         "invoicing": "Fatturazione",
-        "liveSites": "Siti live",
-        "cashFlow": "Flusso di cassa",
-        "clients": "Clienti",
-        "tasks": "Attività",
-        "quotes": "Preventivi",
-        "expenses": "Spese"
+        "enrolments": "Iscrizioni",
+        "timetables": "Orari",
+        "payments": "Pagamenti",
+        "families": "Famiglie",
+        "attendance": "Presenze",
+        "classes": "Corsi",
+        "reports": "Report"
       }
     },
     "studioHero": {
@@ -40,20 +40,20 @@
     "problem": {
       "eyebrow": "L'aspetto umano",
       "title": "Non hai aperto uno studio per fare amministrazione.",
-      "body1": "L'hai aperto per fare un gran lavoro. Ma tra fatture, tracker di progetto, modifiche ai siti client e le e-mail «domanda veloce», il lavoro che ami è finito sepolto sotto quello che non ami.",
-      "body2": "Olune riunisce tutto in un unico posto — e fa il grosso del lavoro in silenzio in background, così le tue serate tornano tue.",
-      "sceneCaption": "21:14 — fatture già inviate. <i>Le serate, restituite.</i>",
+      "body1": "L'hai aperto per insegnare. Ma tra le fatture del trimestre, i registri di carta, le e-mail dei genitori e un sito che mostra ancora l'orario dell'anno scorso, l'amministrazione si è mangiata la settimana.",
+      "body2": "Olune raccoglie tutto in un unico posto — e fa in silenzio il lavoro pesante, così le tue serate smettono di appartenere alle scartoffie.",
+      "sceneCaption": "21:14 — fatture del trimestre già inviate. <i>Le serate, restituite.</i>",
       "oldWay": "Il vecchio modo",
       "newWay": "Il modo Olune",
       "oldWayItems": [
         "Fogli di calcolo",
-        "Strumento PM",
-        "App di contabilità",
-        "Website builder",
-        "E-mail infinite",
-        "Post-it",
-        "Calendari",
-        "Documenti clienti"
+        "Registri di carta",
+        "Software contabile",
+        "Costruttore di siti",
+        "E-mail dei genitori",
+        "Foglietti adesivi",
+        "Calendari da parete",
+        "Elenchi dei corsi"
       ],
       "newWayCaption": "Tutto, in un'unica casa serena."
     },
@@ -61,33 +61,33 @@
       "eyebrow": "Tutto, in un unico posto",
       "title": "Un'unica casa per tutto.",
       "cells": {
-        "liveSites": {
-          "title": "Siti client live",
-          "body": "Crea e modifica siti in tempo reale — senza sviluppatori, senza attese per una modifica al testo."
-        },
         "invoicing": {
-          "title": "Fatturazione",
-          "body": "Invia, monitora e incassa senza uscire da Olune."
+          "title": "Fatture e quote",
+          "body": "Quote inviate, pagamenti incassati, solleciti gestiti."
         },
         "cashFlow": {
           "title": "Flusso di cassa",
           "body": "Entrate e uscite, in tempo reale."
         },
-        "quotes": {
-          "title": "Preventivi",
-          "body": "Da bozza ad accettato, in fretta."
+        "website": {
+          "title": "Il sito del tuo studio",
+          "body": "Orari, corsi e prezzi su un sito che modifichi tu — online nel momento in cui lo cambi."
         },
-        "projects": {
-          "title": "Progetti e attività",
-          "body": "Ogni scadenza in una vista serena."
+        "paymentPlans": {
+          "title": "Pagamenti rateali",
+          "body": "Dividi un trimestre. Incassato in automatico."
         },
-        "expenses": {
-          "title": "Spese",
-          "body": "Registrale una volta. Fatto."
+        "classes": {
+          "title": "Corsi e orari",
+          "body": "Ogni corso, sala ed elenco in un'unica vista chiara."
         },
-        "clients": {
-          "title": "Clienti",
-          "body": "Tutto su tutti."
+        "checkin": {
+          "title": "Check-in con un tocco",
+          "body": "Un tocco alla porta. Presenza registrata."
+        },
+        "families": {
+          "title": "Famiglie",
+          "body": "Ogni allievo, genitore e fratello, insieme."
         }
       },
       "stats": {
@@ -100,7 +100,7 @@
           "label": "strumenti sostituiti da uno solo"
         },
         "price": {
-          "n": "19 $",
+          "n": "29 $",
           "label": "dove lo stack costa 80–150 $"
         }
       }
@@ -112,15 +112,15 @@
       "items": {
         "faster": {
           "title": "Più veloce del patchwork",
-          "body": "Smetti di mettere insieme uno strumento PM, un'app contabile, un website builder e una dozzina di schede. Olune fa tutto in uno — meno passaggi, meno errori, ore restituite ogni settimana."
+          "body": "Smetti di mettere insieme un gestionale corsi, un'app di contabilità, un costruttore di siti e dodici schede. Olune fa tutto in uno."
         },
         "value": {
           "title": "Miglior valore dello stack",
-          "body": "Sostituisci tre o quattro abbonamenti con un prezzo equo. Ottieni di più, paghi meno, e sai sempre quanto costa — niente livelli a sorpresa, niente micro-addebiti."
+          "body": "Sostituisci tre o quattro abbonamenti con un prezzo giusto. Ottieni di più, paghi meno, e sai sempre quanto costerà il mese prossimo."
         },
         "craft": {
           "title": "Fatto con cura",
-          "body": "Creato da persone che capiscono davvero gli studi. Ogni schermata è veloce, pulita e pensata — il tipo di strumento che apri volentieri, non quello che temi."
+          "body": "Creato da chi conosce gli studi — il ritmo dei trimestri, la corsa al saggio, la famiglia che paga sempre in ritardo. Ogni schermata è veloce, pulita e pensata."
         }
       }
     },
@@ -130,27 +130,27 @@
       "items": {
         "mornings": {
           "title": "Mattine più serene",
-          "body": "Apri Olune e la giornata si dispone da sola — niente più caccia tra le app."
+          "body": "Apri Olune e la giornata si dispone da sola — ogni corso, ogni assenza, ogni quota ancora da incassare."
         },
         "money": {
           "title": "I soldi hanno senso",
-          "body": "Invia una fattura, registra una spesa, vedi l'impatto all'istante."
-        },
-        "clients": {
-          "title": "Clienti soddisfatti",
-          "body": "Modifica il loro sito live durante una call e guarda il loro viso illuminarsi."
+          "body": "Invia una fattura del trimestre, vedi chi ha pagato, sollecita il resto con un tocco."
         },
         "evenings": {
           "title": "Serate restituite",
           "body": "Quando l'amministrazione si gestisce da sola, il tempo libero smette di essere un miraggio."
+        },
+        "families": {
+          "title": "Le famiglie restano informate",
+          "body": "I genitori ricevono avvisi di arrivo e fatture senza che tu scriva una sola e-mail."
         }
       }
     },
     "promise": {
       "eyebrow": "La promessa",
-      "title": "Più creazione.",
-      "titleEmphasis": "Meno gestione.",
-      "body": "Olune non è qui per aggiungere un'altra scheda alla tua giornata. È qui per togliere silenziosamente il peso — progetti, finanze, siti — così torni al lavoro per cui hai iniziato.",
+      "title": "Più insegnamento.",
+      "titleEmphasis": "Meno amministrazione.",
+      "body": "Olune non è qui per aggiungere una scheda alla tua giornata. È qui per togliere il peso — le iscrizioni, i registri, le quote e il sito — così puoi tornare in sala.",
       "cta": "Inizia la prova gratuita",
       "footnote": "Nessuna carta richiesta. Configurazione in pochi minuti."
     },
@@ -158,63 +158,63 @@
       "eyebrow": "Prezzi",
       "title": "Prezzi equi.",
       "titleEmphasis": "Nessuna sorpresa.",
-      "subtitle": "Un piano sostituisce lo strumento di progetto, l'app contabile e il website builder. Paghi una cosa, non quattro.",
+      "subtitle": "Un piano sostituisce il gestionale corsi, l'app di contabilità e il costruttore di siti. Paghi una cosa sola, non quattro.",
       "mostPopular": "Più popolare",
       "perMonth": "/mese",
       "plans": {
         "solo": {
           "name": "Solo",
-          "tag": "per lo studio one-person",
-          "price": "$19",
-          "desc": "Tutto ciò che serve per gestire progetti, inviare fatture e un sito client. Perfetto per i freelance che fanno tutto."
+          "tag": "per lo studio di una persona",
+          "price": "29 $",
+          "desc": "Tutto il necessario per insegnare, fare l'appello e incassare le quote. Per lo studio di una sola persona."
         },
         "studio": {
           "name": "Studio",
           "tag": "più popolare",
-          "price": "$49",
-          "desc": "Per piccoli team. Progetti illimitati, suite finanziaria completa, siti live fino a 10 client, accesso team."
+          "price": "59 $",
+          "desc": "Tutto quello che c'è in Solo, più personale, sostituzioni, moduli di iscrizione e il sito del tuo studio — ciò che conta quando c'è una squadra."
         },
         "scale": {
           "name": "Scale",
-          "tag": "per studi in crescita",
-          "price": "$99",
-          "desc": "Tutto illimitato — siti, membri del team e clienti — più supporto prioritario e report finanziari avanzati."
+          "tag": "per studi molto attivi",
+          "price": "120 $",
+          "desc": "Ogni modulo di Olune, comprese lezioni private, badge e progressi, saggi e costumi."
         }
       },
       "includes": "Ogni piano include:",
-      "includesBody": "creazione siti in tempo reale, fatturazione e spese integrate, gestione progetti e aggiornamenti gratuiti. Nessun costo di setup. Nessuna carta per iniziare. Disdici quando vuoi.",
+      "includesBody": "allievi illimitati, iscrizioni e orari, presenze, fatturazione e pagamenti, e aggiornamenti gratuiti. Mai costi di attivazione.",
       "honestMath": "Il calcolo onesto:",
-      "honestMathBody": "Uno strumento PM, un'app contabile e un website builder costano di solito $80–150/mese combinati. Olune fa tutti e tre da $19.",
+      "honestMathBody": "Quasi tutti i gestionali per studi fanno pagare in base al numero di allievi, così il conto cresce a ogni trimestre andato bene. Ogni piano Olune ha allievi illimitati — il prezzo cambia solo se vuoi più Olune.",
       "trialNote": "14 giorni, nessuna carta richiesta."
     },
     "featuresSection": {
       "eyebrow": "Cosa fa Olune",
       "title": "Tre compiti.",
       "titleEmphasis": "Una casa.",
-      "manageStudio": {
-        "title": "Gestisci lo studio",
-        "subtitle": "Ogni progetto, scadenza, cliente e attività in una vista chiara. Sai esattamente cosa scade, cosa slitta e cosa è fatto — senza il panico del mattino."
-      },
       "money": {
         "title": "Tieni sotto controllo le finanze",
-        "subtitle": "Preventivi, fatture, spese e flusso di cassa integrati. Guarda entrate e uscite in tempo reale, così la parte finanziaria smette di spaventare ogni trimestre."
+        "subtitle": "Fatture del trimestre, pagamenti rateali e incassi con carta o bonifico, integrati. Guarda cosa è entrato e cosa è ancora dovuto, in tempo reale."
       },
       "liveSites": {
-        "title": "Crea e aggiorna siti live",
-        "subtitle": "Avvia e modifica siti client in tempo reale, dentro Olune. Niente salti tra piattaforme, niente attese per un cambio testo — lo vedi cambiare mentre scrivi."
+        "title": "Tieni il sito sempre aggiornato",
+        "subtitle": "Orari, corsi e prezzi su un sito che modifichi tu — pubblicato nel momento in cui lo cambi. Senza sviluppatori, senza attese."
+      },
+      "runClasses": {
+        "title": "Gestisci i corsi",
+        "subtitle": "Ogni corso, iscrizione, registro e famiglia in un'unica vista chiara. Sai chi c'è, chi manca e chi non si è ancora iscritto per il prossimo trimestre."
       }
     },
     "aboutSection": {
       "eyebrow": "Chi siamo",
       "title": "Creato da persone di studio,",
       "titleEmphasis": "per persone di studio.",
-      "body1": "Abbiamo gestito studi. Conosciamo la corsa alle fatture alle 23, il sito client sempre indietro, il foglio di calcolo che capisce solo una persona. Ci siamo stancati di tenere insieme cinque strumenti sperando che nulla cadesse nel vuoto.",
-      "body2": "Così abbiamo costruito quello che avremmo voluto avere — un sistema calmo che tiene insieme progetti, soldi e siti, e fa il lavoro ripetitivo in silenzio in background.",
-      "body3": "Olune esiste per un motivo: restituire tempo alle persone creative. Meno gestione. Più creazione. Questa è l'intera idea.",
+      "body1": "Abbiamo gestito studi. Conosciamo la corsa alle fatture alle 23, il registro mai tornato in segreteria, il sito che mostra ancora l'orario dell'anno scorso.",
+      "body2": "Così abbiamo costruito quello che avremmo voluto avere — un sistema calmo che tiene i corsi, le famiglie, i soldi e il sito, e li mantiene allineati.",
+      "body3": "Olune esiste per un motivo: restituire tempo a chi manda avanti uno studio. Meno amministrazione. Più insegnamento. È tutta qui l'idea.",
       "meetTeam": "Incontra il team",
       "ourStory": "La nostra storia",
-      "quote": "Meno gestione. Più creazione.",
-      "sceneCaption": "Progetti · Soldi · Siti — <i>in orbita attorno al tuo studio.</i>",
+      "quote": "Meno amministrazione. Più insegnamento.",
+      "sceneCaption": "Corsi · Famiglie · Soldi — <i>in orbita attorno al tuo studio.</i>",
       "principles": {
         "studioRun": {
           "t": "Gestito da studi",
@@ -226,30 +226,25 @@
         },
         "allInOne": {
           "t": "Tutto in uno",
-          "d": "Progetti, soldi e siti, insieme."
+          "d": "Corsi, famiglie, soldi e il tuo sito, insieme."
         }
       }
     },
     "compareSection": {
       "eyebrow": "Confronta",
       "title": "Perché gli studi passano a Olune",
-      "subtitle": "La maggior parte degli studi funziona con un patchwork — uno strumento di progetto qui, un'app contabile là, un website builder a parte e fogli di calcolo che tengono tutto insieme. Funziona, finché non funziona più.",
+      "subtitle": "La maggior parte degli studi va avanti con un mosaico — un gestionale corsi qui, un'app di contabilità là, un costruttore di siti a parte e un foglio di calcolo che tiene insieme tutto.",
       "stackHeader": "Lo stack abituale",
       "rows": {
-        "projects": {
-          "label": "Progetti",
-          "stack": "Un'app",
-          "olune": "Integrato"
-        },
         "invoicing": {
-          "label": "Fatturazione e finanze",
+          "label": "Fatture e pagamenti",
           "stack": "Una seconda app",
           "olune": "Integrato"
         },
         "websites": {
-          "label": "Creazione siti live",
+          "label": "Il sito del tuo studio",
           "stack": "Una terza app",
-          "olune": "Integrato, tempo reale"
+          "olune": "Integrato, in tempo reale"
         },
         "sync": {
           "label": "Tutto sincronizzato",
@@ -270,12 +265,17 @@
           "label": "Fatto per gli studi",
           "stack": "Generico",
           "olune": "Su misura"
+        },
+        "classes": {
+          "label": "Corsi e iscrizioni",
+          "stack": "Un'app",
+          "olune": "Integrato"
         }
       },
       "highlights": {
         "faster": {
           "k": "Più veloce",
-          "v": "Niente passaggi tra app o reinserimento degli stessi dati tre volte."
+          "v": "Nessun passaggio tra app, nessun elenco corsi da reinserire tre volte."
         },
         "cheaper": {
           "k": "Più economico",

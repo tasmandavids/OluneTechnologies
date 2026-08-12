@@ -190,3 +190,91 @@ export function personJsonLd(params: {
       : {}),
   } as const;
 }
+
+/**
+ * JSON-LD Article schema for an editorial page (/guides, /compare).
+ *
+ * Publisher is the Olune organisation rather than a named author: these are
+ * product-team pages, and claiming a byline Google can't corroborate anywhere
+ * else is worse than claiming none.
+ */
+export function articleJsonLd(params: {
+  url: string;
+  headline: string;
+  description: string;
+  /** ISO date — surfaces as the freshness signal on the result. */
+  dateModified: string;
+}) {
+  const { url, headline, description, dateModified } = params;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    headline,
+    description,
+    dateModified,
+    datePublished: dateModified,
+    publisher: {
+      "@type": "Organization",
+      name: "Olune",
+      url: CANONICAL_ORIGIN,
+    },
+  } as const;
+}
+
+/**
+ * JSON-LD BreadcrumbList. Google prints these above the blue link in place of
+ * the raw URL, so a nested page reads as "olune.co.nz › Guides › …" rather
+ * than a slug. Pass the trail in order, excluding the site root.
+ */
+export function breadcrumbJsonLd(trail: { name: string; path: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [{ name: "Olune", path: "/" }, ...trail].map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: rootUrl(item.path),
+    })),
+  } as const;
+}
+
+/** JSON-LD ItemList for an index page, so the collection reads as a set. */
+export function itemListJsonLd(items: { name: string; path: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      url: rootUrl(item.path),
+    })),
+  } as const;
+}
+
+/**
+ * JSON-LD Product + Offer list for the pricing page. Prices must match the
+ * rendered table exactly — Google drops offer markup that contradicts the
+ * visible page, and this is the one page where it definitely checks.
+ */
+export function pricingJsonLd(plans: { name: string; price: string; desc: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: "Olune",
+    description:
+      "Studio management software for dance and fitness studios — enrolments, timetables, attendance, term fees and a live studio website.",
+    brand: { "@type": "Brand", name: "Olune" },
+    offers: plans.map((p) => ({
+      "@type": "Offer",
+      name: p.name,
+      description: p.desc,
+      price: p.price,
+      priceCurrency: CURRENCY_CODE,
+      url: rootUrl("/pricing"),
+      availability: "https://schema.org/InStock",
+    })),
+  } as const;
+}

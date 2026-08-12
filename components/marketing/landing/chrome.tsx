@@ -44,14 +44,16 @@ export function LandingNav() {
     return () => obs.disconnect();
   }, []);
 
+  // Pricing points at the real /pricing route rather than the homepage anchor:
+  // an anchor can't rank, can't be linked to, and can't be shared.
   const links = [
     { label: t("features"), href: "/#features" },
-    { label: t("pricing"), href: "/#pricing" },
+    { label: t("pricing"), href: "/pricing" },
+    { label: "Guides", href: "/guides" },
     { label: "Mobile", href: "/mobile" },
     { label: "Card", href: "/card" },
     { label: "FAQ", href: "/faq" },
     { label: "Team", href: "/team" },
-    { label: "Updates", href: "/#updates" },
     { label: t("about"), href: "/#about" },
   ];
 
@@ -105,7 +107,9 @@ export function LandingFooter() {
 
   const footerLinks = [
     { label: t("features"), href: "/#features" },
-    { label: t("pricing"), href: "/#pricing" },
+    { label: t("pricing"), href: "/pricing" },
+    { label: "Guides", href: "/guides" },
+    { label: "Compare", href: "/compare" },
     { label: "Mobile", href: "/mobile" },
     { label: "Card", href: "/card" },
     { label: "FAQ", href: "/faq" },

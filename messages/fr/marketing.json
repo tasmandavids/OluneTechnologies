@@ -3,18 +3,18 @@
     "hero": {
       "titleLine1": "Pilotez tout votre studio.",
       "titleLine2": "Fini le chaos.",
-      "subtitle": "Projets, finances et sites clients en direct au même endroit — l'administration se gère toute seule et vous retrouvez votre temps.",
+      "subtitle": "Inscriptions, plannings, présences et cotisations au même endroit — l'administratif se gère seul et vos soirées vous reviennent.",
       "seeInAction": "Voir en action",
-      "quote": "Fini de jongler entre six outils, trois tableurs et un site toujours en retard d'une mise à jour.",
+      "quote": "Fini les feuilles de présence papier, les relances de cotisations et le planning éparpillé dans trois tableurs.",
       "marquee": {
-        "projects": "Projets",
         "invoicing": "Facturation",
-        "liveSites": "Sites en direct",
-        "cashFlow": "Trésorerie",
-        "clients": "Clients",
-        "tasks": "Tâches",
-        "quotes": "Devis",
-        "expenses": "Dépenses"
+        "enrolments": "Inscriptions",
+        "timetables": "Plannings",
+        "payments": "Paiements",
+        "families": "Familles",
+        "attendance": "Présences",
+        "classes": "Cours",
+        "reports": "Rapports"
       }
     },
     "studioHero": {
@@ -40,20 +40,20 @@
     "problem": {
       "eyebrow": "L'aspect humain",
       "title": "Vous n'avez pas créé un studio pour faire de l'admin.",
-      "body1": "Vous l'avez créé pour produire du beau travail. Mais entre les factures, les outils de suivi, les modifications de sites clients et les e-mails « petite question », le travail que vous aimez s'est retrouvé noyé sous celui que vous n'aimez pas.",
-      "body2": "Olune regroupe tout au même endroit — et s'occupe discrètement du gros du travail en arrière-plan, pour que vos soirées vous appartiennent à nouveau.",
-      "sceneCaption": "21 h 14 — factures déjà envoyées. <i>Les soirées, retrouvées.</i>",
+      "body1": "Vous l'avez ouvert pour enseigner. Mais entre les factures de trimestre, les feuilles de présence, les e-mails des parents et un site qui affiche encore le planning de l'an dernier, l'administratif a dévoré votre semaine.",
+      "body2": "Olune rassemble tout au même endroit — et fait discrètement le gros du travail en arrière-plan, pour que vos soirées cessent d'appartenir à la paperasse.",
+      "sceneCaption": "21h14 — factures du trimestre déjà envoyées. <i>Les soirées, retrouvées.</i>",
       "oldWay": "L'ancienne méthode",
       "newWay": "La méthode Olune",
       "oldWayItems": [
         "Tableurs",
-        "Outil de gestion",
-        "Appli comptable",
+        "Feuilles papier",
+        "Logiciel comptable",
         "Créateur de site",
-        "Fils d'e-mails",
+        "E-mails des parents",
         "Pense-bêtes",
-        "Calendriers",
-        "Documents clients"
+        "Calendriers muraux",
+        "Listes de cours"
       ],
       "newWayCaption": "Tout, dans un seul endroit serein."
     },
@@ -61,33 +61,33 @@
       "eyebrow": "Tout, au même endroit",
       "title": "Un seul lieu pour tout.",
       "cells": {
-        "liveSites": {
-          "title": "Sites clients en direct",
-          "body": "Lancez et modifiez des sites en temps réel — sans développeur, sans attendre un changement de texte."
-        },
         "invoicing": {
-          "title": "Facturation",
-          "body": "Envoyez, suivez et soyez payé sans quitter Olune."
+          "title": "Factures et cotisations",
+          "body": "Cotisations envoyées, paiements encaissés, relances gérées."
         },
         "cashFlow": {
           "title": "Trésorerie",
-          "body": "L'argent qui entre et qui sort, en direct."
+          "body": "Les entrées et les sorties, en direct."
         },
-        "quotes": {
-          "title": "Devis",
-          "body": "Du brouillon à l'acceptation, rapidement."
+        "website": {
+          "title": "Le site de votre studio",
+          "body": "Planning, cours et tarifs sur un site que vous modifiez vous-même — en ligne dès que vous le changez."
         },
-        "projects": {
-          "title": "Projets et tâches",
-          "body": "Chaque échéance dans une vue sereine."
+        "paymentPlans": {
+          "title": "Paiement échelonné",
+          "body": "Divisez un trimestre. Prélevé automatiquement."
         },
-        "expenses": {
-          "title": "Dépenses",
-          "body": "Enregistrez une fois. C'est fait."
+        "classes": {
+          "title": "Cours et plannings",
+          "body": "Chaque cours, chaque salle, chaque liste en une vue claire."
         },
-        "clients": {
-          "title": "Clients",
-          "body": "Tout sur tout le monde."
+        "checkin": {
+          "title": "Pointage sans contact",
+          "body": "Un geste à la porte. Présence enregistrée."
+        },
+        "families": {
+          "title": "Familles",
+          "body": "Chaque élève, parent et frère ou sœur, ensemble."
         }
       },
       "stats": {
@@ -100,7 +100,7 @@
           "label": "outils remplacés par un seul"
         },
         "price": {
-          "n": "19 $",
+          "n": "29 $",
           "label": "là où la stack coûte 80–150 $"
         }
       }
@@ -112,15 +112,15 @@
       "items": {
         "faster": {
           "title": "Plus rapide que le bricolage",
-          "body": "Arrêtez d'assembler un outil de gestion de projet, une appli comptable, un créateur de site et une douzaine d'onglets. Olune fait tout en un — moins de changements, moins d'oublis, des heures gagnées chaque semaine."
+          "body": "Arrêtez d'assembler un logiciel de cours, une application comptable, un créateur de site et douze onglets. Olune fait tout en un."
         },
         "value": {
           "title": "Meilleur rapport qualité-prix",
-          "body": "Remplacez trois ou quatre abonnements par un prix juste. Vous en avez plus, vous payez moins, et vous savez toujours combien ça coûte — pas de paliers surprises, pas de petites facturations."
+          "body": "Remplacez trois ou quatre abonnements par un tarif juste. Vous avez plus, vous payez moins, et vous savez toujours ce que coûtera le mois prochain."
         },
         "craft": {
           "title": "Conçu avec soin",
-          "body": "Créé par des personnes qui comprennent vraiment les studios. Chaque écran est rapide, épuré et réfléchi — le genre d'outil que l'on ouvre avec plaisir, pas celui que l'on redoute."
+          "body": "Conçu par des gens qui connaissent les studios — le rythme des trimestres, la course au gala, la famille qui paie toujours en retard. Chaque écran est rapide, clair et pensé."
         }
       }
     },
@@ -130,27 +130,27 @@
       "items": {
         "mornings": {
           "title": "Des matins plus sereins",
-          "body": "Ouvrez Olune et la journée se dessine — plus besoin de chercher dans dix applications."
+          "body": "Ouvrez Olune et la journée se déroule d'elle-même — chaque cours, chaque absence, chaque cotisation en attente."
         },
         "money": {
           "title": "L'argent devient clair",
-          "body": "Envoyez une facture, enregistrez une dépense, voyez l'impact instantanément."
-        },
-        "clients": {
-          "title": "Des clients satisfaits",
-          "body": "Modifiez leur site en direct pendant un appel et voyez leur visage s'illuminer."
+          "body": "Envoyez une facture de trimestre, voyez qui a payé, relancez le reste en un geste."
         },
         "evenings": {
           "title": "Des soirées retrouvées",
           "body": "Quand l'administration se gère toute seule, votre temps libre n'est plus un fantasme."
+        },
+        "families": {
+          "title": "Les familles restent informées",
+          "body": "Les parents reçoivent les alertes d'arrivée et les factures sans que vous écriviez un seul e-mail."
         }
       }
     },
     "promise": {
       "eyebrow": "La promesse",
-      "title": "Plus de création.",
-      "titleEmphasis": "Moins de gestion.",
-      "body": "Olune n'est pas là pour ajouter un onglet de plus à votre journée. Il est là pour prendre discrètement le poids — les projets, les finances, les sites — afin que vous retrouviez le travail qui vous a fait vous lancer.",
+      "title": "Plus d'enseignement.",
+      "titleEmphasis": "Moins d'administratif.",
+      "body": "Olune n'est pas là pour ajouter un onglet à votre journée. Il est là pour porter le poids — les inscriptions, les présences, les cotisations et le site — pour que vous retourniez dans la salle.",
       "cta": "Commencer l'essai gratuit",
       "footnote": "Sans carte bancaire. Configuration en quelques minutes."
     },
@@ -158,63 +158,63 @@
       "eyebrow": "Tarifs",
       "title": "Des tarifs justes.",
       "titleEmphasis": "Sans surprises.",
-      "subtitle": "Un seul forfait remplace votre outil de projet, votre appli comptable et votre créateur de site. Payez une chose, pas quatre.",
+      "subtitle": "Un abonnement remplace votre logiciel de cours, votre application comptable et votre créateur de site. Payez une chose, pas quatre.",
       "mostPopular": "Le plus populaire",
       "perMonth": "/mois",
       "plans": {
         "solo": {
           "name": "Solo",
-          "tag": "pour le studio solo",
-          "price": "19 $",
-          "desc": "Tout ce qu'il faut pour gérer les projets, envoyer des factures et un site client. Idéal pour les freelances qui cumulent tous les rôles."
+          "tag": "pour le studio d'une personne",
+          "price": "29 $",
+          "desc": "Tout ce qu'il faut pour enseigner, faire l'appel et encaisser les cotisations. Pour le studio d'une seule personne."
         },
         "studio": {
           "name": "Studio",
           "tag": "le plus populaire",
-          "price": "49 $",
-          "desc": "Pour les petites équipes. Projets illimités, suite financière complète, création de sites en direct pour jusqu'à 10 clients, et accès équipe."
+          "price": "59 $",
+          "desc": "Tout ce que contient Solo, plus le personnel, les remplacements, les formulaires d'inscription et le site de votre studio — ce qui compte dès qu'il y a une équipe."
         },
         "scale": {
           "name": "Scale",
-          "tag": "pour les studios en croissance",
-          "price": "99 $",
-          "desc": "Tout illimité — sites, membres d'équipe et clients — plus support prioritaire et rapports financiers avancés."
+          "tag": "pour les studios très actifs",
+          "price": "120 $",
+          "desc": "Tous les modules d'Olune, y compris les cours particuliers, les badges et la progression, les spectacles et les costumes."
         }
       },
       "includes": "Chaque forfait inclut :",
-      "includesBody": "création de sites en temps réel, facturation et dépenses intégrées, gestion de projets et mises à jour gratuites. Pas de frais d'installation. Pas de carte pour commencer. Résiliation à tout moment.",
+      "includesBody": "élèves illimités, inscriptions et planning, présences, facturation et paiements, et mises à jour gratuites. Jamais de frais d'installation.",
       "honestMath": "Le calcul honnête :",
-      "honestMathBody": "Un outil de gestion, une appli comptable et un créateur de site coûtent généralement 80–150 $/mois combinés. Olune fait les trois à partir de 19 $.",
+      "honestMathBody": "La plupart des logiciels pour studios facturent au nombre d'élèves : la note grimpe à chaque bon trimestre. Chaque offre Olune est en élèves illimités — le prix ne change que si vous voulez plus d'Olune.",
       "trialNote": "14 jours, sans carte bancaire."
     },
     "featuresSection": {
       "eyebrow": "Ce que fait Olune",
       "title": "Trois missions.",
       "titleEmphasis": "Un seul lieu.",
-      "manageStudio": {
-        "title": "Gérer le studio",
-        "subtitle": "Chaque projet, échéance, client et tâche dans une vue claire. Sachez exactement ce qui est dû, ce qui glisse et ce qui est fait — sans la panique du matin."
-      },
       "money": {
         "title": "Maîtriser les finances",
-        "subtitle": "Devis, factures, dépenses et trésorerie intégrés. Suivez les entrées et sorties en temps réel, pour que les finances ne soient plus une frayeur trimestrielle."
+        "subtitle": "Factures de trimestre, paiement échelonné et règlement par carte ou virement, intégrés. Suivez ce qui est rentré et ce qui reste dû, en temps réel."
       },
       "liveSites": {
-        "title": "Créer et mettre à jour les sites en direct",
-        "subtitle": "Lancez et modifiez les sites clients en temps réel, directement dans Olune. Plus de va-et-vient entre plateformes, plus d'attente pour un changement de texte — voyez la modification en tapant."
+        "title": "Gardez votre site à jour",
+        "subtitle": "Votre planning, vos cours et vos tarifs sur un site que vous modifiez vous-même — publié dès que vous le changez. Sans développeur, sans attendre."
+      },
+      "runClasses": {
+        "title": "Gérez les cours",
+        "subtitle": "Chaque cours, inscription, feuille de présence et famille en une vue claire. Sachez qui est là, qui est absent, et qui n'est pas encore inscrit pour le trimestre prochain."
       }
     },
     "aboutSection": {
       "eyebrow": "À propos",
       "title": "Conçu par des gens de studio,",
       "titleEmphasis": "pour des gens de studio.",
-      "body1": "Nous avons géré des studios. Nous connaissons la course aux factures à 23 h, le site client toujours en retard, le tableur que seule une personne comprend. Nous en avions assez de bricoler cinq outils en espérant que rien ne passe à travers les mailles.",
-      "body2": "Alors nous avons construit l'outil que nous aurions voulu avoir — un système serein qui réunit projets, argent et sites, et fait le travail répétitif discrètement en arrière-plan.",
-      "body3": "Olune existe pour une raison : redonner du temps aux créatifs. Moins de gestion. Plus de création. C'est toute l'idée.",
+      "body1": "Nous avons dirigé des studios. Nous connaissons la course aux factures à 23h, la feuille de présence jamais revenue au bureau, le site qui affiche encore le planning de l'an dernier.",
+      "body2": "Alors nous avons construit ce que nous aurions voulu avoir — un système calme qui tient les cours, les familles, l'argent et le site, et les garde synchronisés.",
+      "body3": "Olune existe pour une raison : rendre leur temps aux gens du studio. Moins d'administratif. Plus d'enseignement. C'est toute l'idée.",
       "meetTeam": "Rencontrer l'équipe",
       "ourStory": "Notre histoire",
-      "quote": "Moins de gestion. Plus de création.",
-      "sceneCaption": "Projets · Argent · Sites — <i>en orbite autour de votre studio.</i>",
+      "quote": "Moins d'administratif. Plus d'enseignement.",
+      "sceneCaption": "Cours · Familles · Argent — <i>en orbite autour de votre studio.</i>",
       "principles": {
         "studioRun": {
           "t": "Géré par des studios",
@@ -226,30 +226,25 @@
         },
         "allInOne": {
           "t": "Tout-en-un",
-          "d": "Projets, argent et sites, réunis."
+          "d": "Cours, familles, argent et votre site, ensemble."
         }
       }
     },
     "compareSection": {
       "eyebrow": "Comparer",
       "title": "Pourquoi les studios passent à Olune",
-      "subtitle": "La plupart des studios fonctionnent avec un bricolage — un outil de projet ici, une appli comptable là, un créateur de site à part, et des tableurs pour tenir le tout. Ça marche, jusqu'au jour où ça casse.",
+      "subtitle": "La plupart des studios fonctionnent avec un bricolage — un logiciel de cours ici, une application comptable là, un créateur de site à part, et un tableur qui tient le tout.",
       "stackHeader": "La stack habituelle",
       "rows": {
-        "projects": {
-          "label": "Projets",
-          "stack": "Une appli",
-          "olune": "Intégré"
-        },
         "invoicing": {
-          "label": "Facturation et finances",
+          "label": "Factures et paiements",
           "stack": "Une deuxième appli",
           "olune": "Intégré"
         },
         "websites": {
-          "label": "Création de sites en direct",
+          "label": "Le site de votre studio",
           "stack": "Une troisième appli",
-          "olune": "Intégré, temps réel"
+          "olune": "Intégré, en direct"
         },
         "sync": {
           "label": "Tout synchronisé",
@@ -270,12 +265,17 @@
           "label": "Conçu pour les studios",
           "stack": "Générique",
           "olune": "Sur mesure"
+        },
+        "classes": {
+          "label": "Cours et inscriptions",
+          "stack": "Une appli",
+          "olune": "Intégré"
         }
       },
       "highlights": {
         "faster": {
           "k": "Plus rapide",
-          "v": "Plus de changements d'appli ni de ressaisie des mêmes données trois fois."
+          "v": "Aucun passage d'une application à l'autre, aucune liste de cours ressaisie trois fois."
         },
         "cheaper": {
           "k": "Moins cher",

@@ -16,6 +16,7 @@
 // ============================================================================
 
 import {
+  Fragment,
   useCallback,
   useEffect,
   useRef,
@@ -445,18 +446,18 @@ export default function OluneLanding() {
   // ---------- data (copy via i18n; en matches the export verbatim) ----------
   const heroWords1 = t("hero.titleLine1").split(" ");
   const heroWords2 = t("hero.titleLine2").split(" ");
-  const tickerWords = (["projects", "invoicing", "liveSites", "cashFlow", "clients", "tasks", "quotes", "expenses"] as const).map((k) => t(`hero.marquee.${k}`));
+  const tickerWords = (["enrolments", "timetables", "attendance", "invoicing", "families", "classes", "payments", "reports"] as const).map((k) => t(`hero.marquee.${k}`));
   const tickerLoop = [...tickerWords, ...tickerWords];
   const chaosLabels = t.raw("problem.oldWayItems") as string[];
 
   const bentoCells = ([
-    { key: "liveSites", col: 2, row: 2, feature: true },
+    { key: "website", col: 2, row: 2, feature: true },
     { key: "invoicing", col: 2, row: 1, feature: false },
     { key: "cashFlow", col: 1, row: 1, feature: false },
-    { key: "quotes", col: 1, row: 1, feature: false },
-    { key: "projects", col: 2, row: 1, feature: false },
-    { key: "expenses", col: 1, row: 1, feature: false },
-    { key: "clients", col: 1, row: 1, feature: false },
+    { key: "paymentPlans", col: 1, row: 1, feature: false },
+    { key: "classes", col: 2, row: 1, feature: false },
+    { key: "checkin", col: 1, row: 1, feature: false },
+    { key: "families", col: 1, row: 1, feature: false },
   ] as const).map((c, i) => ({
     ...c,
     title: t(`bento.cells.${c.key}.title`),
@@ -470,9 +471,9 @@ export default function OluneLanding() {
   }));
 
   const jobsRows = ([
-    { key: "manageStudio", num: "01", tag: "Projects", url: "app.olune.co.nz/projects" },
-    { key: "money", num: "02", tag: "Finances", url: "app.olune.co.nz/finances" },
-    { key: "liveSites", num: "03", tag: "Live Sites", url: "app.olune.co.nz/sites" },
+    { key: "runClasses", num: "01", tag: "Classes", url: "app.olune.co.nz/classes" },
+    { key: "money", num: "02", tag: "Money", url: "app.olune.co.nz/money" },
+    { key: "liveSites", num: "03", tag: "Website", url: "app.olune.co.nz/site" },
   ] as const).map((r, i) => ({
     ...r,
     title: t(`featuresSection.${r.key}.title`),
@@ -482,10 +483,11 @@ export default function OluneLanding() {
     reverse: i % 2 === 1,
   }));
 
-  const projectTasks = [
-    { name: "Brand refresh — Tempo Dance Co.", pct: "86%", delay: "0s", done: true },
-    { name: "Website build — Kea Tours", pct: "62%", delay: "0.6s", done: false },
-    { name: "Campaign assets — Moa & Co", pct: "38%", delay: "1.2s", done: false },
+  // Class rolls with their term fill — the progress bars read as capacity.
+  const classRolls = [
+    { name: "Ballet Grade 3 · Tue 5:30pm", pct: "90%", delay: "0s", done: true },
+    { name: "Hip hop Juniors · Wed 6:00pm", pct: "62%", delay: "0.6s", done: false },
+    { name: "Contemporary Seniors · Sat 10:00am", pct: "38%", delay: "1.2s", done: false },
   ];
   const financeBars = [42, 68, 55, 88, 72, 96, 80];
   const cafeMenu = [
@@ -499,7 +501,7 @@ export default function OluneLanding() {
     title: t(`whyChoose.items.${k}.title`),
     body: t(`whyChoose.items.${k}.body`),
   }));
-  const everydayItems = (["mornings", "money", "clients", "evenings"] as const).map((k, i) => ({
+  const everydayItems = (["mornings", "money", "families", "evenings"] as const).map((k, i) => ({
     num: ["I", "II", "III", "IV"][i],
     title: t(`everyday.items.${k}.title`),
     body: t(`everyday.items.${k}.body`),
@@ -507,9 +509,9 @@ export default function OluneLanding() {
 
   const pp = counting ? priceProgress : 1;
   const pricingTiers = ([
-    { key: "solo", target: 19, highlight: false },
-    { key: "studio", target: 49, highlight: true },
-    { key: "scale", target: 99, highlight: false },
+    { key: "solo", target: 29, highlight: false },
+    { key: "studio", target: 59, highlight: true },
+    { key: "scale", target: 120, highlight: false },
   ] as const).map((p) => ({
     ...p,
     name: t(`pricingSection.plans.${p.key}.name`),
@@ -518,7 +520,7 @@ export default function OluneLanding() {
     price: `$${Math.round(p.target * pp)}`,
   }));
 
-  const compareRows = (["projects", "invoicing", "websites", "sync", "cost", "tools", "purpose"] as const).map((k) => ({
+  const compareRows = (["classes", "invoicing", "websites", "sync", "cost", "tools", "purpose"] as const).map((k) => ({
     label: t(`compareSection.rows.${k}.label`),
     usual: t(`compareSection.rows.${k}.stack`),
     olune: t(`compareSection.rows.${k}.olune`),
@@ -644,12 +646,25 @@ export default function OluneLanding() {
           <h1 style={{ margin: "0 0 32px" }}>
             <span style={{ display: "block", fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(46px, 7.4vw, 118px)", lineHeight: 1.02, color: NAVY, letterSpacing: "-0.02em" }}>
               {heroWords1.map((w, i) => (
-                <span key={i} style={{ display: "inline-block", marginRight: "0.24em", ...heroReveal(i + 1, "blur") }}>{w}</span>
+                // Real space between the word spans, not marginRight: the gap has
+                // to survive HTML-to-text extraction. Crawlers (and LLM readers)
+                // concatenate text nodes and ignore CSS, so margin-only spacing
+                // served the H1 as one unreadable token.
+                <Fragment key={i}>
+                  {i > 0 ? " " : null}
+                  <span style={{ display: "inline-block", ...heroReveal(i + 1, "blur") }}>{w}</span>
+                </Fragment>
               ))}
             </span>
+            {/* Separates the two display:block lines for text extractors. Whitespace-only
+                content between block boxes generates no box, so this renders nothing. */}
+            {" "}
             <span style={{ display: "block", fontFamily: DISPLAY, fontWeight: 500, fontStyle: "italic", fontSize: "clamp(46px, 7.4vw, 118px)", lineHeight: 1.04, letterSpacing: "-0.02em" }}>
               {heroWords2.map((w, i) => (
-                <span key={i} style={{ display: "inline-block", marginRight: "0.24em", color: ACCENT, ...heroReveal(i + heroWords1.length + 1, "blur") }}>{w}</span>
+                <Fragment key={i}>
+                  {i > 0 ? " " : null}
+                  <span style={{ display: "inline-block", color: ACCENT, ...heroReveal(i + heroWords1.length + 1, "blur") }}>{w}</span>
+                </Fragment>
               ))}
             </span>
           </h1>
@@ -833,9 +848,9 @@ export default function OluneLanding() {
                       <span style={liveBadgeStyle}><span style={liveDotStyle} />Live</span>
                     </div>
 
-                    {row.key === "manageStudio" && (
+                    {row.key === "runClasses" && (
                       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                        {projectTasks.map((task) => (
+                        {classRolls.map((task) => (
                           <div key={task.name} style={{ display: "flex", alignItems: "center", gap: 14, padding: "15px 18px", background: "#ffffff", border: "1px solid rgba(26,21,53,0.07)", borderRadius: 12, boxShadow: "0 12px 28px -22px rgba(26,21,53,0.4)" }}>
                             <span style={task.done
                               ? { width: 20, height: 20, borderRadius: "50%", background: ACCENT, color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, animation: "checkPop 6s ease-in-out infinite", flexShrink: 0 }
@@ -849,7 +864,7 @@ export default function OluneLanding() {
                             <span style={{ fontSize: 12, fontWeight: 700, color: "rgba(26,21,53,0.45)", flexShrink: 0 }}>{task.pct}</span>
                           </div>
                         ))}
-                        <div style={{ fontSize: 12.5, color: "rgba(26,21,53,0.45)", textAlign: "center" }}>3 projects on track · nothing overdue</div>
+                        <div style={{ fontSize: 12.5, color: "rgba(26,21,53,0.45)", textAlign: "center" }}>Term 3 filling up · Ballet Grade 3 nearly full</div>
                       </div>
                     )}
 

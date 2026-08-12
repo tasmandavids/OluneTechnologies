@@ -15,7 +15,7 @@ const ACCENT = "#8b7cf0";
 const NAVY = "#1a1535";
 
 const PRINCIPLES = [
-  { t: "Studio-run", d: "Built by people who've actually lived the freelance week." },
+  { t: "Studio-run", d: "Built by people who've actually run a studio term." },
   { t: "Calm by design", d: "Every screen made to open, not dread." },
   { t: "All in one", d: "Projects, money and sites, together." },
 ] as const;
@@ -56,9 +56,9 @@ export function TeamPageClient() {
 
           <div>
             <h2 style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(28px, 3.2vw, 40px)", lineHeight: 1.1, letterSpacing: "-0.015em", color: NAVY, margin: "0 0 24px" }}>Why Olune exists</h2>
-            <p style={{ fontSize: 17, lineHeight: 1.75, color: "rgba(26,21,53,0.64)", margin: "0 0 20px" }}>Olune started with frustration. Running client work meant living inside a patchwork — a project tool over here, an invoicing app over there, a website builder somewhere else, and spreadsheets quietly holding the whole thing together.</p>
-            <p style={{ fontSize: 17, lineHeight: 1.75, color: "rgba(26,21,53,0.64)", margin: "0 0 20px" }}>The breaking point is familiar to anyone who&rsquo;s freelanced: evenings lost to chasing invoices, re-entering the same numbers in three places, and client websites where a one-line copy change meant waiting on a developer. Four subscriptions, none of them talking to each other — and the creative work getting buried under the admin.</p>
-            <p style={{ fontSize: 17, lineHeight: 1.75, color: "rgba(26,21,53,0.64)", margin: "0 0 36px" }}>So we stopped duct-taping and started building. Olune is the result: one calm home for the projects, the money, and the live client sites — built in New Zealand and shaped daily by the people using it.</p>
+            <p style={{ fontSize: 17, lineHeight: 1.75, color: "rgba(26,21,53,0.64)", margin: "0 0 20px" }}>Olune started with frustration. Running a studio meant living inside a patchwork — a class manager over here, an accounting app over there, a website builder somewhere else, and spreadsheets quietly holding the whole thing together.</p>
+            <p style={{ fontSize: 17, lineHeight: 1.75, color: "rgba(26,21,53,0.64)", margin: "0 0 20px" }}>The breaking point is familiar to anyone who&rsquo;s run a term: evenings lost to chasing fees, registers that never made it back to the office, and a website still showing last year&rsquo;s timetable because changing it meant waiting on someone else. Four subscriptions, none of them talking to each other — and the teaching getting buried under the admin.</p>
+            <p style={{ fontSize: 17, lineHeight: 1.75, color: "rgba(26,21,53,0.64)", margin: "0 0 36px" }}>So we stopped duct-taping and started building. Olune is the result: one calm home for the classes, the families, the money and your studio website — built in New Zealand and shaped daily by the studios using it.</p>
 
             <div style={{ display: "flex", alignItems: "center", gap: 22, marginBottom: 40, padding: "28px 30px", background: "#ffffff", borderRadius: 16, boxShadow: "0 30px 70px -46px rgba(26,21,53,0.45)", border: "1px solid rgba(26,21,53,0.05)" }}>
               <span style={{ position: "relative", width: 44, height: 44, flexShrink: 0, filter: "drop-shadow(0 6px 16px rgba(139,124,240,0.5))" }}>

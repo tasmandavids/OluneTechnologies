@@ -31,6 +31,16 @@ import {
 // won't consider a sitelink candidate.
 const PRIMARY_NAV = [
   {
+    name: "Pricing",
+    path: "/pricing",
+    description: "Flat plans in NZD from $19/month, with your studio website included.",
+  },
+  {
+    name: "Guides",
+    path: "/guides",
+    description: "Practical guides to studio admin — enrolments, term fees, registers.",
+  },
+  {
     name: "Olune Mobile",
     path: "/mobile",
     description: "The studio in your pocket — offline registers and the whole day at a glance.",

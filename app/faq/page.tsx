@@ -13,7 +13,7 @@ import { faqPageJsonLd, rootUrl } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "FAQ",
   description:
-    "What Olune does, what it costs, and how projects, invoicing and live client websites connect — answered.",
+    "How Olune handles enrolments, class registers, term fees and your studio website — plus what it costs. Answers for dance and fitness studios.",
   alternates: { canonical: rootUrl("/faq") },
 };
 
