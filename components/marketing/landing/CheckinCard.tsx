@@ -39,6 +39,11 @@ const MICRO: CSSProperties = { fontSize: 11, fontWeight: 600, letterSpacing: "0.
 const resetBtn: CSSProperties = { border: "none", background: "none", padding: 0, margin: 0, font: "inherit", color: "inherit", textAlign: "left", cursor: "pointer" };
 
 // ── the ladder (verbatim from the design export) ──────────────────────────
+
+/** One thing a studio has attached to a tier. `kind` is the rule type, `value`
+ *  the number the studio chose — both are the studio's to set, not Olune's. */
+export type Reward = { kind: RewardKind; label: string; value: string };
+
 export type Tier = {
   key: string;
   name: string;
@@ -54,11 +59,26 @@ export type Tier = {
   next: string;
   tapNote: string;
   perks: string[];
+  rewards: Reward[];
   m: [string, string, string];
   fx: string;
   ct: string;
   prism: number;
 };
+
+/** The rule types a studio can hang off a tier. The last one is the escape
+ *  hatch — a plain line of text for anything the studio does its own way. */
+export const REWARD_KINDS = [
+  { key: "discount", name: "Discount", eg: "10% off term fees, every invoice" },
+  { key: "credit", name: "Credit", eg: "$50 a year at the uniform shop" },
+  { key: "included", name: "Included", eg: "One private lesson a year" },
+  { key: "passes", name: "Passes", eg: "Four guest passes a year" },
+  { key: "booking", name: "Booking", eg: "Enrolment opens 7 days early" },
+  { key: "waived", name: "Waived", eg: "No enrolment or late fees" },
+  { key: "perk", name: "Anything else", eg: "Reserved concert seating" },
+] as const;
+
+export type RewardKind = (typeof REWARD_KINDS)[number]["name"];
 
 export const TIERS: Tier[] = [
   {
@@ -69,6 +89,12 @@ export const TIERS: Tier[] = [
     next: "Silver at five years — 1 yr 4 mo to go.",
     tapNote: "Bronze: two guest passes left this year.",
     perks: ["Two guest passes a year", "48-hour priority booking", "Free annual costume fitting", "Attendance history in the app"],
+    rewards: [
+      { kind: "Discount", label: "Term fees", value: "5% off" },
+      { kind: "Passes", label: "Guest passes", value: "2 a year" },
+      { kind: "Booking", label: "Priority window", value: "48 hours" },
+      { kind: "Included", label: "Costume fitting", value: "1 a year" },
+    ],
     m: ["#3a2416", "#a4713c", "#f0be86"], fx: "#ffdcae", ct: "#fff6ec", prism: 0,
   },
   {
@@ -79,6 +105,12 @@ export const TIERS: Tier[] = [
     next: "Gold at eight years — 2 yr 7 mo to go.",
     tapNote: "Silver: booking opens 5 days before general release.",
     perks: ["Four guest passes a year", "5-day priority booking", "10% off holiday programmes", "One missed class rolls over each term"],
+    rewards: [
+      { kind: "Discount", label: "Term fees", value: "10% off" },
+      { kind: "Discount", label: "Holiday programmes", value: "10% off" },
+      { kind: "Passes", label: "Guest passes", value: "4 a year" },
+      { kind: "Booking", label: "Priority window", value: "5 days" },
+    ],
     m: ["#464b54", "#a3abb6", "#f7f9fc"], fx: "#ffffff", ct: "#20202c", prism: 0,
   },
   {
@@ -89,6 +121,12 @@ export const TIERS: Tier[] = [
     next: "Platinum at twelve years — 3 yr 2 mo to go.",
     tapNote: "Gold: your reserved concert seat is held until 7:15 pm.",
     perks: ["Six guest passes a year", "7-day priority booking", "One private lesson a year", "Reserved concert seating"],
+    rewards: [
+      { kind: "Discount", label: "Term fees", value: "15% off" },
+      { kind: "Credit", label: "Costume levy", value: "$100 a concert" },
+      { kind: "Included", label: "Private lesson", value: "1 a year" },
+      { kind: "Anything else", label: "Reserved concert seat", value: "Held to 7:15 pm" },
+    ],
     m: ["#3d2b06", "#c1972f", "#ffeaa8"], fx: "#fff6d2", ct: "#2b1f04", prism: 0,
   },
   {
@@ -99,6 +137,12 @@ export const TIERS: Tier[] = [
     next: "Diamond at fifteen years — by invitation, 2 yr 9 mo to go.",
     tapNote: "Platinum: 1 h 40 m of private studio time left this month.",
     perks: ["Unlimited guest passes", "First-look enrolment, every term", "Two private studio hours a month", "Family fees capped for life"],
+    rewards: [
+      { kind: "Discount", label: "Term fees", value: "20% off" },
+      { kind: "Waived", label: "Enrolment & late fees", value: "None charged" },
+      { kind: "Included", label: "Private studio time", value: "2 hrs a month" },
+      { kind: "Passes", label: "Guest passes", value: "Unlimited" },
+    ],
     m: ["#15181f", "#4e5666", "#bcc6d8"], fx: "#eaf0f9", ct: "#f3f5fa", prism: 0,
   },
   {
@@ -109,6 +153,12 @@ export const TIERS: Tier[] = [
     next: "The top of the ladder. There is nothing after Diamond.",
     tapNote: "Diamond: this term is on the house. Nothing to pay.",
     perks: ["By invitation — fifteen years with the studio", "Named on the studio wall", "Standing front-row concert seats", "A term on the house, every year"],
+    rewards: [
+      { kind: "Included", label: "Term fees", value: "One term a year" },
+      { kind: "Credit", label: "Uniform shop", value: "$250 a year" },
+      { kind: "Booking", label: "Enrolment", value: "Before general release" },
+      { kind: "Anything else", label: "Named on the studio wall", value: "For good" },
+    ],
     m: ["#0b0a14", "#332f5c", "#928de6"], fx: "#e8e5ff", ct: "#f7f5ff", prism: 1,
   },
 ];
@@ -345,7 +395,10 @@ export function TierDetail({ tier }: { tier: Tier }) {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <span style={{ ...MICRO, color: MUTED }}>What this studio gives it</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+          <span style={{ ...MICRO, color: MUTED }}>What this studio gives it</span>
+          <span style={{ ...MICRO, fontSize: 10, color: ACCENT, padding: "4px 9px", borderRadius: 9999, background: T1, border: `1px solid ${TB}`, whiteSpace: "nowrap" }}>Studio-set</span>
+        </div>
         <div>
           {tier.perks.map((perk) => (
             <div key={perk} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "11px 0", borderTop: `1px solid ${HAIR}` }}>
@@ -355,7 +408,7 @@ export function TierDetail({ tier }: { tier: Tier }) {
           ))}
         </div>
         <p style={{ margin: 0, fontSize: 13, lineHeight: 1.55, color: MUTED, textWrap: "pretty" }}>
-          One studio&rsquo;s list, as an example. Olune counts the years and issues the card &mdash; what each tier is worth is yours to set.
+          One studio&rsquo;s list, as an example. Olune counts the years and issues the card &mdash; the discounts, credits and passes on each tier are yours to write.
         </p>
       </div>
 
@@ -412,6 +465,44 @@ export function TierLadder({ index, onSelect }: { index: number; onSelect: (i: n
           </div>
         </button>
       ))}
+    </div>
+  );
+}
+
+// ══ 3b · the rewards a studio hangs off a tier ════════════════════════════
+// A mock of the studio-side list: Olune counts the years, the studio decides
+// what they are worth. Reads the active tier so the ladder above drives it.
+
+export function TierRewards({ tier }: { tier: Tier }) {
+  return (
+    <div style={{ background: "#ffffff", border: `1px solid ${HAIR}`, borderRadius: 28, padding: 26, display: "flex", flexDirection: "column", gap: 18, height: "100%", boxSizing: "border-box" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
+        <span style={{ ...MICRO, color: MUTED }}>Rewards · {tier.name}</span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 11px 5px 6px", borderRadius: 9999, border: `1px solid ${HAIR}`, background: "rgba(26,21,53,0.03)" }}>
+          <span aria-hidden style={{ ...tierVars(tier), width: 18, height: 18, borderRadius: "50%", background: "linear-gradient(148deg, var(--m1), var(--m2) 46%, var(--m3))", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.35)" }} />
+          <span style={{ fontSize: 12.5, fontWeight: 600, color: MUTED }}>{tier.years}</span>
+        </span>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", borderRadius: 18, overflow: "hidden", border: `1px solid ${HAIR}` }}>
+        {tier.rewards.map((r, n) => (
+          <div key={r.kind + r.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, padding: "14px 16px", borderBottom: n < tier.rewards.length - 1 ? `1px solid ${HAIR}` : "none" }}>
+            <span style={{ display: "flex", flexDirection: "column", gap: 5, minWidth: 0 }}>
+              <span style={{ ...MICRO, fontSize: 10, color: ACCENT }}>{r.kind}</span>
+              <span style={{ fontSize: 15, lineHeight: 1.4, color: NAVY }}>{r.label}</span>
+            </span>
+            <span style={{ fontFamily: DISPLAY, fontWeight: 900, fontSize: 17, letterSpacing: "-0.02em", color: NAVY, textAlign: "right", whiteSpace: "nowrap" }}>{r.value}</span>
+          </div>
+        ))}
+      </div>
+
+      <div aria-hidden style={{ padding: "13px 16px", borderRadius: 14, border: `1px dashed ${RING}`, color: MUTED, fontSize: 14, fontWeight: 600 }}>
+        + Add a reward to {tier.name}
+      </div>
+
+      <p style={{ margin: "auto 0 0", fontSize: 13, lineHeight: 1.55, color: MUTED, textWrap: "pretty" }}>
+        Discounts come off the invoice automatically; passes, credits and priority windows are counted as they get used. Change any of it and the cards keep their material &mdash; only what they unlock moves.
+      </p>
     </div>
   );
 }

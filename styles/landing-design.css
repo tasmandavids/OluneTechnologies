@@ -111,6 +111,7 @@ html:has(#olune-landing-root) {
   .dcl-mobile-showcase { grid-template-columns: 1fr !important; justify-items: center; gap: 40px !important; }
   .dcl-mobile-showcase aside { width: 100%; max-width: 402px; }
   .dcl-cc-split { grid-template-columns: 1fr !important; }
+  .dcl-cc-rewards { grid-template-columns: 1fr !important; gap: 28px !important; }
   .dcl-cc-ladder { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   .dcl-grid-release { grid-template-columns: 1fr !important; }
   .dcl-grid-release-row { grid-template-columns: 1fr !important; gap: 16px !important; }
@@ -129,6 +130,7 @@ html:has(#olune-landing-root) {
   .dcl-bento-feature-span { grid-column: span 1 !important; grid-row: span 2 !important; }
   .dcl-compare-row-grid { grid-template-columns: 1fr !important; gap: 4px !important; }
   .dcl-cc-ladder { grid-template-columns: 1fr !important; }
+  .dcl-grid-reward-kinds { grid-template-columns: 1fr !important; }
 }
 
 /* ── reduced motion: freeze the ambient loops ──────────────────────────── */
