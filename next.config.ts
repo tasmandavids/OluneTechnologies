@@ -16,6 +16,12 @@ function supabaseImageHostname(): string | null {
 
 const supaHost = supabaseImageHostname();
 
+// @vercel/analytics and @vercel/speed-insights only hit va.vercel-scripts.com
+// in development (the .debug.js builds). In production both are proxied through
+// same-origin paths, which 'self' already covers — so this host is allowed in
+// dev only rather than widening the production policy for nothing.
+const devOnlySources = process.env.NODE_ENV === "development" ? " https://va.vercel-scripts.com" : "";
+
 // Baseline HTTP security headers applied to every response. Deliberately
 // conservative — no Content-Security-Policy (which needs per-app tuning to
 // avoid breaking inline styles/scripts). HSTS is ignored by browsers over
@@ -50,10 +56,15 @@ const securityHeaders = [
       "frame-ancestors 'self'",
       "form-action 'self'",
       "img-src 'self' data: blob: https:",
-      "font-src 'self' data: https://js.stripe.com",
-      "style-src 'self' 'unsafe-inline' https://js.stripe.com",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://maps.googleapis.com",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://maps.googleapis.com",
+      // fonts.gstatic.com serves the actual .woff2 files that the
+      // fonts.googleapis.com stylesheet points at — tenant typography is
+      // studio-configurable, so both hosts are needed on every page.
+      "font-src 'self' data: https://js.stripe.com https://fonts.gstatic.com",
+      "style-src 'self' 'unsafe-inline' https://js.stripe.com https://fonts.googleapis.com",
+      // googletagmanager.com is the studio's own GA4 tag (StudioAnalytics),
+      // loaded only when a studio has connected Google Analytics.
+      `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://maps.googleapis.com https://www.googletagmanager.com${devOnlySources}`,
+      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://maps.googleapis.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com${devOnlySources}`,
       "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://calendly.com https://form.typeform.com https://docs.google.com",
       "worker-src 'self' blob:",
     ].join("; "),
