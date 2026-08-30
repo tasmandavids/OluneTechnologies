@@ -17,7 +17,7 @@ const ImapConnectSchema = z.object({
 
 export async function connectImapAccount(input: unknown): Promise<ActionResult> {
   const ctx = await getAdminEmailContext();
-  if (ctx.error) return { ok: false, error: ctx.error };
+  if (ctx.error !== null) return { ok: false, error: ctx.error };
 
   const parsed = ImapConnectSchema.safeParse(input);
   if (!parsed.success) {
@@ -52,7 +52,7 @@ export async function connectImapAccount(input: unknown): Promise<ActionResult> 
 
 export async function disconnectEmailAccount(accountId: string): Promise<ActionResult> {
   const ctx = await getAdminEmailContext();
-  if (ctx.error) return { ok: false, error: ctx.error };
+  if (ctx.error !== null) return { ok: false, error: ctx.error };
 
   const { error } = await ctx.supabase
     .from("email_accounts")
@@ -68,7 +68,7 @@ export async function disconnectEmailAccount(accountId: string): Promise<ActionR
 
 export async function syncEmailAccountAction(accountId?: string): Promise<ActionResult<{ synced: number }>> {
   const ctx = await getAdminEmailContext();
-  if (ctx.error) return { ok: false, error: ctx.error };
+  if (ctx.error !== null) return { ok: false, error: ctx.error };
 
   let query = ctx.supabase.from("email_accounts").select("*").eq("studio_id", ctx.studioId);
   if (accountId) query = query.eq("id", accountId);
@@ -92,7 +92,7 @@ export async function syncEmailAccountAction(accountId?: string): Promise<Action
 
 export async function summarizeThreadAction(threadId: string): Promise<ActionResult<{ summary: string }>> {
   const ctx = await getAdminEmailContext();
-  if (ctx.error) return { ok: false, error: ctx.error };
+  if (ctx.error !== null) return { ok: false, error: ctx.error };
 
   const { data: thread } = await ctx.supabase
     .from("email_threads")
@@ -139,7 +139,7 @@ export async function summarizeThreadAction(threadId: string): Promise<ActionRes
 
 export async function markThreadReadAction(threadId: string): Promise<ActionResult> {
   const ctx = await getAdminEmailContext();
-  if (ctx.error) return { ok: false, error: ctx.error };
+  if (ctx.error !== null) return { ok: false, error: ctx.error };
 
   await ctx.supabase
     .from("email_threads")

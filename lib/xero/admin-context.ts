@@ -1,25 +1,31 @@
-import { createClient } from "@/lib/supabase/server";
+// ============================================================================
+//  Admin context for Xero accounting.
+//
+//  A thin adapter over getAdminStudio() rather than its own auth check — see
+//  lib/email/admin-context.ts for the full account of what re-implementing it
+//  cost. The short version: reading profile.studio_id directly ignores
+//  active_studio_id, so a multi-studio admin could push invoices into the wrong
+//  organisation's Xero ledger, and it bypassed the plan gate.
+// ============================================================================
 
-export async function getAdminXeroContext() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not signed in." as const };
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { getAdminStudio } from "@/lib/portal/access";
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("studio_id, role")
-    .eq("id", user.id)
-    .single();
+/** Annotated, not inferred — see the note in lib/email/admin-context.ts. */
+export type AdminXeroContext =
+  | { error: string; supabase?: undefined; studioId?: undefined; userId?: undefined }
+  | { error: null; supabase: SupabaseClient; studioId: string; userId: string };
 
-  if (profile?.role !== "admin") return { error: "Admin only." as const };
-  if (!profile.studio_id) return { error: "No studio." as const };
+export async function getAdminXeroContext(): Promise<AdminXeroContext> {
+  const access = await getAdminStudio();
+  if (access.error || !access.studioId || !access.userId) {
+    return { error: access.error ?? "No studio." };
+  }
 
   return {
     error: null,
-    supabase,
-    studioId: profile.studio_id as string,
-    userId: user.id,
+    supabase: access.supabase,
+    studioId: access.studioId,
+    userId: access.userId,
   };
 }

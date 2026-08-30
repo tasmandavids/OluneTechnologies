@@ -9,7 +9,7 @@ import { listXeroSalesAccounts, listXeroSalesItems, type XeroAccountOption, type
 
 export async function disconnectXero(): Promise<{ ok: true } | { ok: false; error: string }> {
   const ctx = await getAdminXeroContext();
-  if (ctx.error) return { ok: false, error: ctx.error };
+  if (ctx.error !== null) return { ok: false, error: ctx.error };
 
   try {
     const origin = await resolveAppOriginFromHeaders();
@@ -23,7 +23,7 @@ export async function disconnectXero(): Promise<{ ok: true } | { ok: false; erro
 
 export async function refreshAccountingData(): Promise<{ ok: true } | { ok: false; error: string }> {
   const ctx = await getAdminXeroContext();
-  if (ctx.error) return { ok: false, error: ctx.error };
+  if (ctx.error !== null) return { ok: false, error: ctx.error };
 
   revalidatePath("/portal/admin/money");
   return { ok: true };
@@ -33,7 +33,7 @@ export async function getXeroSalesAccountOptions(): Promise<
   { ok: true; data: XeroAccountOption[] | null } | { ok: false; error: string }
 > {
   const ctx = await getAdminXeroContext();
-  if (ctx.error) return { ok: false, error: ctx.error };
+  if (ctx.error !== null) return { ok: false, error: ctx.error };
 
   try {
     const origin = await resolveAppOriginFromHeaders();
@@ -48,7 +48,7 @@ export async function getXeroItemOptions(): Promise<
   { ok: true; data: XeroItemOption[] | null } | { ok: false; error: string }
 > {
   const ctx = await getAdminXeroContext();
-  if (ctx.error) return { ok: false, error: ctx.error };
+  if (ctx.error !== null) return { ok: false, error: ctx.error };
 
   try {
     const origin = await resolveAppOriginFromHeaders();
@@ -63,7 +63,7 @@ export async function updateXeroSettings(
   settings: unknown,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const ctx = await getAdminXeroContext();
-  if (ctx.error) return { ok: false, error: ctx.error };
+  if (ctx.error !== null) return { ok: false, error: ctx.error };
 
   const parsed = xeroSettingsSchema.safeParse(settings);
   if (!parsed.success) {
