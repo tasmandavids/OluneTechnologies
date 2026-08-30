@@ -4,6 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { inviteRedirectUrl } from "@/lib/app-url";
 import {
   getAdminStudio as getOwnerStudio,
   getStudioOpsStudio,
@@ -637,8 +638,7 @@ export async function bulkInviteMembers(): Promise<BulkInviteResult> {
     return { ok: true, sent: 0, skipped: 0, failed: 0, details: ["No members with email found."] };
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  const redirectTo = `${appUrl}/auth/callback?next=/welcome`;
+  const redirectTo = inviteRedirectUrl();
 
   let sent = 0;
   let skipped = 0;

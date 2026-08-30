@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { inviteRedirectUrl } from "@/lib/app-url";
 import { createStudentAuthUser } from "@/lib/students/login-email";
 import { escapeHtml } from "@/lib/notify/messages";
 import { getParentStudio } from "@/lib/portal/access";
@@ -45,7 +46,7 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
   if (d.email) {
     const { data: inviteData, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(d.email, {
       data: { full_name: d.fullName },
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/auth/callback?next=/welcome`,
+      redirectTo: inviteRedirectUrl(),
     });
     if (inviteErr) return { ok: false, error: inviteErr.message };
     studentId = inviteData.user.id;
@@ -111,12 +112,11 @@ async function notifyParentOfStudentLogin(params: {
   loginEmail: string;
 }): Promise<void> {
   const { admin, parentEmail, parentName, studentName, loginEmail } = params;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
   const { data: linkData } = await admin.auth.admin.generateLink({
     type: "invite",
     email: loginEmail,
-    options: { redirectTo: `${appUrl}/auth/callback?next=/welcome` },
+    options: { redirectTo: inviteRedirectUrl() },
   });
   const inviteUrl = linkData?.properties?.action_link;
 

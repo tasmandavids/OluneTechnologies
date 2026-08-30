@@ -4,6 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { inviteRedirectUrl } from "@/lib/app-url";
 
 export type InviteCoParentResult = { ok: true; linked: boolean } | { ok: false; error: string };
 
@@ -91,7 +92,7 @@ export async function inviteCoParent(input: unknown): Promise<InviteCoParentResu
   }
 
   const { data: inviteData, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/auth/callback?next=/welcome`,
+    redirectTo: inviteRedirectUrl(),
   });
   if (inviteErr || !inviteData.user) {
     return { ok: false, error: inviteErr?.message ?? "Could not send invite." };
