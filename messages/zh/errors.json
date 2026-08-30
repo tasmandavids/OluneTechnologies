@@ -46,6 +46,7 @@
       "invalidEmail": "邮箱无效",
       "studioNotFound": "找不到工作室",
       "invalidStatus": "状态无效",
+      "tooManyRequests": "请求过于频繁。请稍等几分钟后重试。",
       "notSignedIn": "尚未登录。",
       "parentAccessRequired": "需要家长权限。",
       "adminOnly": "仅限管理员。",
