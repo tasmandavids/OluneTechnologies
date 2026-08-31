@@ -123,15 +123,29 @@ async function main() {
   /**
    * The Product for this plan, creating it only if nothing points at one yet.
    *
-   * Resolved from an existing Price first, and only then by searching. That
-   * order is not cosmetic: `prices.list({lookup_keys})` reads the primary
-   * store and is strongly consistent, while `products.search` reads an index
-   * that lags writes by up to a minute. Searching first meant a re-run within
-   * that window found nothing and created a SECOND product for the same plan —
-   * silently, since the prices still resolved and the script still printed
-   * success. Anchoring on the price makes the idempotent thing the thing that
-   * is actually guaranteed to be idempotent.
+   * Nothing here consults `products.search`, deliberately. That index lags
+   * writes by up to a minute, and both lookups below are strongly consistent:
+   *
+   *   1. the Product the existing Prices already point at — Prices are found by
+   *      lookup_key via `prices.list`, which reads the primary store;
+   *   2. failing that, a Product created under a DETERMINISTIC id, retrieved
+   *      by that id.
+   *
+   * The search-first version of this cost us twice on the same day: a re-run
+   * inside the lag window created a duplicate product per plan in the sandbox,
+   * and then — after an explicit poll showed the index had caught up — a
+   * duplicate "Olune Studio" on the live account anyway, because the index went
+   * stale again between the check and the run. An index you have to poll is not
+   * a lookup you can build idempotency on.
+   *
+   * Products that predate this (created by hand, or by the search-era script)
+   * keep their random ids and are found by path 1, which is why that path
+   * stays first rather than being replaced.
    */
+  function deterministicProductId(planKey) {
+    return `olune_plan_${planKey}`;
+  }
+
   async function ensureProduct(plan, existingPrices) {
     const anchor = existingPrices.find(Boolean);
     if (anchor) {
@@ -139,18 +153,18 @@ async function main() {
       return { product: { id }, created: false };
     }
 
-    // Searched rather than listed: a `list` walk is O(all products on the
-    // account), and on the platform account that includes every per-class
-    // tuition product lib/stripe/class-price.ts has ever created.
-    const found = await stripe.products.search({
-      query: `metadata['olune_plan']:'${plan.key}'`,
-      limit: 1,
-    });
-    if (found.data[0]) return { product: found.data[0], created: false };
+    const id = deterministicProductId(plan.key);
+    try {
+      const product = await stripe.products.retrieve(id);
+      return { product, created: false };
+    } catch (e) {
+      if (e?.code !== "resource_missing") throw e;
+    }
 
-    if (DRY_RUN) return { product: { id: `(new) prod_${plan.key}` }, created: true };
+    if (DRY_RUN) return { product: { id: `(new) ${id}` }, created: true };
 
     const product = await stripe.products.create({
+      id,
       name: plan.name,
       description: plan.description,
       metadata: { olune_plan: plan.key },
