@@ -15,7 +15,7 @@ import { createClient } from "@/lib/supabase/server";
 import QRCode from "qrcode";
 import { CURRENCY } from "@/lib/currency";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
-import { resolveTransferData } from "@/lib/stripe/connect";
+import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import { loadProductByCode } from "@/lib/billing/catalog";
 import { CLASS_PASS_PRODUCT_CODE } from "@/lib/passes/constants";
 
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
       user_id: user.id,
       studio_id: studioId,
     },
-    transfer_data: await resolveTransferData(supabase, studioId),
+    ...(await resolveDestinationCharge(supabase, studioId)),
   });
 
   const { data: updatedPass, error: updateErr } = await supabase

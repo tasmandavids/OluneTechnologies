@@ -12,7 +12,7 @@ import { resolveLineCodes, type LineCodeDefaults } from "@/lib/accounting/line-c
 import { resolveAccountingProvider } from "@/lib/accounting/provider";
 import { stripe } from "@/lib/stripe";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
-import { resolveTransferData } from "@/lib/stripe/connect";
+import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import {
   xeroAuthoriseOutstandingInvoice,
   xeroSyncOutstandingInvoice,
@@ -177,7 +177,7 @@ async function attachPaymentIntent(
       supabase_user_id: payerId,
     },
     automatic_payment_methods: { enabled: true },
-    transfer_data: await resolveTransferData(supabase, studioId),
+    ...(await resolveDestinationCharge(supabase, studioId)),
   });
   await supabase
     .from("invoices")

@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { StripeBalanceSummary, StripeConnectAccountRow, StripePayoutRow } from "@/lib/stripe/connect";
-import { getStripeExpressLoginLink } from "@/app/portal/admin/payments/actions";
+import { getStripeDashboardLink } from "@/app/portal/admin/payments/actions";
 import { formatMoney } from "@/lib/currency";
 import { connectionPath } from "@/lib/integrations/routes";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
@@ -47,7 +47,7 @@ function DashboardLinkButton() {
         onClick={() => {
           setError(null);
           startOpen(async () => {
-            const res = await getStripeExpressLoginLink();
+            const res = await getStripeDashboardLink();
             if (!res.ok) setError(res.error);
             else window.open(res.url, "_blank", "noopener,noreferrer");
           });

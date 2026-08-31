@@ -7,6 +7,27 @@
 //  events in the Stripe Dashboard.
 //
 //  Requires env: STRIPE_CONNECT_WEBHOOK_SECRET
+//
+//  ── KNOWN GAP: this endpoint no longer hears about studio accounts
+//  Studio accounts are Accounts v2 (see lib/stripe/connect.ts). v2 status
+//  changes are emitted as `v2.core.account[configuration.merchant]
+//  .capability_status_updated` and friends, and a CLASSIC webhook endpoint
+//  cannot subscribe to those — the API rejects the event names outright.
+//  v2 events are delivered to an Event Destination
+//  (`stripe.v2.core.eventDestinations`) instead, which is a different payload
+//  shape and a different route.
+//
+//  Until that exists, a studio's status is refreshed:
+//    • on return from onboarding — /api/stripe/connect/return calls
+//      syncStripeAccountStatus(), which is the common case; and
+//    • on demand — the refresh action on /portal/admin/payments.
+//
+//  What is NOT covered is Stripe restricting an already-onboarded studio
+//  later (expired documents, a review). Olune will keep believing that studio
+//  is chargeable until something calls the sync, so charges will start failing
+//  before the dashboard admits anything is wrong. Building the Event
+//  Destination is the fix; a periodic sync of connected accounts would also
+//  close it.
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
