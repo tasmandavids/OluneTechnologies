@@ -68,7 +68,13 @@ jobs:
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high
 
-  # Every merge to main: apply pending migrations + refresh the test admin seed.
+  # Every merge to main: apply pending migrations.
+  #
+  # This job no longer seeds a platform operator. It used to run
+  # scripts/seed-platform-admin.mjs against the linked production project on
+  # every merge, recreating a cross-tenant superuser with a password published
+  # in the repo and resetting it on each run. The job name is kept so existing
+  # branch-protection rules keep matching.
   migrate-and-seed:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: quality
@@ -122,9 +128,3 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
         run: node scripts/verify-migrations.mjs
-
-      - name: Seed platform test admin
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: node scripts/seed-platform-admin.mjs

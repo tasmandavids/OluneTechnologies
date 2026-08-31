@@ -5,6 +5,8 @@
 schema (119 migrations), CI/CD pipeline, and repository documentation.
 **Framework:** AICPA Trust Services Criteria (2017, rev. 2022) — Security (common
 criteria), Availability, Confidentiality, Processing Integrity, Privacy.
+**Status:** SOC2-01 partially remediated on this branch (31 Aug 2026); its credential
+rotation remains outstanding. Every other finding is as-assessed.
 **Type:** Readiness / gap assessment. This is *not* an audit opinion and confers no
 attestation. It identifies what an auditor would test and where the evidence is
 currently absent.
@@ -74,9 +76,15 @@ Recorded because an examination needs the positive evidence as much as the gaps.
 ### SOC2-01 — CI provisions a cross-tenant superuser with a published password · **Critical**
 **TSC:** CC6.1 (logical access), CC6.2 (credential issuance), CC6.3 (least privilege)
 
-`.github/workflows/ci.yml:126-130` runs `scripts/seed-platform-admin.mjs` on **every
+> **Status: partially remediated (31 Aug 2026).** The code-side exposure is closed on
+> this branch — see *Remediation applied* below. **The credential itself is still live
+> and must be rotated by hand**; that requires Supabase dashboard access and is not
+> something a repository change can do.
+
+`.github/workflows/ci.yml:126-130` ran `scripts/seed-platform-admin.mjs` on **every
 push to `main`**, against the production Supabase project (`secrets.NEXT_PUBLIC_SUPABASE_URL`
-+ `secrets.SUPABASE_SERVICE_ROLE_KEY`). The script:
++ `secrets.SUPABASE_SERVICE_ROLE_KEY`), and `.github/workflows/supabase-database.yml:60`
+ran the same step on manual dispatch. The script:
 
 - creates `platform-admin@olune.test` with the hardcoded password `testadmin123`
   (`scripts/seed-platform-admin.mjs:13-14`);
@@ -100,14 +108,36 @@ product means minors' names, addresses, photos, medical notes, and guardian paym
 details. An auditor would treat it as a reportable exception regardless of remediation
 date; a breach notification obligation may already exist.
 
-**Remediate now:**
-1. Delete the `Seed platform test admin` step from the production CI job.
-2. Rotate or delete the `platform-admin@olune.test` account and audit `platform_audit_log`
-   plus Supabase auth logs for any sign-in that was not your own.
-3. Rotate `SUPABASE_SERVICE_ROLE_KEY` — it has been used from CI with a logged password.
-4. Move the seed to a local/preview-only script with a hard production refusal, take
-   the password from env with no default, and delete the credentials from `TEST_ACCOUNTS.md`.
-5. Replace the `PLATFORM_OPERATOR_EMAILS` bypass with table membership only.
+#### Remediation applied
+
+1. The `Seed platform test admin` step is removed from **both** workflows
+   (`ci.yml`, `supabase-database.yml`). The `migrate-and-seed` job name is kept so any
+   existing branch-protection rule keeps matching; it now only pushes migrations.
+2. `scripts/seed-platform-admin.mjs` refuses to run unless
+   `ALLOW_PLATFORM_ADMIN_SEED=1` is set explicitly on every run, takes
+   `PLATFORM_ADMIN_PASSWORD` from the environment with no default and a 16-character
+   minimum, rejects the published `testadmin123` by name, and **refuses outright when
+   `$CI` is set** — so re-adding a workflow step fails loudly instead of silently
+   reprovisioning the account. It no longer prints the password, and it names the
+   target host before writing.
+3. Credentials are removed from `TEST_ACCOUNTS.md`, `docs/SETUP_DATABASE.md`, and
+   `scripts/setup-all.sh`, each replaced with the generate-your-own invocation.
+4. `tests/seed-platform-admin-guard.test.ts` holds the refusals in CI, including the
+   ordering that makes the burned-password message reachable.
+
+#### Still outstanding — needs dashboard access
+
+1. **Rotate or delete `platform-admin@olune.test`.** It exists in production now with
+   the published password. Nothing in this repository can change that.
+2. **Rotate `SUPABASE_SERVICE_ROLE_KEY`** — it has been used from CI in runs that also
+   logged the password.
+3. **Review Supabase auth logs** for sign-ins to that account that were not yours, and
+   `platform_audit_log` for operator actions you do not recognise.
+4. **Remove the `PLATFORM_OPERATOR_EMAILS` bypass** (`lib/platform/auth.ts:23`), which
+   grants operator rights on an email match alone with no table row and no audit trail.
+   Left in place deliberately: if any current operator is configured by env var without
+   a `platform_operators` row, removing it locks them out of `/platform`. Confirm the
+   roster in the table first, then delete the allowlist branch.
 
 ---
 
