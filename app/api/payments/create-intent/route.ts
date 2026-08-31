@@ -14,7 +14,7 @@ import { stripe } from "@/lib/stripe";
 import { CURRENCY } from "@/lib/currency";
 import { isUuid } from "@/lib/validation/uuid";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
-import { resolveTransferData } from "@/lib/stripe/connect";
+import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
         supabase_user_id: user.id,
       },
       automatic_payment_methods: { enabled: true },
-      transfer_data: await resolveTransferData(supabase, invoice.studio_id as string),
+      ...(await resolveDestinationCharge(supabase, invoice.studio_id as string)),
     });
 
     // Persist the intent ID on the invoice

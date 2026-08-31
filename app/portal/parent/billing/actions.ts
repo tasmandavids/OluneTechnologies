@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCY } from "@/lib/currency";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
-import { resolveTransferData } from "@/lib/stripe/connect";
+import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import { TERM_INSTALLMENT_COUNT } from "@/lib/term-payments";
 import {
   addInvoicesToActivePlan,
@@ -162,7 +162,7 @@ export async function createTermInstallmentIntent(
     // order value and settle asynchronously, which double-splits the balance and
     // lets an unsettled `processing` intent look "paid". One installment = one card charge.
     payment_method_types: ["card"],
-    transfer_data: await resolveTransferData(supabase, plan.studio_id),
+    ...(await resolveDestinationCharge(supabase, plan.studio_id)),
   });
 
   if (!intent.client_secret) {

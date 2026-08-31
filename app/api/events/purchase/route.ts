@@ -11,7 +11,7 @@ import { CURRENCY } from "@/lib/currency";
 import { familyDiscountInfo } from "@/lib/discounts";
 import { isUuid } from "@/lib/validation/uuid";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
-import { resolveTransferData } from "@/lib/stripe/connect";
+import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
@@ -137,7 +137,7 @@ export async function POST(req: NextRequest) {
       // Saves the webhook a lookup on `events` to dispatch payment.succeeded.
       studio_id: event.studio_id as string,
     },
-    transfer_data: await resolveTransferData(supabase, event.studio_id as string),
+    ...(await resolveDestinationCharge(supabase, event.studio_id as string)),
   });
 
   // Reserve ticket row (pending payment)

@@ -11,7 +11,10 @@ next-env.d.ts
 *.tsbuildinfo
 
 # env & secrets
-.env*.local
+# Broad on purpose: .env*.local alone let a plain `.env` or an
+# `.env.production` through, and those hold the same live keys.
+# .env.local.example is already tracked, so it is unaffected.
+.env*
 .env.vercel.*
 
 # vercel

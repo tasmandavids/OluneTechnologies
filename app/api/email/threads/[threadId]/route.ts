@@ -10,7 +10,7 @@ export async function GET(
   { params }: { params: Promise<{ threadId: string }> },
 ) {
   const ctx = await getAdminEmailContext();
-  if (ctx.error) {
+  if (ctx.error !== null) {
     return NextResponse.json({ error: ctx.error }, { status: 401 });
   }
 

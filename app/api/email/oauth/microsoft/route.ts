@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
   const ctx = await getAdminEmailContext();
-  if (ctx.error) {
+  if (ctx.error !== null) {
     return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(CONNECTIONS_PATH)}`, req.url));
   }
 

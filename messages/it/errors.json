@@ -46,6 +46,7 @@
       "invalidEmail": "E-mail non valida",
       "studioNotFound": "Studio non trovato",
       "invalidStatus": "Stato non valido",
+      "tooManyRequests": "Troppe richieste. Attendi qualche minuto e riprova.",
       "notSignedIn": "Accesso non effettuato.",
       "parentAccessRequired": "Accesso genitore richiesto.",
       "adminOnly": "Solo amministratori.",

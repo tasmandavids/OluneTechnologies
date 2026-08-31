@@ -19,7 +19,7 @@
 import { useState, type CSSProperties } from "react";
 import { landingFontVars } from "@/components/marketing/landing/fonts";
 import { DevBanner, LandingNav, LandingFooter, Eyebrow, PrimaryButton, DISPLAY, BODY } from "@/components/marketing/landing/chrome";
-import { CheckinCardStage, TierDetail, TierLadder, TapFlow, TIERS } from "@/components/marketing/landing/CheckinCard";
+import { CheckinCardStage, TierDetail, TierLadder, TierRewards, TapFlow, TIERS, REWARD_KINDS } from "@/components/marketing/landing/CheckinCard";
 
 const ACCENT = "#8b7cf0";
 const NAVY = "#1a1535";
@@ -115,8 +115,38 @@ export function CardPageClient() {
         </div>
       </section>
 
-      {/* THE TAP */}
+      {/* WHAT A TIER IS WORTH */}
       <section className="dcl-section" style={{ ...sectionStyle, background: "#f7f6fb", boxShadow: "0 -34px 70px -38px rgba(26,21,53,0.16)" }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto", position: "relative", zIndex: 2 }}>
+          <div className="dcl-cc-rewards" style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(340px,0.82fr)", gap: 40, alignItems: "stretch" }}>
+            <div>
+              <Eyebrow>Your rewards, your rules</Eyebrow>
+              <h2 style={{ ...h2Style, marginTop: 14 }}>Olune counts the years. You decide what they&rsquo;re worth.</h2>
+              <p style={leadStyle}>
+                Bronze at three years is the same material in every studio &mdash; what it unlocks is not. Hang a discount, a credit, a free class or a booking window off any tier, in whatever combination suits your fees, and change it whenever you like.
+              </p>
+
+              <div style={{ marginTop: 36, display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 12 }} className="dcl-grid-reward-kinds">
+                {REWARD_KINDS.map((k) => (
+                  <div key={k.key} style={{ background: "#ffffff", border: "1px solid rgba(26,21,53,0.08)", borderRadius: 18, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 6 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: ACCENT }}>{k.name}</span>
+                    <span style={{ fontSize: 14.5, lineHeight: 1.5, color: "rgba(26,21,53,0.6)" }}>{k.eg}</span>
+                  </div>
+                ))}
+              </div>
+
+              <p style={{ margin: "26px 0 0", fontSize: 14, lineHeight: 1.7, color: "rgba(26,21,53,0.45)" }}>
+                Set once per tier and it applies to every family who reaches it &mdash; no vouchers to hand out, no list of who is owed what. Pick a tier above to see one studio&rsquo;s numbers.
+              </p>
+            </div>
+
+            <TierRewards tier={active} />
+          </div>
+        </div>
+      </section>
+
+      {/* THE TAP */}
+      <section className="dcl-section" style={{ ...sectionStyle, background: "#efeafb", boxShadow: "0 -34px 70px -38px rgba(26,21,53,0.16)" }}>
         <div style={{ maxWidth: 1180, margin: "0 auto", position: "relative", zIndex: 2 }}>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 20, flexWrap: "wrap", marginBottom: 48 }}>
             <div style={{ maxWidth: 620 }}>
@@ -132,7 +162,7 @@ export function CardPageClient() {
       </section>
 
       {/* WHY */}
-      <section className="dcl-section" style={{ ...sectionStyle, background: "#efeafb", boxShadow: "0 -34px 70px -38px rgba(26,21,53,0.16)" }}>
+      <section className="dcl-section" style={{ ...sectionStyle, background: "#f7f6fb", boxShadow: "0 -34px 70px -38px rgba(26,21,53,0.16)" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", position: "relative", zIndex: 2 }}>
           <div style={{ maxWidth: 660 }}>
             <Eyebrow>Why a card at all</Eyebrow>
@@ -158,7 +188,7 @@ export function CardPageClient() {
       </section>
 
       {/* WITH AND WITHOUT */}
-      <section className="dcl-section" style={{ ...sectionStyle, background: "#f7f6fb", boxShadow: "0 -34px 70px -38px rgba(26,21,53,0.16)" }}>
+      <section className="dcl-section" style={{ ...sectionStyle, background: "#efeafb", boxShadow: "0 -34px 70px -38px rgba(26,21,53,0.16)" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", position: "relative", zIndex: 2 }}>
           <div style={{ maxWidth: 620 }}>
             <Eyebrow>Same evening, two studios</Eyebrow>
@@ -188,7 +218,7 @@ export function CardPageClient() {
       </section>
 
       {/* CTA */}
-      <section className="dcl-section" style={{ ...sectionStyle, background: "#efeafb", padding: "116px 48px 140px", boxShadow: "0 -34px 70px -38px rgba(26,21,53,0.16)" }}>
+      <section className="dcl-section" style={{ ...sectionStyle, background: "#f7f6fb", padding: "116px 48px 140px", boxShadow: "0 -34px 70px -38px rgba(26,21,53,0.16)" }}>
         <div style={{ maxWidth: 640, margin: "0 auto", textAlign: "center", position: "relative", zIndex: 2 }}>
           <h2 style={h2Style}>Start counting the years now.</h2>
           <p style={{ fontSize: 16, lineHeight: 1.65, color: "rgba(26,21,53,0.56)", maxWidth: 520, margin: "16px auto 0" }}>

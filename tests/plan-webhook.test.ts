@@ -166,7 +166,6 @@ function subscriptionEvent(type: string, over: Record<string, unknown> = {}): St
   } as unknown as Stripe.Event;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const asServiceClient = (db: SupabaseFake) => db as any;
 
 describe("Olune plan events never reach the parent-billing path", () => {

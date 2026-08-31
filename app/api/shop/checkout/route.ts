@@ -9,7 +9,7 @@ import { CURRENCY } from "@/lib/currency";
 import { familyDiscountInfo } from "@/lib/discounts";
 import { isUuid } from "@/lib/validation/uuid";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
-import { resolveTransferData } from "@/lib/stripe/connect";
+import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 interface OrderItem { productId: string; qty: number }
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
     // studio_id lets the webhook dispatch payment.succeeded without re-reading
     // the order to find out whose studio it was.
     metadata: { order_id: order.id, user_id: user.id, studio_id: profile.studio_id as string },
-    transfer_data: await resolveTransferData(supabase, profile.studio_id as string),
+    ...(await resolveDestinationCharge(supabase, profile.studio_id as string)),
   });
 
   // Store payment intent reference on order

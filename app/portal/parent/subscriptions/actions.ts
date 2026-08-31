@@ -14,7 +14,7 @@ import { siblingDiscountInfo } from "@/lib/discounts";
 import { monthlyFromTermFeeCents } from "@/lib/term-payments";
 import { getOrCreateClassStripePrice } from "@/lib/stripe/class-price";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
-import { resolveTransferData } from "@/lib/stripe/connect";
+import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import { loadStudioClassPrice } from "@/lib/enrollment-class-price";
 import { getParentStudio } from "@/lib/portal/access";
 import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
@@ -189,7 +189,7 @@ export async function createEnrollmentSubscription(
         student_id: studentId,
         class_id: classId,
       },
-      transfer_data: await resolveTransferData(supabase, studioId),
+      ...(await resolveDestinationCharge(supabase, studioId)),
     });
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Stripe error" };

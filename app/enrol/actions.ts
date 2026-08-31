@@ -4,7 +4,8 @@ import { z } from "zod";
 import { createPublicClient } from "@/lib/supabase/public";
 import { buildTrialLeadNotes, splitParentName } from "@/lib/enrol/trial-request";
 import { getTranslations } from "@/lib/i18n/server";
-import { cookies } from "next/headers";
+import { checkRateLimit, clientIpKey } from "@/lib/rate-limit";
+import { cookies, headers } from "next/headers";
 import {
   ATTRIBUTION_COOKIE,
   attributionColumns,
@@ -27,6 +28,18 @@ export async function submitTrialRequest(input: unknown): Promise<ActionResult> 
     disciplineKey: z.string().max(40).optional().or(z.literal("")),
     disciplineLabel: z.string().max(80).optional().or(z.literal("")),
   });
+
+  // The only write path in the app an anonymous caller can reach (RLS policy
+  // leads_public_trial_insert, 0050). Everything else is keyed by user id;
+  // there is no user here, so it is keyed by address. 5/hour is far above what
+  // a family filling in a trial form does and far below what makes flooding a
+  // studio's lead inbox worthwhile.
+  if (!checkRateLimit(clientIpKey("enrol-trial", await headers()), {
+    limit: 5,
+    windowMs: 60 * 60_000,
+  })) {
+    return { ok: false, error: t("tooManyRequests") };
+  }
 
   const parsed = TrialRequestSchema.safeParse(input);
   if (!parsed.success) {
@@ -87,6 +100,12 @@ export async function submitTrialRequest(input: unknown): Promise<ActionResult> 
     ({ error: dbErr } = await supabase.from("leads").insert(lead));
   }
 
-  if (dbErr) return { ok: false, error: dbErr.message };
+  // Logged, not returned. The caller here is an anonymous visitor, and a raw
+  // PostgREST message names tables, columns and constraints — free schema
+  // reconnaissance in exchange for an error string no parent could act on.
+  if (dbErr) {
+    console.error(`[enrol] trial request insert failed: ${dbErr.message}`);
+    return { ok: false, error: t("unknown") };
+  }
   return { ok: true };
 }

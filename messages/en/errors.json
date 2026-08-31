@@ -46,6 +46,7 @@
       "invalidEmail": "Invalid email",
       "studioNotFound": "Studio not found",
       "invalidStatus": "Invalid status",
+      "tooManyRequests": "Too many requests. Please wait a few minutes and try again.",
       "notSignedIn": "Not signed in.",
       "parentAccessRequired": "Parent access required.",
       "adminOnly": "Admin only.",

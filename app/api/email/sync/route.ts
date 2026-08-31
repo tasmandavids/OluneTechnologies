@@ -9,7 +9,7 @@ export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   const ctx = await getAdminEmailContext();
-  if (ctx.error) {
+  if (ctx.error !== null) {
     return NextResponse.json({ error: ctx.error }, { status: 401 });
   }
 

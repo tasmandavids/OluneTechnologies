@@ -9,6 +9,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { inviteRedirectUrl } from "@/lib/app-url";
 import { getStudioOpsStudio } from "@/lib/portal/access";
 import { insertTuitionInvoice, quoteEnrollment } from "@/lib/billing/tuition-invoice";
 import { loadStudioTuitionContext } from "@/lib/billing/tuition-model";
@@ -218,7 +219,7 @@ export async function addStudent(input: unknown): Promise<ActionResult> {
   if (d.email) {
     const { data: inviteData, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(d.email, {
       data: { full_name: d.fullName },
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/auth/callback?next=/welcome`,
+      redirectTo: inviteRedirectUrl(),
     });
     if (inviteErr) return { ok: false, error: inviteErr.message };
     userId = inviteData.user.id;

@@ -15,11 +15,17 @@ const config = [
   // Ignore generated/build output — next lint did this automatically
   {
     ignores: [
-      ".next/**",
-      "node_modules/**",
-      "out/**",
+      // Globbed with a leading **/ so nested copies are covered too. A git
+      // worktree under .claude/worktrees/ carries its own .next/, and a
+      // root-relative ".next/**" does not match it — which put 13 errors from
+      // generated webpack output into every local `npm run lint`, hiding the
+      // real ones. CI never saw them because it clones without the worktrees.
+      "**/.next/**",
+      "**/node_modules/**",
+      "**/out/**",
       "public/**",
-      ".vercel/**",
+      "**/.vercel/**",
+      ".claude/**",
     ],
   },
   // Load eslint-config-next via the legacy compat layer

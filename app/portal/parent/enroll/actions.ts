@@ -16,7 +16,7 @@ import type { HoursLadder } from "@/lib/billing/hours-ladder";
 import type { ComboDefinition } from "@/lib/billing/combo-match";
 import { loadStudioClassPrice, loadStudioClassPrices } from "@/lib/enrollment-class-price";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
-import { resolveTransferData } from "@/lib/stripe/connect";
+import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import { currentTuitionPeriod, invoicedTuitionCents } from "@/lib/billing/tuition-ledger";
 import { siblingDiscountInfo } from "@/lib/discounts";
 import { getTranslations } from "@/lib/i18n/server";
@@ -588,7 +588,7 @@ export async function createEnrollmentIntent(
       student_id: studentId,
       class_id: classId,
     },
-    transfer_data: await resolveTransferData(supabase, studioId),
+    ...(await resolveDestinationCharge(supabase, studioId)),
   });
 
   await supabase

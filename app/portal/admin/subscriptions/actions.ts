@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { CURRENCY } from "@/lib/currency";
 import { stripe } from "@/lib/stripe";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
-import { resolveTransferData } from "@/lib/stripe/connect";
+import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import {
   chargeAmountCents,
   intervalLabel,
@@ -140,7 +140,7 @@ export async function createAdminSubscription(
         admin_created: "true",
         monthly_amount_cents: String(monthlyCents),
       },
-      transfer_data: await resolveTransferData(supabase, studioId),
+      ...(await resolveDestinationCharge(supabase, studioId)),
     });
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Stripe subscription error" };

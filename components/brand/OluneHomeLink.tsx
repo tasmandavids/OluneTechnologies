@@ -7,8 +7,12 @@
 // www.olune.co.nz.
 
 import type { ReactNode } from "react";
+import { canonicalAppUrl } from "@/lib/app-url";
 
-const OLUNE_HOME = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://olune.co.nz";
+// canonicalAppUrl() rather than the raw env var: NEXT_PUBLIC_APP_URL is stored
+// in production without a scheme, and a bare `olune.co.nz` in href is a
+// RELATIVE path — the logo would navigate to /olune.co.nz and 404.
+const OLUNE_HOME = canonicalAppUrl();
 
 export function OluneHomeLink({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (

@@ -50,6 +50,24 @@ export function canonicalAppUrl(): string {
   return LOCAL_APP_URL;
 }
 
+/**
+ * Where a Supabase invite / magic link drops the recipient.
+ *
+ * Built from canonicalAppUrl() rather than NEXT_PUBLIC_APP_URL directly, and
+ * exported so no caller has to remember that. The production value of that env
+ * var is stored WITHOUT a scheme (`olune.co.nz`), so interpolating it raw
+ * yields `olune.co.nz/auth/callback?next=/welcome` — not a URL. Supabase
+ * rejects it and silently falls back to the project's Site URL, which sends a
+ * family somewhere other than the page the invite promised. normalizeOrigin()
+ * is what puts the `https://` and the `www.` back.
+ *
+ * `next` is percent-encoded; /auth/callback reads it through
+ * searchParams.get() + sanitizeNextPath(), which decodes and re-validates.
+ */
+export function inviteRedirectUrl(next = "/welcome"): string {
+  return `${canonicalAppUrl()}/auth/callback?next=${encodeURIComponent(next)}`;
+}
+
 export function emailGoogleOAuthCallbackUrl(): string {
   return `${canonicalAppUrl()}/api/email/oauth/google/callback`;
 }
