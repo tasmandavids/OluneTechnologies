@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import * as Sentry from "@sentry/nextjs";
 import { LOCALE_COOKIE, isLocale, type Locale } from "@/lib/i18n/config";
 import enErrors from "@/messages/en/errors.json";
 import frErrors from "@/messages/fr/errors.json";
@@ -37,6 +38,14 @@ export default function GlobalError({
   const locale = useMemo(resolveClientLocale, []);
   const t = ERROR_MESSAGES[locale].errors.global;
   const [recoverToLogin, setRecoverToLogin] = useState(false);
+
+  // global-error replaces the root layout, which means React has already given
+  // up on the whole tree. Nothing downstream will report this, so it is
+  // captured here explicitly — `digest` ties it back to the server-side log
+  // line when the error originated on the server.
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
 
   useEffect(() => {
     setRecoverToLogin(needsAuthRecovery(window.location.pathname));

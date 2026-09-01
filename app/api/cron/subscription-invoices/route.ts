@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { authorizedCron } from "@/lib/cron/auth";
+import { reportHandledError } from "@/lib/observability/report";
 import { runSubscriptionInvoicesForStudio, runTermInvoicesForStudio } from "@/lib/subscriptions/cron-run";
 import { studioLocalYmd, studioLocalYmdOffset } from "@/lib/date/studio-date";
 
@@ -22,6 +23,10 @@ export async function GET(req: NextRequest) {
   try {
     supabase = createAdminClient();
   } catch (e) {
+    await reportHandledError(e, {
+      route: "cron.subscription-invoices",
+      tags: { reason: "admin-client" },
+    });
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Admin client unavailable" },
       { status: 500 },

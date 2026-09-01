@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { withSentryConfig } from "@sentry/nextjs/config";
+import { sentryIngestOrigin } from "./lib/observability/dsn";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
@@ -15,6 +17,14 @@ function supabaseImageHostname(): string | null {
 }
 
 const supaHost = supabaseImageHostname();
+
+// The browser SDK POSTs errors to the DSN's ingest host. connect-src is
+// 'self'-only apart from the hosts listed below, so without this the CSP
+// blocks every client-side event and the only errors that ever arrive are the
+// server ones. Derived from the DSN so the policy tracks the configured
+// project — and stays absent entirely when Sentry isn't configured.
+const sentryHost = sentryIngestOrigin(process.env.NEXT_PUBLIC_SENTRY_DSN);
+const sentrySource = sentryHost ? ` ${sentryHost}` : "";
 
 // @vercel/analytics and @vercel/speed-insights only hit va.vercel-scripts.com
 // in development (the .debug.js builds). In production both are proxied through
@@ -64,7 +74,7 @@ const securityHeaders = [
       // googletagmanager.com is the studio's own GA4 tag (StudioAnalytics),
       // loaded only when a studio has connected Google Analytics.
       `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://maps.googleapis.com https://www.googletagmanager.com${devOnlySources}`,
-      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://maps.googleapis.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com${devOnlySources}`,
+      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://maps.googleapis.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com${sentrySource}${devOnlySources}`,
       "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://calendly.com https://form.typeform.com https://docs.google.com",
       "worker-src 'self' blob:",
     ].join("; "),
@@ -129,4 +139,46 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+// ── Sentry ──────────────────────────────────────────────────────────────────
+// Wraps the config last so it sees the final webpack/turbopack setup.
+//
+// Source maps upload only when SENTRY_AUTH_TOKEN is present. CI builds and
+// forks run without one and must still build — an observability integration
+// that can break the build is worse than no observability.
+export default withSentryConfig(withNextIntl(nextConfig), {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  // Only chatter during CI, where the log is the only record.
+  silent: !process.env.CI,
+
+  sourcemaps: {
+    disable: !process.env.SENTRY_AUTH_TOKEN,
+    // Don't ship the maps to the CDN — they're uploaded to Sentry and then
+    // deleted, so stack traces resolve without exposing our source publicly.
+    deleteSourcemapsAfterUpload: true,
+  },
+
+  // Client bundles are emitted under a hashed path; without this, errors from
+  // route-group pages come back unminified only some of the time.
+  widenClientFileUpload: true,
+
+  webpack: {
+    // Registers each entry in vercel.json's `crons` as a Sentry Cron Monitor,
+    // so a cron that stops running at all raises an alert. A missing run is
+    // the failure mode a try/catch can never catch.
+    automaticVercelMonitors: true,
+
+    treeshake: {
+      // Strip Sentry's own debug logging from the production bundle.
+      removeDebugLogging: true,
+      // We deliberately don't use Session Replay (see instrumentation-client.ts
+      // — the DOM here has children's names in it), so drop the recording code
+      // rather than shipping it to every browser.
+      excludeReplayIframe: true,
+      excludeReplayShadowDOM: true,
+      excludeReplayCompressionWorker: true,
+    },
+  },
+});

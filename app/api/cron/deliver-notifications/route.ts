@@ -36,6 +36,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { authorizedCron } from "@/lib/cron/auth";
+import { reportHandledError, reportHandledMessage } from "@/lib/observability/report";
 import {
   channelsForType,
   renderNotificationEmail,
@@ -62,6 +63,10 @@ export async function GET(req: NextRequest) {
   try {
     supabase = createAdminClient();
   } catch (e) {
+    await reportHandledError(e, {
+      route: "cron.deliver-notifications",
+      tags: { reason: "admin-client" },
+    });
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Admin client unavailable" },
       { status: 500 },
@@ -109,6 +114,11 @@ export async function GET(req: NextRequest) {
     .limit(batch);
 
   if (fetchErr) {
+    await reportHandledMessage("Notification queue read failed", {
+      route: "cron.deliver-notifications",
+      tags: { reason: "queue-read" },
+      extra: { message: fetchErr.message },
+    });
     return NextResponse.json({ error: fetchErr.message }, { status: 500 });
   }
   if (!rows || rows.length === 0) {
@@ -357,6 +367,18 @@ export async function GET(req: NextRequest) {
         .is("revoked_at", null);
       if (!error) summary.tokensRevoked += tokens.length;
     }
+  }
+
+  // A row that exhausted its retry budget is a notification a parent never
+  // received — an absence SMS, a payment-failed warning. The run itself
+  // "succeeded", so nothing else would ever surface it. Reported once per run
+  // rather than once per row to keep the alert readable.
+  if (summary.gaveUp > 0) {
+    await reportHandledMessage("Notification delivery gave up on one or more rows", {
+      route: "cron.deliver-notifications",
+      tags: { reason: "delivery-exhausted" },
+      extra: { ...summary },
+    });
   }
 
   return NextResponse.json({ ok: true, ranAt: new Date().toISOString(), summary });

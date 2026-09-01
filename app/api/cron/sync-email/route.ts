@@ -28,6 +28,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { authorizedCron } from "@/lib/cron/auth";
+import { reportHandledMessage } from "@/lib/observability/report";
 import { syncStudioAccounts } from "@/lib/email/sync";
 import { isUuid } from "@/lib/validation/uuid";
 
@@ -87,6 +88,17 @@ export async function GET(req: NextRequest) {
   }
 
   const skipped = ids.length - studiosProcessed;
+
+  // A mailbox that stops syncing is invisible from the outside: the Inbox hub
+  // simply shows nothing new. The per-account errors are already collected for
+  // the response body, so surface them rather than letting them expire with it.
+  if (errors.length) {
+    await reportHandledMessage("Email sync reported per-account errors", {
+      route: "cron.sync-email",
+      tags: { reason: "account-sync" },
+      extra: { errorCount: errors.length, errors: errors.slice(0, 10), studiosProcessed },
+    });
+  }
 
   return NextResponse.json({
     studios: ids.length,
