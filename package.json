@@ -23,6 +23,7 @@
     "db:sync:remote": "bash scripts/db-sync.sh --remote",
     "db:sync:local": "bash scripts/db-sync.sh --local",
     "db:verify": "node --env-file=.env.local scripts/verify-migrations.mjs",
+    "db:verify:grants": "node --env-file=.env.local scripts/verify-function-grants.mjs",
     "setup:all": "bash scripts/setup-all.sh",
     "db:pull": "supabase db pull",
     "db:reset": "supabase db reset",

@@ -123,6 +123,18 @@ jobs:
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
         run: node scripts/verify-migrations.mjs
 
+      # Every new function in `public` is auto-granted to anon by Supabase's
+      # default privileges, and PostgreSQL grants EXECUTE to PUBLIC on top of
+      # that no matter what those defaults say — so a migration that forgets to
+      # revoke silently publishes an RPC. That is how the 0011/0028/0029 linter
+      # warnings came back twice after 0048 and 0075 "fixed" them. See the
+      # header of 0121_security_linter_fixes.sql.
+      - name: Verify function grants
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: node scripts/verify-function-grants.mjs
+
       - name: Seed platform test admin
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
