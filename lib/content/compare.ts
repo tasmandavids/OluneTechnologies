@@ -186,7 +186,7 @@ export const COMPARISONS: CompareDoc[] = [
       "Plenty of good studios run on spreadsheets for years, and there's no shame in it. It's worth knowing the specific points where they stop being free.",
     updated: "2026-08-11",
     table: [
-      { label: "Cost", them: "Free", olune: "From $29/month" },
+      { label: "Cost", them: "Free", olune: "From NZ$29/month" },
       { label: "Setup", them: "Already done", olune: "An evening" },
       { label: "Enrolment", them: "Retyped from forms", olune: "Families enter their own" },
       { label: "Term invoicing", them: "Built by hand", olune: "Generated from the roll" },

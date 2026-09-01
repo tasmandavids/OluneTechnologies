@@ -81,7 +81,7 @@ export const GUIDES: ContentDoc[] = [
       },
       {
         q: "How much does dance studio software cost?",
-        a: "Commonly somewhere between NZ$30 and NZ$200 a month, depending on how many students you have and whether extras like a branded parent app or a website are included. Watch for tiered pricing that steps up with student numbers, one-off setup fees, and payment processing charged on top. Olune's plans start at $29/month in NZD, GST-inclusive, with unlimited students on every tier.",
+        a: "Commonly somewhere between NZ$30 and NZ$200 a month, depending on how many students you have and whether extras like a branded parent app or a website are included. Watch for tiered pricing that steps up with student numbers, one-off setup fees, and payment processing charged on top. Olune's plans start at NZ$29/month, GST-inclusive, with unlimited students on every tier.",
       },
       {
         q: "Do I need separate software for my studio website?",

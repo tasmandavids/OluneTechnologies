@@ -21,9 +21,18 @@ import { breadcrumbJsonLd, faqPageJsonLd, pricingJsonLd, rootUrl } from "@/lib/s
 import { ContentCta, ContentFaq, ContentHero, ContentShell } from "@/components/marketing/content/ContentArticle";
 import { ACCENT, DISPLAY, FAINT, HAIRLINE, MUTED, NAVY, PAGE_BG } from "@/components/marketing/content/tokens";
 
-/** Whole dollars — plan prices are round, and cents read as clutter here. */
+/**
+ * Whole dollars, marked as New Zealand dollars — plan prices are round, and
+ * cents read as clutter here.
+ *
+ * There is no separate Unicode glyph for the NZ dollar; en-NZ/NZD formats as a
+ * bare "$", which reads as USD to anyone scanning a SaaS pricing page. The
+ * "NZ$" prefix is the NZ convention for disambiguating it, and it has to be on
+ * the number itself rather than in a caption beside it, because these strings
+ * also get inlined into the FAQ answers below.
+ */
 function dollars(cents: number): string {
-  return formatMoney(cents, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  return `NZ${formatMoney(cents, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
 const PLAN_COPY: Record<string, { tag: string; desc: string; highlights: string[] }> = {
@@ -158,7 +167,7 @@ export default function PricingPage() {
               <div style={{ display: "flex", alignItems: "baseline", gap: 5, marginBottom: 4 }}>
                 <span style={{ fontFamily: DISPLAY, fontSize: 46, color: NAVY, lineHeight: 1 }}>{plan.monthly}</span>
                 <span style={{ fontSize: 15, color: FAINT }}>/mo</span>
-                <span style={{ fontSize: 13, color: FAINT, marginLeft: 4 }}>NZD incl. GST</span>
+                <span style={{ fontSize: 13, color: FAINT, marginLeft: 4 }}>incl. GST</span>
               </div>
               <div style={{ fontSize: 13.5, color: FAINT, marginBottom: 18 }}>or {plan.annual}/year — two months free</div>
               <p style={{ fontSize: 15.5, lineHeight: 1.65, color: MUTED, margin: "0 0 20px" }}>{plan.desc}</p>
