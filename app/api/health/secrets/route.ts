@@ -4,6 +4,7 @@ import {
   PRODUCTION_REQUIRED_SECRETS,
   missingProductionSecrets,
 } from "@/lib/env/required-secret";
+import { deliveryStatus, unconfiguredDeliveryChannels } from "@/lib/notify/config";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,6 +25,14 @@ export const dynamic = "force-dynamic";
  *   curl -H "Authorization: Bearer $CRON_SECRET" \
  *     https://www.olune.co.nz/api/health/secrets
  *
+ * Also reports outbound delivery (email/SMS/push). Those keys are deliberately
+ * NOT in the required-secrets registry — that registry is bound to
+ * `requireSecret`, which throws, and a missing Resend key must not take down an
+ * enrolment. But the graceful no-op is precisely how production ran with
+ * RESEND_API_KEY unset while the cron marked every undelivered invoice as sent.
+ * Reporting closes that gap without changing the degradation behaviour, so read
+ * `delivery` as well as `missing`: `ok` covers only the throwing secrets.
+ *
  * Reuses cron auth rather than admin session auth so it can be checked without
  * a browser, and stays closed in production when CRON_SECRET is unset.
  */
@@ -33,6 +42,7 @@ export async function GET(req: NextRequest) {
   }
 
   const missing = missingProductionSecrets();
+  const silentChannels = unconfiguredDeliveryChannels();
 
   return NextResponse.json(
     {
@@ -40,6 +50,13 @@ export async function GET(req: NextRequest) {
       environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "unknown",
       checked: PRODUCTION_REQUIRED_SECRETS.length,
       missing,
+      delivery: {
+        // Distinct from `ok` on purpose: an unconfigured channel is a silent
+        // outage, not a crash, and conflating the two would change what an
+        // existing `ok: false` means.
+        allChannelsConfigured: silentChannels.length === 0,
+        channels: deliveryStatus(),
+      },
     },
     // 200 even when degraded: this is a diagnostic read, and a 5xx here would
     // show up as a deployment error in Vercel's dashboard. Read `ok`.

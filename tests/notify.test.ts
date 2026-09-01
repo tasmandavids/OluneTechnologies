@@ -6,7 +6,13 @@ import {
   renderNotificationSms,
   type DeliverableNotification,
 } from "@/lib/notify/messages";
-import { isEmailConfigured, isPushConfigured, isSmsConfigured } from "@/lib/notify/config";
+import {
+  deliveryStatus,
+  isEmailConfigured,
+  isPushConfigured,
+  isSmsConfigured,
+  unconfiguredDeliveryChannels,
+} from "@/lib/notify/config";
 
 const sample = (over: Partial<DeliverableNotification> = {}): DeliverableNotification => ({
   id: "n1",
@@ -212,6 +218,34 @@ describe("provider configuration gates", () => {
     expect(isEmailConfigured()).toBe(false); // still missing RESEND_FROM
     process.env.RESEND_FROM = "Olune <a@b.com>";
     expect(isEmailConfigured()).toBe(true);
+  });
+
+  // Regression: production ran with RESEND_API_KEY unset, sendEmail returned
+  // {skipped:true}, and the cron marked the notification delivered. Nothing
+  // threw and nothing logged. These assert the reporting that makes that
+  // visible to /api/health/secrets.
+  it("names an unconfigured channel and what it silently drops", () => {
+    const silent = unconfiguredDeliveryChannels();
+    const email = silent.find((c) => c.channel === "email");
+    expect(email).toBeDefined();
+    expect(email!.requires).toContain("RESEND_API_KEY");
+    expect(email!.requires).toContain("RESEND_FROM");
+    expect(email!.drops.trim().length).toBeGreaterThan(0);
+  });
+
+  it("drops a channel out of the unconfigured list once its keys are set", () => {
+    expect(unconfiguredDeliveryChannels().map((c) => c.channel)).toContain("email");
+    process.env.RESEND_API_KEY = "re_test";
+    process.env.RESEND_FROM = "Olune <a@b.com>";
+    expect(unconfiguredDeliveryChannels().map((c) => c.channel)).not.toContain("email");
+  });
+
+  it("reports every channel, configured or not, and leaks no values", () => {
+    process.env.RESEND_API_KEY = "re_secret_value";
+    process.env.RESEND_FROM = "Olune <a@b.com>";
+    const all = deliveryStatus();
+    expect(all.map((c) => c.channel).sort()).toEqual(["email", "push", "sms"]);
+    expect(JSON.stringify(all)).not.toContain("re_secret_value");
   });
 
   it("reports SMS unconfigured until sid, token and from are all present", () => {

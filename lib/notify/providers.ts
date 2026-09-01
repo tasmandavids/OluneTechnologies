@@ -46,6 +46,9 @@ export async function sendEmail(params: {
         subject: params.subject,
         html: params.html,
         text: params.text,
+        // Omitted entirely when unset — Resend treats an empty reply_to as a
+        // validation error rather than as "no reply-to".
+        ...(cfg.replyTo ? { reply_to: cfg.replyTo } : {}),
       }),
     });
     if (!res.ok) {
