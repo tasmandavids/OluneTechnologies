@@ -120,23 +120,23 @@ export function CardPageClient() {
         <div style={{ maxWidth: 1180, margin: "0 auto", position: "relative", zIndex: 2 }}>
           <div className="dcl-cc-rewards" style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(340px,0.82fr)", gap: 40, alignItems: "stretch" }}>
             <div>
-              <Eyebrow>Your rewards, your rules</Eyebrow>
+              <Eyebrow>Your rewards, your rules, your cost</Eyebrow>
               <h2 style={{ ...h2Style, marginTop: 14 }}>Olune counts the years. You decide what they&rsquo;re worth.</h2>
               <p style={leadStyle}>
-                Bronze at three years is the same material in every studio &mdash; what it unlocks is not. Hang a discount, a credit, a free class or a booking window off any tier, in whatever combination suits your fees, and change it whenever you like.
+                Bronze at three years is the same material in every studio &mdash; what it unlocks is not. Olune sets no rewards and funds none: you hang a discount, a credit, a comped class or a booking window off any tier, in whatever combination suits your fees, and change it whenever you like.
               </p>
 
               <div style={{ marginTop: 36, display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 12 }} className="dcl-grid-reward-kinds">
                 {REWARD_KINDS.map((k) => (
                   <div key={k.key} style={{ background: "#ffffff", border: "1px solid rgba(26,21,53,0.08)", borderRadius: 18, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 6 }}>
                     <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: ACCENT }}>{k.name}</span>
-                    <span style={{ fontSize: 14.5, lineHeight: 1.5, color: "rgba(26,21,53,0.6)" }}>{k.eg}</span>
+                    <span style={{ fontSize: 14.5, lineHeight: 1.5, color: "rgba(26,21,53,0.6)" }}>{k.what}</span>
                   </div>
                 ))}
               </div>
 
               <p style={{ margin: "26px 0 0", fontSize: 14, lineHeight: 1.7, color: "rgba(26,21,53,0.45)" }}>
-                Set once per tier and it applies to every family who reaches it &mdash; no vouchers to hand out, no list of who is owed what. Pick a tier above to see one studio&rsquo;s numbers.
+                Set once per tier and it applies to every family who reaches it &mdash; no vouchers to hand out, no list of who is owed what. The ladder is Olune&rsquo;s; every reward on it is your studio&rsquo;s to set, price and honour.
               </p>
             </div>
 
