@@ -28,6 +28,12 @@ export async function sendEmail(params: {
   subject: string;
   html: string;
   text: string;
+  /**
+   * Overrides RESEND_REPLY_TO for this message. Studio-branded mail passes the
+   * studio's own address here (see lib/notify/reply-to.ts); the global default
+   * is Olune's own support address and is only right for Olune's own mail.
+   */
+  replyTo?: string;
 }): Promise<SendResult> {
   const cfg = getEmailConfig();
   if (!cfg) return { ok: false, skipped: true };
@@ -46,9 +52,12 @@ export async function sendEmail(params: {
         subject: params.subject,
         html: params.html,
         text: params.text,
-        // Omitted entirely when unset — Resend treats an empty reply_to as a
-        // validation error rather than as "no reply-to".
-        ...(cfg.replyTo ? { reply_to: cfg.replyTo } : {}),
+        // Per-send wins over the global default; omitted entirely when neither
+        // is set, since Resend treats an empty reply_to as a validation error
+        // rather than as "no reply-to".
+        ...(params.replyTo?.trim() || cfg.replyTo
+          ? { reply_to: params.replyTo?.trim() || cfg.replyTo }
+          : {}),
       }),
     });
     if (!res.ok) {

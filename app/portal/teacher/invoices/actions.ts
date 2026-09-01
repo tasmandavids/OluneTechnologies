@@ -159,7 +159,15 @@ export async function sendContractorInvoice(id: string) {
   // ── Deliver ────────────────────────────────────────────────────────────────
   const results = await Promise.all(
     recipients.map((to) =>
-      sendEmail({ to, subject: rendered.subject, html: rendered.html, text: rendered.text }),
+      // A studio replying to an invoice wants the contractor who issued it —
+      // neither the studio's own address nor Olune support.
+      sendEmail({
+        to,
+        replyTo: (me?.email as string | null) ?? undefined,
+        subject: rendered.subject,
+        html: rendered.html,
+        text: rendered.text,
+      }),
     ),
   );
   const delivered = results.filter((r) => r.ok).length;

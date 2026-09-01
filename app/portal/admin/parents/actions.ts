@@ -17,6 +17,7 @@ import {
   type ParentEmailCandidate,
 } from "@/lib/parents/mass-email";
 import type { GuardianRelationship } from "@/lib/parents/types";
+import { resolveStudioReplyTo } from "@/lib/notify/reply-to";
 
 /** Front-desk + owner — roster CRUD. */
 async function getAdminStudio() {
@@ -640,6 +641,9 @@ export async function bulkInviteMembers(): Promise<BulkInviteResult> {
   }
 
   const redirectTo = inviteRedirectUrl();
+  // Resolved once, not per recipient — every invite in this run is from the
+  // same studio, and a reply belongs to it rather than to Olune support.
+  const replyTo = await resolveStudioReplyTo(admin, studioId);
 
   let sent = 0;
   let skipped = 0;
@@ -684,6 +688,7 @@ export async function bulkInviteMembers(): Promise<BulkInviteResult> {
 
     const result = await sendEmail({
       to: profile.email,
+      replyTo,
       subject: "You've been invited to Olune",
       html: `<p>Hi ${name},</p>
 <p>You've been added to your studio's Olune portal. Click the link below to set your password and get started:</p>
@@ -832,6 +837,8 @@ export async function massEmailParents(input: unknown): Promise<MassEmailResult>
 
   const studioName = (studio?.name as string | null)?.trim() || "Your studio";
   const { sendEmail } = await import("@/lib/notify/providers");
+  // This mail signs off "— {studioName}", so a reply must reach the studio.
+  const replyTo = await resolveStudioReplyTo(supabase, studioId);
 
   let sent = 0;
   let skipped = 0;
@@ -853,6 +860,7 @@ export async function massEmailParents(input: unknown): Promise<MassEmailResult>
 
     const result = await sendEmail({
       to: parent.email,
+      replyTo,
       subject: rendered.subject,
       html: rendered.html,
       text: rendered.text,

@@ -93,6 +93,7 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
   ) {
     await notifyParentOfStudentLogin({
       admin,
+      studioId: ctx.studioId,
       parentEmail: parentProfile.email as string,
       parentName: (parentProfile.full_name as string | null) ?? null,
       studentName: d.fullName,
@@ -106,12 +107,13 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
 
 async function notifyParentOfStudentLogin(params: {
   admin: ReturnType<typeof createAdminClient>;
+  studioId: string;
   parentEmail: string;
   parentName: string | null;
   studentName: string;
   loginEmail: string;
 }): Promise<void> {
-  const { admin, parentEmail, parentName, studentName, loginEmail } = params;
+  const { admin, studioId, parentEmail, parentName, studentName, loginEmail } = params;
 
   const { data: linkData } = await admin.auth.admin.generateLink({
     type: "invite",
@@ -133,8 +135,11 @@ async function notifyParentOfStudentLogin(params: {
     ? `\n\nSet a password for ${studentName} here:\n${inviteUrl}\n\nThis link expires in 24 hours.`
     : "";
 
+  const { resolveStudioReplyTo } = await import("@/lib/notify/reply-to");
+
   await sendEmail({
     to: parentEmail,
+    replyTo: await resolveStudioReplyTo(admin, studioId),
     subject: `Login details for ${studentName}`,
     html: `<p>${greeting}</p>
 <p>We've created a portal login for ${safeStudentName}.</p>

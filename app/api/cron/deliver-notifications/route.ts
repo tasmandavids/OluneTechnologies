@@ -44,6 +44,7 @@ import {
   type DeliverableNotification,
 } from "@/lib/notify/messages";
 import { sendEmail, sendPush, sendSms } from "@/lib/notify/providers";
+import { createStudioReplyToResolver } from "@/lib/notify/reply-to";
 import { nextAttemptAt } from "@/lib/notify/backoff";
 
 export const dynamic = "force-dynamic";
@@ -178,6 +179,10 @@ export async function GET(req: NextRequest) {
 
   const nowIso = new Date().toISOString();
 
+  // Per-run, so a studio that changes its contact address is picked up on the
+  // next pass rather than being cached for the life of the process.
+  const studioReplyTo = createStudioReplyToResolver(supabase);
+
   // 3. Deliver each row.
   for (const row of rows) {
     summary.processed += 1;
@@ -223,7 +228,14 @@ export async function GET(req: NextRequest) {
       channelEnabled(row.user_id as string, row.type as string, "email")
     ) {
       if (contact?.email) {
-        const r = await sendEmail({ to: contact.email, ...renderNotificationEmail(notif) });
+        // Studio-branded mail — an invoice or a class reminder — must reply to
+        // the studio, not to Olune support. Memoised across the whole run, so
+        // a batch spanning many studios costs one lookup each, not one per row.
+        const r = await sendEmail({
+          to: contact.email,
+          replyTo: await studioReplyTo(row.studio_id as string | null),
+          ...renderNotificationEmail(notif),
+        });
         if (r.ok) {
           update.email_sent_at = nowIso;
           summary.emailsSent += 1;
