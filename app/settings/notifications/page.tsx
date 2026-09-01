@@ -15,6 +15,11 @@ const ALL_TYPES = [
   { type: "substitute_needed",    label: "Cover requests",        description: "When a class at your studio needs a substitute teacher" },
   { type: "substitute_filled",    label: "Cover confirmed",       description: "When someone picks up a class you asked to be covered" },
   { type: "payment_reminder",     label: "Payment reminders",     description: "A nudge before or after a payment is due" },
+  // Push-only types. They carry no email or SMS destination, so they only
+  // became controllable once push existed — before that they were in-app only
+  // and there was nothing here to switch off.
+  { type: "message_received",     label: "Chat messages",         description: "When your studio sends you a message" },
+  { type: "checkin_tap",          label: "Check-ins",             description: "When a student taps in or out of a class" },
 ];
 
 export type PrefEntry = {
@@ -23,8 +28,10 @@ export type PrefEntry = {
   description: string;
   supportsEmail: boolean;
   supportsSms: boolean;
+  supportsPush: boolean;
   emailEnabled: boolean;
   smsEnabled: boolean;
+  pushEnabled: boolean;
 };
 
 export default async function NotificationPreferencesPage() {
@@ -42,8 +49,12 @@ export default async function NotificationPreferencesPage() {
       description,
       supportsEmail: channels.includes("email"),
       supportsSms:  channels.includes("sms"),
+      supportsPush: channels.includes("push"),
       emailEnabled: row ? row.email_enabled : true,
       smsEnabled:   row ? row.sms_enabled   : true,
+      // `?? true` rather than `row ? … : true` — rows written before 0120 have
+      // no push_enabled value and must read as on, not as off.
+      pushEnabled:  row ? (row.push_enabled ?? true) : true,
     }];
   });
 

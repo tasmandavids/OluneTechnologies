@@ -107,6 +107,26 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Deep-link association files. Rewritten rather than served from public/
+  // because Apple requires `apple-app-site-association` to have no extension
+  // AND a Content-Type of application/json — static serving gives one or the
+  // other, never both. Route handlers set it explicitly.
+  //
+  // These resolve on every tenant host, which is the point: iOS and Android
+  // each fetch the association from the origin of the link they are opening,
+  // so a studio subdomain and a studio's custom domain both have to answer.
+  async rewrites() {
+    return [
+      {
+        source: "/.well-known/apple-app-site-association",
+        destination: "/api/well-known/apple-app-site-association",
+      },
+      {
+        source: "/.well-known/assetlinks.json",
+        destination: "/api/well-known/assetlinks",
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

@@ -2,10 +2,11 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
   channelsForType,
   renderNotificationEmail,
+  renderNotificationPush,
   renderNotificationSms,
   type DeliverableNotification,
 } from "@/lib/notify/messages";
-import { isEmailConfigured, isSmsConfigured } from "@/lib/notify/config";
+import { isEmailConfigured, isPushConfigured, isSmsConfigured } from "@/lib/notify/config";
 
 const sample = (over: Partial<DeliverableNotification> = {}): DeliverableNotification => ({
   id: "n1",
@@ -17,20 +18,16 @@ const sample = (over: Partial<DeliverableNotification> = {}): DeliverableNotific
 });
 
 describe("channelsForType", () => {
-  it("routes imminent action events to email + SMS", () => {
-    expect(channelsForType("class_reminder")).toEqual(["email", "sms"]);
-    expect(channelsForType("waitlist_promoted")).toEqual(["email", "sms"]);
+  it("routes imminent action events to email + SMS + push", () => {
+    expect(channelsForType("class_reminder")).toEqual(["email", "sms", "push"]);
+    expect(channelsForType("waitlist_promoted")).toEqual(["email", "sms", "push"]);
   });
 
-  it("routes money + confirmation events to email only", () => {
-    expect(channelsForType("payment_failed")).toEqual(["email"]);
-    expect(channelsForType("invoice_overdue")).toEqual(["email"]);
-    expect(channelsForType("enrollment_confirmed")).toEqual(["email"]);
-    expect(channelsForType("birthday_greeting")).toEqual(["email"]);
-  });
-
-  it("keeps chat messages in-app only (no outbound channels)", () => {
-    expect(channelsForType("message_received")).toEqual([]);
+  it("routes money + confirmation events to email + push", () => {
+    expect(channelsForType("payment_failed")).toEqual(["email", "push"]);
+    expect(channelsForType("invoice_overdue")).toEqual(["email", "push"]);
+    expect(channelsForType("enrollment_confirmed")).toEqual(["email", "push"]);
+    expect(channelsForType("birthday_greeting")).toEqual(["email", "push"]);
   });
 
   it("defaults unknown types to in-app only", () => {
@@ -41,11 +38,75 @@ describe("channelsForType", () => {
   // class starts in hours and has no teacher. Email alone assumes the teacher
   // is at a desk, so this must stay on SMS.
   it("sends cover requests on SMS as well as email", () => {
-    expect(channelsForType("substitute_needed")).toEqual(["email", "sms"]);
+    expect(channelsForType("substitute_needed")).toContain("sms");
   });
 
-  it("confirms cover by email only — the urgency is gone once it's filled", () => {
-    expect(channelsForType("substitute_filled")).toEqual(["email"]);
+  it("confirms cover without SMS — the urgency is gone once it's filled", () => {
+    expect(channelsForType("substitute_filled")).not.toContain("sms");
+  });
+
+  // ── Push routing ─────────────────────────────────────────────────────────
+  // Adding push must never have moved an existing email or SMS destination.
+  // These two assertions are the regression guard for that.
+  it("leaves the SMS set untouched by the arrival of push", () => {
+    const smsTypes = [
+      "class_reminder",
+      "waitlist_promoted",
+      "substitute_needed",
+    ];
+    const nonSmsTypes = [
+      "substitute_filled",
+      "enrollment_confirmed",
+      "payment_failed",
+      "invoice_overdue",
+      "invoice_sent",
+      "payment_reminder",
+      "subscription_sent",
+      "birthday_greeting",
+      "schedule_updated",
+      "message_received",
+      "checkin_tap",
+      "contractor_invoice_received",
+    ];
+    for (const t of smsTypes) expect(channelsForType(t)).toContain("sms");
+    for (const t of nonSmsTypes) expect(channelsForType(t)).not.toContain("sms");
+  });
+
+  it("leaves the email set untouched by the arrival of push", () => {
+    const emailTypes = [
+      "class_reminder",
+      "waitlist_promoted",
+      "substitute_needed",
+      "substitute_filled",
+      "enrollment_confirmed",
+      "payment_failed",
+      "invoice_overdue",
+      "invoice_sent",
+      "payment_reminder",
+      "subscription_sent",
+      "birthday_greeting",
+      "schedule_updated",
+    ];
+    const nonEmailTypes = ["message_received", "checkin_tap", "contractor_invoice_received"];
+    for (const t of emailTypes) expect(channelsForType(t)).toContain("email");
+    for (const t of nonEmailTypes) expect(channelsForType(t)).not.toContain("email");
+  });
+
+  // Chat and check-in are the two the native app exists for: worth a lock
+  // screen, never worth an email.
+  it("makes chat and check-in push-only", () => {
+    expect(channelsForType("message_received")).toEqual(["push"]);
+    expect(channelsForType("checkin_tap")).toEqual(["push"]);
+  });
+
+  // The invoice IS the email; a push on top carries no extra information.
+  it("does not push the invoice-delivery types", () => {
+    expect(channelsForType("invoice_sent")).toEqual(["email"]);
+    expect(channelsForType("subscription_sent")).toEqual(["email"]);
+  });
+
+  it("keeps the contractor invoice copy in-app only", () => {
+    expect(channelsForType("contractor_invoice_received")).toEqual([]);
   });
 });
 
@@ -94,6 +155,43 @@ describe("renderNotificationSms", () => {
   });
 });
 
+describe("renderNotificationPush", () => {
+  it("uses the title and body verbatim and keeps the link in data", () => {
+    const p = renderNotificationPush(sample());
+    expect(p.title).toBe("Class tomorrow: Ballet");
+    expect(p.body).toBe("Starts at 16:00. See you there!");
+    expect(p.data.link).toBe("/portal/student");
+    expect(p.data.notificationId).toBe("n1");
+    expect(p.data.type).toBe("class_reminder");
+  });
+
+  // A visible URL in a push is untappable as text and eats the two lines a
+  // lock screen gives you. The app routes from data.link instead.
+  it("never appends the link to the visible body", () => {
+    const p = renderNotificationPush(sample({ link: "/portal/parent/billing" }));
+    expect(p.body).not.toContain("/portal/parent/billing");
+  });
+
+  it("keeps the link relative for the app's own router", () => {
+    const prev = process.env.NEXT_PUBLIC_APP_URL;
+    process.env.NEXT_PUBLIC_APP_URL = "https://demo.olune.app";
+    const p = renderNotificationPush(sample({ link: "/portal/student" }));
+    expect(p.data.link).toBe("/portal/student");
+    process.env.NEXT_PUBLIC_APP_URL = prev;
+  });
+
+  it("truncates a long body to what a notification shade will show", () => {
+    const p = renderNotificationPush(sample({ body: "x".repeat(500) }));
+    expect(p.body.length).toBeLessThanOrEqual(240);
+    expect(p.body.endsWith("...")).toBe(true);
+  });
+
+  it("renders an empty body rather than the string 'null'", () => {
+    const p = renderNotificationPush(sample({ body: null }));
+    expect(p.body).toBe("");
+  });
+});
+
 describe("provider configuration gates", () => {
   const saved = { ...process.env };
   beforeEach(() => {
@@ -102,6 +200,7 @@ describe("provider configuration gates", () => {
     delete process.env.TWILIO_ACCOUNT_SID;
     delete process.env.TWILIO_AUTH_TOKEN;
     delete process.env.TWILIO_FROM;
+    delete process.env.EXPO_ACCESS_TOKEN;
   });
   afterEach(() => {
     process.env = { ...saved };
@@ -122,5 +221,14 @@ describe("provider configuration gates", () => {
     expect(isSmsConfigured()).toBe(false); // still missing TWILIO_FROM
     process.env.TWILIO_FROM = "+6421234567";
     expect(isSmsConfigured()).toBe(true);
+  });
+
+  // Expo accepts unauthenticated sends, so gating on the access token is our
+  // choice: it turns on Expo's push security and keeps push consistent with
+  // the other two providers, which silently no-op in an unconfigured env.
+  it("reports push unconfigured until the Expo access token is present", () => {
+    expect(isPushConfigured()).toBe(false);
+    process.env.EXPO_ACCESS_TOKEN = "expo_tok";
+    expect(isPushConfigured()).toBe(true);
   });
 });

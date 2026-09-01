@@ -1,0 +1,19 @@
+{
+  "name": "olune-parent",
+  "version": "0.1.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo start --ios",
+    "android": "expo start --android",
+    "typecheck": "tsc --noEmit",
+    "doctor": "npx expo-doctor",
+    "build:preview": "eas build --profile preview",
+    "build:production": "eas build --profile production",
+    "submit:ios": "eas submit --platform ios --profile production",
+    "submit:android": "eas submit --platform android --profile production"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
