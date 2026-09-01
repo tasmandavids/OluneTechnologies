@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sanitizeNextPath } from "@/lib/auth/oauth";
+import { withAuthCookieDomain } from "@/lib/auth/cookie-domain";
 import { mergeSessionCookies } from "@/lib/supabase/middleware";
 import { createServerClient } from "@supabase/ssr";
 import { purgeAuthCookies } from "@/lib/supabase/auth-cookies";
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
           response = NextResponse.redirect(origin);
           cookiesToSet.forEach(({ name, value, options }) => {
             response.cookies.set(name, value, {
-              ...options,
+              ...withAuthCookieDomain(options),
               ...(request.nextUrl.protocol === "https:" ? { secure: true } : {}),
             });
           });
@@ -59,8 +60,6 @@ export async function GET(request: NextRequest) {
     },
   );
 
-  purgeAuthCookies(response, request);
-
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
@@ -71,8 +70,14 @@ export async function GET(request: NextRequest) {
   });
 
   if (error || !data?.url) {
-    return NextResponse.redirect(loginOnError);
+    const fail = NextResponse.redirect(loginOnError);
+    purgeAuthCookies(fail, request);
+    return fail;
   }
+
+  // signInWithOAuth's setAll recreates `response`, so any purge before this call
+  // is discarded. Purge stale session cookies here, after the PKCE verifier is set.
+  purgeAuthCookies(response, request, { keepVerifier: true });
 
   const providerRedirect = NextResponse.redirect(data.url);
   return mergeSessionCookies(providerRedirect, response);
