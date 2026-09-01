@@ -38,11 +38,17 @@ record themselves in `supabase_migrations.schema_migrations`; pasting DDL skips 
 bookkeeping, so the repo and the database silently diverge and `npm run db:verify`
 can no longer tell you the truth.
 
-To seed the test admin on its own (service role key in `.env.local`):
+To create a platform operator on its own (service role key in `.env.local`).
+Both variables are required — there is no default password, and the script
+refuses to run from CI:
 
 ```bash
-npm run seed:platform-admin
+ALLOW_PLATFORM_ADMIN_SEED=1 \
+PLATFORM_ADMIN_PASSWORD="$(openssl rand -base64 24)" \
+  npm run seed:platform-admin
 ```
+
+The account it creates is a cross-tenant superuser — see `TEST_ACCOUNTS.md`.
 
 ## Checking the database matches the repo
 
@@ -52,8 +58,10 @@ npm run db:verify
 
 ## Test login (after seed)
 
-- **Email:** `platform-admin@olune.test`
-- **Password:** `testadmin123`
+- **Email:** `platform-admin@olune.test`, or whatever you set `PLATFORM_ADMIN_EMAIL` to
+- **Password:** the one you supplied as `PLATFORM_ADMIN_PASSWORD`
 - **URLs:** `/platform` and `/portal/admin`
 
-Also set on Vercel: `PLATFORM_OPERATOR_EMAILS=platform-admin@olune.test`
+There is no shared password in this repo. Do not set `PLATFORM_OPERATOR_EMAILS`
+in production — it grants operator access on an email match alone, with no
+`platform_operators` row and no audit trail (SOC2-01).

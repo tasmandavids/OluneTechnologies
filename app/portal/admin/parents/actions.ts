@@ -18,6 +18,7 @@ import {
 } from "@/lib/parents/mass-email";
 import type { GuardianRelationship } from "@/lib/parents/types";
 import { resolveStudioReplyTo } from "@/lib/notify/reply-to";
+import { logAuditEvent } from "@/lib/audit/log";
 
 /** Front-desk + owner — roster CRUD. */
 async function getAdminStudio() {
@@ -26,6 +27,9 @@ async function getAdminStudio() {
     error: ctx.error,
     supabase: ctx.supabase,
     studioId: ctx.studioId,
+    // Carried through for the audit trail — see lib/audit/log.ts.
+    userId: ctx.userId,
+    role: ctx.role,
   };
 }
 
@@ -522,7 +526,7 @@ export async function updateChildRelationship(input: unknown): Promise<ActionRes
 export async function deleteParent(parentId: string): Promise<ActionResult> {
   if (!parentId) return { ok: false, error: "Missing parent ID" };
 
-  const { error, studioId } = await getAdminStudio();
+  const { error, studioId, userId: actorId, role: actorRole } = await getAdminStudio();
   if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
 
   let admin;
@@ -598,6 +602,20 @@ export async function deleteParent(parentId: string): Promise<ActionResult> {
       .eq("user_id", parentId);
     if (membershipErr) return { ok: false, error: membershipErr.message };
   }
+
+  // The two branches above are very different events wearing one button:
+  // at the home studio the person's account is destroyed, elsewhere they are
+  // only unlinked from this studio and keep their account. An entry that did
+  // not distinguish them would misreport an unlink as an erasure.
+  await logAuditEvent({
+    studioId,
+    actorId,
+    actorRole,
+    action: "parent.deleted",
+    targetType: "profile",
+    targetId: parentId,
+    metadata: { scope: isHomeStudio ? "account_deleted" : "unlinked_from_studio" },
+  });
 
   revalidateParentPaths();
   return { ok: true };
