@@ -15,6 +15,7 @@ import {
   WORK_LOCATIONS,
 } from "@/lib/staff/types";
 import { studioLocalYmd } from "@/lib/date/studio-date";
+import { logAuditEvent } from "@/lib/audit/log";
 
 export type ActionResult = { ok: true; id?: string } | { ok: false; error: string };
 
@@ -89,7 +90,7 @@ async function rollbackAuthUser(admin: ReturnType<typeof createAdminClient>, use
 export async function createStaffMember(
   input: z.infer<typeof CreateStaffSchema>,
 ): Promise<ActionResult> {
-  const { error, studioId } = await getAdminStudio();
+  const { error, studioId, userId: actorId, role: actorRole } = await getAdminStudio();
   if (error || !studioId) return { ok: false, error: error ?? "No studio." };
 
   const parsed = CreateStaffSchema.safeParse(input);
@@ -174,6 +175,20 @@ export async function createStaffMember(
     },
     { onConflict: "user_id,studio_id" },
   );
+
+  // Logged as an invite rather than a creation because that is what it is from
+  // an access point of view: this hands someone a role inside the studio. The
+  // granted role is the field that matters — 'office' and 'teacher' see very
+  // different amounts of a family's data.
+  await logAuditEvent({
+    studioId,
+    actorId,
+    actorRole,
+    action: "member.invited",
+    targetType: "profile",
+    targetId: userId,
+    metadata: { grantedRole: data.role },
+  });
 
   revalidateStaffPaths(userId);
   return { ok: true, id: userId };
@@ -360,15 +375,16 @@ export async function deleteStaffShift(id: string): Promise<ActionResult> {
 export async function deleteStaffMember(id: string): Promise<ActionResult> {
   if (!id) return { ok: false, error: "Missing staff ID." };
 
-  const { error, studioId, userId } = await getAdminStudio();
+  const { error, studioId, userId, role: actorRole } = await getAdminStudio();
   if (error || !studioId) return { ok: false, error: error ?? "No studio." };
   if (userId === id) return { ok: false, error: "You cannot delete your own account." };
 
   const admin = createAdminClient();
 
+  // full_name for the audit entry — the profile is gone moments later.
   const { data: profile, error: profileErr } = await admin
     .from("profiles")
-    .select("id, role")
+    .select("id, role, full_name")
     .eq("id", id)
     .eq("studio_id", studioId)
     .in("role", ["teacher", "office"])
@@ -393,6 +409,16 @@ export async function deleteStaffMember(id: string): Promise<ActionResult> {
 
   const { error: deleteErr } = await admin.auth.admin.deleteUser(id);
   if (deleteErr) return { ok: false, error: deleteErr.message };
+
+  await logAuditEvent({
+    studioId,
+    actorId: userId,
+    actorRole,
+    action: "member.removed",
+    targetType: "profile",
+    targetId: id,
+    metadata: { removedRole: profile.role, fullName: profile.full_name ?? null },
+  });
 
   revalidateStaffPaths();
   return { ok: true };

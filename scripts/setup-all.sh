@@ -16,11 +16,14 @@ bash scripts/db-sync.sh "$@" || {
 }
 
 echo ""
-echo "=== Seeding test admin ==="
-npm run seed:platform-admin
-
-echo ""
 echo "=== Done ==="
-echo "  Email:    platform-admin@olune.test"
-echo "  Password: testadmin123"
-echo "  Console:  /platform and /portal/admin"
+echo ""
+echo "Migrations are applied. This script no longer seeds a platform operator:"
+echo "that account is a cross-tenant superuser and is created deliberately, with"
+echo "a password you supply. To create one against a local or preview database:"
+echo ""
+echo "  ALLOW_PLATFORM_ADMIN_SEED=1 \\"
+echo "  PLATFORM_ADMIN_PASSWORD=\"\$(openssl rand -base64 24)\" \\"
+echo "    npm run seed:platform-admin"
+echo ""
+echo "See TEST_ACCOUNTS.md."
