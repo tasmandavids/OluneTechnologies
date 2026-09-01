@@ -14,6 +14,7 @@ import { getStudioOpsStudio } from "@/lib/portal/access";
 import { insertTuitionInvoice, quoteEnrollment } from "@/lib/billing/tuition-invoice";
 import { loadStudioTuitionContext } from "@/lib/billing/tuition-model";
 import { dispatchStudioEvent } from "@/lib/integrations/events";
+import { logAuditEvent } from "@/lib/audit/log";
 
 async function getAdminStudio() {
   const ctx = await getStudioOpsStudio();
@@ -21,6 +22,10 @@ async function getAdminStudio() {
     error: ctx.error,
     supabase: ctx.supabase,
     studioId: ctx.studioId,
+    // Carried through for the audit trail: an entry without an actor answers
+    // "what happened" but not "who", which is the half an auditor asks about.
+    userId: ctx.userId,
+    role: ctx.role,
   };
 }
 
@@ -200,7 +205,7 @@ export async function addStudent(input: unknown): Promise<ActionResult> {
   const parsed = StudentSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
 
-  const { error, studioId } = await getAdminStudio();
+  const { error, studioId, userId: actorId, role: actorRole } = await getAdminStudio();
   if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
 
   let admin;
@@ -257,6 +262,18 @@ export async function addStudent(input: unknown): Promise<ActionResult> {
     { onConflict: "user_id,studio_id" },
   );
 
+  await logAuditEvent({
+    studioId,
+    actorId,
+    actorRole,
+    action: "student.created",
+    targetType: "profile",
+    targetId: userId,
+    // Whether an invite email went out is the part that matters later: it is
+    // the difference between a record created and a person given access.
+    metadata: { invited: Boolean(d.email) },
+  });
+
   revalidatePath("/portal/admin/students");
   revalidatePath("/portal/admin/people");
   return { ok: true };
@@ -269,7 +286,7 @@ export async function addStudent(input: unknown): Promise<ActionResult> {
 export async function deleteStudent(studentId: string): Promise<ActionResult> {
   if (!studentId) return { ok: false, error: "Missing student ID" };
 
-  const { error, studioId } = await getAdminStudio();
+  const { error, studioId, userId: actorId, role: actorRole } = await getAdminStudio();
   if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
 
   let admin;
@@ -282,9 +299,12 @@ export async function deleteStudent(studentId: string): Promise<ActionResult> {
     };
   }
 
+  // full_name is selected for the audit entry, not for the delete: once the
+  // auth user is gone the row is gone with it, and an entry that says only
+  // "deleted <uuid>" cannot be read by the person who needs it a year later.
   const { data: profile, error: profileErr } = await admin
     .from("profiles")
-    .select("id, role")
+    .select("id, role, full_name")
     .eq("id", studentId)
     .eq("studio_id", studioId)
     .eq("role", "student")
@@ -309,6 +329,16 @@ export async function deleteStudent(studentId: string): Promise<ActionResult> {
 
   const { error: deleteErr } = await admin.auth.admin.deleteUser(studentId);
   if (deleteErr) return { ok: false, error: deleteErr.message };
+
+  await logAuditEvent({
+    studioId,
+    actorId,
+    actorRole,
+    action: "student.deleted",
+    targetType: "profile",
+    targetId: studentId,
+    metadata: { fullName: profile.full_name ?? null },
+  });
 
   revalidatePath("/portal/admin/students");
   revalidatePath("/portal/admin/people");
@@ -428,7 +458,7 @@ export async function bulkDeleteStudents(input: unknown): Promise<BulkDeleteResu
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const { error, supabase, studioId } = await getAdminStudio();
+  const { error, supabase, studioId, userId: actorId, role: actorRole } = await getAdminStudio();
   if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
 
   const { data: profiles } = await supabase
@@ -461,6 +491,23 @@ export async function bulkDeleteStudents(input: unknown): Promise<BulkDeleteResu
   if (deleted === 0 && failures.length > 0) {
     return { ok: false, error: failures[0]?.error ?? "No students were deleted." };
   }
+
+  // deleteStudent already logged one entry per student. This second, coarser
+  // entry records the *decision* — one admin removing N children in a single
+  // stroke — which is the shape of an incident, and which N separate entries
+  // scattered among a day's activity do not show.
+  await logAuditEvent({
+    studioId,
+    actorId,
+    actorRole,
+    action: "student.bulk_deleted",
+    targetType: "profile",
+    metadata: {
+      requested: parsed.data.studentIds.length,
+      deleted,
+      failed: failures.length,
+    },
+  });
 
   revalidatePath("/portal/admin/students");
   revalidatePath("/portal/admin/people");

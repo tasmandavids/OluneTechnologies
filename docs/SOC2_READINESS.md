@@ -6,7 +6,8 @@ schema (119 migrations), CI/CD pipeline, and repository documentation.
 **Framework:** AICPA Trust Services Criteria (2017, rev. 2022) — Security (common
 criteria), Availability, Confidentiality, Processing Integrity, Privacy.
 **Status:** SOC2-01 partially remediated on this branch (31 Aug 2026); its credential
-rotation remains outstanding. Every other finding is as-assessed.
+rotation remains outstanding. SOC2-02 foundation landed 1 Sep 2026 with partial call-site
+coverage. Every other finding is as-assessed.
 **Type:** Readiness / gap assessment. This is *not* an audit opinion and confers no
 attestation. It identifies what an auditor would test and where the evidence is
 currently absent.
@@ -144,6 +145,10 @@ date; a breach notification obligation may already exist.
 ### SOC2-02 — No tenant-scoped audit trail · **High**
 **TSC:** CC7.2, CC6.1
 
+> **Status: foundation landed, coverage partial (1 Sep 2026).** The table, the
+> write path and the first six call sites exist — see *Remediation applied*
+> below. The remaining call sites are not yet wired, so this finding stays open.
+
 `platform_audit_log` (`supabase/migrations/0026_platform_admin.sql:143`) is the only
 audit facility, and `lib/platform/audit.ts` is called from 26 sites — **all** under
 `app/platform/`. Nothing records what happens inside a studio: no log of a studio admin
@@ -154,10 +159,49 @@ password reset) are not captured beyond Supabase's own short-lived internal logs
 The table is also mutable by the service role, has no retention period, and no
 tamper-evidence — an auditor will ask how you prove entries were not altered.
 
-**Remediate:** add a tenant-scoped `audit_events` table (append-only: revoke
-update/delete, ideally write to an external sink); log every privileged action, PII
-read/export, role change, and auth event; define a retention period of at least 12
-months to cover the observation window.
+#### Remediation applied
+
+- `supabase/migrations/0120_audit_events.sql` — `audit_events`, scoped by
+  `studio_id`, indexed for the three questions actually asked of it (recent
+  activity in a studio, everything one actor did, everything that touched one
+  record). Readable by that studio's own admins and by platform operators.
+- **Append-only at the database.** `update` and `delete` are revoked from `anon`,
+  `authenticated` *and* `service_role`; `insert` is granted to `service_role`
+  alone. `service_role` bypasses RLS but not table grants, so this is what makes
+  the table immutable through the API rather than merely by convention — the
+  distinction between "we keep a log" and evidence.
+- `lib/audit/events.ts` — typed action catalogue with severity, so a call site
+  cannot invent `student.delete` beside `student.deleted` and split one action
+  into two histories.
+- `lib/audit/log.ts` — the single write path. Never throws: it runs after the
+  action it records has already succeeded, so a throw would report a successful
+  delete as a failure and invite a second one. Failures route to a replaceable
+  handler, which is where monitoring attaches once SOC2-05 lands.
+- `tests/audit-log.test.ts` — 8 tests covering the row shape (a column rename
+  otherwise fails only in production), both failure paths, and the severity
+  classification.
+
+**Live call sites (6):** `student.created`, `student.deleted`,
+`student.bulk_deleted`, `parent.deleted`, `member.invited`, `member.removed`.
+
+#### Still outstanding
+
+1. **Coverage.** Roughly 8,100 lines of admin server actions exist; six actions
+   are instrumented. Still unwired, and all catalogued: refunds and invoice
+   voids (`app/portal/admin/billing/actions.ts`), integration connect and
+   disconnect (`settings/connections/actions.ts`), studio settings changes,
+   enrolment changes, and parent create/update.
+2. **Data exports.** `data.exported` is catalogued but nothing emits it, because
+   no self-serve export exists yet — it lands with SOC2-09.
+3. **Auth events.** Sign-in, failed sign-in and password reset are still only in
+   Supabase's own short-lived logs. Capturing them needs either an auth hook or
+   log drain, which is a separate piece of work.
+4. **Retention.** Deliberately not enforced in 0120: a purge job is itself a
+   deletion path into an append-only table and needs its own justification.
+   SOC 2 wants at least the observation window; 12 months is the norm.
+5. **External sink.** Everything above still lives in the same database it
+   audits. A copy shipped somewhere the application cannot reach is what
+   survives a compromise of the application.
 
 ---
 
