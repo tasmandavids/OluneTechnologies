@@ -50,7 +50,7 @@ const DOOR = [
   },
   {
     t: "It is worth keeping",
-    d: "The card changes material as the years add up — bronze at three, diamond at fifteen. Loyalty stops being a spreadsheet and becomes something a family carries.",
+    d: "The card changes material as the years add up — bronze on the day they enrol, diamond at ten. Loyalty stops being a spreadsheet and becomes something a family carries.",
     stat: "5 tiers",
     statLabel: "earned, never bought",
   },
@@ -61,7 +61,7 @@ const COMPARE = [
   { moment: "Family arrives for class", card: "Tap — logged, parents notified", without: "Teacher marks a paper roll" },
   { moment: "Pickup at the door", card: "Tap out, time recorded", without: "Nobody is sure when they left" },
   { moment: "End-of-term attendance report", card: "Already complete", without: "Retyped from the rolls" },
-  { moment: "Fifteen years with the studio", card: "A diamond card, issued by the director", without: "A thank-you in the newsletter" },
+  { moment: "Ten years with the studio", card: "A diamond card, issued by the director", without: "A thank-you in the newsletter" },
 ] as const;
 
 export function CardPageClient() {
@@ -123,7 +123,7 @@ export function CardPageClient() {
               <Eyebrow>Your rewards, your rules, your cost</Eyebrow>
               <h2 style={{ ...h2Style, marginTop: 14 }}>Olune counts the years. You decide what they&rsquo;re worth.</h2>
               <p style={leadStyle}>
-                Bronze at three years is the same material in every studio &mdash; what it unlocks is not. Olune sets no rewards and funds none: you hang a discount, a credit, a comped class or a booking window off any tier, in whatever combination suits your fees, and change it whenever you like.
+                Bronze on day one is the same material in every studio &mdash; what it unlocks is not. Olune sets no rewards and funds none: you hang a discount, a credit, a comped class or a booking window off any tier, in whatever combination suits your fees, and change it whenever you like.
               </p>
 
               <div style={{ marginTop: 36, display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 12 }} className="dcl-grid-reward-kinds">
@@ -136,7 +136,7 @@ export function CardPageClient() {
               </div>
 
               <p style={{ margin: "26px 0 0", fontSize: 14, lineHeight: 1.7, color: "rgba(26,21,53,0.45)" }}>
-                Set once per tier and it applies to every family who reaches it &mdash; no vouchers to hand out, no list of who is owed what. The ladder is Olune&rsquo;s; every reward on it is your studio&rsquo;s to set, price and honour.
+                Set once per tier and it applies to every family who reaches it &mdash; no vouchers to hand out, no list of who is owed what. Pick a tier above for ideas to start from. The ladder is Olune&rsquo;s; every reward on it is your studio&rsquo;s to set, price and honour.
               </p>
             </div>
 

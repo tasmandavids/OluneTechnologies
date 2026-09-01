@@ -53,6 +53,7 @@ export type Tier = {
   number: string;
   taps: string;
   next: string;
+  ideas: Idea[];
   m: [string, string, string];
   fx: string;
   ct: string;
@@ -74,45 +75,81 @@ export const REWARD_KINDS = [
   { key: "perk", name: "Anything else", what: "A line of your own, for anything off-system" },
 ] as const;
 
+export type RewardKindName = (typeof REWARD_KINDS)[number]["name"];
+
+/** A suggestion a studio might hang off a tier — a prompt for the person
+ *  filling the list in, never a benefit Olune offers, sets or pays for. */
+export type Idea = { kind: RewardKindName; text: string };
+
 export const TIERS: Tier[] = [
   {
-    key: "bronze", name: "Bronze", rank: "1", years: "3 years", badge: "Bronze · 3 yrs",
-    tagline: "Three years in. The first card that isn’t plastic.",
-    blurb: "Earned at the third enrolment anniversary. Warm brushed bronze, matte back, reissued the day it unlocks.",
-    since: "2023", id: "Ellerslie", number: "4021 8890 1147", taps: "184",
-    next: "Silver at five years — 1 yr 4 mo to go.",
+    key: "bronze", name: "Bronze", rank: "1", years: "Day one", badge: "Bronze · day one",
+    tagline: "Day one. The first card, and it isn’t plastic.",
+    blurb: "Issued the day a family enrols. Warm brushed bronze, matte back, in the app before the first class.",
+    since: "2026", id: "Ellerslie", number: "4021 8890 1147", taps: "9",
+    next: "Silver at one year — 7 mo to go.",
+    ideas: [
+      { kind: "Passes", text: "A guest pass for a friend’s first class" },
+      { kind: "Waived", text: "No enrolment fee for a second child" },
+      { kind: "Included", text: "A welcome tee in the first term" },
+      { kind: "Anything else", text: "Name on the board in week one" },
+    ],
     m: ["#3a2416", "#a4713c", "#f0be86"], fx: "#ffdcae", ct: "#fff6ec", prism: 0,
   },
   {
-    key: "silver", name: "Silver", rank: "2", years: "5 years", badge: "Silver · 5 yrs",
-    tagline: "Five years. Cool metal, sharper edge.",
-    blurb: "Polished silver with a mirrored bevel. Cool where bronze was warm, and it catches the light at the door.",
-    since: "2021", id: "Ellerslie", number: "4021 8890 2036", taps: "296",
-    next: "Gold at eight years — 2 yr 7 mo to go.",
+    key: "silver", name: "Silver", rank: "2", years: "1 year", badge: "Silver · 1 yr",
+    tagline: "One year. Cool metal, sharper edge.",
+    blurb: "Polished silver with a mirrored bevel, struck at the first enrolment anniversary. Cool where bronze was warm, and it catches the light at the door.",
+    since: "2025", id: "Ellerslie", number: "4021 8890 2036", taps: "96",
+    next: "Gold at three years — 1 yr 9 mo to go.",
+    ideas: [
+      { kind: "Discount", text: "5% off the term invoice" },
+      { kind: "Passes", text: "Two guest passes a year" },
+      { kind: "Included", text: "One make-up class a term" },
+      { kind: "Booking", text: "Enrolment opens 48 hours early" },
+    ],
     m: ["#464b54", "#a3abb6", "#f7f9fc"], fx: "#ffffff", ct: "#20202c", prism: 0,
   },
   {
-    key: "gold", name: "Gold", rank: "3", years: "8 years", badge: "Gold · 8 yrs",
-    tagline: "Eight years. Warm, deep, unmistakable.",
-    blurb: "Struck gold with a hairline guilloche. Eight years is longer than most families stay anywhere.",
-    since: "2018", id: "Ellerslie", number: "4021 8890 3312", taps: "451",
-    next: "Platinum at twelve years — 3 yr 2 mo to go.",
+    key: "gold", name: "Gold", rank: "3", years: "3 years", badge: "Gold · 3 yrs",
+    tagline: "Three years. Warm, deep, unmistakable.",
+    blurb: "Struck gold with a hairline guilloche. Three years in, the material stops being subtle.",
+    since: "2023", id: "Ellerslie", number: "4021 8890 3312", taps: "184",
+    next: "Platinum at five years — 1 yr 5 mo to go.",
+    ideas: [
+      { kind: "Discount", text: "10% off every term invoice" },
+      { kind: "Credit", text: "$50 a year at the uniform shop" },
+      { kind: "Included", text: "A private lesson before exams" },
+      { kind: "Booking", text: "First pick of concert tickets" },
+    ],
     m: ["#3d2b06", "#c1972f", "#ffeaa8"], fx: "#fff6d2", ct: "#2b1f04", prism: 0,
   },
   {
-    key: "platinum", name: "Platinum", rank: "4", years: "12 years", badge: "Platinum · 12 yrs",
-    tagline: "Twelve years. Quiet, heavy, cold to the touch.",
-    blurb: "Sandblasted platinum on midnight. Heavier in the hand, quieter in the light, twelve years in the making.",
-    since: "2014", id: "Ellerslie", number: "4021 8890 4488", taps: "612",
-    next: "Diamond at fifteen years — by invitation, 2 yr 9 mo to go.",
+    key: "platinum", name: "Platinum", rank: "4", years: "5 years", badge: "Platinum · 5 yrs",
+    tagline: "Five years. Quiet, heavy, cold to the touch.",
+    blurb: "Sandblasted platinum on midnight. Heavier in the hand, quieter in the light, five years in the making.",
+    since: "2021", id: "Ellerslie", number: "4021 8890 4488", taps: "312",
+    next: "Diamond at ten years — by invitation, 4 yr 2 mo to go.",
+    ideas: [
+      { kind: "Discount", text: "15% off term fees, all year" },
+      { kind: "Waived", text: "No costume levy this concert" },
+      { kind: "Included", text: "The studio for a birthday, once a year" },
+      { kind: "Anything else", text: "Reserved seats at every showcase" },
+    ],
     m: ["#15181f", "#4e5666", "#bcc6d8"], fx: "#eaf0f9", ct: "#f3f5fa", prism: 0,
   },
   {
-    key: "diamond", name: "Diamond", rank: "5", years: "15 years · invitation", badge: "Diamond · invitation",
-    tagline: "Fifteen years. The studio’s own eclipse, in glass.",
-    blurb: "Faceted glass over midnight, refracting the moon. Issued by the studio director, never requested.",
-    since: "2011", id: "Ellerslie", number: "4021 8890 0001", taps: "823",
+    key: "diamond", name: "Diamond", rank: "5", years: "10 years · invitation", badge: "Diamond · invitation",
+    tagline: "Ten years. The studio’s own eclipse, in glass.",
+    blurb: "Faceted glass over midnight, refracting the moon. Issued by the studio director at ten years, never requested.",
+    since: "2016", id: "Ellerslie", number: "4021 8890 0001", taps: "604",
     next: "The top of the ladder. There is nothing after Diamond.",
+    ideas: [
+      { kind: "Included", text: "A term on the house each year" },
+      { kind: "Credit", text: "$250 a year against anything you sell" },
+      { kind: "Booking", text: "Enrol before the timetable goes public" },
+      { kind: "Anything else", text: "Named on the studio wall, for good" },
+    ],
     m: ["#0b0a14", "#332f5c", "#928de6"], fx: "#e8e5ff", ct: "#f7f5ff", prism: 1,
   },
 ];
@@ -436,24 +473,51 @@ export function TierRewards({ tier }: { tier: Tier }) {
         </span>
       </div>
 
-      <div style={{ padding: "26px 20px", borderRadius: 18, border: `1px dashed ${RING}`, display: "flex", flexDirection: "column", gap: 8, textAlign: "center" }}>
+      <div style={{ padding: "20px", borderRadius: 18, border: `1px dashed ${RING}`, display: "flex", flexDirection: "column", gap: 6, textAlign: "center" }}>
         <span style={{ fontSize: 15, fontWeight: 600, color: NAVY }}>Nothing set for {tier.name} yet</span>
         <span style={{ fontSize: 13.5, lineHeight: 1.6, color: MUTED, textWrap: "pretty" }}>
           Every studio&rsquo;s list starts empty. What {tier.name} is worth here is yours to write, and yours to fund.
         </span>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <span style={{ ...MICRO, color: MUTED }}>Add a reward to {tier.name}</span>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {REWARD_KINDS.map((k) => (
-            <span key={k.key} aria-hidden style={{ fontSize: 13, fontWeight: 600, color: ACCENT, padding: "7px 13px", borderRadius: 9999, background: T1, border: `1px solid ${TB}` }}>+ {k.name}</span>
+      {/* Ideas — prompts for the person filling the list in. Kept visibly in
+          the studio's voice ("you could…"), never phrased as Olune's offer. */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <span style={{ ...MICRO, color: MUTED }}>Ideas for {tier.name}</span>
+          <span style={{ ...MICRO, fontSize: 10, color: ACCENT }}>You set the numbers</span>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {tier.ideas.map((idea) => (
+            <div
+              key={idea.text}
+              className="dcl-idea"
+              style={{
+                ...tierVars(tier),
+                display: "flex", alignItems: "center", gap: 13, padding: "12px 14px", borderRadius: 15,
+                background: "linear-gradient(100deg, rgba(139,124,240,0.07), rgba(139,124,240,0.02))",
+                border: `1px solid ${HAIR}`, boxSizing: "border-box",
+                transition: "transform .22s cubic-bezier(.32,.72,0,1), border-color .22s, box-shadow .22s",
+              }}
+            >
+              <span aria-hidden style={{ flex: "none", width: 26, height: 26, borderRadius: "50%", background: "linear-gradient(148deg, var(--m1), var(--m2) 46%, var(--m3))", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.4)" }} />
+              <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0, flex: 1 }}>
+                <span style={{ ...MICRO, fontSize: 9.5, color: ACCENT }}>{idea.kind}</span>
+                <span style={{ fontSize: 14.5, lineHeight: 1.4, color: NAVY, textWrap: "pretty" }}>{idea.text}</span>
+              </span>
+              <span aria-hidden className="dcl-idea-add" style={{ flex: "none", width: 26, height: 26, borderRadius: "50%", border: `1px solid ${TB}`, color: ACCENT, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, lineHeight: 1, transition: "background .22s, color .22s" }}>+</span>
+            </div>
           ))}
+        </div>
+
+        <div aria-hidden style={{ padding: "12px 16px", borderRadius: 14, border: `1px dashed ${RING}`, color: MUTED, fontSize: 14, fontWeight: 600, textAlign: "center" }}>
+          + Write your own
         </div>
       </div>
 
       <p style={{ margin: "auto 0 0", fontSize: 13, lineHeight: 1.55, color: MUTED, textWrap: "pretty" }}>
-        Olune ships the mechanics and applies whatever you set &mdash; discounts come off your invoices, passes and credits count down as they get used. The numbers are always the studio&rsquo;s own. Change them any time and the cards keep their material; only what they unlock moves.
+        Ideas, not offers &mdash; each one is a cost your studio chooses to carry, priced by you. Olune only makes it apply: discounts come off your invoices, passes and credits count down as they get used. Change any of it and the cards keep their material; only what they unlock moves.
       </p>
     </div>
   );
