@@ -111,7 +111,11 @@ What still breaks: a link a studio hand-writes on their *custom* domain opens th
 
 Not done, and needed before a build will even succeed:
 
-- **App icons and splash.** `mobile/assets/` is empty and `app.config.ts` references four images. The build fails without them.
-- **`npm install` has never run** in `mobile/`. Nothing there is typechecked or compiled. Run `bash bootstrap.sh`, then `npm run typecheck`.
-- **Migration 0120 is still unapplied**, so push registration has no table to write to.
+- **App icons and splash.** `mobile/assets/` is empty and `app.config.ts` references four images — `icon.png`, `splash.png`, `adaptive-icon.png`, `notification-icon.png`. The build fails without them. This is now the only thing blocking a first EAS build.
 - **12 of 14 screens.** Phase 3–4.
+
+Done since this page was written:
+
+- **Dependencies installed and pinned.** `bootstrap.sh` has run against SDK 57; `package-lock.json` is committed. `npm run typecheck` passes and `expo-doctor` reports 21/21.
+- **Migration 0120 applied** to the linked project — `supabase migration list` shows local and remote in step.
+- **Three SDK 57 config breakages fixed**, all of which would have failed the build rather than the typecheck: `ios.deploymentTarget` raised to 16.4 (SDK 57's floor), `newArchEnabled` and `android.edgeToEdgeEnabled` removed (both are now unconditional and were dropped from the config type), and the top-level `splash` key moved into the `expo-splash-screen` plugin (moved there back in SDK 52).

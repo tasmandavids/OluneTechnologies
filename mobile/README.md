@@ -4,7 +4,9 @@ Expo / React Native. One binary, every studio — a studio is chosen inside the 
 
 **Status: scaffold.** Sign-in, studio selection and push registration are wired end to end against the real backend. The Today screen reads live rows to prove the chain works; the other thirteen screens are phase 3–4. See the plan artifact for the full map.
 
-> **None of this has been installed, built or run.** It was written without an Expo SDK present. Run `bash bootstrap.sh` first — it resolves every dependency against whatever SDK is current, which is the only reliable way to get Expo package versions right — then `npm run typecheck` and fix what it finds before trusting any of it.
+> **Installed and typechecked, never built or run.** `bootstrap.sh` has resolved everything against SDK 57, `npm run typecheck` is clean and `expo-doctor` passes 21/21 — but no binary has been produced and no screen has rendered on a device. Typecheck says the code compiles, not that it works.
+>
+> `assets/` is still empty, so `npm run build:preview` will fail until the four images exist.
 
 ## Setup
 

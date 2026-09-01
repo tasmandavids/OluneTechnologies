@@ -43,7 +43,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   version: "0.1.0",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
-  newArchEnabled: true,
+  // No `newArchEnabled` — the New Architecture is the only one SDK 57
+  // ships, so the flag was removed from the config type.
 
   // Both stores read these; keep them in step with the web's NZ-first framing.
   primaryColor: "#5A55BD",
@@ -133,7 +134,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 
   android: {
     package: BUNDLE_ID,
-    edgeToEdgeEnabled: true,
+    // No `edgeToEdgeEnabled` — SDK 57 enforces edge-to-edge on Android
+    // unconditionally and dropped the opt-in flag from the config type.
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#FAF8F3",
@@ -181,12 +183,24 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     [
+      // SDK 52 moved the splash screen out of the top-level `splash` key and
+      // into this plugin. Same three values, different home.
+      "expo-splash-screen",
+      {
+        image: "./assets/splash.png",
+        resizeMode: "contain",
+        backgroundColor: "#FAF8F3",
+      },
+    ],
+    [
       "expo-build-properties",
       {
         // Play requires apps to target a recent API level; pinning it here
         // stops an SDK bump from silently changing what we submit.
         android: { compileSdkVersion: 35, targetSdkVersion: 35 },
-        ios: { deploymentTarget: "15.1" },
+        // SDK 57 refuses to build below 16.4 — expo-build-properties
+        // validates this at config time, not at build time.
+        ios: { deploymentTarget: "16.4" },
       },
     ],
   ],
@@ -204,9 +218,4 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
 
   icon: "./assets/icon.png",
-  splash: {
-    image: "./assets/splash.png",
-    resizeMode: "contain",
-    backgroundColor: "#FAF8F3",
-  },
 });
