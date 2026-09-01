@@ -30,7 +30,7 @@ export default async function CardPage() {
           category: "Dance studio membership card",
           url: `${origin}/card`,
           description:
-            "An NFC membership card for dance studios. Families tap in and out at the door — attendance and pickup are logged automatically and parents are notified. Five earned tiers, from bronze at three years to diamond at fifteen.",
+            "An NFC membership card for dance studios. Families tap in and out at the door — attendance and pickup are logged automatically and parents are notified. Five earned tiers, from bronze on the day a family enrols to diamond at ten years.",
           brand: { "@type": "Organization", name: "Olune", url: origin },
         }}
       />

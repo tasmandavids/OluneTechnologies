@@ -88,6 +88,8 @@ html:has(#olune-landing-root) {
 .dcl-tier:hover { transform: translateY(-12px); box-shadow: 0 44px 84px -38px #8b7cf066 !important; border-color: #8b7cf044 !important; }
 .dcl-tier-hot:hover { transform: translateY(-28px) !important; box-shadow: 0 56px 110px -30px #8b7cf0 !important; }
 .dcl-compare-row:hover { background: #8b7cf00d; transform: translateX(6px); }
+.dcl-idea:hover { transform: translateX(5px); border-color: #8b7cf055 !important; box-shadow: 0 18px 34px -24px #8b7cf0aa !important; }
+.dcl-idea:hover .dcl-idea-add { background: #8b7cf0 !important; color: #ffffff !important; }
 .dcl-lang:hover { color: #ffffff !important; }
 .dcl-rel-latest:hover { transform: translateY(-6px); box-shadow: 0 70px 130px -50px #8b7cf0 !important; border-color: #8b7cf077 !important; }
 .dcl-rel-row:hover { transform: translateX(8px); background: rgba(255, 255, 255, 0.06) !important; border-color: #8b7cf055 !important; }
