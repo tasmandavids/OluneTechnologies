@@ -26,6 +26,9 @@ const config = [
       "public/**",
       "**/.vercel/**",
       ".claude/**",
+      // The Expo app has its own toolchain and lint config; the web
+      // eslint run would flag React Native globals and JSX it cannot resolve.
+      "mobile/**",
     ],
   },
   // Load eslint-config-next via the legacy compat layer

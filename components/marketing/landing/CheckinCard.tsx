@@ -396,8 +396,8 @@ export function TierDetail({ tier }: { tier: Tier }) {
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-          <span style={{ ...MICRO, color: MUTED }}>What this studio gives it</span>
-          <span style={{ ...MICRO, fontSize: 10, color: ACCENT, padding: "4px 9px", borderRadius: 9999, background: T1, border: `1px solid ${TB}`, whiteSpace: "nowrap" }}>Studio-set</span>
+          <span style={{ ...MICRO, color: MUTED }}>Benefits you configure</span>
+          <span style={{ ...MICRO, fontSize: 10, color: ACCENT, padding: "4px 9px", borderRadius: 9999, background: T1, border: `1px solid ${TB}`, whiteSpace: "nowrap" }}>Example</span>
         </div>
         <div>
           {tier.perks.map((perk) => (
@@ -408,7 +408,7 @@ export function TierDetail({ tier }: { tier: Tier }) {
           ))}
         </div>
         <p style={{ margin: 0, fontSize: 13, lineHeight: 1.55, color: MUTED, textWrap: "pretty" }}>
-          One studio&rsquo;s list, as an example. Olune counts the years and issues the card &mdash; the discounts, credits and passes on each tier are yours to write.
+          Every benefit is yours to define. Olune counts the years and issues the card &mdash; you decide what each tier unlocks: discounts, account credit, free passes, comped terms, priority booking, whatever suits your studio.
         </p>
       </div>
 

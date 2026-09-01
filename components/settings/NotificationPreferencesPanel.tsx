@@ -9,9 +9,13 @@ type PrefEntry = {
   description: string;
   supportsEmail: boolean;
   supportsSms: boolean;
+  supportsPush: boolean;
   emailEnabled: boolean;
   smsEnabled: boolean;
+  pushEnabled: boolean;
 };
+
+type Channel = "email" | "sms" | "push";
 
 function Toggle({
   enabled,
@@ -41,7 +45,7 @@ export function NotificationPreferencesPanel({ prefs: initial }: { prefs: PrefEn
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  function handleToggle(type: string, channel: "email" | "sms", value: boolean) {
+  function handleToggle(type: string, channel: Channel, value: boolean) {
     setPrefs(prev => prev.map(p => p.type === type ? { ...p, [`${channel}Enabled`]: value } : p));
     setSaved(false);
     setError(null);
@@ -58,7 +62,8 @@ export function NotificationPreferencesPanel({ prefs: initial }: { prefs: PrefEn
       <div>
         <h1 className="text-2xl font-bold text-base-content">Notification preferences</h1>
         <p className="text-sm text-base-content/60 mt-0.5">
-          In-app notifications are always on. Choose which ones also reach your email or phone.
+          In-app notifications are always on. Choose which ones also reach your email, your phone
+          as a text, or the Olune app as a push notification.
         </p>
       </div>
 
@@ -67,14 +72,15 @@ export function NotificationPreferencesPanel({ prefs: initial }: { prefs: PrefEn
 
       <div className="bg-surface rounded-xl shadow-sm divide-y divide-base-200">
         {/* Header row */}
-        <div className="grid grid-cols-[1fr_auto_auto] gap-6 px-5 py-3">
+        <div className="grid grid-cols-[1fr_auto_auto_auto] gap-6 px-5 py-3">
           <span className="text-xs font-semibold uppercase tracking-wide text-base-content/40">Notification</span>
           <span className="text-xs font-semibold uppercase tracking-wide text-base-content/40 w-12 text-center">Email</span>
           <span className="text-xs font-semibold uppercase tracking-wide text-base-content/40 w-12 text-center">SMS</span>
+          <span className="text-xs font-semibold uppercase tracking-wide text-base-content/40 w-12 text-center">Push</span>
         </div>
 
         {prefs.map(p => (
-          <div key={p.type} className="grid grid-cols-[1fr_auto_auto] gap-6 items-center px-5 py-4">
+          <div key={p.type} className="grid grid-cols-[1fr_auto_auto_auto] gap-6 items-center px-5 py-4">
             <div>
               <p className="text-sm font-medium text-base-content">{p.label}</p>
               <p className="text-xs text-base-content/50 mt-0.5">{p.description}</p>
@@ -101,12 +107,24 @@ export function NotificationPreferencesPanel({ prefs: initial }: { prefs: PrefEn
                 <span className="text-xs text-base-content/30">—</span>
               )}
             </div>
+            <div className="w-12 flex justify-center">
+              {p.supportsPush ? (
+                <Toggle
+                  enabled={p.pushEnabled}
+                  onChange={v => handleToggle(p.type, "push", v)}
+                  disabled={pending}
+                />
+              ) : (
+                <span className="text-xs text-base-content/30">—</span>
+              )}
+            </div>
           </div>
         ))}
       </div>
 
       <p className="text-xs text-base-content/40">
-        SMS delivery requires a phone number on your profile and studio SMS configuration.
+        SMS delivery requires a phone number on your profile and studio SMS configuration. Push
+        notifications reach the Olune app on any device you are signed in to.
       </p>
     </div>
   );

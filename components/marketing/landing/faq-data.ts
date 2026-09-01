@@ -57,7 +57,7 @@ export const CATEGORIES: FaqCategory[] = [
   {
     label: "Pricing & plans",
     items: [
-      { q: "How much does Olune cost?", a: "Plans are $29/month for Solo, $59/month for Studio and $120/month for Scale, in New Zealand dollars and GST-inclusive. Annual billing works out to two months free. Every plan has unlimited students — the tiers differ by which parts of Olune they unlock, not by how many dancers you enrol." },
+      { q: "How much does Olune cost?", a: "Plans are NZ$29/month for Solo, NZ$59/month for Studio and NZ$120/month for Scale, GST-inclusive. Annual billing works out to two months free. Every plan has unlimited students — the tiers differ by which parts of Olune they unlock, not by how many dancers you enrol." },
       { q: "Does the price go up as I enrol more students?", a: "No. Every plan has unlimited students, so a strong enrolment term doesn't move you into a more expensive bracket. Most studio software prices on student count; Olune charges for capability instead." },
       { q: "Is there a free trial?", a: "Better — Olune is completely free to use as much as you like until general release in December. After that, every plan starts with 14 days free and no card is needed to sign up." },
       { q: "Can I change plans or cancel?", a: "Anytime. Upgrade, downgrade or cancel from your settings in a couple of clicks — no lock-in contracts, no cancellation fees." },

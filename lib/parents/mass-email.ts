@@ -11,9 +11,47 @@ export function isGhostEmail(email: string | null | undefined): boolean {
   return /@.+\.olune\.local$/i.test(email.trim());
 }
 
+/**
+ * TLDs that cannot receive mail because they do not exist in the public DNS
+ * root, so every send to them is an instant hard bounce rather than a delayed
+ * one.
+ *
+ * This matters more than it looks. A sending domain earns its reputation from
+ * scratch, and mailbox providers (and Resend itself) judge on bounce RATE, not
+ * count — so a single "email everyone" click against a studio full of seeded
+ * demo parents can put the domain in the penalty box before the first real
+ * parent is ever contacted. Filtering here is cheaper than recovering from it.
+ *
+ * `test`/`example`/`invalid`/`localhost` are reserved by RFC 2606 and RFC 6761;
+ * `local` by RFC 6762 (this is also what catches the `@*.olune.local` ghost
+ * addresses). `demo` is not reserved but is genuinely undelegated — verified
+ * against the root: `.app`, `.nz` and `.kiwi` return NS + SOA records and
+ * `.demo` returns neither. It is in this list because the seed data uses
+ * `@auroradance.demo`.
+ */
+const NON_ROUTABLE_TLDS = new Set([
+  "test",
+  "example",
+  "invalid",
+  "localhost",
+  "local",
+  "demo",
+]);
+
+/** An address whose domain provably cannot accept mail. */
+export function isNonRoutableEmail(email: string | null | undefined): boolean {
+  const at = email?.trim().lastIndexOf("@") ?? -1;
+  if (!email || at < 1) return true;
+  const domain = email.trim().slice(at + 1).toLowerCase();
+  if (!domain.includes(".")) return true;
+  const tld = domain.slice(domain.lastIndexOf(".") + 1);
+  return NON_ROUTABLE_TLDS.has(tld);
+}
+
 export function isSendableParentEmail(email: string | null | undefined): boolean {
   if (!email?.trim()) return false;
-  return !isGhostEmail(email);
+  if (isGhostEmail(email)) return false;
+  return !isNonRoutableEmail(email);
 }
 
 /** Escape plaintext and preserve line breaks as <br>. */

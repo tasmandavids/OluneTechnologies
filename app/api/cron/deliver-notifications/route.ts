@@ -1,16 +1,21 @@
 // ============================================================================
-//  GET /api/cron/deliver-notifications   (Session 16 — EMAIL/SMS delivery)
+//  GET /api/cron/deliver-notifications   (EMAIL / SMS / PUSH delivery)
 //
 //  Flushes un-delivered `notifications` rows to their external channels (email
-//  via Resend, SMS via Twilio). In-app notifications already exist as rows; this
-//  is purely the outbound fan-out. Channel routing per type lives in
-//  lib/notify/messages.ts (channelsForType).
+//  via Resend, SMS via Twilio, push via Expo). In-app notifications already
+//  exist as rows; this is purely the outbound fan-out. Channel routing per type
+//  lives in lib/notify/messages.ts (channelsForType).
 //
 //  Per row:
-//    • No outbound channels (e.g. message_received) → marked delivered (in-app
-//      only), nothing sent.
+//    • No outbound channels (e.g. contractor_invoice_received) → marked
+//      delivered (in-app only), nothing sent.
 //    • A channel with no recipient address, or a provider that isn't configured
 //      (no API keys) → treated as terminal for that channel (won't retry).
+//    • Push fans out to every live device the recipient has registered (0120).
+//      A device Expo reports as `DeviceNotRegistered` is revoked at the end of
+//      the run and dropped from the rest of it; that is terminal for the
+//      device, never for the notification — the parent's other phone may well
+//      have taken it.
 //    • A real send error → left queued with a `next_attempt_at` set from the
 //      backoff schedule in lib/notify/backoff.ts, and retried once that time
 //      passes. After the budget is exhausted (~4h20m across 5 attempts) it's
@@ -25,7 +30,7 @@
 //
 //  Requires env: SUPABASE_SERVICE_ROLE_KEY, CRON_SECRET.
 //  Optional env (delivery no-ops without them): RESEND_API_KEY + RESEND_FROM,
-//  TWILIO_ACCOUNT_SID + TWILIO_AUTH_TOKEN + TWILIO_FROM.
+//  TWILIO_ACCOUNT_SID + TWILIO_AUTH_TOKEN + TWILIO_FROM, EXPO_ACCESS_TOKEN.
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
@@ -34,10 +39,11 @@ import { authorizedCron } from "@/lib/cron/auth";
 import {
   channelsForType,
   renderNotificationEmail,
+  renderNotificationPush,
   renderNotificationSms,
   type DeliverableNotification,
 } from "@/lib/notify/messages";
-import { sendEmail, sendSms } from "@/lib/notify/providers";
+import { sendEmail, sendPush, sendSms } from "@/lib/notify/providers";
 import { nextAttemptAt } from "@/lib/notify/backoff";
 
 export const dynamic = "force-dynamic";
@@ -71,6 +77,8 @@ export async function GET(req: NextRequest) {
     processed: 0,
     emailsSent: 0,
     smsSent: 0,
+    pushesSent: 0,
+    tokensRevoked: 0,
     inAppOnly: 0,
     failedRetained: 0,
     gaveUp: 0,
@@ -88,7 +96,11 @@ export async function GET(req: NextRequest) {
   const dueBeforeIso = new Date().toISOString();
   const { data: rows, error: fetchErr } = await supabase
     .from("notifications")
-    .select("id, type, title, body, link, user_id, studio_id, delivery_attempts")
+    // Kept as one string literal: supabase-js parses the select at the type
+    // level, and a concatenated expression degrades the row type to
+    // GenericStringError. The three *_sent_at stamps are what let a retry skip
+    // a channel that already succeeded — see `alreadySent` below.
+    .select("id, type, title, body, link, user_id, studio_id, delivery_attempts, email_sent_at, sms_sent_at, push_sent_at")
     .is("delivered_at", null)
     .or(`next_attempt_at.is.null,next_attempt_at.lte.${dueBeforeIso}`)
     .order("next_attempt_at", { ascending: true, nullsFirst: true })
@@ -104,12 +116,19 @@ export async function GET(req: NextRequest) {
 
   // 2. Resolve recipient contact details + notification preferences in one go.
   const userIds = [...new Set(rows.map((r) => r.user_id as string))];
-  const [{ data: profiles }, { data: prefRows }] = await Promise.all([
+  const [{ data: profiles }, { data: prefRows }, { data: deviceRows }] = await Promise.all([
     supabase.from("profiles").select("id, email, phone").in("id", userIds),
     supabase
       .from("notification_preferences")
-      .select("user_id, notification_type, email_enabled, sms_enabled")
+      .select("user_id, notification_type, email_enabled, sms_enabled, push_enabled")
       .in("user_id", userIds),
+    // Live device registrations only (0120). A parent may have several — phone
+    // and iPad — and every one of them is the same notification.
+    supabase
+      .from("device_tokens")
+      .select("user_id, token")
+      .in("user_id", userIds)
+      .is("revoked_at", null),
   ]);
   const contacts = new Map<string, ProfileContact>(
     (profiles ?? []).map((p) => [
@@ -117,18 +136,45 @@ export async function GET(req: NextRequest) {
       { id: p.id as string, email: p.email as string | null, phone: p.phone as string | null },
     ]),
   );
-  // prefKey = `${userId}:${type}` → { emailEnabled, smsEnabled }
-  const prefMap = new Map<string, { emailEnabled: boolean; smsEnabled: boolean }>(
+  // prefKey = `${userId}:${type}` → { emailEnabled, smsEnabled, pushEnabled }
+  const prefMap = new Map<
+    string,
+    { emailEnabled: boolean; smsEnabled: boolean; pushEnabled: boolean }
+  >(
     (prefRows ?? []).map((p) => [
       `${p.user_id}:${p.notification_type}`,
-      { emailEnabled: Boolean(p.email_enabled), smsEnabled: Boolean(p.sms_enabled) },
+      {
+        emailEnabled: Boolean(p.email_enabled),
+        smsEnabled: Boolean(p.sms_enabled),
+        // Rows written before 0120 have no value; the column defaults true, so
+        // this only guards a hand-written null.
+        pushEnabled: p.push_enabled ?? true,
+      },
     ]),
   );
-  function channelEnabled(userId: string, type: string, channel: "email" | "sms"): boolean {
+  function channelEnabled(
+    userId: string,
+    type: string,
+    channel: "email" | "sms" | "push",
+  ): boolean {
     const pref = prefMap.get(`${userId}:${type}`);
     if (!pref) return true; // default on when no explicit preference saved
-    return channel === "email" ? pref.emailEnabled : pref.smsEnabled;
+    if (channel === "email") return pref.emailEnabled;
+    if (channel === "sms") return pref.smsEnabled;
+    return pref.pushEnabled;
   }
+
+  // userId → live push tokens. Mutable: a token Expo rejects as dead is dropped
+  // here as well as revoked in the DB, so the rest of this batch stops sending
+  // to it immediately rather than re-learning it row by row.
+  const devices = new Map<string, string[]>();
+  for (const d of deviceRows ?? []) {
+    const uid = d.user_id as string;
+    const list = devices.get(uid);
+    if (list) list.push(d.token as string);
+    else devices.set(uid, [d.token as string]);
+  }
+  const revokedTokens = new Map<string, string>(); // token → reason
 
   const nowIso = new Date().toISOString();
 
@@ -158,7 +204,24 @@ export async function GET(req: NextRequest) {
     const errors: string[] = [];
     let retryable = false;
 
-    if (channels.includes("email") && channelEnabled(row.user_id as string, row.type as string, "email")) {
+    // A row is retried as a whole, but its channels succeed independently: a
+    // class_reminder whose SMS fails comes back around with its email already
+    // delivered. Without this guard that email is sent again on every one of
+    // the five attempts. Push makes the case routine rather than rare — a
+    // parent who uninstalled on one of two devices fails the push channel on
+    // an otherwise perfect row — so each channel is skipped once it is stamped.
+    //
+    // Push is stamped when *any* device took it. Re-pushing every device to
+    // reach one that was throttled would ring the others a second time, and a
+    // duplicate lock-screen alert is worse than a missed one.
+    const alreadySent = (channel: "email" | "sms" | "push"): boolean =>
+      row[`${channel}_sent_at` as const] != null;
+
+    if (
+      channels.includes("email") &&
+      !alreadySent("email") &&
+      channelEnabled(row.user_id as string, row.type as string, "email")
+    ) {
       if (contact?.email) {
         const r = await sendEmail({ to: contact.email, ...renderNotificationEmail(notif) });
         if (r.ok) {
@@ -173,7 +236,11 @@ export async function GET(req: NextRequest) {
       // no email address → terminal for this channel.
     }
 
-    if (channels.includes("sms") && channelEnabled(row.user_id as string, row.type as string, "sms")) {
+    if (
+      channels.includes("sms") &&
+      !alreadySent("sms") &&
+      channelEnabled(row.user_id as string, row.type as string, "sms")
+    ) {
       if (contact?.phone) {
         const r = await sendSms({
           to: contact.phone,
@@ -190,6 +257,50 @@ export async function GET(req: NextRequest) {
           retryable = true;
         }
       }
+    }
+
+    if (
+      channels.includes("push") &&
+      !alreadySent("push") &&
+      channelEnabled(row.user_id as string, row.type as string, "push")
+    ) {
+      const tokens = devices.get(row.user_id as string) ?? [];
+      if (tokens.length) {
+        const rendered = renderNotificationPush(notif);
+        const r = await sendPush({ tokens, ...rendered });
+        if (!r.skipped) {
+          let anyOk = false;
+          for (const ticket of r.tickets) {
+            if (ticket.ok) {
+              anyOk = true;
+              summary.pushesSent += 1;
+              continue;
+            }
+            if (ticket.unregistered) {
+              // Terminal for this device, not for this notification. Revoke it
+              // and drop it from the batch; a parent's other device may still
+              // be live, so this must not fail the row on its own.
+              revokedTokens.set(
+                ticket.token,
+                /valid expo push token/i.test(ticket.error)
+                  ? "invalid_token"
+                  : "device_not_registered",
+              );
+              devices.set(
+                row.user_id as string,
+                (devices.get(row.user_id as string) ?? []).filter((t) => t !== ticket.token),
+              );
+            } else if (ticket.retryable) {
+              retryable = true;
+            }
+            errors.push(`push: ${ticket.error}`);
+          }
+          if (anyOk) update.push_sent_at = nowIso;
+        }
+        // r.skipped (no EXPO_ACCESS_TOKEN) → terminal, no retry.
+      }
+      // No live devices → terminal for this channel. A parent who hasn't
+      // installed the app is not a delivery failure.
     }
 
     if (errors.length) update.delivery_error = errors.join(" | ");
@@ -210,6 +321,30 @@ export async function GET(req: NextRequest) {
     }
 
     await supabase.from("notifications").update(update).eq("id", row.id);
+  }
+
+  // 4. Retire the device tokens Expo told us are dead.
+  //
+  //    Grouped by reason so both writes stay a single statement each, and done
+  //    after the loop so a token rejected on the first row isn't re-revoked on
+  //    the next twenty. Failures here are logged into the summary rather than
+  //    failing the run: the notifications themselves are already committed, and
+  //    the next pass will simply learn the same thing again.
+  if (revokedTokens.size) {
+    const byReason = new Map<string, string[]>();
+    for (const [token, reason] of revokedTokens) {
+      const list = byReason.get(reason);
+      if (list) list.push(token);
+      else byReason.set(reason, [token]);
+    }
+    for (const [reason, tokens] of byReason) {
+      const { error } = await supabase
+        .from("device_tokens")
+        .update({ revoked_at: nowIso, revoked_reason: reason })
+        .in("token", tokens)
+        .is("revoked_at", null);
+      if (!error) summary.tokensRevoked += tokens.length;
+    }
   }
 
   return NextResponse.json({ ok: true, ranAt: new Date().toISOString(), summary });

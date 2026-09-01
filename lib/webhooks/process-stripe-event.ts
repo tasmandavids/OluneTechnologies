@@ -192,7 +192,45 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           // and covers intents created before studio_id was stamped on metadata.
           .select("id, studio_id");
 
-        if (orderUpdateErr || !updatedOrders?.length) {
+        // Two very different failures used to share one warn-and-continue path.
+        // An empty result is benign — a replayed event or an intent that does
+        // not match this order. An actual error is not: Stripe has taken the
+        // customer's money and the order is still unpaid.
+        if (orderUpdateErr) {
+          // Migration 0124 put an oversell guard on the status→'paid' trigger,
+          // so a lost race for the last unit lands here. That is permanent —
+          // retrying will not conjure stock — and letting Stripe retry it for
+          // three days risks it disabling the endpoint and taking every other
+          // payment down with it. So record it where an operator will see it
+          // and acknowledge the event.
+          const outOfStock = /insufficient stock/i.test(orderUpdateErr.message);
+
+          console.error(
+            `[stripe-webhook] payment_intent.succeeded — order ${target.orderId} was CHARGED but could not be marked paid: ${orderUpdateErr.message}`,
+          );
+
+          if (outOfStock) {
+            // Deliberately not touching status: that would re-fire the trigger.
+            await supabase
+              .from("orders")
+              .update({
+                notes:
+                  `⚠️ Payment succeeded (${intent.id}) but the order could not be fulfilled: ` +
+                  `${orderUpdateErr.message}. The customer has been charged — refund them or ` +
+                  `restock and mark this order paid manually.`,
+              })
+              .eq("id", target.orderId);
+            break;
+          }
+
+          // Anything else may well be transient (a timeout, a deadlock), so let
+          // it surface as a failed webhook and take Stripe's retries.
+          throw new Error(
+            `order ${target.orderId} paid but not updated: ${orderUpdateErr.message}`,
+          );
+        }
+
+        if (!updatedOrders?.length) {
           console.warn(
             `[stripe-webhook] payment_intent.succeeded — order ${target.orderId} PI mismatch or not found`,
           );

@@ -185,7 +185,11 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   // Page routes only — skip Next.js internals, static assets, and API routes.
+  //
+  // `.well-known` is excluded explicitly: Apple requires the association file
+  // to be served with no extension and no redirect, and the extension-based
+  // exclusions above would not have caught `apple-app-site-association`.
   matcher: [
-    "/((?!_next/static|_next/image|favicon\\.ico|api/|auth/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|json)$).*)",
+    "/((?!_next/static|_next/image|favicon\\.ico|api/|auth/|\\.well-known/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|json)$).*)",
   ],
 };
