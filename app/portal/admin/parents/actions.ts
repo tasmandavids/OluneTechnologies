@@ -12,6 +12,7 @@ import {
 import { listStudioMemberProfileIds } from "@/lib/portal/studio-members";
 import {
   dedupeParentsByEmail,
+  isSendableParentEmail,
   renderMassParentEmail,
   type ParentEmailCandidate,
 } from "@/lib/parents/mass-email";
@@ -647,6 +648,15 @@ export async function bulkInviteMembers(): Promise<BulkInviteResult> {
 
   for (const profile of profiles) {
     if (!profile.email) continue;
+
+    // The SQL above only excludes @*.olune.local ghosts. Seeded and demo
+    // accounts sit on undelegated domains (@auroradance.demo), which hard-bounce
+    // instantly and burn the sending domain's reputation for the real parents in
+    // the same run — so re-check every address against the full rule.
+    if (!isSendableParentEmail(profile.email)) {
+      skipped++;
+      continue;
+    }
 
     // Check if they've already signed in (don't re-invite active accounts)
     const { data: authUser } = await admin.auth.admin.getUserById(profile.id);
