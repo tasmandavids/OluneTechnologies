@@ -12,6 +12,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit --incremental false",
     "check:i18n": "node scripts/check-i18n.mjs",
+    "scan:i18n": "node scripts/scan-hardcoded-i18n.mjs",
+    "check:i18n-literals": "node scripts/scan-hardcoded-i18n.mjs --check",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "INTEGRATION_TEST=1 node --env-file=.env.local ./node_modules/vitest/vitest.mjs run --config vitest.integration.config.ts",

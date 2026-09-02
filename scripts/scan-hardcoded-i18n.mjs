@@ -97,6 +97,29 @@ for (const f of findings) {
 
 const areas = Object.entries(byArea).sort((a, b) => b[1].length - a[1].length);
 
+// ── Hardcoded display locale ────────────────────────────────────────────────
+//
+//  Separate from the string sweep: these render translated *copy* around an
+//  untranslated *number or date*, so a Russian reader gets Latin grouping on
+//  every price. `en-CA` is exempt — that is the ISO YYYY-MM-DD idiom used for
+//  date keys in lib/date/, not display formatting.
+
+import { execSync } from "node:child_process";
+
+function hardcodedLocaleCallSites() {
+  try {
+    const out = execSync(
+      `grep -rn 'toLocaleDateString("en-\\|toLocaleTimeString("en-\\|toLocaleString("en-\\|NumberFormat("en-\\|DateTimeFormat("en-' app components lib --include=*.ts --include=*.tsx || true`,
+      { encoding: "utf8" },
+    );
+    return out.split("\n").filter((l) => l.trim() && !l.includes("en-CA"));
+  } catch {
+    return [];
+  }
+}
+
+const localeSites = hardcodedLocaleCallSites();
+
 if (process.argv.includes("--json")) {
   console.log(JSON.stringify(findings, null, 2));
 } else if (process.argv.includes("--files")) {
@@ -105,8 +128,36 @@ if (process.argv.includes("--json")) {
   Object.entries(byFile)
     .sort((a, b) => b[1].length - a[1].length)
     .forEach(([file, list]) => console.log(`${String(list.length).padStart(4)}  ${file}`));
+} else if (process.argv.includes("--check")) {
+  // Ratchet: these two numbers may fall, never rise. Lower them as areas are
+  // migrated — that is the point. Raising one needs a reason in the diff.
+  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 874);
+  const MAX_LOCALE_SITES = Number(process.env.I18N_MAX_LOCALE_SITES ?? 30);
+
+  let failed = false;
+  if (findings.length > MAX_STRINGS) {
+    console.error(
+      `i18n: ${findings.length} hardcoded user-facing strings, budget is ${MAX_STRINGS}.\n` +
+        `      New literals must go through next-intl. Run \`npm run scan:i18n -- --files\` to see where.`,
+    );
+    failed = true;
+  }
+  if (localeSites.length > MAX_LOCALE_SITES) {
+    console.error(
+      `i18n: ${localeSites.length} hardcoded display-locale call sites, budget is ${MAX_LOCALE_SITES}.\n` +
+        `      Use the helpers in lib/i18n/format.ts so numbers and dates follow the reader's locale.`,
+    );
+    failed = true;
+  }
+  if (failed) process.exit(1);
+
+  console.log(
+    `i18n literal check passed — ${findings.length}/${MAX_STRINGS} strings, ` +
+      `${localeSites.length}/${MAX_LOCALE_SITES} hardcoded-locale call sites.`,
+  );
 } else {
-  console.log(`Hardcoded user-facing strings: ${findings.length}\n`);
+  console.log(`Hardcoded user-facing strings: ${findings.length}`);
+  console.log(`Hardcoded display-locale call sites: ${localeSites.length}\n`);
   for (const [area, list] of areas) {
     console.log(`${String(list.length).padStart(4)}  ${area}`);
   }

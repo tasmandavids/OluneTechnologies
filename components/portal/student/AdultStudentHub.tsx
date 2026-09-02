@@ -1,5 +1,7 @@
 "use client";
 
+import { useNumberFormat } from "@/lib/i18n/format";
+
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -28,7 +30,6 @@ function discColor(discipline: string | null) {
   return discipline && DISC_COLORS[discipline] ? DISC_COLORS[discipline] : "var(--brand)";
 }
 
-const NZD = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD", maximumFractionDigits: 2 });
 
 const STATUS_COLORS: Record<string, string> = {
   paid: "color-mix(in srgb, #22c55e 70%, transparent)",
@@ -70,6 +71,7 @@ export default function AdultStudentHub({
   passes: StudentPass[];
   passPriceCents: number;
 }) {
+  const NZD = useNumberFormat({ style: "currency", currency: "NZD", maximumFractionDigits: 2 });
   const t = useTranslations("student.timetable");
   const tHub = useTranslations("parent.hub");
   const locale = useLocale();
