@@ -1,4 +1,4 @@
-export const locales = ["en", "fr", "it", "ru", "zh"] as const;
+export const locales = ["en", "es", "fr", "it", "ja", "ko", "ru", "zh"] as const;
 
 export type Locale = (typeof locales)[number];
 
@@ -8,8 +8,11 @@ export const LOCALE_COOKIE = "olune_locale";
 
 export const localeLabels: Record<Locale, string> = {
   en: "English",
+  es: "Español",
   fr: "Français",
   it: "Italiano",
+  ja: "日本語",
+  ko: "한국어",
   ru: "Русский",
   zh: "中文",
 };
