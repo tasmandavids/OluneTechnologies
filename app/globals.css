@@ -2,6 +2,39 @@
 @import "../styles/micro-interactions.css";
 @import "../styles/landing-design.css";
 
+/* ============================================================================
+   Single-bar dollar sign (U+0024) for the marketing display face.
+
+   Unicode has one dollar sign, and NZD and USD are both written with it — the
+   number of vertical bars is a decision the typeface makes, not a currency.
+   Bodoni Moda happens to draw it with two, which reads as American on a
+   pricing page aimed at New Zealand studios.
+
+   "Olune Dollar" is Bodoni Moda's own dollar with one bar removed and the
+   survivor centred (see scripts/build-dollar-font.py), so the glyph still
+   belongs to the typeface. The unicode-range keeps it to that one character:
+   listed ahead of Bodoni in the DISPLAY stacks, it supplies the "$" and Bodoni
+   supplies everything else. Body copy is already set in Archivo, whose dollar
+   has a single bar, so it needs no override.
+   ============================================================================ */
+@font-face {
+  font-family: "Olune Dollar";
+  src: url("/fonts/olune-dollar.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0024;
+}
+
+@font-face {
+  font-family: "Olune Dollar";
+  src: url("/fonts/olune-dollar-italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0024;
+}
+
 /* Map Tailwind v4 utilities to the tenant's runtime CSS variables.
    bg-brand, text-brand-hot, bg-surface, text-ink, etc. all follow the studio. */
 @theme {

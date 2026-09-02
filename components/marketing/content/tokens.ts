@@ -14,7 +14,9 @@
 
 export const ACCENT = "#8b7cf0";
 export const NAVY = "#1a1535";
-export const DISPLAY = "var(--font-landing-display), 'Bodoni Moda', serif";
+// "Olune Dollar" supplies U+0024 only (see app/globals.css) — a single-bar
+// dollar so NZ prices don't render with the two-bar glyph Bodoni draws.
+export const DISPLAY = "'Olune Dollar', var(--font-landing-display), 'Bodoni Moda', serif";
 export const BODY = "var(--font-landing-body), 'Archivo', sans-serif";
 
 export const MUTED = "rgba(26,21,53,0.62)";
