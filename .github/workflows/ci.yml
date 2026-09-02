@@ -42,6 +42,15 @@ jobs:
       - name: i18n check
         run: npm run check:i18n
 
+      # check-i18n above only compares the message files against each other, so
+      # a string that never enters next-intl is invisible to it — which is how
+      # the production wizard shipped entirely in English. This counts the
+      # literals that never reach the translation layer, plus the call sites
+      # that format a number or date against a hardcoded locale. Both budgets
+      # ratchet down only; raising one should be a deliberate line in the diff.
+      - name: i18n literal check
+        run: npm run check:i18n-literals
+
       # A build failure currently reaches Vercel unblocked — typecheck and lint
       # don't catch bad metadataBase URLs, invalid next.config values, or
       # server/client boundary violations that only surface at build time.

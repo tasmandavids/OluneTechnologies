@@ -1,0 +1,34 @@
+-- ============================================================================
+--  0127_drop_legacy_register_studio_member.sql
+--
+--  Drops the superseded 2-argument overload of register_studio_member.
+--
+--  ── Why ──
+--
+--  0027 created register_studio_member(text, user_role). 0056 added a 4-arg
+--  form (self_managed, birthday) and 0064 rewrote that form to register a user
+--  at additional studios through studio_memberships. The 2-arg form was never
+--  dropped — 0121 even re-granted execute on it, with a comment noting it was
+--  "superseded ... but still present".
+--
+--  Both overloads are SECURITY DEFINER and both are reachable by `authenticated`
+--  via /rest/v1/rpc/register_studio_member. The gating is the same in both
+--  (registration_enabled, registration_roles, status <> 'suspended'), so this is
+--  not a privilege bypass. The difference is what they write:
+--
+--    4-arg (current):  inserts a studio_memberships row, sets active_studio_id,
+--                      and supports users who already belong to a studio.
+--    2-arg (legacy):   sets profiles.studio_id + profiles.role only. No
+--                      membership row, no active_studio_id.
+--
+--  So the legacy path can leave an account registered to a studio with no
+--  corresponding studio_memberships row — a state the rest of the app, which
+--  reads membership to resolve the active studio, does not expect.
+--
+--  app/join/actions.ts is the only caller and always passes all four named
+--  arguments, so PostgREST resolves it to the 4-arg form. Nothing reaches the
+--  2-arg form except a hand-made REST call, and dropping it cannot change which
+--  function that call site resolves to.
+-- ============================================================================
+
+drop function if exists public.register_studio_member(text, public.user_role);

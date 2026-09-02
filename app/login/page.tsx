@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient, createImplicitClient } from "@/lib/supabase/client";
+import { sanitizeNextPath } from "@/lib/auth/oauth";
 import { isTenantHost } from "@/lib/tenant-host";
 import { OluneLogo } from "@/components/brand/OluneLogo";
 import { OluneHomeLink } from "@/components/brand/OluneHomeLink";
@@ -17,7 +18,12 @@ function LoginForm() {
   const t = useTranslations("auth");
   const tCommon = useTranslations("common");
   const searchParams = useSearchParams();
-  const next = searchParams?.get("next") ?? "/portal";
+  // Same guard the OAuth routes apply: `next` is a public query param, and
+  // after signInWithPassword we hand it straight to location.assign(). An
+  // absolute or protocol-relative value would navigate the just-signed-in
+  // user off this origin (a stale http://127.0.0.1:3000 next strands a studio
+  // on a dead tab; an attacker-supplied one is an open redirect).
+  const next = sanitizeNextPath(searchParams?.get("next"));
   const callbackError = searchParams?.get("error") === "auth_callback_error";
 
   const [email, setEmail] = useState("");

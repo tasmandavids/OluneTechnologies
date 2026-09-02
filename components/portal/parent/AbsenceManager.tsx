@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "next-intl";
+
 import { useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -55,6 +57,7 @@ export function AbsenceManager({
     notes: string;
   }) => Promise<void>;
 }) {
+  const locale = useLocale();
   const [showForm, setShowForm] = useState(false);
   const [selectedChild, setSelectedChild] = useState(dancers[0]?.studentId ?? "");
   const [selectedClass, setSelectedClass] = useState("");
@@ -110,7 +113,7 @@ export function AbsenceManager({
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-ink">{a.className}</p>
                   <p className="text-xs text-muted">
-                    {a.studentName} · {new Date(a.absenceDate).toLocaleDateString("en-NZ", { weekday: "long", day: "numeric", month: "short" })} · {a.reason}
+                    {a.studentName} · {new Date(a.absenceDate).toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "short" })} · {a.reason}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">

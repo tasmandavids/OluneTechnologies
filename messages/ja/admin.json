@@ -1373,6 +1373,173 @@
         "unknownHolder": "チケット所持者",
         "noEventsTitle": "スキャン対象のイベントがありません",
         "noEventsBody": "本日以降の日付でイベントを公開すると、ここに表示されます。"
+      },
+      "production": {
+        "steps": {
+          "details": "詳細",
+          "venue": "会場",
+          "team": "スタッフ",
+          "cast": "キャスト",
+          "builder": "ビルダー",
+          "review": "確認"
+        },
+        "eventTypes": {
+          "recital": "発表会",
+          "showcase": "ショーケース",
+          "concert": "コンサート",
+          "competition": "コンペティション",
+          "workshop": "ワークショップ",
+          "other": "その他"
+        },
+        "stageTypes": {
+          "proscenium": {
+            "label": "プロセニアム",
+            "desc": "額縁型の舞台。客席は正面に配置"
+          },
+          "thrust": {
+            "label": "スラスト",
+            "desc": "舞台が客席側に張り出す形式"
+          },
+          "in_the_round": {
+            "label": "円形舞台",
+            "desc": "客席が舞台を取り囲む形式"
+          },
+          "black_box": {
+            "label": "ブラックボックス",
+            "desc": "客席配置を自由に変更できる形式"
+          },
+          "other": {
+            "label": "その他",
+            "desc": "カスタム / 屋外 / 非伝統的な形式"
+          }
+        },
+        "crewRoles": {
+          "stageManager": "舞台監督",
+          "technicalDirector": "テクニカルディレクター",
+          "lightingDesigner": "照明デザイナー",
+          "soundOperator": "音響オペレーター",
+          "choreographer": "振付師",
+          "costumeCoordinator": "衣装コーディネーター",
+          "frontOfHouse": "フロント業務",
+          "backstageAssistant": "舞台裏アシスタント"
+        },
+        "details": {
+          "eventName": "イベント名",
+          "eventNamePlaceholder": "例: スプリングショーケース 2026",
+          "eventType": "イベント種別",
+          "description": "説明",
+          "descriptionPlaceholder": "イベントの概要を簡潔に…",
+          "performanceDates": "公演日",
+          "addDate": "日程を追加",
+          "performanceNumbered": "公演 {number}",
+          "performanceSingle": "公演日",
+          "remove": "削除",
+          "date": "日付",
+          "doorsOpen": "開場",
+          "curtainUp": "開演",
+          "expectedEnd": "終演予定",
+          "notes": "この公演のメモ",
+          "notesPlaceholder": "例: マチネ、休憩なし"
+        },
+        "venue": {
+          "venueName": "会場名",
+          "venueNamePlaceholder": "例: 市民ホール",
+          "address": "住所",
+          "addressPlaceholder": "住所をすべて入力",
+          "stageType": "舞台形式",
+          "stageWidth": "舞台間口 (m)",
+          "stageWidthPlaceholder": "例: 12",
+          "stageDepth": "舞台奥行 (m)",
+          "stageDepthPlaceholder": "例: 8",
+          "venueNotes": "会場メモ",
+          "venueNotesPlaceholder": "駐車場、バリアフリー、搬入口、会場の主要連絡先など…",
+          "techNotes": "技術メモ",
+          "techNotesPlaceholder": "音響仕様、照明機材の詳細、AV担当の連絡先、特記事項など…",
+          "ticketPrice": "チケット価格 ({currency})",
+          "freeEntryHint": "無料公演の場合は 0 のままにします",
+          "totalTickets": "チケット総数"
+        },
+        "team": {
+          "intro": "制作スタッフを追加します（舞台監督、テクニカルディレクター、振付師、舞台裏スタッフなど）。Olune のスタッフを紐づけるか、外部の方を追加できます。",
+          "memberNumbered": "スタッフ {number}",
+          "remove": "削除",
+          "fromYourTeam": "自分のスタッフから選ぶ（任意）",
+          "externalManual": "外部 / 手動入力",
+          "name": "氏名",
+          "namePlaceholder": "氏名（フルネーム）",
+          "role": "担当",
+          "rolePlaceholder": "例: 舞台監督",
+          "phone": "電話番号",
+          "email": "メールアドレス",
+          "addMember": "スタッフを追加",
+          "optionalHint": "スタッフは後からでも追加できます。この手順は任意です。"
+        },
+        "cast": {
+          "intro": "出演者をグループに分けて整理します（例:「ジュニアアンサンブル」「シニアカンパニー」）。キャストごとに担当と基本衣装のメモを設定できます。衣装は各演目ごとにビルダーで上書きできます。",
+          "groupNamePlaceholder": "グループ名",
+          "memberCount": "{count} 名",
+          "importClass": "クラスから取り込む",
+          "removeGroup": "グループを削除",
+          "importPrompt": "クラスの受講生をすべて取り込む:",
+          "noClasses": "クラスが見つかりません",
+          "noMembers": "メンバーはまだいません。下から追加するか、クラスを取り込んでください",
+          "colName": "氏名",
+          "colRole": "担当",
+          "colBaseCostume": "基本衣装",
+          "addStudent": "+ 生徒を追加…",
+          "newGroupPlaceholder": "新しいグループ名（例: ジュニアアンサンブル）",
+          "addGroup": "グループを追加",
+          "quickChangeLabel": "早替え警告のしきい値（分）",
+          "quickChangeHint": "連続する演目に同じ出演者がこの間隔未満で登場する場合に警告します",
+          "memberRolePlaceholder": "担当（例: 主役）",
+          "memberCostumePlaceholder": "衣装"
+        },
+        "review": {
+          "unnamedEvent": "名称未設定のイベント",
+          "performances": "公演",
+          "venue": "会場",
+          "stage": "舞台",
+          "teamMembers": "スタッフ",
+          "castGroups": "キャストグループ",
+          "tickets": "チケット",
+          "dateCount": "{count} 日",
+          "free": "無料",
+          "castSummary": "{groups} グループ · {performers} 名",
+          "ticketSummary": "{price} · 定員 {capacity}",
+          "readyTitle": "公開の準備はできましたか？",
+          "readyBody": "公開すると保護者にイベントが表示され、チケット販売が始まります。公開はいつでも取り消せます。"
+        },
+        "shell": {
+          "close": "ウィザードを閉じる",
+          "editing": "編集中: {name}",
+          "eventFallback": "イベント",
+          "newEvent": "新しいイベント",
+          "headings": {
+            "details": "イベントの詳細",
+            "venue": "会場と舞台",
+            "team": "制作スタッフ",
+            "cast": "キャスト",
+            "review": "確認して公開"
+          },
+          "subheadings": {
+            "details": "イベント名と種別を設定し、公演日を登録します。",
+            "venue": "公演の場所はどこですか？会場と舞台の仕様を設定します。",
+            "team": "制作を支えるメンバーを追加します — 舞台監督、技術スタッフ、振付師など。",
+            "cast": "キャストグループを作成して出演者を割り当てます。クラス名簿から取り込めます。",
+            "review": "準備は万全です — 下書きとして保存するか、公開して開始します。"
+          },
+          "back": "戻る",
+          "saveDraft": "下書きを保存",
+          "publish": "イベントを公開",
+          "publishing": "公開中…",
+          "saving": "保存中…",
+          "review": "確認",
+          "next": "次へ"
+        },
+        "errors": {
+          "nameRequired": "イベント名は必須です",
+          "performanceIncomplete": "各公演には日付と開演時刻が必要です"
+        }
       }
     },
     "leads": {

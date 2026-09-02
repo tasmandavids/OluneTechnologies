@@ -1373,6 +1373,173 @@
         "unknownHolder": "티켓 소지자",
         "noEventsTitle": "스캔할 이벤트가 없습니다",
         "noEventsBody": "오늘 이후 날짜의 이벤트를 게시하면 여기에 표시됩니다."
+      },
+      "production": {
+        "steps": {
+          "details": "세부 정보",
+          "venue": "공연장",
+          "team": "제작진",
+          "cast": "출연진",
+          "builder": "빌더",
+          "review": "검토"
+        },
+        "eventTypes": {
+          "recital": "발표회",
+          "showcase": "쇼케이스",
+          "concert": "콘서트",
+          "competition": "대회",
+          "workshop": "워크숍",
+          "other": "기타"
+        },
+        "stageTypes": {
+          "proscenium": {
+            "label": "프로시니엄",
+            "desc": "액자형 무대, 객석이 정면을 향함"
+          },
+          "thrust": {
+            "label": "돌출 무대",
+            "desc": "무대가 객석 쪽으로 돌출된 형태"
+          },
+          "in_the_round": {
+            "label": "원형 무대",
+            "desc": "객석이 무대를 둘러싼 형태"
+          },
+          "black_box": {
+            "label": "블랙박스",
+            "desc": "좌석 배치를 자유롭게 바꿀 수 있는 형태"
+          },
+          "other": {
+            "label": "기타",
+            "desc": "맞춤형 / 야외 / 비전통적 형태"
+          }
+        },
+        "crewRoles": {
+          "stageManager": "무대감독",
+          "technicalDirector": "테크니컬 디렉터",
+          "lightingDesigner": "조명 디자이너",
+          "soundOperator": "음향 오퍼레이터",
+          "choreographer": "안무가",
+          "costumeCoordinator": "의상 코디네이터",
+          "frontOfHouse": "관객 응대",
+          "backstageAssistant": "무대 뒤 어시스턴트"
+        },
+        "details": {
+          "eventName": "행사 이름",
+          "eventNamePlaceholder": "예: 2026 봄 쇼케이스",
+          "eventType": "행사 유형",
+          "description": "설명",
+          "descriptionPlaceholder": "행사에 대한 간단한 소개…",
+          "performanceDates": "공연 일자",
+          "addDate": "일자 추가",
+          "performanceNumbered": "{number}회차 공연",
+          "performanceSingle": "공연 일자",
+          "remove": "삭제",
+          "date": "날짜",
+          "doorsOpen": "입장 시작",
+          "curtainUp": "공연 시작",
+          "expectedEnd": "종료 예정",
+          "notes": "이 공연에 대한 메모",
+          "notesPlaceholder": "예: 마티네, 인터미션 없음"
+        },
+        "venue": {
+          "venueName": "공연장 이름",
+          "venueNamePlaceholder": "예: 시민회관",
+          "address": "주소",
+          "addressPlaceholder": "전체 주소",
+          "stageType": "무대 형태",
+          "stageWidth": "무대 폭 (m)",
+          "stageWidthPlaceholder": "예: 12",
+          "stageDepth": "무대 깊이 (m)",
+          "stageDepthPlaceholder": "예: 8",
+          "venueNotes": "공연장 메모",
+          "venueNotesPlaceholder": "주차, 접근성, 반입 통로, 공연장 주요 연락처 등…",
+          "techNotes": "기술 메모",
+          "techNotesPlaceholder": "음향 사양, 조명 장비 세부 정보, AV 담당 연락처, 특별 요구사항 등…",
+          "ticketPrice": "티켓 가격 ({currency})",
+          "freeEntryHint": "무료 입장은 0으로 두세요",
+          "totalTickets": "총 티켓 수"
+        },
+        "team": {
+          "intro": "제작진을 추가하세요 — 무대감독, 테크니컬 디렉터, 안무가, 무대 뒤 스태프. Olune 스태프를 연결하거나 외부 인원을 추가할 수 있습니다.",
+          "memberNumbered": "제작진 {number}",
+          "remove": "삭제",
+          "fromYourTeam": "내 스태프 중에서 (선택)",
+          "externalManual": "외부 / 직접 입력",
+          "name": "이름",
+          "namePlaceholder": "전체 이름",
+          "role": "역할",
+          "rolePlaceholder": "예: 무대감독",
+          "phone": "전화번호",
+          "email": "이메일",
+          "addMember": "제작진 추가",
+          "optionalHint": "제작진은 나중에 추가할 수 있습니다. 이 단계는 선택 사항입니다."
+        },
+        "cast": {
+          "intro": "출연자를 그룹으로 정리하세요(예: '주니어 앙상블', '시니어 컴퍼니'). 각 출연자에게 역할과 기본 의상 메모를 지정할 수 있습니다. 의상은 빌더에서 장면별로 변경할 수 있습니다.",
+          "groupNamePlaceholder": "그룹 이름",
+          "memberCount": "{count}명",
+          "importClass": "수업에서 가져오기",
+          "removeGroup": "그룹 삭제",
+          "importPrompt": "수업에 등록된 모든 학생 가져오기:",
+          "noClasses": "수업을 찾을 수 없습니다",
+          "noMembers": "아직 구성원이 없습니다 — 아래에서 추가하거나 수업을 가져오세요",
+          "colName": "이름",
+          "colRole": "역할",
+          "colBaseCostume": "기본 의상",
+          "addStudent": "+ 학생 추가…",
+          "newGroupPlaceholder": "새 그룹 이름 (예: 주니어 앙상블)",
+          "addGroup": "그룹 추가",
+          "quickChangeLabel": "빠른 의상 교체 경고 기준 (분)",
+          "quickChangeHint": "출연자가 연속된 장면에 이 간격보다 짧게 등장하면 표시합니다",
+          "memberRolePlaceholder": "역할 (예: 주역)",
+          "memberCostumePlaceholder": "의상"
+        },
+        "review": {
+          "unnamedEvent": "이름 없는 행사",
+          "performances": "공연",
+          "venue": "공연장",
+          "stage": "무대",
+          "teamMembers": "제작진",
+          "castGroups": "출연 그룹",
+          "tickets": "티켓",
+          "dateCount": "{count}일",
+          "free": "무료",
+          "castSummary": "{groups}개 그룹 · {performers}명",
+          "ticketSummary": "{price} · 정원 {capacity}",
+          "readyTitle": "게시할 준비가 되었나요?",
+          "readyBody": "게시하면 학부모에게 행사가 표시되고 티켓 판매가 시작됩니다. 언제든지 게시를 취소할 수 있습니다."
+        },
+        "shell": {
+          "close": "마법사 닫기",
+          "editing": "편집 중: {name}",
+          "eventFallback": "행사",
+          "newEvent": "새 행사",
+          "headings": {
+            "details": "행사 세부 정보",
+            "venue": "공연장 및 무대",
+            "team": "제작진",
+            "cast": "출연진",
+            "review": "검토 및 게시"
+          },
+          "subheadings": {
+            "details": "행사 이름과 유형을 정하고 공연 일자를 등록하세요.",
+            "venue": "공연 장소는 어디인가요? 공연장과 무대 사양을 설정하세요.",
+            "team": "제작을 이끄는 사람들을 추가하세요 — 무대감독, 기술 스태프, 안무가.",
+            "cast": "출연 그룹을 만들고 출연자를 배정하세요. 수업 명단에서 가져올 수 있습니다.",
+            "review": "모두 준비되었습니다 — 초안으로 저장하거나 게시하여 공개하세요."
+          },
+          "back": "뒤로",
+          "saveDraft": "초안 저장",
+          "publish": "행사 게시",
+          "publishing": "게시 중…",
+          "saving": "저장 중…",
+          "review": "검토",
+          "next": "다음"
+        },
+        "errors": {
+          "nameRequired": "행사 이름은 필수입니다",
+          "performanceIncomplete": "각 공연에는 날짜와 시작 시각이 필요합니다"
+        }
       }
     },
     "leads": {

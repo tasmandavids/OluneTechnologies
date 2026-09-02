@@ -1373,6 +1373,173 @@
         "unknownHolder": "Ticket holder",
         "noEventsTitle": "No events to scan",
         "noEventsBody": "Publish an event with a date today or later and it will appear here."
+      },
+      "production": {
+        "steps": {
+          "details": "Details",
+          "venue": "Venue",
+          "team": "Team",
+          "cast": "Cast",
+          "builder": "Builder",
+          "review": "Review"
+        },
+        "eventTypes": {
+          "recital": "Recital",
+          "showcase": "Showcase",
+          "concert": "Concert",
+          "competition": "Competition",
+          "workshop": "Workshop",
+          "other": "Other"
+        },
+        "stageTypes": {
+          "proscenium": {
+            "label": "Proscenium",
+            "desc": "Classic arch stage, audience faces front"
+          },
+          "thrust": {
+            "label": "Thrust",
+            "desc": "Stage extends into audience"
+          },
+          "in_the_round": {
+            "label": "In the Round",
+            "desc": "Audience surrounds the stage"
+          },
+          "black_box": {
+            "label": "Black Box",
+            "desc": "Flexible seating arrangement"
+          },
+          "other": {
+            "label": "Other",
+            "desc": "Custom / outdoor / non-traditional"
+          }
+        },
+        "crewRoles": {
+          "stageManager": "Stage Manager",
+          "technicalDirector": "Technical Director",
+          "lightingDesigner": "Lighting Designer",
+          "soundOperator": "Sound Operator",
+          "choreographer": "Choreographer",
+          "costumeCoordinator": "Costume Coordinator",
+          "frontOfHouse": "Front of House",
+          "backstageAssistant": "Backstage Assistant"
+        },
+        "details": {
+          "eventName": "Event name",
+          "eventNamePlaceholder": "e.g. Spring Showcase 2026",
+          "eventType": "Event type",
+          "description": "Description",
+          "descriptionPlaceholder": "Brief overview of the event…",
+          "performanceDates": "Performance dates",
+          "addDate": "Add date",
+          "performanceNumbered": "Performance {number}",
+          "performanceSingle": "Performance date",
+          "remove": "Remove",
+          "date": "Date",
+          "doorsOpen": "Doors open",
+          "curtainUp": "Curtain up",
+          "expectedEnd": "Expected end",
+          "notes": "Notes for this performance",
+          "notesPlaceholder": "e.g. Matinee, No interval"
+        },
+        "venue": {
+          "venueName": "Venue name",
+          "venueNamePlaceholder": "e.g. Wellington Town Hall",
+          "address": "Address",
+          "addressPlaceholder": "Full address",
+          "stageType": "Stage type",
+          "stageWidth": "Stage width (m)",
+          "stageWidthPlaceholder": "e.g. 12",
+          "stageDepth": "Stage depth (m)",
+          "stageDepthPlaceholder": "e.g. 8",
+          "venueNotes": "Venue notes",
+          "venueNotesPlaceholder": "Parking, accessibility, load-in dock, key contacts at venue…",
+          "techNotes": "Technical notes",
+          "techNotesPlaceholder": "Sound system specs, lighting rig details, AV contacts, special requirements…",
+          "ticketPrice": "Ticket price ({currency})",
+          "freeEntryHint": "Leave at 0 for free entry",
+          "totalTickets": "Total tickets"
+        },
+        "team": {
+          "intro": "Add the production team — stage manager, tech director, choreographers, backstage crew. You can link Olune staff or add external people.",
+          "memberNumbered": "Team member {number}",
+          "remove": "Remove",
+          "fromYourTeam": "From your team (optional)",
+          "externalManual": "External / manual entry",
+          "name": "Name",
+          "namePlaceholder": "Full name",
+          "role": "Role",
+          "rolePlaceholder": "e.g. Stage Manager",
+          "phone": "Phone",
+          "email": "Email",
+          "addMember": "Add team member",
+          "optionalHint": "You can add team members later. This step is optional."
+        },
+        "cast": {
+          "intro": "Organise performers into groups (e.g. “Junior Ensemble”, “Senior Company”). Each cast member gets a role label and base costume note. You can override costumes per-act in the Builder.",
+          "groupNamePlaceholder": "Group name",
+          "memberCount": "{count, plural, one {# member} other {# members}}",
+          "importClass": "Import class",
+          "removeGroup": "Remove group",
+          "importPrompt": "Import all enrolled students from a class:",
+          "noClasses": "No classes found",
+          "noMembers": "No members yet — add from below or import a class",
+          "colName": "Name",
+          "colRole": "Role",
+          "colBaseCostume": "Base costume",
+          "addStudent": "+ Add student…",
+          "newGroupPlaceholder": "New group name (e.g. Junior Ensemble)",
+          "addGroup": "Add group",
+          "quickChangeLabel": "Quick-change warning threshold (minutes)",
+          "quickChangeHint": "Flag when a performer appears in consecutive acts with less than this gap",
+          "memberRolePlaceholder": "Role (e.g. Lead)",
+          "memberCostumePlaceholder": "Costume"
+        },
+        "review": {
+          "unnamedEvent": "Unnamed event",
+          "performances": "Performances",
+          "venue": "Venue",
+          "stage": "Stage",
+          "teamMembers": "Team members",
+          "castGroups": "Cast groups",
+          "tickets": "Tickets",
+          "dateCount": "{count, plural, one {# date} other {# dates}}",
+          "free": "Free",
+          "castSummary": "{groups, plural, one {# group} other {# groups}} · {performers, plural, one {# performer} other {# performers}}",
+          "ticketSummary": "{price} · {capacity} capacity",
+          "readyTitle": "Ready to publish?",
+          "readyBody": "Publishing makes this event visible to parents and enables ticket sales. You can unpublish at any time."
+        },
+        "shell": {
+          "close": "Close wizard",
+          "editing": "Editing: {name}",
+          "eventFallback": "Event",
+          "newEvent": "New Event",
+          "headings": {
+            "details": "Event details",
+            "venue": "Venue & stage",
+            "team": "Production team",
+            "cast": "Cast",
+            "review": "Review & publish"
+          },
+          "subheadings": {
+            "details": "Give your event a name, type, and schedule the performance dates.",
+            "venue": "Where is the show happening? Set up the venue and stage specs.",
+            "team": "Add the people running the production — stage managers, tech crew, choreographers.",
+            "cast": "Set up cast groups and assign performers. You can import from your class roster.",
+            "review": "Everything looks good — save as draft or publish to go live."
+          },
+          "back": "Back",
+          "saveDraft": "Save draft",
+          "publish": "Publish event",
+          "publishing": "Publishing…",
+          "saving": "Saving…",
+          "review": "Review",
+          "next": "Next"
+        },
+        "errors": {
+          "nameRequired": "Event name is required",
+          "performanceIncomplete": "Each performance needs a date and curtain-up time"
+        }
       }
     },
     "leads": {
