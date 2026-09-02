@@ -25,6 +25,28 @@ This adds:
 - `http://127.0.0.1:3000/auth/callback`
 - Production URLs when `NEXT_PUBLIC_APP_URL` or `NEXT_PUBLIC_ROOT_DOMAIN` is set
 
+…and it sets the **Site URL** to the production origin.
+
+### Diagnosing a sign-in that lands somewhere unexpected
+
+```bash
+node --env-file=.env.local scripts/setup-oauth.mjs --check
+```
+
+Read-only — it changes nothing, so it is safe to run against production while a
+studio is reporting a problem. It prints the Site URL and the redirect
+allow-list, and flags the two faults that strand a user mid-sign-in:
+
+- **A loopback Site URL** (`http://127.0.0.1:3000`, `http://localhost:3000`).
+  This is what a Supabase project starts life with. Supabase falls back to the
+  Site URL whenever a redirect target is not allow-listed, so a live sign-in
+  ends on a dead `127.0.0.1` tab — `ERR_CONNECTION_REFUSED` — even though the
+  credentials were accepted.
+- **Missing `/**` globs** for a host we actually sign in from, which is what
+  triggers that fallback in the first place.
+
+Re-run without `--check` to repair both.
+
 ### Custom studio domains (self-serve)
 
 Studios can connect their own domain (e.g. `book.mystudio.co.nz`) from
