@@ -1,0 +1,88 @@
+{
+  "errors": {
+    "generic": {
+      "eyebrow": "문제가 발생했습니다",
+      "title": "예기치 않은 오류가 발생했습니다",
+      "body": "다시 시도하거나, 문제가 계속되면 홈으로 돌아가세요.",
+      "retry": "다시 시도",
+      "signInAgain": "다시 로그인",
+      "goHome": "홈으로"
+    },
+    "global": {
+      "title": "문제가 발생했습니다",
+      "body": "앱에서 심각한 오류가 발생했습니다.",
+      "retry": "다시 시도",
+      "signInAgain": "다시 로그인"
+    },
+    "portal": {
+      "title": "이 페이지에서 문제가 발생했습니다",
+      "body": "데이터는 안전합니다 — 포털의 나머지 부분은 정상적으로 작동합니다. 다시 시도하거나 대시보드로 돌아가세요.",
+      "retry": "다시 시도",
+      "goToPortal": "대시보드로 돌아가기"
+    },
+    "notFound": {
+      "eyebrow": "404",
+      "title": "페이지를 찾을 수 없습니다",
+      "platformBody": "<localhost>localhost</localhost>에서 이 URL은 스튜디오 웹사이트가 아닌 Olune 플랫폼입니다. 공개 페이지는 스튜디오의 서브도메인에 있습니다.",
+      "exampleLabel": "예시:",
+      "oluneHome": "Olune 홈",
+      "signIn": "로그인",
+      "websiteAdmin": "웹사이트 관리",
+      "studioBody": "이 페이지가 아직 게시되지 않았거나 URL이 잘못되었습니다. 관리자 웹사이트 탭에서 철자와 게시 상태를 확인하세요.",
+      "backHome": "홈으로 돌아가기",
+      "studio": "스튜디오를 찾을 수 없습니다."
+    },
+    "forbidden": {
+      "adminOnly": "도메인은 스튜디오 관리자만 관리할 수 있습니다."
+    },
+    "actions": {
+      "unknown": "알 수 없는 오류",
+      "notFound": "찾을 수 없음",
+      "unauthorized": "권한 없음",
+      "validationFailed": "유효성 검사 실패",
+      "invalidInput": "잘못된 입력",
+      "nameRequired": "이름을 입력해야 합니다",
+      "firstNameRequired": "이름(퍼스트 네임)을 입력해야 합니다",
+      "invalidEmail": "잘못된 이메일",
+      "studioNotFound": "스튜디오를 찾을 수 없습니다",
+      "invalidStatus": "잘못된 상태",
+      "tooManyRequests": "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+      "notSignedIn": "로그인되어 있지 않습니다.",
+      "parentAccessRequired": "보호자 권한이 필요합니다.",
+      "adminOnly": "관리자 전용입니다.",
+      "noStudioFound": "스튜디오를 찾을 수 없습니다.",
+      "notGuardian": "이 학생의 보호자가 아닙니다.",
+      "invalidStudentOrClass": "학생 또는 수업 정보가 올바르지 않습니다.",
+      "alreadyEnrolled": "이미 이 수업에 등록되어 있습니다.",
+      "classNoFee": "이 수업에는 수강료가 설정되어 있지 않습니다.",
+      "couldNotCreateInvoice": "청구서를 생성할 수 없습니다.",
+      "stripeNoClientSecret": "Stripe가 클라이언트 시크릿을 반환하지 않았습니다.",
+      "noOutstandingInvoices": "미납 항목이 없습니다.",
+      "termPlanComplete": "이 결제 플랜은 이미 완료되었습니다.",
+      "invalidInvoiceDetails": "청구서 정보가 올바르지 않습니다.",
+      "parentNotFound": "보호자 계정을 찾을 수 없습니다.",
+      "studentNotLinked": "선택한 학생이 이 보호자와 연결되어 있지 않습니다.",
+      "invoiceNotFound": "청구서를 찾을 수 없습니다.",
+      "unpaidInvoicesOnly": "미납 청구서에 대해서만 알림을 보낼 수 있습니다.",
+      "noInvoicesSelected": "선택된 청구서가 없습니다.",
+      "noRemindersSent": "전송된 알림이 없습니다.",
+      "cannotVoidInvoice": "이 청구서는 무효화할 수 없습니다.",
+      "invoiceAlreadyVoid": "이 청구서는 이미 무효화되었습니다.",
+      "paidInvoiceUseRefund": "이미 결제된 청구서는 무효화가 아닌 환불로 처리해야 합니다.",
+      "voidOnActivePlan": "청구서를 무효화하기 전에 결제 플랜을 완료하거나 취소하세요.",
+      "invalidSubscriptionDetails": "구독 정보가 올바르지 않습니다.",
+      "monthlyTotalInvalid": "할인 적용 후 월 합계는 0보다 커야 합니다.",
+      "chargeAmountInvalid": "청구 금액이 올바르지 않습니다.",
+      "studentNotLinkedToParent": "학생이 이 보호자와 연결되어 있지 않습니다.",
+      "couldNotSaveSubscription": "구독을 저장할 수 없습니다.",
+      "subscriptionNotFound": "구독을 찾을 수 없습니다.",
+      "invoiceLocked": "이 청구서는 더 이상 수정할 수 없습니다.",
+      "invoiceNotDraft": "금액과 항목은 임시 저장된 청구서에서만 변경할 수 있습니다.",
+      "invalidLineItems": "항목 정보가 올바르지 않습니다.",
+      "invalidTemplateDetails": "템플릿 정보가 올바르지 않습니다.",
+      "templateNotFound": "템플릿을 찾을 수 없습니다.",
+      "onlyDraftsCanBeSent": "이 방식으로는 임시 저장된 청구서만 보낼 수 있습니다.",
+      "noDraftInvoices": "보낼 임시 저장 청구서가 없습니다."
+    }
+  }
+}

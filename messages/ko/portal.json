@@ -1,0 +1,76 @@
+{
+  "portal": {
+    "progress": {
+      "currentLevel": "Current level",
+      "attendance": {
+        "title": "Attendance · {count, plural, one {# record} other {# records}}",
+        "attendanceRate": "{rate}% attendance in recent classes",
+        "empty": "No attendance recorded yet.",
+        "date": "Date",
+        "class": "Class",
+        "statusColumn": "Status",
+        "status": {
+          "present": "Present",
+          "late": "Late",
+          "absent": "Absent",
+          "excused": "Excused"
+        }
+      },
+      "certificates": {
+        "title": "Certificates · {count}",
+        "subtitle": "Download a PDF certificate for each award.",
+        "downloadPdf": "Download PDF",
+        "downloadAria": "Download PDF certificate for {title}"
+      },
+      "badges": {
+        "title": "Badges · {earned}/{total}",
+        "subtitle": "Achievements earned on the journey",
+        "empty": "No badges yet — they'll appear here as milestones are reached.",
+        "secret": "Secret badge",
+        "earnedOn": "Earned {date}",
+        "levelLabel": "Level {level}",
+        "xpTotal": "{xp} XP",
+        "toNext": "{xp} XP to {level}",
+        "maxLevel": "Top level reached — Étoile!",
+        "familyTitle": "Family badges · {earned}/{total}",
+        "familySubtitle": "Your family's achievements at the academy",
+        "categories": {
+          "founder": "Founder & Legacy",
+          "beginner": "Beginner Journey",
+          "commitment": "Commitment & Discipline",
+          "technique": "Technique",
+          "level": "Level Progression",
+          "performance": "Performance",
+          "character": "Character & Values",
+          "mentor": "Teacher & Mentor Pathway",
+          "community": "Community",
+          "secret": "Secret & Fun",
+          "family": "Family"
+        },
+        "award": {
+          "title": "Award a badge",
+          "subtitle": "Recognise a milestone. The dancer and their family are notified.",
+          "search": "Search badges…",
+          "note": "Note (optional)",
+          "awardCta": "Award",
+          "revoke": "Remove",
+          "noResults": "No badges match your search."
+        }
+      }
+    },
+    "checkinCard": {
+      "title": "Check-in card",
+      "unnamedDancer": "Dancer",
+      "statusActive": "Active",
+      "statusFrozen": "Frozen",
+      "issued": "issued {date}",
+      "qrHint": "Tap in and out at the studio door. Left the card at home? Show this code to the reader instead.",
+      "frozenHint": "This card is paused, so it won't check anyone in. Ask the front desk to unfreeze it.",
+      "qrAlt": "Check-in QR code for {name}",
+      "enlarge": "Enlarge QR code",
+      "shrink": "Shrink QR code",
+      "addToWallet": "Add to Apple Wallet",
+      "walletHint": "Keeps a scannable copy on your iPhone. The physical card still taps the reader."
+    }
+  }
+}

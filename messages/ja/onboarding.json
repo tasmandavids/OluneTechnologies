@@ -1,0 +1,103 @@
+{
+  "onboarding": {
+    "progress": {
+      "account": "Account",
+      "studio": "Studio",
+      "profile": "Profile",
+      "brand": "Brand"
+    },
+    "vertical": {
+      "title": "What do you run?",
+      "subtitle": "We'll set Olune up around your activity — classes, levels and the words your families use.",
+      "comingSoon": "Coming soon",
+      "options": {
+        "dance": "Dance studio",
+        "gymnastics": "Gymnastics club",
+        "sports-club": "Sports club",
+        "swim": "Swim school",
+        "martial-arts": "Martial arts",
+        "music": "Music school",
+        "cheer": "Cheer",
+        "tutoring": "Tutoring"
+      }
+    },
+    "waitlist": {
+      "title": "{vertical} is on the way",
+      "subtitle": "We're building Olune for your activity now. Leave your details and we'll come to you first when it opens.",
+      "emailPlaceholder": "you@yourclub.co.nz",
+      "orgPlaceholder": "Your club or school name (optional)",
+      "submit": "Keep me posted",
+      "submitting": "Adding you…",
+      "doneTitle": "You're on the list",
+      "doneBody": "We'll email you the moment Olune is ready for {vertical}.",
+      "pickAnother": "Choose something else"
+    },
+    "system": {
+      "title": "How will you use Olune?",
+      "subtitle": "Pick the setup that fits you — you can always adjust later.",
+      "back": "Back",
+      "studioOwner": {
+        "title": "I run a studio or club",
+        "desc": "Manage classes, families, billing, and your website."
+      },
+      "instructor": {
+        "title": "I'm an independent coach or teacher",
+        "desc": "Work across clubs, track your schedule, and manage your teaching profile."
+      }
+    },
+    "account": {
+      "title": "Start your studio",
+      "subtitle": "Create your owner account to begin.",
+      "instructorTitle": "Create your instructor account",
+      "instructorSubtitle": "Your personal workspace for teaching across studios.",
+      "divider": "or sign up with email",
+      "emailPlaceholder": "you@studio.co.nz",
+      "passwordPlaceholder": "Create a password",
+      "submitting": "Creating…",
+      "submit": "Create account with email",
+      "hasAccount": "Already have one?",
+      "logIn": "Log in"
+    },
+    "confirmEmail": {
+      "title": "Check your inbox",
+      "body": "We sent a confirmation link to {email}. Click it, then come back — we'll pick up right where you left off."
+    },
+    "studio": {
+      "title": "Name your organisation",
+      "subtitle": "This is what your members and their families will see.",
+      "namePlaceholder": "Sunrise Dance Studio",
+      "slugPlaceholder": "your-studio",
+      "checking": "Checking…",
+      "available": "✓ {slug}.{root} is available",
+      "taken": "✗ That subdomain is taken",
+      "invalid": "Use 3+ lowercase letters, numbers or hyphens",
+      "back": "Back",
+      "continue": "Continue"
+    },
+    "profile": {
+      "title": "Your public name",
+      "subtitle": "How studios and students will know you.",
+      "namePlaceholder": "Jane Smith",
+      "slugPlaceholder": "jane-smith"
+    },
+    "brand": {
+      "title": "Make it yours",
+      "subtitle": "Pick a brand colour — you can refine everything later.",
+      "fallbackName": "Your profile",
+      "previewCta": "Book a trial",
+      "customColour": "Custom colour",
+      "back": "Back",
+      "submitting": "Creating your studio…",
+      "submit": "Create studio",
+      "submittingInstructor": "Creating your workspace…",
+      "submitInstructor": "Create workspace"
+    },
+    "done": {
+      "title": "Welcome, {studioName}",
+      "subtitle": "Your studio is live. Let's get you set up…",
+      "instructorSubtitle": "Your instructor workspace is ready.",
+      "continue": "Continue setup →",
+      "instructorContinue": "Go to your schedule →"
+    }
+  }
+}

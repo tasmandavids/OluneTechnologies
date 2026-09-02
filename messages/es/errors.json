@@ -1,0 +1,88 @@
+{
+  "errors": {
+    "generic": {
+      "eyebrow": "Algo salió mal",
+      "title": "Se produjo un error inesperado",
+      "body": "Inténtalo de nuevo, o vuelve al inicio si el problema persiste.",
+      "retry": "Intentar de nuevo",
+      "signInAgain": "Iniciar sesión de nuevo",
+      "goHome": "Ir al inicio"
+    },
+    "global": {
+      "title": "Algo salió mal",
+      "body": "La aplicación encontró un error crítico.",
+      "retry": "Intentar de nuevo",
+      "signInAgain": "Iniciar sesión de nuevo"
+    },
+    "portal": {
+      "title": "Esta página tuvo un problema",
+      "body": "Tus datos están a salvo — el resto del portal sigue funcionando. Inténtalo de nuevo, o vuelve a tu panel.",
+      "retry": "Intentar de nuevo",
+      "goToPortal": "Volver al panel"
+    },
+    "notFound": {
+      "eyebrow": "404",
+      "title": "Página no encontrada",
+      "platformBody": "En <localhost>localhost</localhost> esta URL es la plataforma Olune — no un sitio web de estudio. Tus páginas públicas están en el subdominio de tu estudio.",
+      "exampleLabel": "Ejemplo:",
+      "oluneHome": "Inicio de Olune",
+      "signIn": "Iniciar sesión",
+      "websiteAdmin": "Administración del sitio web",
+      "studioBody": "Esta página aún no se ha publicado, o la URL es incorrecta. Comprueba la ortografía y el estado de publicación en la pestaña Sitio web del panel de administración.",
+      "backHome": "Volver al inicio",
+      "studio": "Estudio no encontrado."
+    },
+    "forbidden": {
+      "adminOnly": "Solo los administradores del estudio pueden gestionar dominios."
+    },
+    "actions": {
+      "unknown": "Error desconocido",
+      "notFound": "No encontrado",
+      "unauthorized": "No autorizado",
+      "validationFailed": "Validación fallida",
+      "invalidInput": "Entrada no válida",
+      "nameRequired": "Se requiere el nombre",
+      "firstNameRequired": "Se requiere el nombre de pila",
+      "invalidEmail": "Correo electrónico no válido",
+      "studioNotFound": "Estudio no encontrado",
+      "invalidStatus": "Estado no válido",
+      "tooManyRequests": "Demasiadas solicitudes. Espera unos minutos e inténtalo de nuevo.",
+      "notSignedIn": "No se ha iniciado sesión.",
+      "parentAccessRequired": "Se requiere acceso de padre/madre.",
+      "adminOnly": "Solo administradores.",
+      "noStudioFound": "No se encontró ningún estudio.",
+      "notGuardian": "No eres tutor de este alumno.",
+      "invalidStudentOrClass": "Alumno o clase no válidos.",
+      "alreadyEnrolled": "Ya está inscrito en esta clase.",
+      "classNoFee": "La clase no tiene cuota.",
+      "couldNotCreateInvoice": "No se pudo crear la factura.",
+      "stripeNoClientSecret": "Stripe no devolvió un client secret.",
+      "noOutstandingInvoices": "No hay nada pendiente de pago.",
+      "termPlanComplete": "Este plan de pago ya está completo.",
+      "invalidInvoiceDetails": "Detalles de factura no válidos.",
+      "parentNotFound": "Cuenta de padre/madre no encontrada.",
+      "studentNotLinked": "El alumno seleccionado no está vinculado a este padre/madre.",
+      "invoiceNotFound": "Factura no encontrada.",
+      "unpaidInvoicesOnly": "Solo se puede recordar el pago de facturas impagadas.",
+      "noInvoicesSelected": "No se seleccionaron facturas.",
+      "noRemindersSent": "No se envió ningún recordatorio.",
+      "cannotVoidInvoice": "Esta factura no se puede anular.",
+      "invoiceAlreadyVoid": "La factura ya está anulada.",
+      "paidInvoiceUseRefund": "Las facturas pagadas deben reembolsarse, no anularse.",
+      "voidOnActivePlan": "Completa o cancela el plan de pago antes de anular facturas de este.",
+      "invalidSubscriptionDetails": "Detalles de suscripción no válidos.",
+      "monthlyTotalInvalid": "El total mensual debe ser mayor que cero después de los descuentos.",
+      "chargeAmountInvalid": "El importe del cargo no es válido.",
+      "studentNotLinkedToParent": "El alumno no está vinculado a este padre/madre.",
+      "couldNotSaveSubscription": "No se pudo guardar la suscripción.",
+      "subscriptionNotFound": "Suscripción no encontrada.",
+      "invoiceLocked": "Esta factura ya no se puede editar.",
+      "invoiceNotDraft": "El importe y las partidas solo se pueden cambiar en facturas en borrador.",
+      "invalidLineItems": "Partidas no válidas.",
+      "invalidTemplateDetails": "Detalles de plantilla no válidos.",
+      "templateNotFound": "Plantilla no encontrada.",
+      "onlyDraftsCanBeSent": "Solo las facturas en borrador se pueden enviar así.",
+      "noDraftInvoices": "No hay facturas en borrador para enviar."
+    }
+  }
+}

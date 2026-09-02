@@ -1,0 +1,89 @@
+{
+  "timeclock": {
+    "title": "Time clock",
+    "clockedInSince": "On the clock since {time}",
+    "notClockedIn": "Not clocked in",
+    "viaCard": "Card",
+    "onTheClock": "So far",
+    "thisWeek": "This week",
+    "working": "Working…",
+    "clockIn": "Clock in",
+    "clockOut": "Clock out",
+    "addNote": "Add a note",
+    "notePlaceholder": "What were you working on? (optional)",
+    "weekTotal": "{total} this week",
+    "rostered": "{total} rostered",
+    "overRoster": "{amount} over roster",
+    "underRoster": "{amount} under roster",
+    "openShift": "Open",
+    "approved": "Approved",
+    "admin": {
+      "tabTitle": "Timesheets",
+      "range": "{from} to {to}",
+      "summary": "{total} across {count} entries",
+      "openCount": "{count} still open",
+      "pendingOnly": "Needs approval only",
+      "addEntry": "Add an entry",
+      "approveSelected": "Approve selected ({count})",
+      "selectAll": "Select all",
+      "selectNone": "Clear selection",
+      "selectEntry": "Select this entry",
+      "empty": "No hours recorded in this period.",
+      "unknownStaff": "Unknown staff member",
+      "openEnd": "still on the clock",
+      "approve": "Approve",
+      "unapprove": "Unapprove",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "cancel": "Cancel",
+      "stillOpen": "Still open",
+      "notRostered": "Not rostered",
+      "onRoster": "On roster",
+      "overBy": "{amount} over",
+      "underBy": "{amount} under",
+      "source": {
+        "portal": "Portal",
+        "nfc": "Card",
+        "manual": "Added by hand"
+      },
+      "hourType": {
+        "regular": "Regular",
+        "overtime": "Overtime",
+        "holiday": "Public holiday",
+        "sick": "Sick leave",
+        "vacation": "Annual leave",
+        "unpaid": "Unpaid"
+      },
+      "fields": {
+        "staff": "Staff member",
+        "date": "Date",
+        "start": "Start",
+        "end": "End",
+        "hourType": "Hour type",
+        "note": "Note"
+      },
+      "errors": {
+        "needStart": "A date and start time are required.",
+        "needStaffAndStart": "Choose a staff member, a date and a start time."
+      },
+      "rates": {
+        "title": "Pay rates",
+        "subtitle": "Effective-dated. A new rate never re-prices timesheets already approved.",
+        "empty": "No rate recorded — hours for this staff member can’t be costed yet.",
+        "perHour": "per hour",
+        "from": "from {date}",
+        "current": "Current",
+        "remove": "Remove",
+        "add": "Add rate",
+        "fields": {
+          "amount": "Hourly rate",
+          "effectiveFrom": "In force from"
+        },
+        "errors": {
+          "needAmountAndDate": "Enter an hourly rate and the date it starts."
+        }
+      }
+    }
+  }
+}

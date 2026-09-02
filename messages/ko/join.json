@@ -1,0 +1,20 @@
+{
+  "join": {
+    "title": "Join the studio",
+    "subtitle": "Create your account to enrol and manage classes.",
+    "pathParentTitle": "I'm enrolling my child",
+    "pathParentDescription": "Parent or guardian account — add dancers, enrol, and pay fees.",
+    "pathAdultTitle": "I'm enrolling myself (18+)",
+    "pathAdultDescription": "Adult student account — enrol yourself, sign waivers, and pay directly.",
+    "changePath": "← Choose a different option",
+    "yourBirthday": "Your date of birth",
+    "optionalChild": "Add your dancer now (optional)",
+    "childNamePlaceholder": "Child's full name",
+    "fullNamePlaceholder": "Your full name",
+    "createAccount": "Create account & continue",
+    "creatingAccount": "Creating account…",
+    "alreadyHaveAccount": "Already have an account?",
+    "completeRegistration": "Complete registration",
+    "joining": "Joining…"
+  }
+}

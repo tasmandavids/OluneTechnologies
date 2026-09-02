@@ -1,0 +1,827 @@
+{
+  "site": {
+    "brand": {
+      "poweredBy": "Powered by",
+      "logoLabel": "Olune",
+      "poweredByOlune": "Powered by Olune"
+    },
+    "payments": {
+      "paymentNotCompleted": "Payment could not be completed.",
+      "paymentIncomplete": "Payment was not completed. Please try another method.",
+      "processing": "Processing…",
+      "payNow": "Pay now"
+    },
+    "manager": {
+      "title": "Website",
+      "subtitle": "Build and publish your studio's public pages.",
+      "domainSetup": "Domain setup",
+      "cancel": "Cancel",
+      "newPage": "+ New page",
+      "pageTitle": "Page title",
+      "pageTitlePlaceholder": "e.g. About us",
+      "createPage": "Create page",
+      "createAsHomepage": "Create as homepage",
+      "somethingWrong": "Something went wrong.",
+      "chooseHomepageStyle": "Choose a homepage style",
+      "homepageBrowse": "Browse {count} ready-made layouts — every block is fully editable, and you publish when you're ready.",
+      "addPageFromTemplate": "Add a page from a template",
+      "addPageFromTemplateHint": "Start a common page with sensible copy and layout already in place.",
+      "noPagesYet": "No pages yet. Pick a template above, or build one from scratch with \"+ New page\".",
+      "home": "Home",
+      "edit": "Edit",
+      "unpublish": "Unpublish",
+      "publish": "Publish",
+      "setAsHome": "Set as home",
+      "confirm": "Confirm",
+      "delete": "Delete",
+      "statusDraft": "draft",
+      "statusPublished": "published",
+      "defaultHomeTitle": "Home",
+      "defaultPageTitle": "New page"
+    },
+    "setup": {
+      "websiteReady": "Your website is ready",
+      "openingEditor": "Opening the visual editor…",
+      "title": "Set up your website",
+      "subtitle": "Browse 20 starting layouts and 30 type styles. Add your branding, preview, then generate — everything stays editable in the visual editor.",
+      "setupTab": "Setup",
+      "previewTab": "Preview",
+      "homepagePreview": "Homepage preview",
+      "pagesWillBeCreated": "{count, plural, one {# page} other {# pages}} will be created · Homepage publishes on generate",
+      "backToSetup": "Back to setup",
+      "generating": "Generating…",
+      "generateWebsite": "Generate my website",
+      "homepageTemplate": "Homepage template",
+      "homepageTemplateHint": "Scroll through {count} layouts — each is a starting point you can fully edit.",
+      "typography": "Typography",
+      "typographyHint": "30 curated pairings — tap to preview how your site will read.",
+      "starterPages": "Starter pages",
+      "starterPagesHint": "Uncheck any pages you don't need yet.",
+      "sitePlan": "Your site plan",
+      "sitePlanTemplate": "Building for {studio} with the {template} template.",
+      "homepage": "Homepage",
+      "liveMiniPreview": "Live mini preview",
+      "openFullPreview": "Open full preview",
+      "connectDomain": "Connect your own domain →",
+      "templateFallback": "Classic",
+      "portalLabel": "Portal"
+    },
+    "setupPages": {
+      "page-about": "About",
+      "page-classes": "Classes",
+      "page-contact": "Contact",
+      "page-schedule": "Schedule",
+      "page-people": "People / instructors",
+      "page-news": "News & events",
+      "page-shop": "Shop"
+    },
+    "branding": {
+      "title": "Your branding",
+      "subtitle": "Drop in your logo and colours — they apply instantly to the preview below.",
+      "taglineFallback": "Your tagline",
+      "logoUrl": "Logo URL",
+      "logoUrlPlaceholder": "https://…/logo.png",
+      "tagline": "Tagline",
+      "taglinePlaceholder": "e.g. Auckland · All ages welcome",
+      "brandColor": "Brand colour",
+      "brandColorAria": "Brand colour",
+      "siteTheme": "Site theme",
+      "dark": "Dark",
+      "light": "Light",
+      "colorPresets": {
+        "iris": "Iris",
+        "crimson": "Crimson",
+        "voltage": "Voltage",
+        "aurum": "Aurum",
+        "bloom": "Bloom",
+        "jade": "Jade",
+        "forest": "Forest",
+        "slate": "Slate"
+      }
+    },
+    "templateGallery": {
+      "noTemplatesInCategory": "No templates in this category.",
+      "selected": "Selected",
+      "blockLabels": {
+        "hero": "Hero",
+        "features": "Features",
+        "classGrid": "Classes",
+        "testimonials": "Reviews",
+        "cta": "CTA",
+        "contact": "Contact",
+        "gallery": "Gallery",
+        "statsRow": "Stats",
+        "classStreams": "Streams",
+        "newsFeed": "News",
+        "richText": "Story",
+        "peopleGrid": "Team",
+        "schedule": "Schedule",
+        "faq": "FAQ",
+        "pageHeader": "Header",
+        "videoBlock": "Video",
+        "classTabs": "Class tabs",
+        "imageBlock": "Image",
+        "heading": "Heading",
+        "paragraph": "Text",
+        "linkBlock": "Button",
+        "divider": "Divider",
+        "spacer": "Spacer",
+        "shopGrid": "Shop",
+        "locations": "Locations"
+      }
+    },
+    "templateCategories": {
+      "all": "All templates",
+      "minimal": "Minimal",
+      "bold": "Bold",
+      "visual": "Visual",
+      "community": "Community",
+      "professional": "Professional",
+      "elegant": "Elegant",
+      "modern": "Modern",
+      "editorial": "Editorial",
+      "dramatic": "Dramatic",
+      "playful": "Playful",
+      "luxe": "Luxe",
+      "retro": "Retro",
+      "complete": "Complete"
+    },
+    "typography": {
+      "sampleText": "The quick brown fox",
+      "categories": {
+        "all": "All styles",
+        "elegant": "Elegant",
+        "modern": "Modern",
+        "classic": "Classic",
+        "bold": "Bold",
+        "friendly": "Friendly",
+        "minimal": "Minimal",
+        "creative": "Creative",
+        "editorial": "Editorial"
+      },
+      "pairs": {
+        "fraunces-hanken": {
+          "label": "Iris & Ink",
+          "description": "Warm serif headlines with crisp sans body."
+        },
+        "cormorant-inter": {
+          "label": "Editorial Classic",
+          "description": "High-fashion editorial pairing."
+        },
+        "playfair-source": {
+          "label": "Gallery White",
+          "description": "Refined contrast for image-led sites."
+        },
+        "libre-lato": {
+          "label": "Heritage",
+          "description": "Trustworthy and readable."
+        },
+        "merriweather-opensans": {
+          "label": "Scholar",
+          "description": "Academic clarity with warmth."
+        },
+        "lora-nunito": {
+          "label": "Soft Serif",
+          "description": "Approachable and gentle."
+        },
+        "dm-serif-dm-sans": {
+          "label": "DM Duo",
+          "description": "Geometric harmony from one family."
+        },
+        "cinzel-raleway": {
+          "label": "Grand Stage",
+          "description": "Dramatic display for performance arts."
+        },
+        "bodoni-work": {
+          "label": "Atelier",
+          "description": "Luxury fashion-house feel."
+        },
+        "oswald-roboto": {
+          "label": "Impact",
+          "description": "Strong headlines, neutral body."
+        },
+        "bebas-montserrat": {
+          "label": "Poster Bold",
+          "description": "All-caps energy with clean copy."
+        },
+        "space-inter": {
+          "label": "Tech Studio",
+          "description": "Contemporary startup aesthetic."
+        },
+        "archivo": {
+          "label": "Mono Modern",
+          "description": "Single-family geometric clarity."
+        },
+        "poppins": {
+          "label": "Rounded Pop",
+          "description": "Friendly and universally readable."
+        },
+        "nunito": {
+          "label": "Bubble Warm",
+          "description": "Soft curves for family brands."
+        },
+        "lexend": {
+          "label": "Readable First",
+          "description": "Optimised for effortless scanning."
+        },
+        "rubik": {
+          "label": "Rounded Edge",
+          "description": "Playful geometry without noise."
+        },
+        "manrope": {
+          "label": "Neutral Pro",
+          "description": "Balanced and professional."
+        },
+        "jakarta": {
+          "label": "Startup Clean",
+          "description": "Fresh SaaS landing-page energy."
+        },
+        "eb-karla": {
+          "label": "Bookshop",
+          "description": "Literary warmth with modern body."
+        },
+        "crimson-franklin": {
+          "label": "Broadsheet",
+          "description": "Newspaper heritage meets web."
+        },
+        "josefin-lato": {
+          "label": "Art Deco",
+          "description": "Vintage glamour with clarity."
+        },
+        "albert": {
+          "label": "Swiss Lite",
+          "description": "Ultra-clean single family."
+        },
+        "quicksand": {
+          "label": "Playground",
+          "description": "Light and welcoming for kids."
+        },
+        "figtree": {
+          "label": "Fig & Flow",
+          "description": "Contemporary humanist sans."
+        },
+        "urbanist": {
+          "label": "Urban Grid",
+          "description": "City-studio modernism."
+        },
+        "instrument": {
+          "label": "Instrument",
+          "description": "Distinctive editorial character."
+        },
+        "bricolage": {
+          "label": "Bricolage",
+          "description": "Expressive variable sans."
+        },
+        "syne-inter": {
+          "label": "Syne Pulse",
+          "description": "Experimental display with calm body."
+        },
+        "sora-outfit": {
+          "label": "Sora & Outfit",
+          "description": "Clean, friendly, and approachable."
+        }
+      }
+    },
+    "templates": {
+      "home-classic": {
+        "label": "Classic",
+        "description": "Hero, feature grid, class showcase, testimonials, call-to-action and contact."
+      },
+      "home-showcase": {
+        "label": "Showcase",
+        "description": "Image-led layout: bold hero, class showcase, gallery and testimonials."
+      },
+      "home-minimal": {
+        "label": "Minimal",
+        "description": "A clean, focused single-message homepage: hero, intro, classes and a CTA."
+      },
+      "home-bold": {
+        "label": "Bold",
+        "description": "Full-bleed hero, stats strip, class streams, news preview and enrol CTA."
+      },
+      "page-schedule": {
+        "label": "Schedule",
+        "description": "Weekly timetable with day and studio filters."
+      },
+      "page-people": {
+        "label": "People",
+        "description": "Instructor grid from staff profiles."
+      },
+      "page-studios": {
+        "label": "Studios",
+        "description": "Multi-location studio cards and contact."
+      },
+      "page-news": {
+        "label": "News & Events",
+        "description": "Filterable news and events feed."
+      },
+      "page-shop": {
+        "label": "Shop",
+        "description": "Product catalogue with category filters and checkout."
+      },
+      "page-about": {
+        "label": "About",
+        "description": "Tell your story: intro hero, narrative text, values and a closing CTA."
+      },
+      "page-classes": {
+        "label": "Classes",
+        "description": "A dedicated class listing page with FAQ and a sign-up CTA."
+      },
+      "page-contact": {
+        "label": "Contact",
+        "description": "Contact details and opening hours, plus a short FAQ."
+      },
+      "home-academy": {
+        "label": "Academy",
+        "description": "Institution-style layout: bold hero, credentials strip, programmes and faculty."
+      },
+      "home-spotlight": {
+        "label": "Spotlight",
+        "description": "Performer-first: dramatic hero, instructor spotlight and photo gallery."
+      },
+      "home-magazine": {
+        "label": "Magazine",
+        "description": "News-first editorial flow — like a studio journal with class highlights."
+      },
+      "home-gallery": {
+        "label": "Gallery",
+        "description": "Photo portfolio lead — minimal copy, maximum visual impact."
+      },
+      "home-community": {
+        "label": "Community",
+        "description": "Social proof heavy — reviews, values and a welcoming class grid."
+      },
+      "home-momentum": {
+        "label": "Momentum",
+        "description": "High-energy fitness vibe — stats, classes and enrol-focused CTA."
+      },
+      "home-elegant": {
+        "label": "Elegant",
+        "description": "Refined luxury feel — left-aligned hero, story and faculty."
+      },
+      "home-modern": {
+        "label": "Modern Edge",
+        "description": "Clean tech-startup aesthetic — streams, stats and sharp CTAs."
+      },
+      "home-festival": {
+        "label": "Festival",
+        "description": "Events-driven — news, schedule preview and enrol CTA."
+      },
+      "home-streams": {
+        "label": "Programmes",
+        "description": "Class streams explorer with FAQ — ideal for multi-discipline studios."
+      },
+      "home-family": {
+        "label": "Family Welcome",
+        "description": "Warm and approachable — values, classes and FAQ for new parents."
+      },
+      "home-professional": {
+        "label": "Professional",
+        "description": "Corporate-clean layout — story, values, team and contact."
+      },
+      "home-creative": {
+        "label": "Creative Bold",
+        "description": "Agency-style impact — asymmetric hero, gallery and stats."
+      },
+      "home-story": {
+        "label": "Storyteller",
+        "description": "Narrative journey — layered rich text sections building your brand story."
+      },
+      "home-enrol": {
+        "label": "Enrol Focus",
+        "description": "Conversion-optimised — classes, social proof and multiple enrol prompts."
+      },
+      "home-complete": {
+        "label": "Complete",
+        "description": "Everything on one page — the full studio experience in a single scroll."
+      },
+      "home-cinematic": {
+        "label": "Cinematic",
+        "description": "Dark, full-bleed hero, studio gallery, stats, ovations and a closing CTA."
+      },
+      "home-noir": {
+        "label": "Noir",
+        "description": "Black-and-gold drama: bold hero, the company, backstage gallery and testimonials."
+      },
+      "home-eclipse": {
+        "label": "Eclipse",
+        "description": "Electric dark hero, stats, interactive class tabs and testimonials."
+      },
+      "home-playful": {
+        "label": "Playful",
+        "description": "Bright and friendly: feature trio, classes by age, gallery, FAQ and contact."
+      },
+      "home-carnival": {
+        "label": "Carnival",
+        "description": "High-energy hero, stats, class streams, reviews and a showtime gallery."
+      },
+      "home-sunny": {
+        "label": "Sunny",
+        "description": "Warm, upbeat hero with features, classes, upcoming events and a CTA."
+      },
+      "home-atelier": {
+        "label": "Atelier",
+        "description": "Refined boutique layout: story, practitioners, gallery and testimonials."
+      },
+      "home-couture": {
+        "label": "Couture",
+        "description": "Fashion-editorial header, collection gallery, story and featured programmes."
+      },
+      "home-retro": {
+        "label": "Retro",
+        "description": "Vintage poster style: bold hero, stats, the line-up, reviews and contact."
+      },
+      "home-marquee": {
+        "label": "Marquee",
+        "description": "Theatre-marquee dark hero, headline events, showtimes and gallery."
+      },
+      "home-journal": {
+        "label": "Journal",
+        "description": "Long-form editorial: hero, two essays, a divider and a news feed."
+      },
+      "home-broadsheet": {
+        "label": "Broadsheet",
+        "description": "Newspaper feel: print-style header, headlines, classes and testimonials."
+      },
+      "home-lookbook": {
+        "label": "Lookbook",
+        "description": "Image-first layout led by a spacious gallery, stats and testimonials."
+      },
+      "home-reel": {
+        "label": "Reel",
+        "description": "Motion-forward: cinematic hero, a video showreel, gallery and CTA."
+      },
+      "home-grid": {
+        "label": "Grid",
+        "description": "Systematic modern layout with interactive class tabs, stats and features."
+      },
+      "home-pulse": {
+        "label": "Pulse",
+        "description": "Energetic fitness hero, stats, classes, reviews, FAQ and a CTA."
+      },
+      "home-impact": {
+        "label": "Impact",
+        "description": "Maximum-impact dark hero, stats, class streams, gallery and a bold CTA."
+      },
+      "home-whitespace": {
+        "label": "Whitespace",
+        "description": "Ultra-minimal: one big statement, a single idea, classes and a CTA."
+      }
+    },
+    "editor": {
+      "backToPages": "← Pages",
+      "untitled": "Untitled",
+      "unsavedChanges": "Unsaved changes",
+      "saved": "Saved",
+      "published": "Published",
+      "undoTitle": "Undo (⌘Z)",
+      "redoTitle": "Redo (⌘⇧Z)",
+      "add": "+ Add",
+      "background": "Background",
+      "settings": "Settings",
+      "preview": "Preview",
+      "openLiveSite": "Open live site",
+      "previewMode": "Live preview",
+      "exitPreview": "Exit preview",
+      "previewModeBanner": "Live preview — blocks render as visitors will see them. Click Exit preview to edit.",
+      "saving": "Saving…",
+      "saveDraft": "Save draft",
+      "publish": "Publish",
+      "confirmLeave": "You have unsaved changes. Leave this page?",
+      "previewLiveTitle": "Open live page at {url}",
+      "previewDraftTitle": "Preview draft (opens in admin — publish to share publicly)",
+      "elementsSelected": "{count} elements selected",
+      "multiSelectHint": "Arrow keys move all selected elements. Delete removes them. Click one element without Shift to edit it individually.",
+      "deleteSelected": "Delete selected",
+      "clickToEdit": "Click an element on the page to edit it.",
+      "rightClickHint": "Or right-click the canvas to add headings, text boxes, images, or buttons.",
+      "addElement": "Add element",
+      "addElementHint": "Click to add at the bottom, or right-click the canvas for a specific spot. Everything snaps to the 12-column grid.",
+      "groupBasic": "Basic — text, images & buttons",
+      "groupSections": "Sections",
+      "groupStudioContent": "Studio content",
+      "quickActions": "Quick actions",
+      "alignLeft": "⬅ Align",
+      "alignCenter": "↔ Center",
+      "alignRight": "➡ Align",
+      "rotateMinus": "↺ −15°",
+      "rotatePlus": "↻ +15°",
+      "layerUp": "▲ Layer",
+      "layerDown": "▼ Layer",
+      "keyboardHint": "Arrow keys nudge · ⌘D duplicate · ⌘Z undo · Shift+click multi-select",
+      "sectionAppearance": "Section appearance",
+      "frameEffects": "Frame & effects",
+      "positionSize": "Position & size",
+      "selectedMore": "(+{count} selected)",
+      "itemN": "Item {n}",
+      "addItem": "+ Add item",
+      "pageSettings": "Page settings",
+      "pageTitle": "Title",
+      "urlSlug": "URL slug",
+      "homepageSlugHint": "The homepage always lives at /.",
+      "publicUrlHint": "Public URL: /{slug}",
+      "showInNav": "Show in navigation",
+      "navLabel": "Nav label (optional)",
+      "navOrder": "Nav order",
+      "seoTitle": "SEO title",
+      "seoDescription": "SEO description",
+      "boldText": "bold text",
+      "linkText": "link text",
+      "boldTitle": "Bold",
+      "insertLinkTitle": "Insert link",
+      "linkButton": "🔗 Link",
+      "emptyPage": "Your page is empty",
+      "emptyPageHint": "Right-click to add content. Shift+click to multi-select. Pink guides appear when edges align.",
+      "canvasHint": "Right-click to add · Shift+click multi-select · ⌘Z undo",
+      "editPageBackground": "Edit page background",
+      "backgroundLabel": "Background",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "locked": "Locked",
+      "dragToMove": "Drag to move (snaps to grid + guides)",
+      "resize": "Resize",
+      "resizeWidth": "Resize width",
+      "resizeHeight": "Resize height",
+      "previewCopyPlaceholder": "Add your copy here.",
+      "previewFeature": "Feature",
+      "previewBlock": "{label} preview"
+    },
+    "contextMenu": {
+      "addElement": "Add element",
+      "groups": {
+        "basic": "Basic elements",
+        "section": "Sections",
+        "content": "Content blocks"
+      },
+      "actions": {
+        "heading": "Heading",
+        "paragraph": "Text box",
+        "imageBlock": "Image",
+        "linkBlock": "Button",
+        "spacer": "Spacer",
+        "divider": "Divider",
+        "videoBlock": "Video",
+        "pageHeader": "Page header",
+        "hero": "Hero",
+        "richText": "Text section",
+        "cta": "Call to action",
+        "gallery": "Gallery",
+        "features": "Features",
+        "testimonials": "Testimonials"
+      }
+    },
+    "background": {
+      "title": "Page background",
+      "subtitle": "The canvas behind all your elements. Drag blocks on top of it freely.",
+      "type": "Background type",
+      "image": "Background image",
+      "video": "Background video",
+      "autoplayMuted": "Autoplay (muted)",
+      "opacity": "Opacity (%)",
+      "kinds": {
+        "base": "Page colour",
+        "surface": "Surface / card",
+        "tint": "Brand tint",
+        "brand": "Brand gradient",
+        "image": "Image",
+        "video": "Video"
+      }
+    },
+    "linkPicker": {
+      "pickPage": "Pick a page…",
+      "customPath": "Custom path…",
+      "externalUrl": "External URL",
+      "placeholder": "/about or https://…",
+      "hint": "Choose an existing page or type a path. Use https:// for external links."
+    },
+    "media": {
+      "none": "none",
+      "imagePlaceholder": "Paste an image URL or upload",
+      "uploading": "Uploading…",
+      "replace": "Replace",
+      "upload": "Upload",
+      "remove": "Remove",
+      "uploadFailed": "Upload failed.",
+      "videoPlaceholder": "Paste a video URL or upload MP4 / WebM",
+      "replaceVideo": "Replace video",
+      "uploadVideo": "Upload video"
+    },
+    "domain": {
+      "eyebrow": "Domain setup",
+      "title": "Connect your website address",
+      "subtitle": "A simple step-by-step guide for {studio}. No jargon — just copy, paste, and go live.",
+      "steps": {
+        "intro": "Start",
+        "decide": "Choose",
+        "kind": "Type",
+        "domain": "Domain",
+        "dns": "DNS",
+        "connect": "Connect",
+        "done": "Done"
+      },
+      "stepOf": "Step {current} of {total}",
+      "intro": {
+        "title": "Your site already has an address",
+        "subtitle": "Every studio gets a free Olune address — it works right away.",
+        "freeAddress": "Free address",
+        "shareToday": "Share this link today. Families can view your website and portal from this address.",
+        "wantOwn": "Want your own domain instead — like {example}? The next steps walk you through it."
+      },
+      "decide": {
+        "title": "Do you want your own domain?",
+        "subtitle": "Optional — your free Olune address always works.",
+        "yesTitle": "Yes, use my domain",
+        "yesDesc": "I'll connect www.mystudio.co.nz (or similar)",
+        "noTitle": "Not right now",
+        "noDesc": "I'll keep using {address}"
+      },
+      "kind": {
+        "title": "Which address do you want?",
+        "subtitle": "Pick the style that matches what you bought from your domain provider.",
+        "www": {
+          "label": "www address",
+          "hint": "Most common — families type www.yoursite.com"
+        },
+        "subdomain": {
+          "label": "Sub-address",
+          "hint": "Good for a dedicated booking or info page"
+        },
+        "apex": {
+          "label": "Root domain",
+          "hint": "No www — just yoursite.com"
+        }
+      },
+      "domain": {
+        "title": "Enter your domain",
+        "subtitle": "Type exactly what you want families to type in their browser.",
+        "label": "Your domain",
+        "placeholder": "www.mystudio.co.nz",
+        "familiesVisit": "Families will visit {url}"
+      },
+      "dns": {
+        "title": "Add one DNS record",
+        "subtitle": "Log in where you bought your domain (GoDaddy, Cloudflare, Namecheap, etc.) and add this record.",
+        "step1": "Open your domain provider's DNS settings.",
+        "step2": "Add the record below (copy each value).",
+        "step3": "Save — changes can take 15 minutes to 48 hours.",
+        "tip": "If your provider asks for a \"TTL\", leave the default or choose 3600. The \"Host\" column might be labelled Name or Subdomain.",
+        "nextLabel": "I've added the record",
+        "showSteps": "Show DNS steps"
+      },
+      "connect": {
+        "title": "Connect to Olune",
+        "subtitle": "Tell Olune your domain so we can show your website when someone visits it.",
+        "hint": "Click connect below. Then use \"Check DNS\" — if it's not ready yet, wait 30 minutes and try again.",
+        "connecting": "Connecting…",
+        "connectDomain": "Connect domain",
+        "checkDns": "Check DNS"
+      },
+      "done": {
+        "connectedTitle": "You're connected!",
+        "connectedSubtitle": "Your custom domain is linked to Olune.",
+        "readyTitle": "You're all set",
+        "readySubtitle": "Your free Olune address is ready to share.",
+        "customDomain": "Custom domain",
+        "checking": "Checking…",
+        "checkAgain": "Check DNS again",
+        "removeDomain": "Remove custom domain",
+        "yourAddress": "Your address",
+        "connectAnytime": "You can connect a custom domain any time from Website → Domain setup.",
+        "backToWebsite": "Back to website",
+        "connectDomain": "Connect a domain"
+      },
+      "dnsFields": {
+        "type": "Type",
+        "host": "Host / Name",
+        "value": "Points to / Value",
+        "copied": "Copied",
+        "copy": "Copy"
+      },
+      "continue": "Continue",
+      "back": "Back",
+      "verification": {
+        "title": "One more record to prove you own this domain",
+        "note": "Add this alongside the record above, then check again."
+      }
+    },
+    "urlBanner": {
+      "title": "Your public website URL",
+      "openPreviewBefore": "Open",
+      "openPreviewAfter": "to preview what families see.",
+      "localhostNote": "Pages on plain localhost are the Olune platform, not your studio site.",
+      "connectDomain": "Connect your domain →"
+    },
+    "preview": {
+      "draftTitle": "Draft preview",
+      "publishedTitle": "Preview",
+      "refreshHint": "Save in the editor, then refresh to see latest changes.",
+      "backToEditor": "← Editor",
+      "openLiveSite": "Open live site"
+    },
+    "blocks": {
+      "select": "Vertical spacing",
+      "number": "Vertical position (px)",
+      "boolean": "Lock position",
+      "color": "Font size",
+      "text": "Size",
+      "textarea": "Alignment",
+      "image": "Video",
+      "video": "Button",
+      "list": "Class streams",
+      "heading": "Heading",
+      "paragraph": "Text",
+      "imageBlock": "Image",
+      "videoBlock": "Video",
+      "linkBlock": "Button",
+      "hero": "Hero",
+      "pageHeader": "Page header",
+      "statsRow": "Stats",
+      "classStreams": "Streams",
+      "classTabs": "Class tabs",
+      "richText": "Text section",
+      "features": "Features",
+      "classGrid": "Classes",
+      "schedule": "Schedule",
+      "gallery": "Gallery",
+      "testimonials": "Reviews",
+      "newsFeed": "News",
+      "peopleGrid": "Team",
+      "shopGrid": "Shop",
+      "locations": "Locations",
+      "cta": "CTA",
+      "faq": "FAQ",
+      "contact": "Contact",
+      "spacer": "Spacer",
+      "divider": "Divider"
+    },
+    "public": {
+      "emptyPage": "This page has no content yet.",
+      "addImage": "Add an image",
+      "addVideo": "Add a video",
+      "teamComingSoon": "Team members coming soon.",
+      "classesComingSoon": "Classes coming soon.",
+      "allLevels": "All levels",
+      "perMonth": "/ month",
+      "galleryEmpty": "Add image URLs to populate the gallery.",
+      "contactLabels": {
+        "address": "Address",
+        "phone": "Phone",
+        "email": "Email",
+        "hours": "Hours"
+      },
+      "spacerLabel": "Spacer · {height}px",
+      "defaultFooterTagline": "Exceptional dance education. World-class training for all ages and abilities.",
+      "defaultPortalLabel": "Portal",
+      "defaultHeading": "Heading",
+      "defaultImageAlt": "Image",
+      "defaultLinkLabel": "Link",
+      "navigation": "Navigation",
+      "studios": "Studios",
+      "contact": "Contact",
+      "copyright": "© {year} {studio}. All rights reserved.",
+      "closeMenu": "Close menu",
+      "openMenu": "Open menu",
+      "portalArrow": "{label} →"
+    },
+    "shop": {
+      "categoryAll": "All",
+      "categoryGeneral": "General",
+      "checkoutFailed": "Checkout failed. Sign in to purchase.",
+      "orderCreated": "Order created — complete payment in the member portal.",
+      "orderPlaced": "Order placed successfully!",
+      "noProducts": "No products available yet.",
+      "outOfStock": "Out of stock",
+      "addToCart": "Add to cart",
+      "cartItems": "Cart ({count} items)",
+      "processing": "Processing…",
+      "checkout": "Checkout",
+      "signInToPurchase": "Sign in to purchase"
+    },
+    "schedule": {
+      "days": [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "allStudios": "All Studios",
+      "noClassesDay": "No classes scheduled for this day.",
+      "streamComingSoon": "Classes coming soon for this stream.",
+      "fromPerTerm": "From {price} / term"
+    },
+    "news": {
+      "categories": {
+        "all": "All",
+        "news": "News",
+        "events": "Events",
+        "term_dates": "Term dates",
+        "productions": "Productions",
+        "announcements": "Announcements"
+      },
+      "noItems": "No items to show yet."
+    }
+  }
+}

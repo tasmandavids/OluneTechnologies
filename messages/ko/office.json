@@ -1,0 +1,13 @@
+{
+  "office": {
+    "welcome": "Welcome, {name}",
+    "welcomeFallback": "there",
+    "weekOf": "{date} · Week of {weekStart}",
+    "upcomingShifts": "Your upcoming shifts",
+    "noShiftsThisWeek": "No shifts scheduled this week.",
+    "workingToday": "Who's working today",
+    "noShiftsToday": "No shifts on the roster for today.",
+    "quickLinks": "Quick links",
+    "staffFallback": "Staff"
+  }
+}

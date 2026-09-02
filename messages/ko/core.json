@@ -1,0 +1,276 @@
+{
+  "common": {
+    "loading": "로딩 중…",
+    "signOut": "로그아웃 →",
+    "you": "회원님",
+    "operator": "운영자",
+    "yourStudio": "내 스튜디오",
+    "language": "언어",
+    "selectLanguage": "언어 선택",
+    "back": "뒤로",
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "편집",
+    "add": "추가",
+    "create": "생성",
+    "update": "업데이트",
+    "close": "닫기",
+    "confirm": "확인",
+    "search": "검색",
+    "filter": "필터",
+    "actions": "작업",
+    "status": "상태",
+    "name": "이름",
+    "email": "이메일",
+    "phone": "전화번호",
+    "date": "날짜",
+    "time": "시간",
+    "amount": "금액",
+    "total": "합계",
+    "yes": "예",
+    "no": "아니요",
+    "or": "또는",
+    "and": "및",
+    "none": "없음",
+    "all": "전체",
+    "unknown": "알 수 없음",
+    "student": "학생",
+    "parent": "보호자",
+    "teacher": "강사",
+    "comingSoon": "출시 예정",
+    "poweredByOlune": "Olune 제공",
+    "days": {
+      "mon": "월",
+      "tue": "화",
+      "wed": "수",
+      "thu": "목",
+      "fri": "금",
+      "sat": "토",
+      "sun": "일",
+      "monday": "월요일",
+      "tuesday": "화요일",
+      "wednesday": "수요일",
+      "thursday": "목요일",
+      "friday": "금요일",
+      "saturday": "토요일",
+      "sunday": "일요일"
+    },
+    "greeting": {
+      "morning": "좋은 아침입니다",
+      "afternoon": "안녕하세요",
+      "evening": "안녕하세요"
+    }
+  },
+  "roles": {
+    "admin": "스튜디오 관리자",
+    "teacher": "강사",
+    "office": "사무 직원",
+    "parent": "보호자",
+    "student": "학생"
+  },
+  "shell": {
+    "keepSidebarOpen": "사이드바 항상 열어두기",
+    "hideSidebar": "사이드바 숨기기",
+    "showSidebar": "사이드바 표시",
+    "toggleMenu": "메뉴 전환",
+    "theme": "테마",
+    "themeLight": "밝게",
+    "themeDark": "어둡게",
+    "selectTheme": "테마 선택",
+    "studioLabel": "스튜디오",
+    "rail": {
+      "today": "오늘",
+      "people": "구성원",
+      "schedule": "일정",
+      "team": "팀",
+      "money": "재무",
+      "inbox": "받은편지함",
+      "studio": "스튜디오",
+      "settings": "설정",
+      "account": "계정",
+      "appearance": "외관",
+      "toggleTheme": "밝게/어둡게 전환",
+      "workspace": "작업 공간",
+      "everythingByTyping": "입력만으로 모든 것에 접근할 수 있습니다."
+    },
+    "palette": {
+      "placeholder": "무엇이든 검색…",
+      "empty": "일치하는 항목 없음",
+      "new": "신규",
+      "pages": "페이지",
+      "students": "학생",
+      "staff": "직원",
+      "parents": "보호자",
+      "classes": "수업",
+      "leads": "리드",
+      "searching": "검색 중…"
+    },
+    "appearance": {
+      "title": "외관",
+      "subtitle": "작업 공간에 표시되는 유리 질감과 색상의 정도를 조정합니다. 이는 개인 설정이며 팀에게 보이는 화면에는 영향을 주지 않습니다.",
+      "accent": {
+        "label": "스튜디오 색상",
+        "hint": "개인 설정입니다 — 스튜디오의 실제 브랜딩은 변경되지 않습니다.",
+        "custom": "사용자 지정 색상",
+        "useStudioColor": "스튜디오 색상 사용"
+      },
+      "reset": "초기화",
+      "apply": "적용",
+      "sliders": {
+        "tint": {
+          "label": "색상 강도",
+          "hint": "스튜디오 색상이 화면에 얼마나 스며드는지."
+        },
+        "glass": {
+          "label": "유리 투명도",
+          "hint": "불투명한 느낌부터 거의 보이지 않는 정도까지."
+        },
+        "blur": {
+          "label": "블러 깊이",
+          "hint": "패널 뒤에 있는 것을 얼마나 흐리게 보여줄지."
+        },
+        "ambience": {
+          "label": "분위기",
+          "hint": "작업 공간 뒤로 은은하게 퍼지는 빛."
+        }
+      }
+    }
+  },
+  "nav": {
+    "sections": {
+      "people": "구성원",
+      "schedule": "일정",
+      "teamManagement": "팀",
+      "clientManagement": "고객 관리",
+      "finance": "재무",
+      "digital": "디지털",
+      "communications": "커뮤니케이션"
+    },
+    "admin": {
+      "dashboard": "대시보드",
+      "classes": "수업",
+      "events": "이벤트",
+      "staff": "직원",
+      "people": "학생 및 가족",
+      "parents": "보호자",
+      "students": "학생",
+      "leads": "리드",
+      "money": "재무",
+      "products": "상품",
+      "billing": "청구",
+      "accounting": "회계",
+      "website": "웹사이트",
+      "advertising": "소셜 게시",
+      "shop": "샵",
+      "messages": "메시지",
+      "support": "Olune 지원",
+      "settings": "설정",
+      "substitutes": "대강",
+      "availability": "강사 가능 시간",
+      "privateLessons": "개인 레슨",
+      "inbox": "받은편지함",
+      "badges": "배지",
+      "passes": "수업 패스",
+      "checkin": "체크인",
+      "forms": "양식 만들기",
+      "plan": "요금제 및 결제"
+    },
+    "portal": {
+      "forms": "양식 및 정책"
+    },
+    "teacher": {
+      "schedule": "일정 및 출석",
+      "clients": "개인 고객",
+      "invoices": "청구서",
+      "messages": "메시지",
+      "affiliations": "내 스튜디오",
+      "availability": "가능 시간",
+      "privateLessons": "개인 레슨",
+      "substitutes": "대강 요청",
+      "expenses": "지출",
+      "vault": "문서",
+      "notifications": "알림 설정",
+      "profile": "공개 프로필"
+    },
+    "office": {
+      "dashboard": "프런트 데스크"
+    },
+    "parent": {
+      "familyHub": "패밀리 허브",
+      "schedule": "일정",
+      "privateLessons": "개인 레슨",
+      "billing": "청구",
+      "absences": "결석",
+      "recital": "의상 및 발표회",
+      "notifications": "알림",
+      "forms": "양식 및 동의서",
+      "messages": "메시지"
+    },
+    "student": {
+      "timetable": "내 시간표",
+      "progress": "진도",
+      "hub": "내 계정",
+      "messages": "스튜디오 채팅"
+    },
+    "platform": {
+      "overview": "개요",
+      "studios": "스튜디오",
+      "owners": "소유자",
+      "supportInbox": "지원 받은편지함",
+      "opsTasks": "운영 작업",
+      "featureFlags": "기능 플래그",
+      "announcements": "공지사항",
+      "settings": "설정",
+      "auditLog": "감사 로그",
+      "consoleTitle": "Olune 플랫폼",
+      "consoleSubtitle": "운영자 콘솔",
+      "badges": "배지 카탈로그",
+      "plans": "요금제 가격"
+    },
+    "shared": {
+      "notifications": "알림 설정"
+    }
+  },
+  "auth": {
+    "welcomeBack": "다시 오신 것을 환영합니다",
+    "signInSubtitle": "스튜디오에 로그인하세요.",
+    "emailPlaceholder": "you@studio.co.nz",
+    "passwordPlaceholder": "비밀번호",
+    "signingIn": "로그인 중…",
+    "signInWithEmail": "이메일로 로그인",
+    "callbackError": "로그인이 중단되었습니다. 다시 시도해 주세요.",
+    "newStudio": "새로운 스튜디오이신가요?",
+    "getStarted": "시작하기",
+    "platformAdmin": "Olune 플랫폼 관리자이신가요?",
+    "signInToPlatform": "/platform 에 로그인",
+    "joinStudio": "스튜디오에 가입하시겠어요?",
+    "joinLink": "여기에서 등록",
+    "continueWithGoogle": "Google로 계속하기",
+    "continueWithApple": "Apple로 계속하기",
+    "redirecting": "리디렉션 중…",
+    "orContinueWithEmail": "또는 이메일로 계속하기",
+    "googleForgotPassword": "Google 비밀번호를 잊으셨나요?",
+    "googleForgotPasswordLink": "Google에서 재설정",
+    "emailLoginGoogleHint": "Google로 가입하셨나요? 위 버튼을 사용해 주세요 — 이 계정에는 비밀번호가 없을 수 있습니다.",
+    "forgotPassword": "비밀번호를 잊으셨나요?",
+    "sendResetLink": "재설정 링크 보내기",
+    "sendingResetLink": "보내는 중…",
+    "resetLinkSent": "이메일을 확인해 주세요 — 비밀번호 재설정 링크를 보내드렸습니다.",
+    "resetLinkError": "재설정 이메일을 보낼 수 없습니다. 다시 시도해 주세요."
+  },
+  "marketing": {
+    "features": "기능",
+    "pricing": "요금제",
+    "about": "소개",
+    "compare": "비교",
+    "signIn": "로그인",
+    "startFree": "무료로 시작하기",
+    "tagline": "차분하게 스튜디오를 운영하는 방법.",
+    "livePreview": "실시간 미리보기"
+  },
+  "meta": {
+    "title": "Olune — 스튜디오 전체를 하나의 차분한 공간에서 운영하세요",
+    "description": "Olune은 댄스나 피트니스 스튜디오의 관리 업무를 처리합니다 — 등록, 시간표, 청구 및 결제, 그리고 직접 편집하는 실시간 고객용 웹사이트까지."
+  }
+}
