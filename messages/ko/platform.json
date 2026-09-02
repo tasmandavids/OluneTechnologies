@@ -1,0 +1,195 @@
+{
+  "platform": {
+    "dashboard": {
+      "title": "Platform overview",
+      "greeting": "{greeting},",
+      "stats": {
+        "totalStudios": "Total studios",
+        "activeHint": "{count} active",
+        "onTrial": "On trial",
+        "suspended": "Suspended",
+        "studentsPlatformWide": "Students platform-wide"
+      },
+      "recentSignups": "Recent signups",
+      "allStudios": "All studios →",
+      "noStudios": "No studios yet.",
+      "openSupport": "Open support",
+      "inbox": "Inbox →",
+      "inboxClear": "Inbox clear.",
+      "opsQueue": "Ops queue",
+      "allTasks": "All tasks →",
+      "noOpenTasks": "No open tasks.",
+      "dueDate": "due {date}",
+      "unknownStudio": "Unknown"
+    },
+    "studios": {
+      "title": "Studios",
+      "subtitle": "All tenants on the Olune platform.",
+      "filters": {
+        "all": "all",
+        "trial": "trial",
+        "active": "active",
+        "suspended": "suspended"
+      },
+      "updated": "Updated",
+      "tableStudio": "Studio",
+      "tableOwner": "Owner",
+      "tableStudents": "Students",
+      "tableStatus": "Status",
+      "tableJoined": "Joined",
+      "tableActions": "Actions",
+      "noMatch": "No studios match this filter.",
+      "delete": "Delete",
+      "deleted": "Deleted",
+      "confirmDelete": "Type \"{name}\" to permanently delete this studio and all its data. This cannot be undone.",
+      "plan": {
+        "column": "Olune plan",
+        "comp": "Comp",
+        "uncomp": "End comp",
+        "extend": "+14 days",
+        "trialExtended": "Trial extended by 14 days",
+        "missing": "No subscription row",
+        "compReasonPrompt": "Why is {name} being comped? This is recorded against the studio.",
+        "status": {
+          "trialing": "Free trial",
+          "active": "Active",
+          "past_due": "Payment failed",
+          "canceled": "Cancelled",
+          "comped": "Complimentary"
+        }
+      }
+    },
+    "owners": {
+      "title": "Business owners",
+      "subtitle": "Studio admins — your direct line to every tenant.",
+      "searchPlaceholder": "Search by studio, name, or email…",
+      "unnamedOwner": "Unnamed owner",
+      "ownerFallback": "Owner",
+      "adminSince": "Admin since {date}",
+      "privateNotes": "Private notes",
+      "notesPlaceholder": "Relationship notes, call summaries, preferences…",
+      "saveNotes": "Save notes",
+      "messageOwner": "Message owner",
+      "subjectDefault": "Re: {studioName}",
+      "messagePlaceholder": "Your message appears in their support thread…",
+      "sendViaSupport": "Send via support",
+      "notesSaved": "Notes saved",
+      "messageSent": "Message sent — see Support inbox"
+    },
+    "support": {
+      "title": "Support inbox",
+      "noThreads": "No support threads yet.",
+      "selectThread": "Select a thread to view the conversation.",
+      "status": {
+        "open": "open",
+        "pending": "pending",
+        "resolved": "resolved"
+      },
+      "senderOperator": "Olune",
+      "senderOwner": "Owner",
+      "replyPlaceholder": "Reply to studio owner…",
+      "sendReply": "Send reply"
+    },
+    "tasks": {
+      "title": "Ops tasks",
+      "subtitle": "Backend work queue — onboarding reviews, billing, domains, rollouts, and more.",
+      "newTask": "New task",
+      "cancel": "Cancel",
+      "type": "Type",
+      "priority": "Priority",
+      "priorities": {
+        "low": "Low",
+        "normal": "Normal",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "titleLabel": "Title",
+      "studioOptional": "Studio (optional)",
+      "platformWide": "Platform-wide",
+      "detailsPlaceholder": "Details, links, context…",
+      "createTask": "Create task",
+      "columns": {
+        "todo": "To do",
+        "in_progress": "In progress",
+        "blocked": "Blocked",
+        "done": "Done"
+      }
+    },
+    "features": {
+      "title": "Feature flags",
+      "subtitle": "Toggle platform modules globally or per studio — shop, events, SMS, AI beta, and more.",
+      "globalDefaults": "Global defaults",
+      "studioOverrides": "Studio overrides",
+      "on": "On",
+      "off": "Off"
+    },
+    "announcements": {
+      "title": "Announcements",
+      "subtitle": "Broadcast updates to studio admins — maintenance, new features, policy changes.",
+      "titlePlaceholder": "Title",
+      "bodyPlaceholder": "Message body (shown in studio admin portal)…",
+      "severity": {
+        "info": "Info",
+        "warning": "Warning",
+        "critical": "Critical"
+      },
+      "target": {
+        "all": "All studios",
+        "trial": "Trial only",
+        "active": "Active only",
+        "suspended": "Suspended only"
+      },
+      "draft": "Draft announcement",
+      "publishedAt": "published {date}",
+      "draftStatus": "draft",
+      "publishNow": "Publish now",
+      "stop": "Stop",
+      "delete": "Delete",
+      "confirmDelete": "Delete this announcement? This cannot be undone."
+    },
+    "settings": {
+      "title": "Platform settings",
+      "subtitle": "Global Olune configuration — signup, trials, maintenance.",
+      "maintenanceMode": "Maintenance mode",
+      "signupEnabled": "Signup enabled",
+      "defaultTrialDays": "Default trial days",
+      "supportEmail": "Support email",
+      "welcomeMessage": "Welcome message",
+      "saveSettings": "Save settings",
+      "saved": "Saved",
+      "operatorAccessTitle": "Operator access",
+      "operatorAccessBody": "Grant platform access by adding emails to <envVar></envVar> in your env, or insert a row into <table></table> linked to an auth user."
+    },
+    "audit": {
+      "title": "Audit log",
+      "subtitle": "Immutable record of platform operator actions.",
+      "when": "When",
+      "operator": "Operator",
+      "action": "Action",
+      "target": "Target",
+      "noEntries": "No audit entries yet."
+    },
+    "badges": {
+      "title": "Badge catalogue",
+      "subtitle": "{active} of {total} global badges active",
+      "iconLabel": "Emoji",
+      "xpLabel": "XP value",
+      "active": "Active",
+      "inactive": "Hidden",
+      "save": "Save"
+    },
+    "plans": {
+      "title": "Plan prices",
+      "subtitle": "Stripe Price ids for each plan and interval. Test mode and live mode issue different ids, so these are per-environment. What a plan costs and unlocks is set in code, not here.",
+      "emptyWarning": "No Stripe prices are configured in this environment yet — checkout will refuse to start until they are.",
+      "interval": {
+        "month": "Monthly",
+        "year": "Annual"
+      },
+      "moduleCount": "{count, plural, one {# module} other {# modules}}",
+      "save": "Save",
+      "saved": "Saved",
+      "notSet": "Not set — this plan can't be bought yet."
+    }
+  }
+}

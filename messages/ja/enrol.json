@@ -1,0 +1,49 @@
+{
+  "enrol": {
+    "title": "Book a free trial",
+    "subtitle": "Pick a class and we'll contact you to confirm your dancer's spot.",
+    "steps": {
+      "pickClass": "Choose a class"
+    },
+    "continue": "Continue →",
+    "backToClasses": "Change class",
+    "selectedClass": "Class",
+    "noClassesForStyle": "No classes match that style — try another filter or pick \"Not sure yet\".",
+    "fields": {
+      "name": "Parent / guardian name",
+      "namePlaceholder": "Jane Smith",
+      "childName": "Dancer's name",
+      "childNamePlaceholder": "Emma Smith",
+      "email": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "phone": "Phone (optional)",
+      "phonePlaceholder": "+64 21 123 4567",
+      "interest": "Dance style interest"
+    },
+    "disciplines": {
+      "ballet": "Ballet",
+      "contemporary": "Contemporary",
+      "jazz": "Jazz",
+      "hipHop": "Hip-Hop",
+      "tap": "Tap",
+      "lyrical": "Lyrical",
+      "acro": "Acro",
+      "pointe": "Pointe",
+      "notSure": "Not sure yet"
+    },
+    "submitting": "Sending…",
+    "submit": "Request my free trial →",
+    "hasAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "success": {
+      "title": "You're on the list!",
+      "body": "We'll be in touch soon, {name}. Keep an eye on {email}.",
+      "backHome": "Back to home"
+    },
+    "noStudio": {
+      "title": "Visit your studio's site",
+      "body": "Trial booking is available on each studio's subdomain — e.g. yourstudio.olune.app/enrol",
+      "back": "Back to Olune"
+    }
+  }
+}

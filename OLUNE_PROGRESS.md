@@ -723,6 +723,65 @@ Tenant-scoping fixes, admin delete flows, and CI/security hardening ahead of go-
 
 ---
 
+## ✅ SESSION 27 — COMPLETE (2026-09-02) · Locale expansion: es/ja/ko
+
+Added Spanish, Japanese, and Korean as supported locales, following the
+critical-namespace-first approach `docs/i18n-audit-2026-08-07.md` used to
+bring fr/it/ru/zh up to par.
+
+### Locale scaffolding ✅
+- `lib/i18n/config.ts` — `locales` now includes `es`, `ja`, `ko`; added
+  `localeLabels` entries. `LanguageSwitcher` and the rest of the app are
+  driven off this array, so no other UI wiring was needed.
+- `messages/{es,ja,ko}/` — all 19 message modules scaffolded (copied from
+  `en` for key parity), matching the module list in `scripts/check-i18n.mjs`.
+- `app/global-error.tsx` — added `esErrors`/`jaErrors`/`koErrors` imports to
+  the bootstrap error-message map so the pre-next-intl error boundary can
+  render in the three new locales too (this was a TS compile error before
+  the fix — `Record<Locale, …>` was missing the new keys).
+
+### Translated now — critical namespaces (289 keys × 3 locales) ✅
+`common`, `roles`, `shell`, `nav`, `auth` (in `core.json`), all of
+`errors.json`, and all of `payments.json` — the namespaces
+`scripts/check-i18n.mjs` treats as a hard failure if left in English,
+because they render on nearly every screen or are the paths a user hits
+when something breaks. Also translated `core.json`'s `marketing`/`meta`
+for consistency with the other locales, even though those aren't
+critical. Added `es: ["Total", "Digital"]` to the checker's per-locale
+cognate allowlist (same word in Spanish, matching the existing fr/it
+allowlists) instead of weakening the rule.
+
+### Still open — same shape as the P3/P4 backlog for fr/it/ru
+- **Bulk translation**: ~3,300 keys per locale outside the critical
+  namespaces (`admin.*`, `parent.*`, `portal.*`, `site.*`, `programmes.*`,
+  etc.) are currently English placeholders in `es`/`ja`/`ko`, same state
+  fr/it/ru were in before their remediation pass. `check-i18n` reports
+  these as warnings, not errors, so the build isn't blocked, but the
+  product surface outside nav/auth/errors/payments will read in English
+  for these three locales until a dedicated translation pass runs.
+- Japanese/Korean don't inflect for plural, so the existing `_plural`-key
+  convention (see `admin.json`'s `invoiceCount`/`invoiceCount_plural`)
+  just needs the same string twice, mirroring how `zh` already handles it
+  — no new plural-category logic required.
+- P3 (428 hardcoded strings outside next-intl) and P4 (locale-aware
+  date/number formatting, NZD-only `Intl.NumberFormat` call sites) from
+  the August audit are unchanged and apply equally to the new locales.
+
+### Verification ✅
+- `node scripts/check-i18n.mjs` → passes, 3,739 keys × 8 locales, no drift,
+  no ICU errors.
+- `npx tsc --noEmit` → clean.
+- `npx eslint .` → zero warnings/errors.
+- `npm test` → 673 passing (67 files).
+- Did **not** run `next build` (needs Stripe/Supabase env vars not present
+  in this sandbox — same caveat as Session 26's Priority 7) or touch any
+  Supabase migration or Vercel deployment; none was needed for this
+  change and both are explicitly ops-gated per Priority 1 below.
+
+### Migrations to apply: none this session.
+
+---
+
 ## 🔄 NEXT SESSION — Start here
 
 > **Migration frontier:** local + remote are at **0056**. Per `STAGING_AUDIT.md`, staging

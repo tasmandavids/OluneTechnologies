@@ -1,0 +1,291 @@
+{
+  "marketing": {
+    "hero": {
+      "titleLine1": "Run your whole studio.",
+      "titleLine2": "Lose the chaos.",
+      "subtitle": "Enrolments, timetables, attendance and fees in one place — so the admin runs itself and your evenings come back.",
+      "seeInAction": "See it in action",
+      "quote": "No more paper registers, no more chasing term fees, no more timetable living in three different spreadsheets.",
+      "marquee": {
+        "invoicing": "Invoicing",
+        "enrolments": "Enrolments",
+        "timetables": "Timetables",
+        "payments": "Payments",
+        "families": "Families",
+        "attendance": "Attendance",
+        "classes": "Classes",
+        "reports": "Reports"
+      }
+    },
+    "studioHero": {
+      "headlineWhere": "Where",
+      "headlineMovement": "movement",
+      "headlineBecomes": "becomes",
+      "headlineArt": "art.",
+      "defaultTagline": "From a first plié to the stage — every class, every dancer, every family, all in one place.",
+      "bookTrial": "Book a free trial",
+      "exploreProgrammes": "Explore programmes",
+      "scroll": "Scroll",
+      "disciplines": {
+        "ballet": "Ballet",
+        "contemporary": "Contemporary",
+        "jazz": "Jazz",
+        "hipHop": "Hip-Hop",
+        "tap": "Tap",
+        "lyrical": "Lyrical",
+        "acro": "Acro",
+        "pointe": "Pointe"
+      }
+    },
+    "problem": {
+      "eyebrow": "The human bit",
+      "title": "You didn't start a studio to do admin.",
+      "body1": "You started it to teach. But somewhere between the term invoices, the paper registers, the parent emails and a website still showing last year's timetable, the admin quietly ate your week.",
+      "body2": "Olune pulls all of it into one place — and quietly does the heavy lifting in the background, so your evenings stop belonging to the paperwork.",
+      "sceneCaption": "9:14 pm — term invoices already sent. <i>Evenings, returned.</i>",
+      "oldWay": "The old way",
+      "newWay": "The Olune way",
+      "oldWayItems": [
+        "Spreadsheets",
+        "Paper registers",
+        "Accounting app",
+        "Website builder",
+        "Parent emails",
+        "Sticky notes",
+        "Wall calendars",
+        "Class lists"
+      ],
+      "newWayCaption": "Everything, one calm home."
+    },
+    "bento": {
+      "eyebrow": "Everything, in one place",
+      "title": "One home for all of it.",
+      "cells": {
+        "invoicing": {
+          "title": "Invoicing & fees",
+          "body": "Term fees out, payments in, chasing handled."
+        },
+        "cashFlow": {
+          "title": "Cash flow",
+          "body": "Money in and out, live."
+        },
+        "website": {
+          "title": "Your studio website",
+          "body": "Timetable, classes and prices on a site you edit yourself — live the moment you change it."
+        },
+        "paymentPlans": {
+          "title": "Payment plans",
+          "body": "Split a term. Collected automatically."
+        },
+        "classes": {
+          "title": "Classes & timetables",
+          "body": "Every class, room and roll in one clear view."
+        },
+        "checkin": {
+          "title": "Tap check-in",
+          "body": "One tap at the door. Attendance done."
+        },
+        "families": {
+          "title": "Families",
+          "body": "Every dancer, parent and sibling, together."
+        }
+      },
+      "stats": {
+        "logins": {
+          "n": "1",
+          "label": "login for your whole studio"
+        },
+        "tools": {
+          "n": "3–4",
+          "label": "tools replaced by one"
+        },
+        "price": {
+          "n": "$29",
+          "label": "where the stack runs $80–150"
+        }
+      }
+    },
+    "whyChoose": {
+      "eyebrow": "Why studios choose Olune",
+      "title": "Faster. Cheaper.",
+      "titleEmphasis": "Better made.",
+      "items": {
+        "faster": {
+          "title": "Faster than the patchwork",
+          "body": "Stop stitching together a class manager, an accounting app, a website builder and a dozen tabs. Olune does it in one."
+        },
+        "value": {
+          "title": "Better value than the stack",
+          "body": "Replace three or four subscriptions with one fair price. You get more, you pay less, and you always know what next month costs."
+        },
+        "craft": {
+          "title": "Made with real craft",
+          "body": "Built by people who understand studios — the term rhythm, the recital crunch, the family who always pays late. Every screen is fast, clean and thought-through."
+        }
+      }
+    },
+    "everyday": {
+      "eyebrow": "The everyday difference",
+      "title": "What changes when everything lives in one place",
+      "items": {
+        "mornings": {
+          "title": "Mornings start calm",
+          "body": "Open Olune and the day lays itself out — every class, every absence, every fee still owing."
+        },
+        "money": {
+          "title": "Money makes sense",
+          "body": "Send a term invoice, see who has paid, chase the rest in a tap."
+        },
+        "evenings": {
+          "title": "Evenings come back",
+          "body": "When the admin runs itself, your free time stops being a fantasy."
+        },
+        "families": {
+          "title": "Families stay in the loop",
+          "body": "Parents get arrival alerts and invoices without you writing a single email."
+        }
+      }
+    },
+    "promise": {
+      "eyebrow": "The promise",
+      "title": "More teaching.",
+      "titleEmphasis": "Less admin.",
+      "body": "Olune isn't here to add another tab to your day. It's here to quietly take the weight — the enrolments, the registers, the fees and the website — so you can get back to the room.",
+      "cta": "Start your free trial",
+      "footnote": "No card needed. Set up in minutes."
+    },
+    "pricingSection": {
+      "eyebrow": "Pricing",
+      "title": "Fair pricing.",
+      "titleEmphasis": "No surprises.",
+      "subtitle": "One plan replaces your class manager, your accounting app and your website builder. Pay for one thing, not four.",
+      "mostPopular": "Most popular",
+      "perMonth": "/mo",
+      "plans": {
+        "solo": {
+          "name": "Solo",
+          "tag": "for the one-person studio",
+          "price": "$29",
+          "desc": "Everything you need to teach, take the roll and get fees paid. For the studio that's one person."
+        },
+        "studio": {
+          "name": "Studio",
+          "tag": "most popular",
+          "price": "$59",
+          "desc": "Everything in Solo, plus staff, substitutes, enrolment forms and your studio website — what starts mattering once there's a team."
+        },
+        "scale": {
+          "name": "Scale",
+          "tag": "for busy studios",
+          "price": "$120",
+          "desc": "Every module Olune has, including private lessons, badges and progress, production and costumes."
+        }
+      },
+      "includes": "Every plan includes:",
+      "includesBody": "unlimited students, enrolments and timetabling, attendance, invoicing and payments, and free updates. No setup fees, ever.",
+      "honestMath": "The honest math",
+      "honestMathBody": "Most studio software charges by student count, so the bill grows every time you have a good term. Every Olune plan has unlimited students — the price only changes if you decide you want more of Olune.",
+      "trialNote": "14 days, no card needed."
+    },
+    "featuresSection": {
+      "eyebrow": "What Olune does",
+      "title": "Three jobs.",
+      "titleEmphasis": "One home.",
+      "money": {
+        "title": "Stay on top of the money",
+        "subtitle": "Term invoices, payment plans, and card or bank payments built right in. Watch what has come in and what is still owed, in real time."
+      },
+      "liveSites": {
+        "title": "Keep your website live",
+        "subtitle": "Your timetable, classes and prices on a site you edit yourself — published the moment you change it. No developer, no waiting."
+      },
+      "runClasses": {
+        "title": "Run the classes",
+        "subtitle": "Every class, enrolment, register and family in one clear view. Know who is in, who is away, and who still has not enrolled for next term."
+      }
+    },
+    "aboutSection": {
+      "eyebrow": "About us",
+      "title": "Built by studio people,",
+      "titleEmphasis": "for studio people.",
+      "body1": "We've run studios. We know the 11pm invoice scramble, the register that never made it back to the office, the website still showing last year's timetable.",
+      "body2": "So we built the thing we wished we had — one calm system that holds the classes, the families, the money and the website, and keeps them all in step.",
+      "body3": "Olune exists for one reason: to give studio people their time back. Less admin. More teaching. That's the whole idea.",
+      "meetTeam": "Meet the team",
+      "ourStory": "Our story",
+      "quote": "Less admin. More teaching.",
+      "sceneCaption": "Classes · Families · Money — <i>in orbit around your studio.</i>",
+      "principles": {
+        "studioRun": {
+          "t": "Studio-run",
+          "d": "Built by people who've actually run studios."
+        },
+        "calm": {
+          "t": "Calm by design",
+          "d": "Every screen made to open, not dread."
+        },
+        "allInOne": {
+          "t": "All in one",
+          "d": "Classes, families, money and your site, together."
+        }
+      }
+    },
+    "compareSection": {
+      "eyebrow": "Compare",
+      "title": "Why studios switch to Olune",
+      "subtitle": "Most studios run on a patchwork — a class manager here, an accounting app there, a separate website builder, and a spreadsheet holding it all together.",
+      "stackHeader": "The usual stack",
+      "rows": {
+        "invoicing": {
+          "label": "Invoicing & payments",
+          "stack": "A second app",
+          "olune": "Built in"
+        },
+        "websites": {
+          "label": "Your studio website",
+          "stack": "A third app",
+          "olune": "Built in, live"
+        },
+        "sync": {
+          "label": "Everything in sync",
+          "stack": "Manual, error-prone",
+          "olune": "Automatic"
+        },
+        "cost": {
+          "label": "Monthly cost",
+          "stack": "$80–150+ combined",
+          "olune": "From $19"
+        },
+        "tools": {
+          "label": "Tools to learn",
+          "stack": "3–4",
+          "olune": "1"
+        },
+        "purpose": {
+          "label": "Made for studios",
+          "stack": "Generic",
+          "olune": "Purpose-built"
+        },
+        "classes": {
+          "label": "Classes & enrolments",
+          "stack": "One app",
+          "olune": "Built in"
+        }
+      },
+      "highlights": {
+        "faster": {
+          "k": "Faster",
+          "v": "No switching between apps or re-entering the same class list three times."
+        },
+        "cheaper": {
+          "k": "Cheaper",
+          "v": "One fair price instead of four subscriptions."
+        },
+        "better": {
+          "k": "Better made",
+          "v": "Every screen built for how studios actually work, not bolted on after."
+        }
+      }
+    }
+  }
+}

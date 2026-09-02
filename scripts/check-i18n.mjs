@@ -67,6 +67,9 @@ const IDENTICAL_OK = {
   ],
   ru: [],
   zh: ["SKU", "SEO"],
+  es: ["Total", "Digital"],
+  ja: [],
+  ko: [],
 };
 
 function flatten(obj, prefix = "", out = {}) {
