@@ -37,7 +37,9 @@ import { NEXT_UP, RELEASES } from "./landing/releases-data";
 const ACCENT = "#8b7cf0";
 const NAVY = "#1a1535";
 const PURPLE_GRAD = `radial-gradient(circle at 62% 40%, #d6ccff 0%, ${ACCENT} 52%, #5b4bc4 100%)`;
-const DISPLAY = "var(--font-landing-display), 'Bodoni Moda', serif";
+// "Olune Dollar" supplies U+0024 only (see app/globals.css) — a single-bar
+// dollar so NZ prices don't render with the two-bar glyph Bodoni draws.
+const DISPLAY = "'Olune Dollar', var(--font-landing-display), 'Bodoni Moda', serif";
 const BODY = "var(--font-landing-body), 'Archivo', sans-serif";
 
 type MotionIntensity = "cinematic" | "subtle" | "off";
