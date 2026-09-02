@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getAdminEmailContext } from "@/lib/email/admin-context";
 import { sendEmailReply, syncEmailAccount } from "@/lib/email/sync";
 import type { EmailAccountRow } from "@/lib/email/types";
+import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -17,6 +18,12 @@ export async function POST(req: NextRequest) {
   const ctx = await getAdminEmailContext();
   if (ctx.error !== null) {
     return NextResponse.json({ error: ctx.error }, { status: 401 });
+  }
+
+  // Outbound mail goes out over the studio's own sending domain, so runaway
+  // volume costs deliverability reputation and not merely compute.
+  if (!(await checkRateLimit(rateLimitKey("email-compose", ctx.userId), { limit: 20, windowMs: 60_000 }))) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
   const parsed = BodySchema.safeParse(await req.json());

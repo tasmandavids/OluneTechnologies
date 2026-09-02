@@ -1,4 +1,12 @@
+import { timingSafeEqual } from "node:crypto";
 import type { NextRequest } from "next/server";
+
+/** Constant-time string comparison, safe for equal-length secret checks. */
+function safeEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
+}
 
 /**
  * Authorize Vercel Cron / manual cron invocations.
@@ -16,10 +24,11 @@ export function authorizedCron(req: NextRequest): boolean {
   }
 
   const header = req.headers.get("authorization");
-  if (header === `Bearer ${secret}`) return true;
+  if (header && safeEqual(header, `Bearer ${secret}`)) return true;
 
   // Query-string secrets are local-dev only (avoid leaking via logs/referrers).
-  if (isLocalDev && req.nextUrl.searchParams.get("secret") === secret) {
+  const queryParam = req.nextUrl.searchParams.get("secret");
+  if (isLocalDev && queryParam && safeEqual(queryParam, secret)) {
     return true;
   }
   return false;

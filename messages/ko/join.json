@@ -1,0 +1,20 @@
+{
+  "join": {
+    "title": "스튜디오 가입하기",
+    "subtitle": "계정을 만들어 수업을 등록하고 관리하세요.",
+    "pathParentTitle": "자녀를 등록합니다",
+    "pathParentDescription": "부모/보호자 계정 — 무용수를 추가하고, 수업을 등록하고, 수강료를 결제할 수 있습니다.",
+    "pathAdultTitle": "본인을 등록합니다 (만 18세 이상)",
+    "pathAdultDescription": "성인 수강생 계정 — 직접 등록하고, 동의서에 서명하고, 결제할 수 있습니다.",
+    "changePath": "← 다른 옵션 선택하기",
+    "yourBirthday": "생년월일",
+    "optionalChild": "지금 자녀 정보 추가하기 (선택 사항)",
+    "childNamePlaceholder": "자녀의 성명",
+    "fullNamePlaceholder": "성명",
+    "createAccount": "계정 만들고 계속하기",
+    "creatingAccount": "계정을 만드는 중…",
+    "alreadyHaveAccount": "이미 계정이 있으신가요?",
+    "completeRegistration": "등록 완료하기",
+    "joining": "가입 중…"
+  }
+}

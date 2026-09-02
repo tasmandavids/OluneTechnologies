@@ -35,6 +35,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { authorizedCron } from "@/lib/cron/auth";
+import { reportHandledError } from "@/lib/observability/report";
 
 export const dynamic = "force-dynamic";
 
@@ -77,6 +78,10 @@ export async function GET(req: NextRequest) {
   try {
     supabase = createAdminClient();
   } catch (e) {
+    await reportHandledError(e, {
+      route: "cron.notifications",
+      tags: { reason: "admin-client" },
+    });
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Admin client unavailable" },
       { status: 500 },

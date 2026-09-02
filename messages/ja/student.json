@@ -1,0 +1,58 @@
+{
+  "student": {
+    "timetable": {
+      "title": "マイタイムテーブル",
+      "greetingWithName": "{greeting}、{name}さん。",
+      "greetingOnly": "{greeting}。",
+      "today": "本日 · {day}",
+      "noClassesToday": "本日のクラスはありません — ゆっくりお休みください。",
+      "until": "{time} まで",
+      "weeklySchedule": "週間スケジュール",
+      "myClasses": "受講クラス · {count}件登録済み",
+      "noEnrolments": "有効な受講登録が見つかりません。",
+      "noEnrolmentsHint": "スタジオの管理者がクラスを割り当てます。",
+      "withTeacher": "担当：{name}",
+      "viewProgress": "進捗と修了証を見る →"
+    },
+    "progress": {
+      "back": "← タイムテーブルに戻る",
+      "unnamedStudent": "生徒",
+      "emptyProgress": "まだ進捗が記録されていません。新たな節目に到達すると、講師が更新します。"
+    },
+    "classPass": {
+      "title": "1回券（クラスパス）",
+      "subtitle": "大人向けバレエクラス1回分にご利用いただけます",
+      "allSet": "🎉 準備が整いました！",
+      "qrAlt": "クラスパスQRコード",
+      "qrHint": "スタジオでこのQRコードを提示してご利用ください。",
+      "done": "完了",
+      "payAmount": "{amount} を支払う",
+      "back": "戻る",
+      "description": "大人向けバレエクラス1回分にご利用いただける1回券です。スタジオでQRコードを提示すると、スタッフがチェックインします。",
+      "total": "合計",
+      "processing": "処理中…",
+      "buyPass": "パスを購入 →",
+      "cardAtCheckout": "カード決済はお支払い画面でお手続きいただきます。",
+      "purchaseFailed": "購入に失敗しました",
+      "paymentStartFailed": "お支払いを開始できませんでした。もう一度お試しください。",
+      "networkError": "ネットワークエラーが発生しました。もう一度お試しください。",
+      "viewQr": "QRコードを見る",
+      "buyAnother": "もう1枚購入する",
+      "yourPass": "あなたのパス",
+      "purchasedOn": "購入日 {date}",
+      "myPasses": "マイパス",
+      "myPassesSubtitle": "パスをタップすると、スタジオで提示するQRコードが表示されます。",
+      "passesHeldCount": "{count, plural, one {保有パス #枚} other {保有パス #枚}}",
+      "viewPasses": "表示 →",
+      "noPassesYet": "まだパスがありません"
+    },
+    "completeProfile": {
+      "heading": "アカウント設定を完了してください",
+      "subheading": "ダッシュボードにアクセスするには、氏名と生年月日のご登録が必要です。",
+      "fullNameLabel": "氏名",
+      "birthdayLabel": "生年月日",
+      "saving": "保存中…",
+      "continue": "続ける"
+    }
+  }
+}

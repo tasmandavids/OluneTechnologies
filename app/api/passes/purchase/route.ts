@@ -18,6 +18,7 @@ import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import { loadProductByCode } from "@/lib/billing/catalog";
 import { CLASS_PASS_PRODUCT_CODE } from "@/lib/passes/constants";
+import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -25,6 +26,10 @@ export async function POST(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!(await checkRateLimit(rateLimitKey("pass-purchase", user.id), { limit: 20, windowMs: 60_000 }))) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
 
   const { data: profile } = await supabase
     .from("profiles")

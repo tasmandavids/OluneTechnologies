@@ -1,0 +1,44 @@
+{
+  "teacher": {
+    "schedule": {
+      "title": "スケジュールと出欠",
+      "greetingWithName": "{greeting}、{name}さん。",
+      "greetingOnly": "{greeting}。",
+      "todayRoll": "本日の出欠 · {day}",
+      "noClassesToday": "本日のクラスはありません。",
+      "marked": "記録済み",
+      "noStudents": "登録済みの生徒がいません。",
+      "unknownStudent": "不明な生徒",
+      "attendance": {
+        "present": "出席",
+        "late": "遅刻",
+        "absent": "欠席",
+        "excused": "公認欠席"
+      },
+      "thisWeek": "今週 · {count, plural, one {合計 #件のクラス} other {合計 #件のクラス}}",
+      "studentCount": "{count, plural, one {生徒 #名} other {生徒 #名}}",
+      "noClassesAssigned": "まだ担当クラスが割り当てられていません。",
+      "noClassesAssignedHint": "スタジオの管理者にクラスの割り当てを依頼してください。",
+      "noClassesAssignedInstructorHint": "スタジオからの招待を依頼し、以下から招待を承認してください。",
+      "viewAffiliations": "所属スタジオを表示"
+    },
+    "affiliations": {
+      "title": "所属スタジオ",
+      "subtitle": "指導しているスタジオと個人用ワークスペース。",
+      "homeWorkspace": "あなたのワークスペース",
+      "linkedStudios": "連携済みスタジオ",
+      "noneYet": "まだ所属スタジオがありません。スタジオ管理者からの招待を承認してご利用を開始してください。",
+      "roleAtStudio": "{role}アクセス",
+      "acceptInvite": "招待を承認",
+      "acceptInviteHint": "スタジオ管理者からのメールまたは招待リンクに記載されたトークンを貼り付けてください。",
+      "tokenPlaceholder": "招待トークン",
+      "acceptButton": "スタジオを連携",
+      "accepting": "連携中…",
+      "acceptSuccess": "スタジオの連携が完了しました。"
+    },
+    "studentProgress": {
+      "back": "← スケジュールに戻る",
+      "progressLog": "進捗記録"
+    }
+  }
+}

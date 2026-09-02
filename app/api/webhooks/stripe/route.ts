@@ -22,6 +22,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { getServiceSupabase } from "@/lib/webhooks/service-supabase";
 import { processStripeEvent } from "@/lib/webhooks/process-stripe-event";
+import { reportHandledError, reportHandledMessage } from "@/lib/observability/report";
 import type Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
@@ -34,6 +35,10 @@ export async function POST(req: NextRequest) {
 
   if (!process.env.STRIPE_WEBHOOK_SECRET) {
     console.error("STRIPE_WEBHOOK_SECRET not set");
+    await reportHandledMessage("Stripe webhook secret not configured", {
+      route: "webhook.stripe",
+      tags: { reason: "misconfigured" },
+    });
     return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
   }
 
@@ -41,6 +46,10 @@ export async function POST(req: NextRequest) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
+    // Deliberately not reported to Sentry. Anyone on the internet can POST here
+    // with a bad signature, so this is unbounded, attacker-controlled volume —
+    // it would bury the failures that matter. A rotated secret shows up instead
+    // as Stripe's own delivery failures in the dashboard.
     console.error("[stripe-webhook] signature verification failed:", err);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
@@ -50,6 +59,11 @@ export async function POST(req: NextRequest) {
     supabase = await getServiceSupabase();
   } catch (err) {
     console.error("[stripe-webhook] service client unavailable:", err);
+    await reportHandledError(err, {
+      route: "webhook.stripe",
+      tags: { reason: "service-client" },
+      extra: { eventType: event.type },
+    });
     return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
   }
 
@@ -69,7 +83,14 @@ export async function POST(req: NextRequest) {
       console.log(`[stripe-webhook] duplicate event ${event.id} ignored`);
       return NextResponse.json({ received: true, duplicate: true });
     }
+    // Not fatal, but it means replay protection is off: a Stripe retry will be
+    // processed twice. Worth knowing about the moment it starts happening.
     console.warn(`[stripe-webhook] ledger insert failed (continuing):`, ledgerError.message);
+    await reportHandledMessage("Stripe idempotency ledger insert failed", {
+      route: "webhook.stripe",
+      tags: { reason: "ledger" },
+      extra: { eventType: event.type, code: ledgerError.code, message: ledgerError.message },
+    });
   }
 
   try {
@@ -77,6 +98,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (err) {
     console.error("[stripe-webhook] handler error:", err);
+    await reportHandledError(err, {
+      route: "webhook.stripe",
+      tags: { reason: "handler", eventType: event.type },
+      extra: { eventId: event.id, account: event.account ?? null },
+    });
     return NextResponse.json({ error: "Handler failed" }, { status: 500 });
   }
 }

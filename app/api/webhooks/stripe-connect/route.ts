@@ -31,6 +31,7 @@
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
+import { reportHandledError, reportHandledMessage } from "@/lib/observability/report";
 import { stripe } from "@/lib/stripe";
 import { getServiceSupabase } from "@/lib/webhooks/service-supabase";
 import { processStripeEvent } from "@/lib/webhooks/process-stripe-event";
@@ -46,6 +47,10 @@ export async function POST(req: NextRequest) {
 
   if (!process.env.STRIPE_CONNECT_WEBHOOK_SECRET) {
     console.error("STRIPE_CONNECT_WEBHOOK_SECRET not set");
+    await reportHandledMessage("Stripe Connect webhook secret not configured", {
+      route: "webhook.stripe-connect",
+      tags: { reason: "misconfigured" },
+    });
     return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
   }
 
@@ -53,6 +58,8 @@ export async function POST(req: NextRequest) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_CONNECT_WEBHOOK_SECRET);
   } catch (err) {
+    // Unreported for the same reason as the platform webhook: publicly
+    // POST-able, so unbounded attacker-controlled volume.
     console.error("[stripe-connect-webhook] signature verification failed:", err);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
@@ -62,6 +69,10 @@ export async function POST(req: NextRequest) {
     supabase = await getServiceSupabase();
   } catch (err) {
     console.error("[stripe-connect-webhook] service client unavailable:", err);
+    await reportHandledError(err, {
+      route: "webhook.stripe-connect",
+      tags: { reason: "service-client" },
+    });
     return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
   }
 
@@ -84,6 +95,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (err) {
     console.error("[stripe-connect-webhook] handler error:", err);
+    await reportHandledError(err, {
+      route: "webhook.stripe-connect",
+      tags: { reason: "handler" },
+    });
     return NextResponse.json({ error: "Handler failed" }, { status: 500 });
   }
 }

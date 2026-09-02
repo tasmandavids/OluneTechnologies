@@ -1,0 +1,827 @@
+{
+  "site": {
+    "brand": {
+      "poweredBy": "Powered by",
+      "logoLabel": "Olune",
+      "poweredByOlune": "Powered by Olune"
+    },
+    "payments": {
+      "paymentNotCompleted": "お支払いを完了できませんでした。",
+      "paymentIncomplete": "お支払いが完了しませんでした。別のお支払い方法をお試しください。",
+      "processing": "処理中…",
+      "payNow": "今すぐ支払う"
+    },
+    "manager": {
+      "title": "ウェブサイト",
+      "subtitle": "スタジオの公開ページを作成・公開できます。",
+      "domainSetup": "ドメイン設定",
+      "cancel": "キャンセル",
+      "newPage": "+ 新規ページ",
+      "pageTitle": "ページタイトル",
+      "pageTitlePlaceholder": "例：私たちについて",
+      "createPage": "ページを作成",
+      "createAsHomepage": "ホームページとして作成",
+      "somethingWrong": "問題が発生しました。",
+      "chooseHomepageStyle": "ホームページのスタイルを選択",
+      "homepageBrowse": "{count}種類の既製レイアウトから選択できます — すべてのブロックは自由に編集でき、準備ができたら公開できます。",
+      "addPageFromTemplate": "テンプレートからページを追加",
+      "addPageFromTemplateHint": "適切な文言とレイアウトがあらかじめ設定された定番ページから始められます。",
+      "noPagesYet": "まだページがありません。上のテンプレートを選ぶか、「+ 新規ページ」からゼロで作成してください。",
+      "home": "ホーム",
+      "edit": "編集",
+      "unpublish": "公開を停止",
+      "publish": "公開",
+      "setAsHome": "ホームに設定",
+      "confirm": "確認",
+      "delete": "削除",
+      "statusDraft": "下書き",
+      "statusPublished": "公開済み",
+      "defaultHomeTitle": "ホーム",
+      "defaultPageTitle": "新規ページ"
+    },
+    "setup": {
+      "websiteReady": "ウェブサイトの準備が整いました",
+      "openingEditor": "ビジュアルエディターを開いています…",
+      "title": "ウェブサイトを設定",
+      "subtitle": "20種類の初期レイアウトと30種類の文字スタイルから選べます。ブランディングを追加してプレビューし、生成してください — ビジュアルエディターでいつでも編集できます。",
+      "setupTab": "設定",
+      "previewTab": "プレビュー",
+      "homepagePreview": "ホームページプレビュー",
+      "pagesWillBeCreated": "{count, plural, one {#ページ} other {#ページ}}が作成されます · ホームページは生成時に公開されます",
+      "backToSetup": "設定に戻る",
+      "generating": "生成中…",
+      "generateWebsite": "ウェブサイトを生成",
+      "homepageTemplate": "ホームページテンプレート",
+      "homepageTemplateHint": "{count}種類のレイアウトをご覧いただけます — それぞれが自由に編集できる出発点です。",
+      "typography": "タイポグラフィ",
+      "typographyHint": "厳選された30通りの組み合わせ — タップすると表示イメージを確認できます。",
+      "starterPages": "初期ページ",
+      "starterPagesHint": "今すぐ必要ないページはチェックを外してください。",
+      "sitePlan": "サイトプラン",
+      "sitePlanTemplate": "{template} テンプレートで {studio} のサイトを作成します。",
+      "homepage": "ホームページ",
+      "liveMiniPreview": "ミニプレビュー（ライブ）",
+      "openFullPreview": "フルプレビューを開く",
+      "connectDomain": "独自ドメインを接続 →",
+      "templateFallback": "クラシック",
+      "portalLabel": "ポータル"
+    },
+    "setupPages": {
+      "page-about": "私たちについて",
+      "page-classes": "クラス",
+      "page-contact": "お問い合わせ",
+      "page-schedule": "スケジュール",
+      "page-people": "スタッフ紹介",
+      "page-news": "ニュース・イベント",
+      "page-shop": "ショップ"
+    },
+    "branding": {
+      "title": "ブランディング",
+      "subtitle": "ロゴとカラーを設定すると、以下のプレビューに即座に反映されます。",
+      "taglineFallback": "あなたのキャッチコピー",
+      "logoUrl": "ロゴURL",
+      "logoUrlPlaceholder": "https://…/logo.png",
+      "tagline": "キャッチコピー",
+      "taglinePlaceholder": "例：Auckland · 全年齢歓迎",
+      "brandColor": "ブランドカラー",
+      "brandColorAria": "ブランドカラー",
+      "siteTheme": "サイトテーマ",
+      "dark": "ダーク",
+      "light": "ライト",
+      "colorPresets": {
+        "iris": "アイリス",
+        "crimson": "クリムゾン",
+        "voltage": "ボルテージ",
+        "aurum": "オーラム",
+        "bloom": "ブルーム",
+        "jade": "ジェイド",
+        "forest": "フォレスト",
+        "slate": "スレート"
+      }
+    },
+    "templateGallery": {
+      "noTemplatesInCategory": "このカテゴリにテンプレートはありません。",
+      "selected": "選択中",
+      "blockLabels": {
+        "hero": "ヒーロー",
+        "features": "特徴",
+        "classGrid": "クラス",
+        "testimonials": "口コミ",
+        "cta": "CTA",
+        "contact": "お問い合わせ",
+        "gallery": "ギャラリー",
+        "statsRow": "統計",
+        "classStreams": "ストリーム",
+        "newsFeed": "ニュース",
+        "richText": "ストーリー",
+        "peopleGrid": "チーム",
+        "schedule": "スケジュール",
+        "faq": "よくある質問",
+        "pageHeader": "ヘッダー",
+        "videoBlock": "動画",
+        "classTabs": "クラスタブ",
+        "imageBlock": "画像",
+        "heading": "見出し",
+        "paragraph": "テキスト",
+        "linkBlock": "ボタン",
+        "divider": "区切り線",
+        "spacer": "スペーサー",
+        "shopGrid": "ショップ",
+        "locations": "拠点"
+      }
+    },
+    "templateCategories": {
+      "all": "すべてのテンプレート",
+      "minimal": "ミニマル",
+      "bold": "ボールド",
+      "visual": "ビジュアル重視",
+      "community": "コミュニティ",
+      "professional": "プロフェッショナル",
+      "elegant": "エレガント",
+      "modern": "モダン",
+      "editorial": "エディトリアル",
+      "dramatic": "ドラマチック",
+      "playful": "ポップ",
+      "luxe": "ラグジュアリー",
+      "retro": "レトロ",
+      "complete": "コンプリート"
+    },
+    "typography": {
+      "sampleText": "いろはにほへと ちりぬるを",
+      "categories": {
+        "all": "すべてのスタイル",
+        "elegant": "エレガント",
+        "modern": "モダン",
+        "classic": "クラシック",
+        "bold": "ボールド",
+        "friendly": "フレンドリー",
+        "minimal": "ミニマル",
+        "creative": "クリエイティブ",
+        "editorial": "エディトリアル"
+      },
+      "pairs": {
+        "fraunces-hanken": {
+          "label": "アイリス＆インク",
+          "description": "温かみのあるセリフ見出しとすっきりしたサンセリフ本文。"
+        },
+        "cormorant-inter": {
+          "label": "エディトリアル・クラシック",
+          "description": "ハイファッション誌のような組み合わせ。"
+        },
+        "playfair-source": {
+          "label": "ギャラリー・ホワイト",
+          "description": "画像中心のサイトに映える洗練されたコントラスト。"
+        },
+        "libre-lato": {
+          "label": "ヘリテージ",
+          "description": "信頼感があり読みやすい書体。"
+        },
+        "merriweather-opensans": {
+          "label": "スカラー",
+          "description": "アカデミックな明瞭さと温かみを両立。"
+        },
+        "lora-nunito": {
+          "label": "ソフトセリフ",
+          "description": "親しみやすく柔らかな印象。"
+        },
+        "dm-serif-dm-sans": {
+          "label": "DMデュオ",
+          "description": "同一ファミリーによる幾何学的な調和。"
+        },
+        "cinzel-raleway": {
+          "label": "グランドステージ",
+          "description": "舞台芸術にふさわしいドラマチックな見出し。"
+        },
+        "bodoni-work": {
+          "label": "アトリエ",
+          "description": "高級ファッションブランドのような雰囲気。"
+        },
+        "oswald-roboto": {
+          "label": "インパクト",
+          "description": "力強い見出しとニュートラルな本文。"
+        },
+        "bebas-montserrat": {
+          "label": "ポスター・ボールド",
+          "description": "大文字の力強さとすっきりした本文。"
+        },
+        "space-inter": {
+          "label": "テックスタジオ",
+          "description": "現代的なスタートアップの雰囲気。"
+        },
+        "archivo": {
+          "label": "モノモダン",
+          "description": "単一ファミリーによる幾何学的な明快さ。"
+        },
+        "poppins": {
+          "label": "ラウンド・ポップ",
+          "description": "親しみやすく万人に読みやすい書体。"
+        },
+        "nunito": {
+          "label": "バブルウォーム",
+          "description": "ファミリー向けブランドに合う柔らかな曲線。"
+        },
+        "lexend": {
+          "label": "リーダブルファースト",
+          "description": "ストレスなく読める最適化書体。"
+        },
+        "rubik": {
+          "label": "ラウンドエッジ",
+          "description": "うるさすぎない遊び心のある幾何学書体。"
+        },
+        "manrope": {
+          "label": "ニュートラルプロ",
+          "description": "バランスの取れたプロフェッショナルな印象。"
+        },
+        "jakarta": {
+          "label": "スタートアップ・クリーン",
+          "description": "新鮮なSaaSランディングページの雰囲気。"
+        },
+        "eb-karla": {
+          "label": "ブックショップ",
+          "description": "文学的な温かみとモダンな本文。"
+        },
+        "crimson-franklin": {
+          "label": "ブロードシート",
+          "description": "新聞のような伝統をウェブに。"
+        },
+        "josefin-lato": {
+          "label": "アールデコ",
+          "description": "ヴィンテージの華やかさと明瞭さ。"
+        },
+        "albert": {
+          "label": "スイス・ライト",
+          "description": "極めてクリーンな単一ファミリー。"
+        },
+        "quicksand": {
+          "label": "プレイグラウンド",
+          "description": "子ども向けに軽やかで親しみやすい印象。"
+        },
+        "figtree": {
+          "label": "フィグ＆フロー",
+          "description": "現代的なヒューマニストサンセリフ。"
+        },
+        "urbanist": {
+          "label": "アーバングリッド",
+          "description": "都会的スタジオのモダニズム。"
+        },
+        "instrument": {
+          "label": "インストゥルメント",
+          "description": "個性的なエディトリアル書体。"
+        },
+        "bricolage": {
+          "label": "ブリコラージュ",
+          "description": "表現力豊かな可変サンセリフ。"
+        },
+        "syne-inter": {
+          "label": "シーンパルス",
+          "description": "実験的な見出しと落ち着いた本文。"
+        },
+        "sora-outfit": {
+          "label": "ソラ＆アウトフィット",
+          "description": "クリーンで親しみやすい印象。"
+        }
+      }
+    },
+    "templates": {
+      "home-classic": {
+        "label": "クラシック",
+        "description": "ヒーロー、特徴グリッド、クラス紹介、口コミ、CTA、お問い合わせ。"
+      },
+      "home-showcase": {
+        "label": "ショーケース",
+        "description": "画像中心のレイアウト：大胆なヒーロー、クラス紹介、ギャラリー、口コミ。"
+      },
+      "home-minimal": {
+        "label": "ミニマル",
+        "description": "シンプルで的を絞ったホームページ：ヒーロー、紹介、クラス、CTA。"
+      },
+      "home-bold": {
+        "label": "ボールド",
+        "description": "全幅ヒーロー、統計バー、クラスストリーム、ニュースプレビュー、入会CTA。"
+      },
+      "page-schedule": {
+        "label": "スケジュール",
+        "description": "曜日・スタジオでフィルターできる週間タイムテーブル。"
+      },
+      "page-people": {
+        "label": "スタッフ",
+        "description": "スタッフプロフィールからなる講師一覧。"
+      },
+      "page-studios": {
+        "label": "スタジオ",
+        "description": "複数拠点のスタジオカードとお問い合わせ。"
+      },
+      "page-news": {
+        "label": "ニュース・イベント",
+        "description": "絞り込み可能なニュース・イベント一覧。"
+      },
+      "page-shop": {
+        "label": "ショップ",
+        "description": "カテゴリで絞り込める商品カタログとチェックアウト。"
+      },
+      "page-about": {
+        "label": "私たちについて",
+        "description": "あなたのストーリーを伝える：紹介ヒーロー、ナラティブ、価値観、締めのCTA。"
+      },
+      "page-classes": {
+        "label": "クラス",
+        "description": "よくある質問と申込CTAを備えたクラス一覧専用ページ。"
+      },
+      "page-contact": {
+        "label": "お問い合わせ",
+        "description": "連絡先と営業時間、簡単なよくある質問。"
+      },
+      "home-academy": {
+        "label": "アカデミー",
+        "description": "機関らしいレイアウト：大胆なヒーロー、実績バー、プログラム、教員紹介。"
+      },
+      "home-spotlight": {
+        "label": "スポットライト",
+        "description": "パフォーマー中心：ドラマチックなヒーロー、講師スポットライト、写真ギャラリー。"
+      },
+      "home-magazine": {
+        "label": "マガジン",
+        "description": "ニュース中心のエディトリアル構成 — クラスの見どころを紹介するスタジオジャーナル風。"
+      },
+      "home-gallery": {
+        "label": "ギャラリー",
+        "description": "フォトポートフォリオ中心 — 最小限のテキストで最大限のビジュアルインパクト。"
+      },
+      "home-community": {
+        "label": "コミュニティ",
+        "description": "口コミ重視 — レビュー、価値観、親しみやすいクラス一覧。"
+      },
+      "home-momentum": {
+        "label": "モメンタム",
+        "description": "エネルギッシュなフィットネスの雰囲気 — 統計、クラス、入会重視のCTA。"
+      },
+      "home-elegant": {
+        "label": "エレガント",
+        "description": "洗練されたラグジュアリー感 — 左寄せヒーロー、ストーリー、教員紹介。"
+      },
+      "home-modern": {
+        "label": "モダンエッジ",
+        "description": "クリーンなテックスタートアップ風 — ストリーム、統計、シャープなCTA。"
+      },
+      "home-festival": {
+        "label": "フェスティバル",
+        "description": "イベント中心 — ニュース、スケジュールプレビュー、入会CTA。"
+      },
+      "home-streams": {
+        "label": "プログラム",
+        "description": "よくある質問付きクラスストリーム紹介 — 複数分野のスタジオに最適。"
+      },
+      "home-family": {
+        "label": "ファミリーウェルカム",
+        "description": "温かく親しみやすい — 価値観、クラス、新規保護者向けのよくある質問。"
+      },
+      "home-professional": {
+        "label": "プロフェッショナル",
+        "description": "企業らしいクリーンなレイアウト — ストーリー、価値観、チーム、お問い合わせ。"
+      },
+      "home-creative": {
+        "label": "クリエイティブ・ボールド",
+        "description": "広告代理店風のインパクト — 非対称ヒーロー、ギャラリー、統計。"
+      },
+      "home-story": {
+        "label": "ストーリーテラー",
+        "description": "物語調の展開 — 積み重ねたリッチテキストであなたのブランドストーリーを構築。"
+      },
+      "home-enrol": {
+        "label": "入会フォーカス",
+        "description": "コンバージョン最適化 — クラス、口コミ、複数の入会案内。"
+      },
+      "home-complete": {
+        "label": "コンプリート",
+        "description": "1ページにすべてを凝縮 — スタジオ体験をひとつのスクロールで。"
+      },
+      "home-cinematic": {
+        "label": "シネマティック",
+        "description": "ダークで全幅のヒーロー、スタジオギャラリー、統計、称賛の声、締めのCTA。"
+      },
+      "home-noir": {
+        "label": "ノワール",
+        "description": "黒と金のドラマ：大胆なヒーロー、カンパニー紹介、舞台裏ギャラリー、口コミ。"
+      },
+      "home-eclipse": {
+        "label": "エクリプス",
+        "description": "電光石火のダークヒーロー、統計、インタラクティブなクラスタブ、口コミ。"
+      },
+      "home-playful": {
+        "label": "プレイフル",
+        "description": "明るく親しみやすい：3つの特徴、年齢別クラス、ギャラリー、よくある質問、お問い合わせ。"
+      },
+      "home-carnival": {
+        "label": "カーニバル",
+        "description": "エネルギッシュなヒーロー、統計、クラスストリーム、口コミ、本番写真ギャラリー。"
+      },
+      "home-sunny": {
+        "label": "サニー",
+        "description": "温かく明るいヒーローに、特徴、クラス、今後のイベント、CTA。"
+      },
+      "home-atelier": {
+        "label": "アトリエ",
+        "description": "洗練されたブティック風レイアウト：ストーリー、指導者紹介、ギャラリー、口コミ。"
+      },
+      "home-couture": {
+        "label": "クチュール",
+        "description": "ファッション誌風ヘッダー、コレクションギャラリー、ストーリー、注目プログラム。"
+      },
+      "home-retro": {
+        "label": "レトロ",
+        "description": "ヴィンテージポスター風：大胆なヒーロー、統計、ラインナップ、口コミ、お問い合わせ。"
+      },
+      "home-marquee": {
+        "label": "マーキー",
+        "description": "劇場の看板風ダークヒーロー、注目イベント、公演スケジュール、ギャラリー。"
+      },
+      "home-journal": {
+        "label": "ジャーナル",
+        "description": "長文エディトリアル：ヒーロー、2本のエッセイ、区切り線、ニュース一覧。"
+      },
+      "home-broadsheet": {
+        "label": "ブロードシート",
+        "description": "新聞のような雰囲気：印刷紙面風ヘッダー、見出し、クラス、口コミ。"
+      },
+      "home-lookbook": {
+        "label": "ルックブック",
+        "description": "ゆとりあるギャラリーが主役の画像中心レイアウト、統計、口コミ。"
+      },
+      "home-reel": {
+        "label": "リール",
+        "description": "動きを前面に：シネマティックなヒーロー、動画リール、ギャラリー、CTA。"
+      },
+      "home-grid": {
+        "label": "グリッド",
+        "description": "インタラクティブなクラスタブ、統計、特徴を備えた体系的なモダンレイアウト。"
+      },
+      "home-pulse": {
+        "label": "パルス",
+        "description": "活気あるフィットネス系ヒーロー、統計、クラス、口コミ、よくある質問、CTA。"
+      },
+      "home-impact": {
+        "label": "インパクト",
+        "description": "最大限のインパクトを持つダークヒーロー、統計、クラスストリーム、ギャラリー、大胆なCTA。"
+      },
+      "home-whitespace": {
+        "label": "ホワイトスペース",
+        "description": "極めてミニマル：ひとつの大きなメッセージ、シンプルなコンセプト、クラス、CTA。"
+      }
+    },
+    "editor": {
+      "backToPages": "← ページ一覧",
+      "untitled": "無題",
+      "unsavedChanges": "未保存の変更があります",
+      "saved": "保存しました",
+      "published": "公開済み",
+      "undoTitle": "元に戻す（⌘Z）",
+      "redoTitle": "やり直す（⌘⇧Z）",
+      "add": "+ 追加",
+      "background": "背景",
+      "settings": "設定",
+      "preview": "プレビュー",
+      "openLiveSite": "公開サイトを開く",
+      "previewMode": "ライブプレビュー",
+      "exitPreview": "プレビューを終了",
+      "previewModeBanner": "ライブプレビュー — 訪問者に表示される状態でブロックが表示されます。「プレビューを終了」をクリックすると編集に戻れます。",
+      "saving": "保存中…",
+      "saveDraft": "下書きを保存",
+      "publish": "公開",
+      "confirmLeave": "未保存の変更があります。このページを離れますか？",
+      "previewLiveTitle": "{url} で公開ページを開く",
+      "previewDraftTitle": "下書きをプレビュー（管理画面内で開きます — 一般公開するには公開してください）",
+      "elementsSelected": "{count}個の要素を選択中",
+      "multiSelectHint": "矢印キーで選択中のすべての要素を移動できます。Deleteで削除。Shiftを押さずにクリックすると個別に編集できます。",
+      "deleteSelected": "選択項目を削除",
+      "clickToEdit": "ページ上の要素をクリックすると編集できます。",
+      "rightClickHint": "またはキャンバスを右クリックすると、見出し、テキストボックス、画像、ボタンを追加できます。",
+      "addElement": "要素を追加",
+      "addElementHint": "クリックすると末尾に追加されます。特定の位置に追加するにはキャンバスを右クリックしてください。すべての要素は12列グリッドにスナップします。",
+      "groupBasic": "基本 — テキスト、画像、ボタン",
+      "groupSections": "セクション",
+      "groupStudioContent": "スタジオコンテンツ",
+      "quickActions": "クイックアクション",
+      "alignLeft": "⬅ 整列",
+      "alignCenter": "↔ 中央揃え",
+      "alignRight": "➡ 整列",
+      "rotateMinus": "↺ −15°",
+      "rotatePlus": "↻ +15°",
+      "layerUp": "▲ レイヤー",
+      "layerDown": "▼ レイヤー",
+      "keyboardHint": "矢印キーで微調整 · ⌘Dで複製 · ⌘Zで元に戻す · Shift+クリックで複数選択",
+      "sectionAppearance": "セクションの外観",
+      "frameEffects": "フレームとエフェクト",
+      "positionSize": "位置とサイズ",
+      "selectedMore": "（他{count}個選択中）",
+      "itemN": "項目 {n}",
+      "addItem": "+ 項目を追加",
+      "pageSettings": "ページ設定",
+      "pageTitle": "タイトル",
+      "urlSlug": "URLスラッグ",
+      "homepageSlugHint": "ホームページは常に / に配置されます。",
+      "publicUrlHint": "公開URL：/{slug}",
+      "showInNav": "ナビゲーションに表示",
+      "navLabel": "ナビゲーションラベル（任意）",
+      "navOrder": "ナビゲーション表示順",
+      "seoTitle": "SEOタイトル",
+      "seoDescription": "SEO説明文",
+      "boldText": "太字テキスト",
+      "linkText": "リンクテキスト",
+      "boldTitle": "太字",
+      "insertLinkTitle": "リンクを挿入",
+      "linkButton": "🔗 リンク",
+      "emptyPage": "このページはまだ空です",
+      "emptyPageHint": "右クリックでコンテンツを追加できます。Shift+クリックで複数選択。端が揃うとピンクのガイドが表示されます。",
+      "canvasHint": "右クリックで追加 · Shift+クリックで複数選択 · ⌘Zで元に戻す",
+      "editPageBackground": "ページ背景を編集",
+      "backgroundLabel": "背景",
+      "duplicate": "複製",
+      "delete": "削除",
+      "locked": "ロック中",
+      "dragToMove": "ドラッグで移動（グリッドとガイドにスナップ）",
+      "resize": "サイズ変更",
+      "resizeWidth": "幅を変更",
+      "resizeHeight": "高さを変更",
+      "previewCopyPlaceholder": "ここにテキストを入力してください。",
+      "previewFeature": "特徴",
+      "previewBlock": "{label} プレビュー"
+    },
+    "contextMenu": {
+      "addElement": "要素を追加",
+      "groups": {
+        "basic": "基本要素",
+        "section": "セクション",
+        "content": "コンテンツブロック"
+      },
+      "actions": {
+        "heading": "見出し",
+        "paragraph": "テキストボックス",
+        "imageBlock": "画像",
+        "linkBlock": "ボタン",
+        "spacer": "スペーサー",
+        "divider": "区切り線",
+        "videoBlock": "動画",
+        "pageHeader": "ページヘッダー",
+        "hero": "ヒーロー",
+        "richText": "テキストセクション",
+        "cta": "CTA",
+        "gallery": "ギャラリー",
+        "features": "特徴",
+        "testimonials": "口コミ"
+      }
+    },
+    "background": {
+      "title": "ページ背景",
+      "subtitle": "すべての要素の背後にあるキャンバスです。ブロックは自由にその上に配置できます。",
+      "type": "背景の種類",
+      "image": "背景画像",
+      "video": "背景動画",
+      "autoplayMuted": "自動再生（ミュート）",
+      "opacity": "不透明度（%）",
+      "kinds": {
+        "base": "ページカラー",
+        "surface": "サーフェス／カード",
+        "tint": "ブランドティント",
+        "brand": "ブランドグラデーション",
+        "image": "画像",
+        "video": "動画"
+      }
+    },
+    "linkPicker": {
+      "pickPage": "ページを選択…",
+      "customPath": "カスタムパス…",
+      "externalUrl": "外部URL",
+      "placeholder": "/about または https://…",
+      "hint": "既存のページを選択するか、パスを直接入力してください。外部リンクには https:// を使用してください。"
+    },
+    "media": {
+      "none": "なし",
+      "imagePlaceholder": "画像URLを貼り付けるかアップロード",
+      "uploading": "アップロード中…",
+      "replace": "置き換え",
+      "upload": "アップロード",
+      "remove": "削除",
+      "uploadFailed": "アップロードに失敗しました。",
+      "videoPlaceholder": "動画URLを貼り付けるか、MP4／WebMをアップロード",
+      "replaceVideo": "動画を置き換え",
+      "uploadVideo": "動画をアップロード"
+    },
+    "domain": {
+      "eyebrow": "ドメイン設定",
+      "title": "ウェブサイトのアドレスを接続する",
+      "subtitle": "{studio} 向けのシンプルなステップガイドです。専門用語不要 — コピー＆ペーストで公開できます。",
+      "steps": {
+        "intro": "開始",
+        "decide": "選択",
+        "kind": "種類",
+        "domain": "ドメイン",
+        "dns": "DNS",
+        "connect": "接続",
+        "done": "完了"
+      },
+      "stepOf": "ステップ {current}／{total}",
+      "intro": {
+        "title": "サイトにはすでにアドレスがあります",
+        "subtitle": "すべてのスタジオに無料のOluneアドレスが割り当てられ、すぐにご利用いただけます。",
+        "freeAddress": "無料アドレス",
+        "shareToday": "このリンクを今すぐ共有できます。ご家族はこのアドレスからウェブサイトとポータルを閲覧できます。",
+        "wantOwn": "{example} のような独自ドメインをご希望ですか？次のステップでご案内します。"
+      },
+      "decide": {
+        "title": "独自ドメインをご希望ですか？",
+        "subtitle": "任意です — 無料のOluneアドレスは常にご利用いただけます。",
+        "yesTitle": "はい、自分のドメインを使う",
+        "yesDesc": "www.mystudio.co.nz（またはそれに準ずるもの）を接続します",
+        "noTitle": "今はしない",
+        "noDesc": "{address} を引き続き使用します"
+      },
+      "kind": {
+        "title": "どのアドレス形式をご希望ですか？",
+        "subtitle": "ドメイン提供元でご購入いただいた形式に合わせてお選びください。",
+        "www": {
+          "label": "wwwアドレス",
+          "hint": "最も一般的な形式 — ご家族は www.yoursite.com と入力します"
+        },
+        "subdomain": {
+          "label": "サブアドレス",
+          "hint": "予約専用ページや案内ページに適しています"
+        },
+        "apex": {
+          "label": "ルートドメイン",
+          "hint": "wwwなし — yoursite.com のみ"
+        }
+      },
+      "domain": {
+        "title": "ドメインを入力してください",
+        "subtitle": "ご家族がブラウザに入力してほしいアドレスを正確に入力してください。",
+        "label": "ドメイン",
+        "placeholder": "www.mystudio.co.nz",
+        "familiesVisit": "ご家族は {url} にアクセスします"
+      },
+      "dns": {
+        "title": "DNSレコードを1件追加",
+        "subtitle": "ドメインを購入したサービス（GoDaddy、Cloudflare、Namecheapなど）にログインし、以下のレコードを追加してください。",
+        "step1": "ドメイン提供元のDNS設定を開いてください。",
+        "step2": "以下のレコードを追加してください（各値をコピーしてください）。",
+        "step3": "保存してください — 反映には15分から48時間かかる場合があります。",
+        "tip": "「TTL」の入力を求められた場合は、デフォルトのままか3600を選択してください。「Host」列は「Name」または「Subdomain」と表示される場合があります。",
+        "nextLabel": "レコードを追加しました",
+        "showSteps": "DNS手順を表示"
+      },
+      "connect": {
+        "title": "Oluneに接続",
+        "subtitle": "ドメインをOluneに登録すると、アクセスがあった際にウェブサイトを表示できるようになります。",
+        "hint": "下の「接続」をクリックしてください。続けて「DNSを確認」を使用してください — まだ準備ができていない場合は30分待って再度お試しください。",
+        "connecting": "接続中…",
+        "connectDomain": "ドメインを接続",
+        "checkDns": "DNSを確認"
+      },
+      "done": {
+        "connectedTitle": "接続が完了しました！",
+        "connectedSubtitle": "カスタムドメインがOluneに連携されました。",
+        "readyTitle": "準備が整いました",
+        "readySubtitle": "無料のOluneアドレスをすぐに共有できます。",
+        "customDomain": "カスタムドメイン",
+        "checking": "確認中…",
+        "checkAgain": "DNSを再確認",
+        "removeDomain": "カスタムドメインを削除",
+        "yourAddress": "あなたのアドレス",
+        "connectAnytime": "「ウェブサイト → ドメイン設定」からいつでもカスタムドメインを接続できます。",
+        "backToWebsite": "ウェブサイトに戻る",
+        "connectDomain": "ドメインを接続"
+      },
+      "dnsFields": {
+        "type": "種類",
+        "host": "Host／Name",
+        "value": "接続先／Value",
+        "copied": "コピーしました",
+        "copy": "コピー"
+      },
+      "continue": "続ける",
+      "back": "戻る",
+      "verification": {
+        "title": "所有権確認のため、もう1件レコードが必要です",
+        "note": "上記のレコードに加えてこちらも追加し、再度確認してください。"
+      }
+    },
+    "urlBanner": {
+      "title": "公開ウェブサイトのURL",
+      "openPreviewBefore": "開く",
+      "openPreviewAfter": "でご家族に見える内容を確認できます。",
+      "localhostNote": "通常のlocalhost上のページはOluneプラットフォームであり、スタジオのサイトではありません。",
+      "connectDomain": "ドメインを接続 →"
+    },
+    "preview": {
+      "draftTitle": "下書きプレビュー",
+      "publishedTitle": "プレビュー",
+      "refreshHint": "エディターで保存後、再読み込みすると最新の変更が確認できます。",
+      "backToEditor": "← エディター",
+      "openLiveSite": "公開サイトを開く"
+    },
+    "blocks": {
+      "select": "垂直方向の間隔",
+      "number": "垂直位置（px）",
+      "boolean": "位置を固定",
+      "color": "フォントサイズ",
+      "text": "サイズ",
+      "textarea": "配置",
+      "image": "動画",
+      "video": "ボタン",
+      "list": "クラスストリーム",
+      "heading": "見出し",
+      "paragraph": "テキスト",
+      "imageBlock": "画像",
+      "videoBlock": "動画",
+      "linkBlock": "ボタン",
+      "hero": "ヒーロー",
+      "pageHeader": "ページヘッダー",
+      "statsRow": "統計",
+      "classStreams": "ストリーム",
+      "classTabs": "クラスタブ",
+      "richText": "テキストセクション",
+      "features": "特徴",
+      "classGrid": "クラス",
+      "schedule": "スケジュール",
+      "gallery": "ギャラリー",
+      "testimonials": "口コミ",
+      "newsFeed": "ニュース",
+      "peopleGrid": "チーム",
+      "shopGrid": "ショップ",
+      "locations": "拠点",
+      "cta": "CTA",
+      "faq": "よくある質問",
+      "contact": "お問い合わせ",
+      "spacer": "スペーサー",
+      "divider": "区切り線"
+    },
+    "public": {
+      "emptyPage": "このページにはまだコンテンツがありません。",
+      "addImage": "画像を追加",
+      "addVideo": "動画を追加",
+      "teamComingSoon": "スタッフ紹介は近日公開予定です。",
+      "classesComingSoon": "クラス情報は近日公開予定です。",
+      "allLevels": "全レベル対応",
+      "perMonth": "／月",
+      "galleryEmpty": "画像URLを追加するとギャラリーに表示されます。",
+      "contactLabels": {
+        "address": "住所",
+        "phone": "電話番号",
+        "email": "メールアドレス",
+        "hours": "営業時間"
+      },
+      "spacerLabel": "スペーサー · {height}px",
+      "defaultFooterTagline": "卓越したダンス教育。あらゆる年齢・レベルに対応した世界水準のトレーニング。",
+      "defaultPortalLabel": "ポータル",
+      "defaultHeading": "見出し",
+      "defaultImageAlt": "画像",
+      "defaultLinkLabel": "リンク",
+      "navigation": "ナビゲーション",
+      "studios": "スタジオ",
+      "contact": "お問い合わせ",
+      "copyright": "© {year} {studio}. All rights reserved.",
+      "closeMenu": "メニューを閉じる",
+      "openMenu": "メニューを開く",
+      "portalArrow": "{label} →"
+    },
+    "shop": {
+      "categoryAll": "すべて",
+      "categoryGeneral": "一般",
+      "checkoutFailed": "決済に失敗しました。購入するにはサインインしてください。",
+      "orderCreated": "注文を作成しました — 会員ポータルでお支払いを完了してください。",
+      "orderPlaced": "注文が完了しました！",
+      "noProducts": "現在利用可能な商品がありません。",
+      "outOfStock": "在庫切れ",
+      "addToCart": "カートに追加",
+      "cartItems": "カート（{count}点）",
+      "processing": "処理中…",
+      "checkout": "レジに進む",
+      "signInToPurchase": "購入するにはサインイン"
+    },
+    "schedule": {
+      "days": [
+        "日曜日",
+        "月曜日",
+        "火曜日",
+        "水曜日",
+        "木曜日",
+        "金曜日",
+        "土曜日"
+      ],
+      "allStudios": "すべてのスタジオ",
+      "noClassesDay": "この曜日に予定されているクラスはありません。",
+      "streamComingSoon": "このストリームのクラス情報は近日公開予定です。",
+      "fromPerTerm": "1学期 {price}〜"
+    },
+    "news": {
+      "categories": {
+        "all": "すべて",
+        "news": "ニュース",
+        "events": "イベント",
+        "term_dates": "学期日程",
+        "productions": "公演",
+        "announcements": "お知らせ"
+      },
+      "noItems": "表示できる項目はまだありません。"
+    }
+  }
+}

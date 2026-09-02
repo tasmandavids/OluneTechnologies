@@ -5,11 +5,14 @@ import { authorizedCron } from "@/lib/cron/auth";
 import { NextRequest } from "next/server";
 
 describe("checkRateLimit", () => {
-  it("allows up to the limit then blocks", () => {
+  it("allows up to the limit then blocks", async () => {
     const key = rateLimitKey("test", `u-${Math.random()}`);
-    expect(checkRateLimit(key, { limit: 2, windowMs: 60_000 })).toBe(true);
-    expect(checkRateLimit(key, { limit: 2, windowMs: 60_000 })).toBe(true);
-    expect(checkRateLimit(key, { limit: 2, windowMs: 60_000 })).toBe(false);
+    // Async since the limiter gained a shared Redis window; with no Upstash
+    // credentials in the test env it resolves through the in-process
+    // fallback, so the semantics asserted here are unchanged.
+    expect(await checkRateLimit(key, { limit: 2, windowMs: 60_000 })).toBe(true);
+    expect(await checkRateLimit(key, { limit: 2, windowMs: 60_000 })).toBe(true);
+    expect(await checkRateLimit(key, { limit: 2, windowMs: 60_000 })).toBe(false);
   });
 });
 

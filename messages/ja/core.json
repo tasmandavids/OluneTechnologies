@@ -1,0 +1,276 @@
+{
+  "common": {
+    "loading": "読み込み中…",
+    "signOut": "サインアウト →",
+    "you": "あなた",
+    "operator": "運営者",
+    "yourStudio": "あなたのスタジオ",
+    "language": "言語",
+    "selectLanguage": "言語を選択",
+    "back": "戻る",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "add": "追加",
+    "create": "作成",
+    "update": "更新",
+    "close": "閉じる",
+    "confirm": "確認",
+    "search": "検索",
+    "filter": "絞り込み",
+    "actions": "操作",
+    "status": "ステータス",
+    "name": "名前",
+    "email": "メールアドレス",
+    "phone": "電話番号",
+    "date": "日付",
+    "time": "時間",
+    "amount": "金額",
+    "total": "合計",
+    "yes": "はい",
+    "no": "いいえ",
+    "or": "または",
+    "and": "および",
+    "none": "なし",
+    "all": "すべて",
+    "unknown": "不明",
+    "student": "生徒",
+    "parent": "保護者",
+    "teacher": "講師",
+    "comingSoon": "近日公開",
+    "poweredByOlune": "Olune 提供",
+    "days": {
+      "mon": "月",
+      "tue": "火",
+      "wed": "水",
+      "thu": "木",
+      "fri": "金",
+      "sat": "土",
+      "sun": "日",
+      "monday": "月曜日",
+      "tuesday": "火曜日",
+      "wednesday": "水曜日",
+      "thursday": "木曜日",
+      "friday": "金曜日",
+      "saturday": "土曜日",
+      "sunday": "日曜日"
+    },
+    "greeting": {
+      "morning": "おはようございます",
+      "afternoon": "こんにちは",
+      "evening": "こんばんは"
+    }
+  },
+  "roles": {
+    "admin": "スタジオ管理者",
+    "teacher": "講師",
+    "office": "事務スタッフ",
+    "parent": "保護者",
+    "student": "生徒"
+  },
+  "shell": {
+    "keepSidebarOpen": "サイドバーを開いたままにする",
+    "hideSidebar": "サイドバーを隠す",
+    "showSidebar": "サイドバーを表示",
+    "toggleMenu": "メニューを切り替え",
+    "theme": "テーマ",
+    "themeLight": "ライト",
+    "themeDark": "ダーク",
+    "selectTheme": "テーマを選択",
+    "studioLabel": "スタジオ",
+    "rail": {
+      "today": "本日",
+      "people": "メンバー",
+      "schedule": "スケジュール",
+      "team": "チーム",
+      "money": "お金",
+      "inbox": "受信箱",
+      "studio": "スタジオ",
+      "settings": "設定",
+      "account": "アカウント",
+      "appearance": "外観",
+      "toggleTheme": "ライト／ダーク切り替え",
+      "workspace": "ワークスペース",
+      "everythingByTyping": "入力するだけで、あらゆる機能にアクセスできます。"
+    },
+    "palette": {
+      "placeholder": "何でも検索…",
+      "empty": "一致する項目がありません",
+      "new": "新規",
+      "pages": "ページ",
+      "students": "生徒",
+      "staff": "スタッフ",
+      "parents": "保護者",
+      "classes": "クラス",
+      "leads": "見込み客",
+      "searching": "検索中…"
+    },
+    "appearance": {
+      "title": "外観",
+      "subtitle": "ワークスペースに表示されるガラス感と色味を調整できます。これは個人設定であり、チームの表示には影響しません。",
+      "accent": {
+        "label": "スタジオカラー",
+        "hint": "個人設定です — スタジオ本来のブランドカラーは変更されません。",
+        "custom": "カスタムカラー",
+        "useStudioColor": "スタジオカラーを使用"
+      },
+      "reset": "リセット",
+      "apply": "適用",
+      "sliders": {
+        "tint": {
+          "label": "カラーの強さ",
+          "hint": "スタジオカラーが画面全体にどれくらい反映されるか。"
+        },
+        "glass": {
+          "label": "ガラスの透明度",
+          "hint": "すりガラス調から不透明まで、あるいはほぼ透明まで。"
+        },
+        "blur": {
+          "label": "ぼかしの深さ",
+          "hint": "パネルの背後がどれだけぼやけて見えるか。"
+        },
+        "ambience": {
+          "label": "アンビエンス",
+          "hint": "ワークスペースの背景で漂う光の演出。"
+        }
+      }
+    }
+  },
+  "nav": {
+    "sections": {
+      "people": "メンバー",
+      "schedule": "スケジュール",
+      "teamManagement": "チーム",
+      "clientManagement": "顧客管理",
+      "finance": "財務",
+      "digital": "デジタル",
+      "communications": "コミュニケーション"
+    },
+    "admin": {
+      "dashboard": "ダッシュボード",
+      "classes": "クラス",
+      "events": "イベント",
+      "staff": "スタッフ",
+      "people": "生徒・ご家族",
+      "parents": "保護者",
+      "students": "生徒",
+      "leads": "見込み客",
+      "money": "お金",
+      "products": "商品",
+      "billing": "請求",
+      "accounting": "会計",
+      "website": "ウェブサイト",
+      "advertising": "SNS投稿",
+      "shop": "ショップ",
+      "messages": "メッセージ",
+      "support": "Oluneサポート",
+      "settings": "設定",
+      "substitutes": "代講",
+      "availability": "講師の空き状況",
+      "privateLessons": "個人レッスン",
+      "inbox": "受信箱",
+      "badges": "バッジ",
+      "passes": "クラスパス",
+      "checkin": "チェックイン",
+      "forms": "フォーム作成",
+      "plan": "プランと請求"
+    },
+    "portal": {
+      "forms": "フォーム・規約"
+    },
+    "teacher": {
+      "schedule": "スケジュールと出欠",
+      "clients": "個人レッスンの顧客",
+      "invoices": "請求書",
+      "messages": "メッセージ",
+      "affiliations": "所属スタジオ",
+      "availability": "空き状況",
+      "privateLessons": "個人レッスン",
+      "substitutes": "代講依頼",
+      "expenses": "経費",
+      "vault": "書類",
+      "notifications": "通知設定",
+      "profile": "公開プロフィール"
+    },
+    "office": {
+      "dashboard": "フロントデスク"
+    },
+    "parent": {
+      "familyHub": "ファミリーハブ",
+      "schedule": "スケジュール",
+      "privateLessons": "個人レッスン",
+      "billing": "請求",
+      "absences": "欠席連絡",
+      "recital": "衣装・発表会",
+      "notifications": "通知",
+      "forms": "フォーム・同意書",
+      "messages": "メッセージ"
+    },
+    "student": {
+      "timetable": "マイタイムテーブル",
+      "progress": "進捗",
+      "hub": "マイアカウント",
+      "messages": "スタジオチャット"
+    },
+    "platform": {
+      "overview": "概要",
+      "studios": "スタジオ",
+      "owners": "オーナー",
+      "supportInbox": "サポート受信箱",
+      "opsTasks": "運用タスク",
+      "featureFlags": "機能フラグ",
+      "announcements": "お知らせ",
+      "settings": "設定",
+      "auditLog": "監査ログ",
+      "consoleTitle": "Olune プラットフォーム",
+      "consoleSubtitle": "運営者コンソール",
+      "badges": "バッジカタログ",
+      "plans": "プラン料金"
+    },
+    "shared": {
+      "notifications": "通知設定"
+    }
+  },
+  "auth": {
+    "welcomeBack": "おかえりなさい",
+    "signInSubtitle": "スタジオにサインインしてください。",
+    "emailPlaceholder": "you@studio.co.nz",
+    "passwordPlaceholder": "パスワード",
+    "signingIn": "サインイン中…",
+    "signInWithEmail": "メールアドレスでサインイン",
+    "callbackError": "サインインが中断されました。もう一度お試しください。",
+    "newStudio": "新規スタジオですか？",
+    "getStarted": "はじめる",
+    "platformAdmin": "Oluneプラットフォーム管理者ですか？",
+    "signInToPlatform": "/platform にサインイン",
+    "joinStudio": "スタジオに参加しますか？",
+    "joinLink": "こちらから登録",
+    "continueWithGoogle": "Googleで続ける",
+    "continueWithApple": "Appleで続ける",
+    "redirecting": "リダイレクト中…",
+    "orContinueWithEmail": "またはメールアドレスで続ける",
+    "googleForgotPassword": "Googleのパスワードをお忘れですか？",
+    "googleForgotPasswordLink": "Googleでリセットする",
+    "emailLoginGoogleHint": "Googleで登録されましたか？上のボタンをご利用ください — このアカウントにパスワードが設定されていない可能性があります。",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "sendResetLink": "リセットリンクを送信",
+    "sendingResetLink": "送信中…",
+    "resetLinkSent": "メールをご確認ください — パスワード再設定用のリンクをお送りしました。",
+    "resetLinkError": "リセットメールを送信できませんでした。もう一度お試しください。"
+  },
+  "marketing": {
+    "features": "機能",
+    "pricing": "料金",
+    "about": "私たちについて",
+    "compare": "比較",
+    "signIn": "サインイン",
+    "startFree": "無料で始める",
+    "tagline": "落ち着いてスタジオを運営する方法。",
+    "livePreview": "ライブプレビュー"
+  },
+  "meta": {
+    "title": "Olune — スタジオ運営を、ひとつの落ち着いた場所で",
+    "description": "Oluneはダンス・フィットネススタジオの管理業務を一手に担います — 入会申込、タイムテーブル、請求・支払い、そしてご自身で編集できるライブなクライアント向けウェブサイトまで。"
+  }
+}

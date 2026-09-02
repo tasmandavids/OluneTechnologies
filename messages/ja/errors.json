@@ -1,0 +1,88 @@
+{
+  "errors": {
+    "generic": {
+      "eyebrow": "問題が発生しました",
+      "title": "予期しないエラーが発生しました",
+      "body": "もう一度お試しいただくか、問題が続く場合はホームにお戻りください。",
+      "retry": "再試行",
+      "signInAgain": "再度サインイン",
+      "goHome": "ホームに戻る"
+    },
+    "global": {
+      "title": "問題が発生しました",
+      "body": "アプリで致命的なエラーが発生しました。",
+      "retry": "再試行",
+      "signInAgain": "再度サインイン"
+    },
+    "portal": {
+      "title": "このページで問題が発生しました",
+      "body": "データは安全に保存されています — ポータルの他の部分は引き続きご利用いただけます。もう一度お試しいただくか、ダッシュボードにお戻りください。",
+      "retry": "再試行",
+      "goToPortal": "ダッシュボードに戻る"
+    },
+    "notFound": {
+      "eyebrow": "404",
+      "title": "ページが見つかりません",
+      "platformBody": "<localhost>localhost</localhost> 上のこのURLはOluneプラットフォーム自体であり、スタジオのウェブサイトではありません。公開ページはスタジオのサブドメインでご覧いただけます。",
+      "exampleLabel": "例：",
+      "oluneHome": "Olune ホーム",
+      "signIn": "サインイン",
+      "websiteAdmin": "ウェブサイト管理",
+      "studioBody": "このページはまだ公開されていないか、URLが間違っています。管理画面のウェブサイトタブでスペルと公開状態をご確認ください。",
+      "backHome": "ホームに戻る",
+      "studio": "スタジオが見つかりません。"
+    },
+    "forbidden": {
+      "adminOnly": "ドメインを管理できるのはスタジオ管理者のみです。"
+    },
+    "actions": {
+      "unknown": "不明なエラー",
+      "notFound": "見つかりません",
+      "unauthorized": "権限がありません",
+      "validationFailed": "検証に失敗しました",
+      "invalidInput": "入力内容が無効です",
+      "nameRequired": "名前を入力してください",
+      "firstNameRequired": "名を入力してください",
+      "invalidEmail": "メールアドレスが無効です",
+      "studioNotFound": "スタジオが見つかりません",
+      "invalidStatus": "ステータスが無効です",
+      "tooManyRequests": "リクエストが多すぎます。数分待ってから再度お試しください。",
+      "notSignedIn": "サインインしていません。",
+      "parentAccessRequired": "保護者アクセスが必要です。",
+      "adminOnly": "管理者のみ利用できます。",
+      "noStudioFound": "スタジオが見つかりません。",
+      "notGuardian": "この生徒の保護者ではありません。",
+      "invalidStudentOrClass": "生徒またはクラスが無効です。",
+      "alreadyEnrolled": "すでにこのクラスに登録済みです。",
+      "classNoFee": "このクラスには料金が設定されていません。",
+      "couldNotCreateInvoice": "請求書を作成できませんでした。",
+      "stripeNoClientSecret": "Stripeからクライアントシークレットが返されませんでした。",
+      "noOutstandingInvoices": "未払いの請求はありません。",
+      "termPlanComplete": "この支払いプランはすでに完了しています。",
+      "invalidInvoiceDetails": "請求書の内容が無効です。",
+      "parentNotFound": "保護者アカウントが見つかりません。",
+      "studentNotLinked": "選択した生徒はこの保護者に紐付けられていません。",
+      "invoiceNotFound": "請求書が見つかりません。",
+      "unpaidInvoicesOnly": "リマインダーを送信できるのは未払いの請求書のみです。",
+      "noInvoicesSelected": "請求書が選択されていません。",
+      "noRemindersSent": "リマインダーは送信されませんでした。",
+      "cannotVoidInvoice": "この請求書は無効化できません。",
+      "invoiceAlreadyVoid": "この請求書はすでに無効化されています。",
+      "paidInvoiceUseRefund": "支払い済みの請求書は無効化ではなく返金処理が必要です。",
+      "voidOnActivePlan": "請求書を無効化する前に、支払いプランを完了または解約してください。",
+      "invalidSubscriptionDetails": "サブスクリプションの内容が無効です。",
+      "monthlyTotalInvalid": "割引後の月額合計は0より大きい必要があります。",
+      "chargeAmountInvalid": "請求金額が無効です。",
+      "studentNotLinkedToParent": "この生徒はこの保護者に紐付けられていません。",
+      "couldNotSaveSubscription": "サブスクリプションを保存できませんでした。",
+      "subscriptionNotFound": "サブスクリプションが見つかりません。",
+      "invoiceLocked": "この請求書はこれ以上編集できません。",
+      "invoiceNotDraft": "金額と明細を変更できるのは下書きの請求書のみです。",
+      "invalidLineItems": "明細項目が無効です。",
+      "invalidTemplateDetails": "テンプレートの内容が無効です。",
+      "templateNotFound": "テンプレートが見つかりません。",
+      "onlyDraftsCanBeSent": "この方法で送信できるのは下書きの請求書のみです。",
+      "noDraftInvoices": "送信する下書きの請求書がありません。"
+    }
+  }
+}
