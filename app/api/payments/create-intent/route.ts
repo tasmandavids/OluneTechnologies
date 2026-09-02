@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
     }
 
-    if (!checkRateLimit(rateLimitKey("pay-intent", user.id), { limit: 20, windowMs: 60_000 })) {
+    if (!(await checkRateLimit(rateLimitKey("pay-intent", user.id), { limit: 20, windowMs: 60_000 }))) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
 

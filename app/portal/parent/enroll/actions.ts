@@ -321,7 +321,7 @@ export async function enrollChildInClass(
   const accessErr = await assertStudentAccess(ctx, studentId, t);
   if (accessErr) return { ok: false, error: accessErr };
 
-  if (!checkRateLimit(rateLimitKey("enroll", userId), { limit: 30, windowMs: 60_000 })) {
+  if (!(await checkRateLimit(rateLimitKey("enroll", userId), { limit: 30, windowMs: 60_000 }))) {
     return { ok: false, error: t("unknown") };
   }
 
@@ -461,7 +461,7 @@ export async function createEnrollmentPayLaterInvoice(
   const accessErr = await assertStudentAccess(ctx, studentId, t);
   if (accessErr) return { ok: false, error: accessErr };
 
-  if (!checkRateLimit(rateLimitKey("enroll-bill", userId), { limit: 20, windowMs: 60_000 })) {
+  if (!(await checkRateLimit(rateLimitKey("enroll-bill", userId), { limit: 20, windowMs: 60_000 }))) {
     return { ok: false, error: t("unknown") };
   }
 
@@ -533,7 +533,7 @@ export async function createEnrollmentIntent(
   const accessErr = await assertStudentAccess(ctx, studentId, t);
   if (accessErr) return { ok: false, error: accessErr };
 
-  if (!checkRateLimit(rateLimitKey("enroll-pay", userId), { limit: 15, windowMs: 60_000 })) {
+  if (!(await checkRateLimit(rateLimitKey("enroll-pay", userId), { limit: 15, windowMs: 60_000 }))) {
     return { ok: false, error: t("unknown") };
   }
 

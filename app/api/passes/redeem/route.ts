@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import { rollbackRedeemedClassPassClaim } from "@/lib/passes/redemption";
+import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 const RedeemSchema = z.object({
   passId: z.string().uuid(),
@@ -25,6 +26,10 @@ export async function POST(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!(await checkRateLimit(rateLimitKey("pass-redeem", user.id), { limit: 30, windowMs: 60_000 }))) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
 
   const json = await req.json().catch(() => null);
   const parsed = RedeemSchema.safeParse(json);

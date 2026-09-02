@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe";
 import { originForHost } from "@/lib/seo";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
+import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 export async function POST() {
   try {
@@ -21,6 +22,12 @@ export async function POST() {
 
     if (!user) {
       return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
+    }
+
+    // Each call mints a Stripe billing-portal session. Cheap for a user to
+    // spam, not free for us to serve.
+    if (!(await checkRateLimit(rateLimitKey("billing-portal", user.id), { limit: 10, windowMs: 60_000 }))) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
 
     const { data: profile } = await supabase

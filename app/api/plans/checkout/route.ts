@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
   // Each attempt creates a Stripe Customer on first use and a Session every
   // time. Cheap to call, not free to Stripe.
-  if (!checkRateLimit(rateLimitKey("plan-checkout", access.userId), { limit: 8, windowMs: 60_000 })) {
+  if (!(await checkRateLimit(rateLimitKey("plan-checkout", access.userId), { limit: 8, windowMs: 60_000 }))) {
     return NextResponse.json({ error: "Too many attempts. Try again shortly." }, { status: 429 });
   }
 

@@ -12,6 +12,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyReaderCredential } from "@/lib/checkin/reader-auth";
 import { performTap, TAP_FAILURE_MESSAGE, TAP_FAILURE_STATUS } from "@/lib/checkin/tap";
+import { checkRateLimit, clientIpKey } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,7 +27,16 @@ export async function POST(req: NextRequest) {
     req.headers.get("x-olune-reader-key"),
     req.headers.get("x-olune-reader-secret"),
   );
-  if (!reader) return new NextResponse(null, { status: 401 });
+  if (!reader) {
+    // Only *failed* auth is throttled. The reader credential is a shared
+    // secret sitting on a kiosk, so this endpoint is the one place it can be
+    // guessed at; a working kiosk never lands here, so a busy door is never
+    // slowed down by it.
+    if (!(await checkRateLimit(clientIpKey("checkin-tap-auth", req.headers), { limit: 10, windowMs: 60_000 }))) {
+      return new NextResponse(null, { status: 429 });
+    }
+    return new NextResponse(null, { status: 401 });
+  }
 
   const json = await req.json().catch(() => null);
   const parsed = TapSchema.safeParse(json);

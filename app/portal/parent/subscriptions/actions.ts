@@ -106,7 +106,7 @@ export async function createEnrollmentSubscription(
     return { ok: false, error: "Invalid student or class." };
   }
 
-  if (!checkRateLimit(rateLimitKey("sub-create", userId), { limit: 10, windowMs: 60_000 })) {
+  if (!(await checkRateLimit(rateLimitKey("sub-create", userId), { limit: 10, windowMs: 60_000 }))) {
     return { ok: false, error: "Too many requests. Please wait a moment." };
   }
 

@@ -28,7 +28,7 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
     return { ok: false, error: ctx.error ?? "Parent access required." };
   }
 
-  if (!checkRateLimit(rateLimitKey("add-child", ctx.userId), { limit: 10, windowMs: 60 * 60_000 })) {
+  if (!(await checkRateLimit(rateLimitKey("add-child", ctx.userId), { limit: 10, windowMs: 60 * 60_000 }))) {
     return { ok: false, error: "Too many invite attempts. Please try again later." };
   }
 
