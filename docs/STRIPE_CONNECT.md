@@ -10,27 +10,34 @@ account, so the migration is incremental.
 | Surface | Codepath | Purpose |
 | --- | --- | --- |
 | `/portal/admin/payments` | `app/portal/admin/payments/page.tsx` | Shows connection status and actions. |
-| Connect start | `app/api/stripe/connect/route.ts` | Creates/reuses an Express account and redirects to Stripe-hosted onboarding. |
+| Connect start | `app/api/stripe/connect/route.ts` | Creates/reuses an Accounts v2 merchant account and redirects to Stripe-hosted onboarding. |
 | Refresh URL | `app/api/stripe/connect/refresh/route.ts` | Mints a new onboarding link when Stripe's account link expires. |
 | Return URL | `app/api/stripe/connect/return/route.ts` | Revalidates state/session and syncs account status after onboarding. |
-| Status actions | `app/portal/admin/payments/actions.ts` | Refreshes status and opens an Express dashboard login link. |
-| Connect webhook | `app/api/webhooks/stripe-connect/route.ts` | Verifies Connect events and updates account status. |
+| Status actions | `app/portal/admin/payments/actions.ts` | Refreshes status and links to the studio's own Stripe dashboard. |
+| Connect webhook | `app/api/webhooks/stripe-connect/route.ts` | Classic Connect events on the platform account. |
+| v2 event destination | `app/api/webhooks/stripe-v2/route.ts` | Accounts v2 status events for studio accounts — the endpoint that keeps `charges_enabled` honest. |
+| Destination setup | `scripts/setup-v2-event-destination.mjs` | Registers/re-points that Event Destination and prints its signing secret. |
+| Nightly reconcile | `app/api/cron/sync-connect-accounts/route.ts` | Re-derives every studio's status from Stripe in case the destination is not delivering. |
 
 ## Environment variables
 
-Connect uses the standard Stripe configuration plus two Connect-specific
+Connect uses the standard Stripe configuration plus three Connect-specific
 secrets:
 
 ```bash
 STRIPE_SECRET_KEY=sk_...
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_...
 STRIPE_CONNECT_WEBHOOK_SECRET=whsec_...
+STRIPE_V2_WEBHOOK_SECRET=whsec_...
 # Optional; falls back to EMAIL_OAUTH_STATE_SECRET, then CRON_SECRET.
 STRIPE_CONNECT_STATE_SECRET=generate-a-long-random-string
 ```
 
-`STRIPE_CONNECT_WEBHOOK_SECRET` must be the signing secret for the Connect
-webhook endpoint, not the platform webhook endpoint.
+All three webhook secrets are different. `STRIPE_CONNECT_WEBHOOK_SECRET` is the
+Connect endpoint's, not the platform endpoint's, and `STRIPE_V2_WEBHOOK_SECRET`
+belongs to the Event Destination — a separate object from both webhook
+endpoints, created by `scripts/setup-v2-event-destination.mjs`, which prints the
+secret once on creation and never again.
 
 ## Database model
 
@@ -109,24 +116,41 @@ different Stripe Customer ids for different studios.
 
 ## Webhook behavior
 
-The Connect webhook endpoint verifies events with
-`STRIPE_CONNECT_WEBHOOK_SECRET`, inserts the event id/type/account into
-`stripe_events`, and delegates to `processStripeEvent()`.
+Studio account status arrives on the **v2** endpoint, not the Connect one.
+Accounts v2 emits `v2.core.account[configuration.merchant]
+.capability_status_updated` and friends, and a classic webhook endpoint cannot
+subscribe to those — Stripe rejects the event names. They are delivered to an
+Event Destination instead, which POSTs a *thin* notification (id, type,
+`related_object` pointer; no `data.object`) to `/api/webhooks/stripe-v2`. That
+route verifies with `stripe.parseEventNotification()`, dedupes through
+`stripe_events`, and calls `syncStripeAccountStatus()` to re-read the account
+from Stripe — the notification itself carries no status.
 
-`account.updated` events call `syncStripeAccountStatus()` so the local row stays
-fresh if Stripe later enables, disables, or restricts the account outside the
-hosted return flow.
+A studio going from chargeable to not is reported to Sentry, because the
+alternative is discovering it when a parent's card is declined.
 
-Destination charges keep PaymentIntent, Charge, and Refund events platform-side,
-so the existing platform webhook still handles normal payment success and refund
-reconciliation.
+`/api/cron/sync-connect-accounts` re-derives the same state nightly. The Event
+Destination depends on four pieces of dashboard state no deploy can verify
+(registered, enabled, right URL, matching secret); if any is wrong the failure
+is silent, so the sweep is the backstop.
+
+The classic Connect endpoint verifies with `STRIPE_CONNECT_WEBHOOK_SECRET` and
+delegates to `processStripeEvent()`. Destination charges keep PaymentIntent,
+Charge, and Refund events platform-side, so the platform webhook still handles
+normal payment success and refund reconciliation.
 
 ## Operational checklist
 
 - Apply migration `0090_stripe_connect.sql`.
 - Configure both platform and Connect Stripe webhook endpoints with their own
   signing secrets.
-- Subscribe the Connect endpoint to at least `account.updated`.
+- Register the v2 Event Destination and set `STRIPE_V2_WEBHOOK_SECRET`:
+  `node --env-file=.env.local scripts/setup-v2-event-destination.mjs --url
+  https://<host>/api/webhooks/stripe-v2 --ping`. Without it, studio status only
+  refreshes on the nightly sweep and on demand.
+- Confirm the destination's `events_from` is `["@accounts"]`. Set to `@self` it
+  looks healthy and delivers no studio events at all.
+- Set `CRON_SECRET` so `/api/cron/sync-connect-accounts` can run.
 - Use `/portal/admin/payments` to start onboarding and refresh status.
 - Treat `charges_enabled = true` as the gate for destination charges; do not use
   `details_submitted` alone.

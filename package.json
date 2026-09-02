@@ -31,7 +31,9 @@
     "db:reset": "supabase db reset",
     "seed:platform-admin": "node --env-file=.env.local scripts/seed-platform-admin.mjs",
     "staging:verify": "node --env-file=.env.local scripts/staging-verify.mjs",
-    "setup:oauth": "node --env-file=.env.local scripts/setup-oauth.mjs"
+    "setup:oauth": "node --env-file=.env.local scripts/setup-oauth.mjs",
+    "setup:stripe-v2": "node --env-file=.env.local scripts/setup-v2-event-destination.mjs",
+    "check:connect": "node --env-file=.env.local scripts/check-connect-onboarding.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
