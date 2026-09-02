@@ -1061,7 +1061,8 @@ export default function OluneLanding() {
             <div style={eyebrowStyle}><span style={accentDotStyle} />{t("aboutSection.eyebrow")}</div>
             <h2 style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(32px, 4.4vw, 56px)", lineHeight: 1.12, color: NAVY, margin: "22px 0 30px", letterSpacing: "-0.018em" }}>{t("aboutSection.title")} {t("aboutSection.titleEmphasis")}</h2>
             <p style={{ fontSize: 17.5, lineHeight: 1.75, color: "rgba(26,21,53,0.62)", margin: "0 0 22px" }}>{t("aboutSection.body1")}</p>
-            <p style={{ fontSize: 17.5, lineHeight: 1.75, color: "rgba(26,21,53,0.62)", margin: "0 0 40px" }}>{t("aboutSection.body2")}</p>
+            <p style={{ fontSize: 17.5, lineHeight: 1.75, color: "rgba(26,21,53,0.62)", margin: "0 0 22px" }}>{t("aboutSection.body2")}</p>
+            <p style={{ fontSize: 17.5, lineHeight: 1.75, color: "rgba(26,21,53,0.62)", margin: "0 0 40px" }}>{t("aboutSection.nz")}</p>
             <div style={{ display: "flex", gap: 36, marginBottom: 48 }}>
               <Link href="/team" className="dcl-cta-ghost" style={ctaGhostStyle}>{t("aboutSection.meetTeam")}</Link>
               <Link href="/team" className="dcl-cta-ghost" style={ctaGhostStyle}>{t("aboutSection.ourStory")}</Link>
