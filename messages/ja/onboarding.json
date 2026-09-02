@@ -1,0 +1,103 @@
+{
+  "onboarding": {
+    "progress": {
+      "account": "アカウント",
+      "studio": "スタジオ",
+      "profile": "プロフィール",
+      "brand": "ブランド"
+    },
+    "vertical": {
+      "title": "何を運営されていますか？",
+      "subtitle": "お客様の活動内容 — クラス、レベル、ご利用者様が使う用語に合わせてOluneを設定します。",
+      "comingSoon": "近日公開",
+      "options": {
+        "dance": "ダンススタジオ",
+        "gymnastics": "体操クラブ",
+        "sports-club": "スポーツクラブ",
+        "swim": "スイミングスクール",
+        "martial-arts": "武術・格闘技",
+        "music": "音楽教室",
+        "cheer": "チアリーディング",
+        "tutoring": "個別指導"
+      }
+    },
+    "waitlist": {
+      "title": "{vertical} は近日対応予定です",
+      "subtitle": "現在、お客様の活動向けにOluneを開発中です。ご登録いただければ、公開時に真っ先にご案内いたします。",
+      "emailPlaceholder": "you@yourclub.co.nz",
+      "orgPlaceholder": "クラブ・教室名（任意）",
+      "submit": "更新情報を受け取る",
+      "submitting": "登録中…",
+      "doneTitle": "登録が完了しました",
+      "doneBody": "{vertical} 向けのOluneが利用可能になり次第、メールでお知らせします。",
+      "pickAnother": "別のものを選ぶ"
+    },
+    "system": {
+      "title": "Oluneをどのように利用しますか？",
+      "subtitle": "ご自身に合った設定をお選びください — 後からいつでも変更できます。",
+      "back": "戻る",
+      "studioOwner": {
+        "title": "スタジオ・クラブを運営しています",
+        "desc": "クラス、ご家族、請求、ウェブサイトを管理します。"
+      },
+      "instructor": {
+        "title": "独立したコーチ・講師です",
+        "desc": "複数のクラブで活動し、スケジュールを管理し、講師プロフィールを整えます。"
+      }
+    },
+    "account": {
+      "title": "スタジオを開設する",
+      "subtitle": "オーナーアカウントを作成して始めましょう。",
+      "instructorTitle": "講師アカウントを作成する",
+      "instructorSubtitle": "複数のスタジオで指導するための個人用ワークスペースです。",
+      "divider": "またはメールアドレスで登録",
+      "emailPlaceholder": "you@studio.co.nz",
+      "passwordPlaceholder": "パスワードを作成",
+      "submitting": "作成中…",
+      "submit": "メールアドレスでアカウントを作成",
+      "hasAccount": "すでにアカウントをお持ちですか？",
+      "logIn": "ログイン"
+    },
+    "confirmEmail": {
+      "title": "メールをご確認ください",
+      "body": "{email} 宛に確認用のリンクを送信しました。リンクをクリックした後、こちらにお戻りください — 続きから再開できます。"
+    },
+    "studio": {
+      "title": "組織の名前を入力してください",
+      "subtitle": "会員とそのご家族に表示される名前です。",
+      "namePlaceholder": "サンライズ・ダンススタジオ",
+      "slugPlaceholder": "your-studio",
+      "checking": "確認中…",
+      "available": "✓ {slug}.{root} は利用可能です",
+      "taken": "✗ そのサブドメインはすでに使用されています",
+      "invalid": "半角小文字、数字、ハイフンを3文字以上使用してください",
+      "back": "戻る",
+      "continue": "続ける"
+    },
+    "profile": {
+      "title": "公開名を入力してください",
+      "subtitle": "スタジオや生徒に表示される名前です。",
+      "namePlaceholder": "山田 太郎",
+      "slugPlaceholder": "jane-smith"
+    },
+    "brand": {
+      "title": "あなたらしくカスタマイズ",
+      "subtitle": "ブランドカラーを選択してください — 詳細は後からいつでも調整できます。",
+      "fallbackName": "あなたのプロフィール",
+      "previewCta": "体験レッスンを予約",
+      "customColour": "カスタムカラー",
+      "back": "戻る",
+      "submitting": "スタジオを作成中…",
+      "submit": "スタジオを作成",
+      "submittingInstructor": "ワークスペースを作成中…",
+      "submitInstructor": "ワークスペースを作成"
+    },
+    "done": {
+      "title": "ようこそ、{studioName}",
+      "subtitle": "スタジオが公開されました。続けて設定を行いましょう…",
+      "instructorSubtitle": "講師用ワークスペースの準備が整いました。",
+      "continue": "設定を続ける →",
+      "instructorContinue": "スケジュールへ進む →"
+    }
+  }
+}

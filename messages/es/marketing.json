@@ -1,0 +1,291 @@
+{
+  "marketing": {
+    "hero": {
+      "titleLine1": "Gestiona todo tu estudio.",
+      "titleLine2": "Olvídate del caos.",
+      "subtitle": "Inscripciones, horarios, asistencia y cuotas en un solo lugar — para que la administración funcione sola y recuperes tus tardes.",
+      "seeInAction": "Verlo en acción",
+      "quote": "Se acabaron las listas en papel, perseguir las cuotas del trimestre y el horario repartido en tres hojas de cálculo distintas.",
+      "marquee": {
+        "invoicing": "Facturación",
+        "enrolments": "Inscripciones",
+        "timetables": "Horarios",
+        "payments": "Pagos",
+        "families": "Familias",
+        "attendance": "Asistencia",
+        "classes": "Clases",
+        "reports": "Informes"
+      }
+    },
+    "studioHero": {
+      "headlineWhere": "Donde",
+      "headlineMovement": "el movimiento",
+      "headlineBecomes": "se convierte",
+      "headlineArt": "en arte.",
+      "defaultTagline": "Desde el primer plié hasta el escenario — cada clase, cada bailarín, cada familia, todo en un solo lugar.",
+      "bookTrial": "Reservar una clase de prueba gratuita",
+      "exploreProgrammes": "Explorar programas",
+      "scroll": "Desplázate",
+      "disciplines": {
+        "ballet": "Ballet",
+        "contemporary": "Contemporáneo",
+        "jazz": "Jazz",
+        "hipHop": "Hip-Hop",
+        "tap": "Claqué",
+        "lyrical": "Lírico",
+        "acro": "Acrobacia",
+        "pointe": "Puntas"
+      }
+    },
+    "problem": {
+      "eyebrow": "La parte humana",
+      "title": "No abriste un estudio para hacer papeleo.",
+      "body1": "Lo abriste para enseñar. Pero entre las facturas del trimestre, las listas en papel, los correos a los padres y un sitio web que aún muestra el horario del año pasado, la administración se comió tu semana en silencio.",
+      "body2": "Olune reúne todo eso en un solo lugar — y hace el trabajo pesado en segundo plano, para que tus tardes dejen de pertenecer al papeleo.",
+      "sceneCaption": "9:14 pm — facturas del trimestre ya enviadas. <i>Tardes recuperadas.</i>",
+      "oldWay": "La forma antigua",
+      "newWay": "La forma Olune",
+      "oldWayItems": [
+        "Hojas de cálculo",
+        "Listas en papel",
+        "Aplicación de contabilidad",
+        "Creador de sitios web",
+        "Correos a los padres",
+        "Notas adhesivas",
+        "Calendarios de pared",
+        "Listas de clases"
+      ],
+      "newWayCaption": "Todo, en un solo hogar sin estrés."
+    },
+    "bento": {
+      "eyebrow": "Todo, en un solo lugar",
+      "title": "Un hogar para todo.",
+      "cells": {
+        "invoicing": {
+          "title": "Facturación y cuotas",
+          "body": "Cuotas del trimestre enviadas, pagos recibidos, cobros gestionados."
+        },
+        "cashFlow": {
+          "title": "Flujo de caja",
+          "body": "Dinero que entra y sale, en tiempo real."
+        },
+        "website": {
+          "title": "El sitio web de tu estudio",
+          "body": "Horario, clases y precios en un sitio que editas tú mismo/a — en vivo en el momento en que lo cambias."
+        },
+        "paymentPlans": {
+          "title": "Planes de pago",
+          "body": "Divide un trimestre. Se cobra automáticamente."
+        },
+        "classes": {
+          "title": "Clases y horarios",
+          "body": "Cada clase, sala y lista de asistencia en una vista clara."
+        },
+        "checkin": {
+          "title": "Registro con un toque",
+          "body": "Un toque en la puerta. Asistencia lista."
+        },
+        "families": {
+          "title": "Familias",
+          "body": "Cada bailarín, padre y hermano, juntos."
+        }
+      },
+      "stats": {
+        "logins": {
+          "n": "1",
+          "label": "inicio de sesión para todo tu estudio"
+        },
+        "tools": {
+          "n": "3-4",
+          "label": "herramientas sustituidas por una sola"
+        },
+        "price": {
+          "n": "29 $",
+          "label": "donde el conjunto de herramientas cuesta 80-150 $"
+        }
+      }
+    },
+    "whyChoose": {
+      "eyebrow": "Por qué los estudios eligen Olune",
+      "title": "Más rápido. Más barato.",
+      "titleEmphasis": "Mejor hecho.",
+      "items": {
+        "faster": {
+          "title": "Más rápido que el mosaico de herramientas",
+          "body": "Deja de combinar un gestor de clases, una aplicación de contabilidad, un creador de sitios web y una decena de pestañas. Olune lo hace todo en uno."
+        },
+        "value": {
+          "title": "Mejor relación calidad-precio que el conjunto",
+          "body": "Sustituye tres o cuatro suscripciones por un precio justo. Obtienes más, pagas menos y siempre sabes cuánto costará el próximo mes."
+        },
+        "craft": {
+          "title": "Hecho con verdadero cuidado",
+          "body": "Creado por personas que entienden los estudios — el ritmo del trimestre, el ajetreo del recital, la familia que siempre paga tarde. Cada pantalla es rápida, clara y bien pensada."
+        }
+      }
+    },
+    "everyday": {
+      "eyebrow": "La diferencia del día a día",
+      "title": "Lo que cambia cuando todo vive en un solo lugar",
+      "items": {
+        "mornings": {
+          "title": "Las mañanas empiezan tranquilas",
+          "body": "Abre Olune y el día se organiza solo — cada clase, cada ausencia, cada cuota pendiente."
+        },
+        "money": {
+          "title": "El dinero cobra sentido",
+          "body": "Envía una factura de trimestre, ve quién ha pagado y reclama el resto con un toque."
+        },
+        "evenings": {
+          "title": "Las tardes vuelven a ser tuyas",
+          "body": "Cuando la administración funciona sola, tu tiempo libre deja de ser una fantasía."
+        },
+        "families": {
+          "title": "Las familias están al tanto",
+          "body": "Los padres reciben alertas de llegada y facturas sin que tengas que escribir un solo correo."
+        }
+      }
+    },
+    "promise": {
+      "eyebrow": "La promesa",
+      "title": "Más enseñanza.",
+      "titleEmphasis": "Menos administración.",
+      "body": "Olune no está aquí para añadir otra pestaña a tu día. Está aquí para asumir el peso en silencio — las inscripciones, las listas, las cuotas y el sitio web — para que puedas volver a la sala.",
+      "cta": "Empieza tu prueba gratuita",
+      "footnote": "No se necesita tarjeta. Configúralo en minutos."
+    },
+    "pricingSection": {
+      "eyebrow": "Precios",
+      "title": "Precios justos.",
+      "titleEmphasis": "Sin sorpresas.",
+      "subtitle": "Un plan sustituye a tu gestor de clases, tu aplicación de contabilidad y tu creador de sitios web. Paga por una sola cosa, no por cuatro.",
+      "mostPopular": "Más popular",
+      "perMonth": "/mes",
+      "plans": {
+        "solo": {
+          "name": "Solo",
+          "tag": "para el estudio de una sola persona",
+          "price": "29 $",
+          "desc": "Todo lo que necesitas para enseñar, pasar lista y cobrar las cuotas. Para el estudio que es una sola persona."
+        },
+        "studio": {
+          "name": "Estudio",
+          "tag": "el más popular",
+          "price": "59 $",
+          "desc": "Todo lo de Solo, además de personal, sustitutos, formularios de inscripción y el sitio web de tu estudio — lo que empieza a importar cuando hay un equipo."
+        },
+        "scale": {
+          "name": "Escala",
+          "tag": "para estudios con mucho movimiento",
+          "price": "120 $",
+          "desc": "Todos los módulos de Olune, incluidas las clases particulares, insignias y progreso, producciones y vestuario."
+        }
+      },
+      "includes": "Todos los planes incluyen:",
+      "includesBody": "alumnos, inscripciones y horarios ilimitados, asistencia, facturación y pagos, y actualizaciones gratuitas. Sin cuotas de configuración, nunca.",
+      "honestMath": "Las cuentas claras",
+      "honestMathBody": "La mayoría de los programas para estudios cobran según el número de alumnos, así que la factura crece cada vez que tienes un buen trimestre. Todos los planes de Olune tienen alumnos ilimitados — el precio solo cambia si decides que quieres más funciones de Olune.",
+      "trialNote": "14 días, sin necesidad de tarjeta."
+    },
+    "featuresSection": {
+      "eyebrow": "Lo que hace Olune",
+      "title": "Tres tareas.",
+      "titleEmphasis": "Un solo hogar.",
+      "money": {
+        "title": "Controla el dinero",
+        "subtitle": "Facturas de trimestre, planes de pago y pagos con tarjeta o banco integrados. Observa en tiempo real lo que ha entrado y lo que aún se debe."
+      },
+      "liveSites": {
+        "title": "Mantén tu sitio web activo",
+        "subtitle": "Tu horario, clases y precios en un sitio que editas tú mismo/a — publicado en el momento en que lo cambias. Sin desarrollador, sin esperas."
+      },
+      "runClasses": {
+        "title": "Gestiona las clases",
+        "subtitle": "Cada clase, inscripción, lista de asistencia y familia en una vista clara. Sabe quién asiste, quién falta y quién aún no se ha inscrito para el próximo trimestre."
+      }
+    },
+    "aboutSection": {
+      "eyebrow": "Sobre nosotros",
+      "title": "Creado por gente de estudios,",
+      "titleEmphasis": "para gente de estudios.",
+      "body1": "Hemos dirigido estudios. Conocemos la carrera contra el reloj de las facturas a las 11 de la noche, la lista de asistencia que nunca volvió a la oficina, el sitio web que todavía muestra el horario del año pasado.",
+      "body2": "Así que creamos lo que nos hubiera gustado tener — un sistema tranquilo que reúne las clases, las familias, el dinero y el sitio web, y los mantiene a todos en sincronía.",
+      "body3": "Olune existe por una sola razón: devolverle su tiempo a la gente de estudios. Menos administración. Más enseñanza. Esa es toda la idea.",
+      "meetTeam": "Conoce al equipo",
+      "ourStory": "Nuestra historia",
+      "quote": "Menos administración. Más enseñanza.",
+      "sceneCaption": "Clases · Familias · Dinero — <i>orbitando alrededor de tu estudio.</i>",
+      "principles": {
+        "studioRun": {
+          "t": "Creado por gente de estudios",
+          "d": "Creado por personas que realmente han dirigido estudios."
+        },
+        "calm": {
+          "t": "Tranquilo por diseño",
+          "d": "Cada pantalla pensada para abrirse con gusto, no con temor."
+        },
+        "allInOne": {
+          "t": "Todo en uno",
+          "d": "Clases, familias, dinero y tu sitio, todo junto."
+        }
+      }
+    },
+    "compareSection": {
+      "eyebrow": "Comparar",
+      "title": "Por qué los estudios se pasan a Olune",
+      "subtitle": "La mayoría de los estudios funcionan con un mosaico de herramientas — un gestor de clases por aquí, una aplicación de contabilidad por allá, un creador de sitios web aparte y una hoja de cálculo que lo sostiene todo.",
+      "stackHeader": "El conjunto habitual",
+      "rows": {
+        "invoicing": {
+          "label": "Facturación y pagos",
+          "stack": "Una segunda aplicación",
+          "olune": "Integrado"
+        },
+        "websites": {
+          "label": "El sitio web de tu estudio",
+          "stack": "Una tercera aplicación",
+          "olune": "Integrado, en vivo"
+        },
+        "sync": {
+          "label": "Todo sincronizado",
+          "stack": "Manual, propenso a errores",
+          "olune": "Automático"
+        },
+        "cost": {
+          "label": "Coste mensual",
+          "stack": "80-150 $ o más en conjunto",
+          "olune": "Desde 19 $"
+        },
+        "tools": {
+          "label": "Herramientas que aprender",
+          "stack": "3-4",
+          "olune": "1"
+        },
+        "purpose": {
+          "label": "Hecho para estudios",
+          "stack": "Genérico",
+          "olune": "Diseñado específicamente"
+        },
+        "classes": {
+          "label": "Clases e inscripciones",
+          "stack": "Una aplicación",
+          "olune": "Integrado"
+        }
+      },
+      "highlights": {
+        "faster": {
+          "k": "Más rápido",
+          "v": "Sin cambiar entre aplicaciones ni volver a introducir la misma lista de clases tres veces."
+        },
+        "cheaper": {
+          "k": "Más barato",
+          "v": "Un precio justo en lugar de cuatro suscripciones."
+        },
+        "better": {
+          "k": "Mejor hecho",
+          "v": "Cada pantalla creada para cómo funcionan realmente los estudios, no añadida después."
+        }
+      }
+    }
+  }
+}

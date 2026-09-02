@@ -1,0 +1,827 @@
+{
+  "site": {
+    "brand": {
+      "poweredBy": "Desarrollado con",
+      "logoLabel": "Olune",
+      "poweredByOlune": "Desarrollado con Olune"
+    },
+    "payments": {
+      "paymentNotCompleted": "No se pudo completar el pago.",
+      "paymentIncomplete": "El pago no se completó. Prueba con otro método.",
+      "processing": "Procesando…",
+      "payNow": "Pagar ahora"
+    },
+    "manager": {
+      "title": "Sitio web",
+      "subtitle": "Crea y publica las páginas públicas de tu estudio.",
+      "domainSetup": "Configuración de dominio",
+      "cancel": "Cancelar",
+      "newPage": "+ Nueva página",
+      "pageTitle": "Título de la página",
+      "pageTitlePlaceholder": "p. ej. Sobre nosotros",
+      "createPage": "Crear página",
+      "createAsHomepage": "Crear como página de inicio",
+      "somethingWrong": "Algo salió mal.",
+      "chooseHomepageStyle": "Elige un estilo para la página de inicio",
+      "homepageBrowse": "Explora {count} diseños ya listos — cada bloque es totalmente editable, y publicas cuando estés listo/a.",
+      "addPageFromTemplate": "Añadir una página desde una plantilla",
+      "addPageFromTemplateHint": "Empieza una página común con textos y diseño razonables ya preparados.",
+      "noPagesYet": "Todavía no hay páginas. Elige una plantilla arriba, o crea una desde cero con \"+ Nueva página\".",
+      "home": "Inicio",
+      "edit": "Editar",
+      "unpublish": "Despublicar",
+      "publish": "Publicar",
+      "setAsHome": "Definir como inicio",
+      "confirm": "Confirmar",
+      "delete": "Eliminar",
+      "statusDraft": "borrador",
+      "statusPublished": "publicada",
+      "defaultHomeTitle": "Inicio",
+      "defaultPageTitle": "Nueva página"
+    },
+    "setup": {
+      "websiteReady": "Tu sitio web está listo",
+      "openingEditor": "Abriendo el editor visual…",
+      "title": "Configura tu sitio web",
+      "subtitle": "Explora 20 diseños iniciales y 30 estilos tipográficos. Añade tu marca, previsualiza y luego genera — todo sigue siendo editable en el editor visual.",
+      "setupTab": "Configuración",
+      "previewTab": "Vista previa",
+      "homepagePreview": "Vista previa de la página de inicio",
+      "pagesWillBeCreated": "{count, plural, one {se creará # página} other {se crearán # páginas}} · La página de inicio se publica al generar",
+      "backToSetup": "Volver a la configuración",
+      "generating": "Generando…",
+      "generateWebsite": "Generar mi sitio web",
+      "homepageTemplate": "Plantilla de la página de inicio",
+      "homepageTemplateHint": "Desplázate por {count} diseños — cada uno es un punto de partida totalmente editable.",
+      "typography": "Tipografía",
+      "typographyHint": "30 combinaciones seleccionadas — toca para previsualizar cómo se leerá tu sitio.",
+      "starterPages": "Páginas iniciales",
+      "starterPagesHint": "Desmarca las páginas que todavía no necesites.",
+      "sitePlan": "El plan de tu sitio",
+      "sitePlanTemplate": "Creando para {studio} con la plantilla {template}.",
+      "homepage": "Página de inicio",
+      "liveMiniPreview": "Vista previa en miniatura en vivo",
+      "openFullPreview": "Abrir vista previa completa",
+      "connectDomain": "Conecta tu propio dominio →",
+      "templateFallback": "Clásico",
+      "portalLabel": "Portal"
+    },
+    "setupPages": {
+      "page-about": "Sobre nosotros",
+      "page-classes": "Clases",
+      "page-contact": "Contacto",
+      "page-schedule": "Horario",
+      "page-people": "Personas / instructores",
+      "page-news": "Noticias y eventos",
+      "page-shop": "Tienda"
+    },
+    "branding": {
+      "title": "Tu marca",
+      "subtitle": "Añade tu logo y colores — se aplican al instante en la vista previa de abajo.",
+      "taglineFallback": "Tu eslogan",
+      "logoUrl": "URL del logo",
+      "logoUrlPlaceholder": "https://…/logo.png",
+      "tagline": "Eslogan",
+      "taglinePlaceholder": "p. ej. Auckland · Todas las edades bienvenidas",
+      "brandColor": "Color de marca",
+      "brandColorAria": "Color de marca",
+      "siteTheme": "Tema del sitio",
+      "dark": "Oscuro",
+      "light": "Claro",
+      "colorPresets": {
+        "iris": "Iris",
+        "crimson": "Carmesí",
+        "voltage": "Voltaje",
+        "aurum": "Aurum",
+        "bloom": "Floración",
+        "jade": "Jade",
+        "forest": "Bosque",
+        "slate": "Pizarra"
+      }
+    },
+    "templateGallery": {
+      "noTemplatesInCategory": "No hay plantillas en esta categoría.",
+      "selected": "Seleccionada",
+      "blockLabels": {
+        "hero": "Cabecera principal",
+        "features": "Características",
+        "classGrid": "Clases",
+        "testimonials": "Reseñas",
+        "cta": "CTA",
+        "contact": "Contacto",
+        "gallery": "Galería",
+        "statsRow": "Estadísticas",
+        "classStreams": "Categorías",
+        "newsFeed": "Noticias",
+        "richText": "Historia",
+        "peopleGrid": "Equipo",
+        "schedule": "Horario",
+        "faq": "Preguntas frecuentes",
+        "pageHeader": "Encabezado",
+        "videoBlock": "Video",
+        "classTabs": "Pestañas de clases",
+        "imageBlock": "Imagen",
+        "heading": "Título",
+        "paragraph": "Texto",
+        "linkBlock": "Botón",
+        "divider": "Divisor",
+        "spacer": "Espaciador",
+        "shopGrid": "Tienda",
+        "locations": "Ubicaciones"
+      }
+    },
+    "templateCategories": {
+      "all": "Todas las plantillas",
+      "minimal": "Minimalista",
+      "bold": "Audaz",
+      "visual": "Visual",
+      "community": "Comunidad",
+      "professional": "Profesional",
+      "elegant": "Elegante",
+      "modern": "Moderno",
+      "editorial": "Editorial",
+      "dramatic": "Dramático",
+      "playful": "Divertido",
+      "luxe": "Lujo",
+      "retro": "Retro",
+      "complete": "Completo"
+    },
+    "typography": {
+      "sampleText": "El veloz murciélago hindú",
+      "categories": {
+        "all": "Todos los estilos",
+        "elegant": "Elegante",
+        "modern": "Moderno",
+        "classic": "Clásico",
+        "bold": "Audaz",
+        "friendly": "Cercano",
+        "minimal": "Minimalista",
+        "creative": "Creativo",
+        "editorial": "Editorial"
+      },
+      "pairs": {
+        "fraunces-hanken": {
+          "label": "Iris & Ink",
+          "description": "Titulares serif cálidos con texto sans-serif nítido."
+        },
+        "cormorant-inter": {
+          "label": "Editorial Classic",
+          "description": "Combinación editorial de alta costura."
+        },
+        "playfair-source": {
+          "label": "Gallery White",
+          "description": "Contraste refinado para sitios centrados en imágenes."
+        },
+        "libre-lato": {
+          "label": "Heritage",
+          "description": "Fiable y fácil de leer."
+        },
+        "merriweather-opensans": {
+          "label": "Scholar",
+          "description": "Claridad académica con calidez."
+        },
+        "lora-nunito": {
+          "label": "Soft Serif",
+          "description": "Cercano y suave."
+        },
+        "dm-serif-dm-sans": {
+          "label": "DM Duo",
+          "description": "Armonía geométrica de una sola familia."
+        },
+        "cinzel-raleway": {
+          "label": "Grand Stage",
+          "description": "Estilo dramático para artes escénicas."
+        },
+        "bodoni-work": {
+          "label": "Atelier",
+          "description": "Sensación de alta costura y lujo."
+        },
+        "oswald-roboto": {
+          "label": "Impact",
+          "description": "Titulares fuertes, texto neutro."
+        },
+        "bebas-montserrat": {
+          "label": "Poster Bold",
+          "description": "Energía en mayúsculas con texto limpio."
+        },
+        "space-inter": {
+          "label": "Tech Studio",
+          "description": "Estética contemporánea de startup."
+        },
+        "archivo": {
+          "label": "Mono Modern",
+          "description": "Claridad geométrica de una sola familia."
+        },
+        "poppins": {
+          "label": "Rounded Pop",
+          "description": "Cercano y fácil de leer para todos."
+        },
+        "nunito": {
+          "label": "Bubble Warm",
+          "description": "Curvas suaves para marcas familiares."
+        },
+        "lexend": {
+          "label": "Readable First",
+          "description": "Optimizado para una lectura sin esfuerzo."
+        },
+        "rubik": {
+          "label": "Rounded Edge",
+          "description": "Geometría divertida sin ruido visual."
+        },
+        "manrope": {
+          "label": "Neutral Pro",
+          "description": "Equilibrado y profesional."
+        },
+        "jakarta": {
+          "label": "Startup Clean",
+          "description": "Energía fresca de página de aterrizaje SaaS."
+        },
+        "eb-karla": {
+          "label": "Bookshop",
+          "description": "Calidez literaria con cuerpo moderno."
+        },
+        "crimson-franklin": {
+          "label": "Broadsheet",
+          "description": "Tradición periodística que llega a la web."
+        },
+        "josefin-lato": {
+          "label": "Art Deco",
+          "description": "Glamur vintage con claridad."
+        },
+        "albert": {
+          "label": "Swiss Lite",
+          "description": "Una sola familia ultralimpia."
+        },
+        "quicksand": {
+          "label": "Playground",
+          "description": "Ligero y acogedor para niños."
+        },
+        "figtree": {
+          "label": "Fig & Flow",
+          "description": "Sans humanista contemporánea."
+        },
+        "urbanist": {
+          "label": "Urban Grid",
+          "description": "Modernismo de estudio urbano."
+        },
+        "instrument": {
+          "label": "Instrument",
+          "description": "Carácter editorial distintivo."
+        },
+        "bricolage": {
+          "label": "Bricolage",
+          "description": "Sans variable y expresiva."
+        },
+        "syne-inter": {
+          "label": "Syne Pulse",
+          "description": "Titulares experimentales con cuerpo tranquilo."
+        },
+        "sora-outfit": {
+          "label": "Sora & Outfit",
+          "description": "Limpio, cercano y accesible."
+        }
+      }
+    },
+    "templates": {
+      "home-classic": {
+        "label": "Clásico",
+        "description": "Cabecera principal, cuadrícula de características, muestra de clases, testimonios, llamada a la acción y contacto."
+      },
+      "home-showcase": {
+        "label": "Vitrina",
+        "description": "Diseño centrado en imágenes: cabecera audaz, muestra de clases, galería y testimonios."
+      },
+      "home-minimal": {
+        "label": "Minimalista",
+        "description": "Una página de inicio limpia y enfocada en un solo mensaje: cabecera, introducción, clases y una llamada a la acción."
+      },
+      "home-bold": {
+        "label": "Audaz",
+        "description": "Cabecera a pantalla completa, franja de estadísticas, categorías de clases, vista previa de noticias y llamada a la acción de inscripción."
+      },
+      "page-schedule": {
+        "label": "Horario",
+        "description": "Horario semanal con filtros por día y estudio."
+      },
+      "page-people": {
+        "label": "Personas",
+        "description": "Cuadrícula de instructores a partir de los perfiles del personal."
+      },
+      "page-studios": {
+        "label": "Estudios",
+        "description": "Fichas de estudios con varias sedes y contacto."
+      },
+      "page-news": {
+        "label": "Noticias y eventos",
+        "description": "Feed filtrable de noticias y eventos."
+      },
+      "page-shop": {
+        "label": "Tienda",
+        "description": "Catálogo de productos con filtros por categoría y pago."
+      },
+      "page-about": {
+        "label": "Sobre nosotros",
+        "description": "Cuenta tu historia: cabecera introductoria, texto narrativo, valores y una llamada a la acción final."
+      },
+      "page-classes": {
+        "label": "Clases",
+        "description": "Una página dedicada al listado de clases con preguntas frecuentes y una llamada a la acción de inscripción."
+      },
+      "page-contact": {
+        "label": "Contacto",
+        "description": "Datos de contacto y horario de apertura, además de una breve sección de preguntas frecuentes."
+      },
+      "home-academy": {
+        "label": "Academia",
+        "description": "Diseño de estilo institucional: cabecera audaz, franja de credenciales, programas y profesorado."
+      },
+      "home-spotlight": {
+        "label": "Foco",
+        "description": "Centrado en el intérprete: cabecera dramática, foco en el instructor y galería de fotos."
+      },
+      "home-magazine": {
+        "label": "Revista",
+        "description": "Flujo editorial centrado en noticias — como un diario del estudio con destacados de clases."
+      },
+      "home-gallery": {
+        "label": "Galería",
+        "description": "Liderado por el portafolio de fotos — texto mínimo, máximo impacto visual."
+      },
+      "home-community": {
+        "label": "Comunidad",
+        "description": "Con mucho peso en pruebas sociales — reseñas, valores y una cuadrícula de clases acogedora."
+      },
+      "home-momentum": {
+        "label": "Momentum",
+        "description": "Ambiente fitness de alta energía — estadísticas, clases y una llamada a la acción centrada en la inscripción."
+      },
+      "home-elegant": {
+        "label": "Elegante",
+        "description": "Sensación de lujo refinado — cabecera alineada a la izquierda, historia y profesorado."
+      },
+      "home-modern": {
+        "label": "Filo Moderno",
+        "description": "Estética limpia de startup tecnológica — categorías, estadísticas y llamadas a la acción claras."
+      },
+      "home-festival": {
+        "label": "Festival",
+        "description": "Impulsado por eventos — noticias, vista previa del horario y llamada a la acción de inscripción."
+      },
+      "home-streams": {
+        "label": "Programas",
+        "description": "Explorador de categorías de clases con preguntas frecuentes — ideal para estudios multidisciplinares."
+      },
+      "home-family": {
+        "label": "Bienvenida Familiar",
+        "description": "Cálido y cercano — valores, clases y preguntas frecuentes para padres nuevos."
+      },
+      "home-professional": {
+        "label": "Profesional",
+        "description": "Diseño corporativo y limpio — historia, valores, equipo y contacto."
+      },
+      "home-creative": {
+        "label": "Creativo Audaz",
+        "description": "Impacto de estilo agencia — cabecera asimétrica, galería y estadísticas."
+      },
+      "home-story": {
+        "label": "Narrador",
+        "description": "Viaje narrativo — secciones de texto enriquecido en capas que construyen la historia de tu marca."
+      },
+      "home-enrol": {
+        "label": "Foco en Inscripción",
+        "description": "Optimizado para la conversión — clases, prueba social y varias llamadas a la inscripción."
+      },
+      "home-complete": {
+        "label": "Completo",
+        "description": "Todo en una página — la experiencia completa del estudio en un solo desplazamiento."
+      },
+      "home-cinematic": {
+        "label": "Cinemático",
+        "description": "Cabecera oscura a pantalla completa, galería del estudio, estadísticas, ovaciones y una llamada a la acción final."
+      },
+      "home-noir": {
+        "label": "Noir",
+        "description": "Drama en negro y dorado: cabecera audaz, la compañía, galería entre bastidores y testimonios."
+      },
+      "home-eclipse": {
+        "label": "Eclipse",
+        "description": "Cabecera oscura eléctrica, estadísticas, pestañas de clases interactivas y testimonios."
+      },
+      "home-playful": {
+        "label": "Divertido",
+        "description": "Brillante y cercano: trío de características, clases por edad, galería, preguntas frecuentes y contacto."
+      },
+      "home-carnival": {
+        "label": "Carnaval",
+        "description": "Cabecera de alta energía, estadísticas, categorías de clases, reseñas y una galería de gran noche."
+      },
+      "home-sunny": {
+        "label": "Soleado",
+        "description": "Cabecera cálida y optimista con características, clases, próximos eventos y una llamada a la acción."
+      },
+      "home-atelier": {
+        "label": "Atelier",
+        "description": "Diseño boutique refinado: historia, profesionales, galería y testimonios."
+      },
+      "home-couture": {
+        "label": "Couture",
+        "description": "Encabezado editorial de moda, galería de colecciones, historia y programas destacados."
+      },
+      "home-retro": {
+        "label": "Retro",
+        "description": "Estilo de póster vintage: cabecera audaz, estadísticas, el elenco, reseñas y contacto."
+      },
+      "home-marquee": {
+        "label": "Marquesina",
+        "description": "Cabecera oscura de marquesina de teatro, eventos destacados, horarios de función y galería."
+      },
+      "home-journal": {
+        "label": "Diario",
+        "description": "Editorial de formato largo: cabecera, dos ensayos, un divisor y un feed de noticias."
+      },
+      "home-broadsheet": {
+        "label": "Broadsheet",
+        "description": "Sensación de periódico: encabezado estilo impreso, titulares, clases y testimonios."
+      },
+      "home-lookbook": {
+        "label": "Lookbook",
+        "description": "Diseño centrado en imágenes liderado por una galería amplia, estadísticas y testimonios."
+      },
+      "home-reel": {
+        "label": "Reel",
+        "description": "Enfocado en el movimiento: cabecera cinematográfica, un video promocional, galería y llamada a la acción."
+      },
+      "home-grid": {
+        "label": "Cuadrícula",
+        "description": "Diseño moderno y sistemático con pestañas de clases interactivas, estadísticas y características."
+      },
+      "home-pulse": {
+        "label": "Pulso",
+        "description": "Cabecera fitness enérgica, estadísticas, clases, reseñas, preguntas frecuentes y una llamada a la acción."
+      },
+      "home-impact": {
+        "label": "Impacto",
+        "description": "Cabecera oscura de máximo impacto, estadísticas, categorías de clases, galería y una llamada a la acción audaz."
+      },
+      "home-whitespace": {
+        "label": "Espacio en Blanco",
+        "description": "Ultraminimalista: una gran declaración, una sola idea, clases y una llamada a la acción."
+      }
+    },
+    "editor": {
+      "backToPages": "← Páginas",
+      "untitled": "Sin título",
+      "unsavedChanges": "Cambios sin guardar",
+      "saved": "Guardado",
+      "published": "Publicado",
+      "undoTitle": "Deshacer (⌘Z)",
+      "redoTitle": "Rehacer (⌘⇧Z)",
+      "add": "+ Añadir",
+      "background": "Fondo",
+      "settings": "Configuración",
+      "preview": "Vista previa",
+      "openLiveSite": "Abrir sitio en vivo",
+      "previewMode": "Vista previa en vivo",
+      "exitPreview": "Salir de la vista previa",
+      "previewModeBanner": "Vista previa en vivo — los bloques se muestran como los verán los visitantes. Haz clic en Salir de la vista previa para editar.",
+      "saving": "Guardando…",
+      "saveDraft": "Guardar borrador",
+      "publish": "Publicar",
+      "confirmLeave": "Tienes cambios sin guardar. ¿Salir de esta página?",
+      "previewLiveTitle": "Abrir la página en vivo en {url}",
+      "previewDraftTitle": "Previsualizar borrador (se abre en administración — publica para compartir públicamente)",
+      "elementsSelected": "{count} elementos seleccionados",
+      "multiSelectHint": "Las flechas mueven todos los elementos seleccionados. Suprimir los elimina. Haz clic en un elemento sin Mayús para editarlo individualmente.",
+      "deleteSelected": "Eliminar seleccionados",
+      "clickToEdit": "Haz clic en un elemento de la página para editarlo.",
+      "rightClickHint": "O haz clic derecho en el lienzo para añadir títulos, cuadros de texto, imágenes o botones.",
+      "addElement": "Añadir elemento",
+      "addElementHint": "Haz clic para añadir al final, o haz clic derecho en el lienzo para un lugar específico. Todo se ajusta a la cuadrícula de 12 columnas.",
+      "groupBasic": "Básico — texto, imágenes y botones",
+      "groupSections": "Secciones",
+      "groupStudioContent": "Contenido del estudio",
+      "quickActions": "Acciones rápidas",
+      "alignLeft": "⬅ Alinear",
+      "alignCenter": "↔ Centrar",
+      "alignRight": "➡ Alinear",
+      "rotateMinus": "↺ −15°",
+      "rotatePlus": "↻ +15°",
+      "layerUp": "▲ Capa",
+      "layerDown": "▼ Capa",
+      "keyboardHint": "Flechas para mover · ⌘D duplicar · ⌘Z deshacer · Mayús+clic selección múltiple",
+      "sectionAppearance": "Apariencia de la sección",
+      "frameEffects": "Marco y efectos",
+      "positionSize": "Posición y tamaño",
+      "selectedMore": "(+{count} seleccionados)",
+      "itemN": "Elemento {n}",
+      "addItem": "+ Añadir elemento",
+      "pageSettings": "Configuración de la página",
+      "pageTitle": "Título",
+      "urlSlug": "Slug de URL",
+      "homepageSlugHint": "La página de inicio siempre está en /.",
+      "publicUrlHint": "URL pública: /{slug}",
+      "showInNav": "Mostrar en la navegación",
+      "navLabel": "Etiqueta de navegación (opcional)",
+      "navOrder": "Orden de navegación",
+      "seoTitle": "Título SEO",
+      "seoDescription": "Descripción SEO",
+      "boldText": "texto en negrita",
+      "linkText": "texto del enlace",
+      "boldTitle": "Negrita",
+      "insertLinkTitle": "Insertar enlace",
+      "linkButton": "🔗 Enlace",
+      "emptyPage": "Tu página está vacía",
+      "emptyPageHint": "Haz clic derecho para añadir contenido. Mayús+clic para selección múltiple. Aparecen guías rosas cuando los bordes se alinean.",
+      "canvasHint": "Clic derecho para añadir · Mayús+clic selección múltiple · ⌘Z deshacer",
+      "editPageBackground": "Editar fondo de la página",
+      "backgroundLabel": "Fondo",
+      "duplicate": "Duplicar",
+      "delete": "Eliminar",
+      "locked": "Bloqueado",
+      "dragToMove": "Arrastra para mover (se ajusta a la cuadrícula y guías)",
+      "resize": "Redimensionar",
+      "resizeWidth": "Redimensionar ancho",
+      "resizeHeight": "Redimensionar alto",
+      "previewCopyPlaceholder": "Añade tu texto aquí.",
+      "previewFeature": "Característica",
+      "previewBlock": "Vista previa de {label}"
+    },
+    "contextMenu": {
+      "addElement": "Añadir elemento",
+      "groups": {
+        "basic": "Elementos básicos",
+        "section": "Secciones",
+        "content": "Bloques de contenido"
+      },
+      "actions": {
+        "heading": "Título",
+        "paragraph": "Cuadro de texto",
+        "imageBlock": "Imagen",
+        "linkBlock": "Botón",
+        "spacer": "Espaciador",
+        "divider": "Divisor",
+        "videoBlock": "Video",
+        "pageHeader": "Encabezado de página",
+        "hero": "Cabecera principal",
+        "richText": "Sección de texto",
+        "cta": "Llamada a la acción",
+        "gallery": "Galería",
+        "features": "Características",
+        "testimonials": "Testimonios"
+      }
+    },
+    "background": {
+      "title": "Fondo de la página",
+      "subtitle": "El lienzo detrás de todos tus elementos. Arrastra bloques encima libremente.",
+      "type": "Tipo de fondo",
+      "image": "Imagen de fondo",
+      "video": "Video de fondo",
+      "autoplayMuted": "Reproducción automática (sin sonido)",
+      "opacity": "Opacidad (%)",
+      "kinds": {
+        "base": "Color de página",
+        "surface": "Superficie / tarjeta",
+        "tint": "Tono de marca",
+        "brand": "Degradado de marca",
+        "image": "Imagen",
+        "video": "Video"
+      }
+    },
+    "linkPicker": {
+      "pickPage": "Elige una página…",
+      "customPath": "Ruta personalizada…",
+      "externalUrl": "URL externa",
+      "placeholder": "/sobre-nosotros o https://…",
+      "hint": "Elige una página existente o escribe una ruta. Usa https:// para enlaces externos."
+    },
+    "media": {
+      "none": "ninguno",
+      "imagePlaceholder": "Pega la URL de una imagen o súbela",
+      "uploading": "Subiendo…",
+      "replace": "Reemplazar",
+      "upload": "Subir",
+      "remove": "Quitar",
+      "uploadFailed": "Error al subir el archivo.",
+      "videoPlaceholder": "Pega la URL de un video o sube MP4 / WebM",
+      "replaceVideo": "Reemplazar video",
+      "uploadVideo": "Subir video"
+    },
+    "domain": {
+      "eyebrow": "Configuración de dominio",
+      "title": "Conecta la dirección de tu sitio web",
+      "subtitle": "Una guía sencilla paso a paso para {studio}. Sin tecnicismos — solo copia, pega y publica.",
+      "steps": {
+        "intro": "Empezar",
+        "decide": "Elegir",
+        "kind": "Tipo",
+        "domain": "Dominio",
+        "dns": "DNS",
+        "connect": "Conectar",
+        "done": "Listo"
+      },
+      "stepOf": "Paso {current} de {total}",
+      "intro": {
+        "title": "Tu sitio ya tiene una dirección",
+        "subtitle": "Cada estudio recibe una dirección gratuita de Olune — funciona de inmediato.",
+        "freeAddress": "Dirección gratuita",
+        "shareToday": "Comparte este enlace hoy mismo. Las familias pueden ver tu sitio web y portal desde esta dirección.",
+        "wantOwn": "¿Prefieres tu propio dominio, como {example}? Los siguientes pasos te guían para conseguirlo."
+      },
+      "decide": {
+        "title": "¿Quieres tu propio dominio?",
+        "subtitle": "Opcional — tu dirección gratuita de Olune siempre funciona.",
+        "yesTitle": "Sí, usar mi dominio",
+        "yesDesc": "Conectaré www.miestudio.co.nz (o similar)",
+        "noTitle": "Ahora no",
+        "noDesc": "Seguiré usando {address}"
+      },
+      "kind": {
+        "title": "¿Qué tipo de dirección quieres?",
+        "subtitle": "Elige el estilo que coincide con lo que compraste a tu proveedor de dominio.",
+        "www": {
+          "label": "Dirección www",
+          "hint": "La más común — las familias escriben www.tusitio.com"
+        },
+        "subdomain": {
+          "label": "Subdirección",
+          "hint": "Ideal para una página dedicada de reservas o información"
+        },
+        "apex": {
+          "label": "Dominio raíz",
+          "hint": "Sin www — solo tusitio.com"
+        }
+      },
+      "domain": {
+        "title": "Introduce tu dominio",
+        "subtitle": "Escribe exactamente lo que quieres que las familias escriban en su navegador.",
+        "label": "Tu dominio",
+        "placeholder": "www.miestudio.co.nz",
+        "familiesVisit": "Las familias visitarán {url}"
+      },
+      "dns": {
+        "title": "Añade un registro DNS",
+        "subtitle": "Inicia sesión donde compraste tu dominio (GoDaddy, Cloudflare, Namecheap, etc.) y añade este registro.",
+        "step1": "Abre la configuración de DNS de tu proveedor de dominio.",
+        "step2": "Añade el registro de abajo (copia cada valor).",
+        "step3": "Guarda — los cambios pueden tardar entre 15 minutos y 48 horas.",
+        "tip": "Si tu proveedor pide un \"TTL\", deja el valor predeterminado o elige 3600. La columna \"Host\" podría llamarse Name o Subdomain.",
+        "nextLabel": "Ya añadí el registro",
+        "showSteps": "Mostrar pasos de DNS"
+      },
+      "connect": {
+        "title": "Conectar con Olune",
+        "subtitle": "Indica tu dominio a Olune para que podamos mostrar tu sitio web cuando alguien lo visite.",
+        "hint": "Haz clic en conectar abajo. Luego usa \"Comprobar DNS\" — si aún no está listo, espera 30 minutos e inténtalo de nuevo.",
+        "connecting": "Conectando…",
+        "connectDomain": "Conectar dominio",
+        "checkDns": "Comprobar DNS"
+      },
+      "done": {
+        "connectedTitle": "¡Ya estás conectado/a!",
+        "connectedSubtitle": "Tu dominio personalizado está vinculado a Olune.",
+        "readyTitle": "Todo listo",
+        "readySubtitle": "Tu dirección gratuita de Olune está lista para compartir.",
+        "customDomain": "Dominio personalizado",
+        "checking": "Comprobando…",
+        "checkAgain": "Comprobar DNS de nuevo",
+        "removeDomain": "Quitar dominio personalizado",
+        "yourAddress": "Tu dirección",
+        "connectAnytime": "Puedes conectar un dominio personalizado en cualquier momento desde Sitio web → Configuración de dominio.",
+        "backToWebsite": "Volver al sitio web",
+        "connectDomain": "Conectar un dominio"
+      },
+      "dnsFields": {
+        "type": "Tipo",
+        "host": "Host / Nombre",
+        "value": "Apunta a / Valor",
+        "copied": "Copiado",
+        "copy": "Copiar"
+      },
+      "continue": "Continuar",
+      "back": "Atrás",
+      "verification": {
+        "title": "Un registro más para verificar que eres el propietario de este dominio",
+        "note": "Añade esto junto al registro anterior, y luego comprueba de nuevo."
+      }
+    },
+    "urlBanner": {
+      "title": "La URL pública de tu sitio web",
+      "openPreviewBefore": "Abre",
+      "openPreviewAfter": "para previsualizar lo que ven las familias.",
+      "localhostNote": "Las páginas en localhost simple son la plataforma Olune, no el sitio de tu estudio.",
+      "connectDomain": "Conecta tu dominio →"
+    },
+    "preview": {
+      "draftTitle": "Vista previa del borrador",
+      "publishedTitle": "Vista previa",
+      "refreshHint": "Guarda en el editor y luego actualiza para ver los últimos cambios.",
+      "backToEditor": "← Editor",
+      "openLiveSite": "Abrir sitio en vivo"
+    },
+    "blocks": {
+      "select": "Espaciado vertical",
+      "number": "Posición vertical (px)",
+      "boolean": "Bloquear posición",
+      "color": "Tamaño de fuente",
+      "text": "Tamaño",
+      "textarea": "Alineación",
+      "image": "Video",
+      "video": "Botón",
+      "list": "Categorías de clases",
+      "heading": "Título",
+      "paragraph": "Texto",
+      "imageBlock": "Imagen",
+      "videoBlock": "Video",
+      "linkBlock": "Botón",
+      "hero": "Cabecera principal",
+      "pageHeader": "Encabezado de página",
+      "statsRow": "Estadísticas",
+      "classStreams": "Categorías",
+      "classTabs": "Pestañas de clases",
+      "richText": "Sección de texto",
+      "features": "Características",
+      "classGrid": "Clases",
+      "schedule": "Horario",
+      "gallery": "Galería",
+      "testimonials": "Reseñas",
+      "newsFeed": "Noticias",
+      "peopleGrid": "Equipo",
+      "shopGrid": "Tienda",
+      "locations": "Ubicaciones",
+      "cta": "CTA",
+      "faq": "Preguntas frecuentes",
+      "contact": "Contacto",
+      "spacer": "Espaciador",
+      "divider": "Divisor"
+    },
+    "public": {
+      "emptyPage": "Esta página todavía no tiene contenido.",
+      "addImage": "Añadir una imagen",
+      "addVideo": "Añadir un video",
+      "teamComingSoon": "Los miembros del equipo estarán disponibles próximamente.",
+      "classesComingSoon": "Las clases estarán disponibles próximamente.",
+      "allLevels": "Todos los niveles",
+      "perMonth": "/ mes",
+      "galleryEmpty": "Añade URLs de imágenes para completar la galería.",
+      "contactLabels": {
+        "address": "Dirección",
+        "phone": "Teléfono",
+        "email": "Correo electrónico",
+        "hours": "Horario"
+      },
+      "spacerLabel": "Espaciador · {height}px",
+      "defaultFooterTagline": "Educación de danza excepcional. Formación de primer nivel para todas las edades y niveles.",
+      "defaultPortalLabel": "Portal",
+      "defaultHeading": "Título",
+      "defaultImageAlt": "Imagen",
+      "defaultLinkLabel": "Enlace",
+      "navigation": "Navegación",
+      "studios": "Estudios",
+      "contact": "Contacto",
+      "copyright": "© {year} {studio}. Todos los derechos reservados.",
+      "closeMenu": "Cerrar menú",
+      "openMenu": "Abrir menú",
+      "portalArrow": "{label} →"
+    },
+    "shop": {
+      "categoryAll": "Todos",
+      "categoryGeneral": "General",
+      "checkoutFailed": "Error al finalizar la compra. Inicia sesión para comprar.",
+      "orderCreated": "Pedido creado — completa el pago en el portal de miembros.",
+      "orderPlaced": "¡Pedido realizado con éxito!",
+      "noProducts": "Todavía no hay productos disponibles.",
+      "outOfStock": "Agotado",
+      "addToCart": "Añadir al carrito",
+      "cartItems": "Carrito ({count} artículos)",
+      "processing": "Procesando…",
+      "checkout": "Finalizar compra",
+      "signInToPurchase": "Inicia sesión para comprar"
+    },
+    "schedule": {
+      "days": [
+        "Domingo",
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado"
+      ],
+      "allStudios": "Todos los estudios",
+      "noClassesDay": "No hay clases programadas para este día.",
+      "streamComingSoon": "Las clases de esta categoría estarán disponibles próximamente.",
+      "fromPerTerm": "Desde {price} / trimestre"
+    },
+    "news": {
+      "categories": {
+        "all": "Todas",
+        "news": "Noticias",
+        "events": "Eventos",
+        "term_dates": "Fechas del trimestre",
+        "productions": "Producciones",
+        "announcements": "Anuncios"
+      },
+      "noItems": "Todavía no hay elementos que mostrar."
+    }
+  }
+}

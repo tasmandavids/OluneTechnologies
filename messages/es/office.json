@@ -1,0 +1,13 @@
+{
+  "office": {
+    "welcome": "Bienvenido/a, {name}",
+    "welcomeFallback": "de nuevo",
+    "weekOf": "{date} · Semana del {weekStart}",
+    "upcomingShifts": "Tus próximos turnos",
+    "noShiftsThisWeek": "No hay turnos programados esta semana.",
+    "workingToday": "Quién trabaja hoy",
+    "noShiftsToday": "No hay turnos en el registro de hoy.",
+    "quickLinks": "Enlaces rápidos",
+    "staffFallback": "Personal"
+  }
+}

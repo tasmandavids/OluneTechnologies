@@ -1,0 +1,49 @@
+{
+  "enrol": {
+    "title": "무료 체험 수업 예약하기",
+    "subtitle": "수업을 선택하시면 담당자가 연락드려 자녀분의 자리를 확정해 드립니다.",
+    "steps": {
+      "pickClass": "수업 선택"
+    },
+    "continue": "계속 →",
+    "backToClasses": "수업 변경",
+    "selectedClass": "수업",
+    "noClassesForStyle": "해당 스타일에 맞는 수업이 없습니다 — 다른 필터를 시도하거나 \"아직 잘 모르겠어요\"를 선택해 주세요.",
+    "fields": {
+      "name": "부모/보호자 성명",
+      "namePlaceholder": "홍길동",
+      "childName": "자녀 성명",
+      "childNamePlaceholder": "홍아름",
+      "email": "이메일 주소",
+      "emailPlaceholder": "you@example.com",
+      "phone": "전화번호 (선택 사항)",
+      "phonePlaceholder": "+64 21 123 4567",
+      "interest": "관심 있는 댄스 스타일"
+    },
+    "disciplines": {
+      "ballet": "발레",
+      "contemporary": "컨템포러리",
+      "jazz": "재즈",
+      "hipHop": "힙합",
+      "tap": "탭댄스",
+      "lyrical": "리리컬",
+      "acro": "아크로",
+      "pointe": "포인트",
+      "notSure": "아직 잘 모르겠어요"
+    },
+    "submitting": "전송 중…",
+    "submit": "무료 체험 수업 신청하기 →",
+    "hasAccount": "이미 계정이 있으신가요?",
+    "signIn": "로그인",
+    "success": {
+      "title": "신청이 접수되었습니다!",
+      "body": "{name}님, 곧 연락드리겠습니다. {email}을 확인해 주세요.",
+      "backHome": "홈으로 돌아가기"
+    },
+    "noStudio": {
+      "title": "스튜디오 사이트를 방문하세요",
+      "body": "체험 수업 예약은 각 스튜디오의 서브도메인에서 이용할 수 있습니다 — 예: yourstudio.olune.app/enrol",
+      "back": "Olune으로 돌아가기"
+    }
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "platform": {
+    "dashboard": {
+      "title": "플랫폼 개요",
+      "greeting": "{greeting},",
+      "stats": {
+        "totalStudios": "전체 스튜디오",
+        "activeHint": "{count}개 활성",
+        "onTrial": "체험 중",
+        "suspended": "정지됨",
+        "studentsPlatformWide": "플랫폼 전체 수강생"
+      },
+      "recentSignups": "최근 가입",
+      "allStudios": "전체 스튜디오 →",
+      "noStudios": "아직 스튜디오가 없습니다.",
+      "openSupport": "지원 요청 진행 중",
+      "inbox": "받은 메시지함 →",
+      "inboxClear": "받은 메시지함이 비어 있습니다.",
+      "opsQueue": "운영 작업 대기열",
+      "allTasks": "전체 작업 →",
+      "noOpenTasks": "진행 중인 작업이 없습니다.",
+      "dueDate": "{date} 마감",
+      "unknownStudio": "알 수 없음"
+    },
+    "studios": {
+      "title": "스튜디오",
+      "subtitle": "Olune 플랫폼의 모든 입주 스튜디오입니다.",
+      "filters": {
+        "all": "전체",
+        "trial": "체험 중",
+        "active": "활성",
+        "suspended": "정지됨"
+      },
+      "updated": "업데이트됨",
+      "tableStudio": "스튜디오",
+      "tableOwner": "운영자",
+      "tableStudents": "수강생",
+      "tableStatus": "상태",
+      "tableJoined": "가입일",
+      "tableActions": "작업",
+      "noMatch": "이 필터와 일치하는 스튜디오가 없습니다.",
+      "delete": "삭제",
+      "deleted": "삭제됨",
+      "confirmDelete": "이 스튜디오와 모든 데이터를 영구적으로 삭제하려면 \"{name}\"을(를) 입력하세요. 이 작업은 되돌릴 수 없습니다.",
+      "plan": {
+        "column": "Olune 요금제",
+        "comp": "무료 제공",
+        "uncomp": "무료 제공 종료",
+        "extend": "+14일",
+        "trialExtended": "체험 기간이 14일 연장되었습니다",
+        "missing": "구독 정보 없음",
+        "compReasonPrompt": "{name}에 무료 제공을 하는 이유는 무엇인가요? 이 내용은 스튜디오 기록에 남습니다.",
+        "status": {
+          "trialing": "무료 체험",
+          "active": "활성",
+          "past_due": "결제 실패",
+          "canceled": "취소됨",
+          "comped": "무료 제공"
+        }
+      }
+    },
+    "owners": {
+      "title": "사업 운영자",
+      "subtitle": "스튜디오 관리자 — 모든 입주 스튜디오와의 직접 연락 창구입니다.",
+      "searchPlaceholder": "스튜디오, 이름 또는 이메일로 검색…",
+      "unnamedOwner": "이름 없는 운영자",
+      "ownerFallback": "운영자",
+      "adminSince": "{date}부터 관리자",
+      "privateNotes": "비공개 메모",
+      "notesPlaceholder": "관계 메모, 통화 요약, 선호 사항…",
+      "saveNotes": "메모 저장",
+      "messageOwner": "운영자에게 메시지 보내기",
+      "subjectDefault": "회신: {studioName}",
+      "messagePlaceholder": "메시지가 지원 스레드에 표시됩니다…",
+      "sendViaSupport": "지원 채널로 전송",
+      "notesSaved": "메모가 저장되었습니다",
+      "messageSent": "메시지가 전송되었습니다 — 지원 받은 메시지함을 확인하세요"
+    },
+    "support": {
+      "title": "지원 받은 메시지함",
+      "noThreads": "아직 지원 스레드가 없습니다.",
+      "selectThread": "대화를 보려면 스레드를 선택하세요.",
+      "status": {
+        "open": "진행 중",
+        "pending": "대기 중",
+        "resolved": "해결됨"
+      },
+      "senderOperator": "Olune",
+      "senderOwner": "운영자",
+      "replyPlaceholder": "스튜디오 운영자에게 답장하기…",
+      "sendReply": "답장 보내기"
+    },
+    "tasks": {
+      "title": "운영 작업",
+      "subtitle": "백엔드 작업 대기열 — 온보딩 검토, 청구, 도메인, 배포 등을 관리합니다.",
+      "newTask": "새 작업",
+      "cancel": "취소",
+      "type": "유형",
+      "priority": "우선순위",
+      "priorities": {
+        "low": "낮음",
+        "normal": "보통",
+        "high": "높음",
+        "urgent": "긴급"
+      },
+      "titleLabel": "제목",
+      "studioOptional": "스튜디오 (선택 사항)",
+      "platformWide": "플랫폼 전체",
+      "detailsPlaceholder": "세부 정보, 링크, 배경 정보…",
+      "createTask": "작업 생성",
+      "columns": {
+        "todo": "할 일",
+        "in_progress": "진행 중",
+        "blocked": "막힘",
+        "done": "완료"
+      }
+    },
+    "features": {
+      "title": "기능 플래그",
+      "subtitle": "샵, 이벤트, SMS, AI 베타 등의 플랫폼 모듈을 전체 또는 스튜디오별로 전환하세요.",
+      "globalDefaults": "전역 기본값",
+      "studioOverrides": "스튜디오별 재정의",
+      "on": "켜짐",
+      "off": "꺼짐"
+    },
+    "announcements": {
+      "title": "공지사항",
+      "subtitle": "스튜디오 관리자에게 업데이트를 알립니다 — 점검, 신규 기능, 정책 변경 사항.",
+      "titlePlaceholder": "제목",
+      "bodyPlaceholder": "본문 내용 (스튜디오 관리자 포털에 표시됨)…",
+      "severity": {
+        "info": "안내",
+        "warning": "주의",
+        "critical": "긴급"
+      },
+      "target": {
+        "all": "전체 스튜디오",
+        "trial": "체험 중인 스튜디오만",
+        "active": "활성 스튜디오만",
+        "suspended": "정지된 스튜디오만"
+      },
+      "draft": "공지 초안",
+      "publishedAt": "{date} 게시됨",
+      "draftStatus": "초안",
+      "publishNow": "지금 게시",
+      "stop": "중지",
+      "delete": "삭제",
+      "confirmDelete": "이 공지사항을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+    },
+    "settings": {
+      "title": "플랫폼 설정",
+      "subtitle": "Olune 전역 설정 — 가입, 체험 기간, 점검 모드.",
+      "maintenanceMode": "점검 모드",
+      "signupEnabled": "가입 허용",
+      "defaultTrialDays": "기본 체험 기간(일)",
+      "supportEmail": "지원 이메일",
+      "welcomeMessage": "환영 메시지",
+      "saveSettings": "설정 저장",
+      "saved": "저장됨",
+      "operatorAccessTitle": "운영자 접근 권한",
+      "operatorAccessBody": "환경 변수의 <envVar></envVar>에 이메일을 추가하거나, 인증 사용자와 연결된 행을 <table></table>에 삽입하여 플랫폼 접근 권한을 부여하세요."
+    },
+    "audit": {
+      "title": "감사 로그",
+      "subtitle": "플랫폼 운영자 작업의 변경 불가능한 기록입니다.",
+      "when": "일시",
+      "operator": "운영자",
+      "action": "작업",
+      "target": "대상",
+      "noEntries": "아직 감사 기록이 없습니다."
+    },
+    "badges": {
+      "title": "배지 카탈로그",
+      "subtitle": "전체 글로벌 배지 {total}개 중 {active}개 활성",
+      "iconLabel": "이모지",
+      "xpLabel": "XP 값",
+      "active": "활성",
+      "inactive": "숨김",
+      "save": "저장"
+    },
+    "plans": {
+      "title": "요금제 가격",
+      "subtitle": "각 요금제 및 결제 주기에 대한 Stripe Price ID입니다. 테스트 모드와 라이브 모드는 서로 다른 ID를 발급하므로 환경별로 관리됩니다. 요금제의 가격과 제공 기능은 코드에서 설정되며, 여기서는 설정할 수 없습니다.",
+      "emptyWarning": "이 환경에는 아직 Stripe 가격이 설정되어 있지 않습니다 — 설정 전까지는 결제를 시작할 수 없습니다.",
+      "interval": {
+        "month": "월간",
+        "year": "연간"
+      },
+      "moduleCount": "{count, plural, one {모듈 #개} other {모듈 #개}}",
+      "save": "저장",
+      "saved": "저장됨",
+      "notSet": "설정되지 않음 — 이 요금제는 아직 구매할 수 없습니다."
+    }
+  }
+}

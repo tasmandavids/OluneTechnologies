@@ -4,15 +4,21 @@ import { useEffect, useMemo, useState } from "react";
 import * as Sentry from "@sentry/nextjs";
 import { LOCALE_COOKIE, isLocale, type Locale } from "@/lib/i18n/config";
 import enErrors from "@/messages/en/errors.json";
+import esErrors from "@/messages/es/errors.json";
 import frErrors from "@/messages/fr/errors.json";
 import itErrors from "@/messages/it/errors.json";
+import jaErrors from "@/messages/ja/errors.json";
+import koErrors from "@/messages/ko/errors.json";
 import ruErrors from "@/messages/ru/errors.json";
 import zhErrors from "@/messages/zh/errors.json";
 
 const ERROR_MESSAGES: Record<Locale, typeof enErrors> = {
   en: enErrors,
+  es: esErrors,
   fr: frErrors,
   it: itErrors,
+  ja: jaErrors,
+  ko: koErrors,
   ru: ruErrors,
   zh: zhErrors,
 };

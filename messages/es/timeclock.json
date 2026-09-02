@@ -1,0 +1,89 @@
+{
+  "timeclock": {
+    "title": "Fichaje horario",
+    "clockedInSince": "Fichado desde las {time}",
+    "notClockedIn": "Sin fichar",
+    "viaCard": "Tarjeta",
+    "onTheClock": "Hasta ahora",
+    "thisWeek": "Esta semana",
+    "working": "Trabajando…",
+    "clockIn": "Fichar entrada",
+    "clockOut": "Fichar salida",
+    "addNote": "Añadir una nota",
+    "notePlaceholder": "¿En qué estabas trabajando? (opcional)",
+    "weekTotal": "{total} esta semana",
+    "rostered": "{total} programadas",
+    "overRoster": "{amount} por encima de lo programado",
+    "underRoster": "{amount} por debajo de lo programado",
+    "openShift": "Abierto",
+    "approved": "Aprobado",
+    "admin": {
+      "tabTitle": "Partes de horas",
+      "range": "{from} a {to}",
+      "summary": "{total} en {count} registros",
+      "openCount": "{count} aún abiertos",
+      "pendingOnly": "Solo pendientes de aprobación",
+      "addEntry": "Añadir un registro",
+      "approveSelected": "Aprobar seleccionados ({count})",
+      "selectAll": "Seleccionar todo",
+      "selectNone": "Borrar selección",
+      "selectEntry": "Seleccionar este registro",
+      "empty": "No se registraron horas en este período.",
+      "unknownStaff": "Miembro del personal desconocido",
+      "openEnd": "todavía fichado",
+      "approve": "Aprobar",
+      "unapprove": "Anular aprobación",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "stillOpen": "Todavía abierto",
+      "notRostered": "No programado",
+      "onRoster": "En el turno programado",
+      "overBy": "{amount} de más",
+      "underBy": "{amount} de menos",
+      "source": {
+        "portal": "Portal",
+        "nfc": "Tarjeta",
+        "manual": "Añadido manualmente"
+      },
+      "hourType": {
+        "regular": "Ordinaria",
+        "overtime": "Extraordinaria",
+        "holiday": "Feriado",
+        "sick": "Baja por enfermedad",
+        "vacation": "Vacaciones anuales",
+        "unpaid": "Sin remunerar"
+      },
+      "fields": {
+        "staff": "Miembro del personal",
+        "date": "Fecha",
+        "start": "Inicio",
+        "end": "Fin",
+        "hourType": "Tipo de hora",
+        "note": "Nota"
+      },
+      "errors": {
+        "needStart": "Se requiere una fecha y una hora de inicio.",
+        "needStaffAndStart": "Elige un miembro del personal, una fecha y una hora de inicio."
+      },
+      "rates": {
+        "title": "Tarifas de pago",
+        "subtitle": "Con fecha de vigencia. Una tarifa nueva nunca vuelve a calcular los partes de horas ya aprobados.",
+        "empty": "No hay ninguna tarifa registrada — todavía no se pueden costear las horas de este miembro del personal.",
+        "perHour": "por hora",
+        "from": "desde el {date}",
+        "current": "Actual",
+        "remove": "Quitar",
+        "add": "Añadir tarifa",
+        "fields": {
+          "amount": "Tarifa por hora",
+          "effectiveFrom": "Vigente desde"
+        },
+        "errors": {
+          "needAmountAndDate": "Introduce una tarifa por hora y la fecha en que comienza."
+        }
+      }
+    }
+  }
+}

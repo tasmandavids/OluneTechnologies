@@ -1,0 +1,49 @@
+{
+  "enrol": {
+    "title": "Reserva una clase de prueba gratuita",
+    "subtitle": "Elige una clase y nos pondremos en contacto contigo para confirmar la plaza de tu bailarín/bailarina.",
+    "steps": {
+      "pickClass": "Elige una clase"
+    },
+    "continue": "Continuar →",
+    "backToClasses": "Cambiar clase",
+    "selectedClass": "Clase",
+    "noClassesForStyle": "Ninguna clase coincide con ese estilo — prueba con otro filtro o elige \"Aún no lo sé\".",
+    "fields": {
+      "name": "Nombre del padre, madre o tutor",
+      "namePlaceholder": "Jane Smith",
+      "childName": "Nombre del bailarín/bailarina",
+      "childNamePlaceholder": "Emma Smith",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@ejemplo.com",
+      "phone": "Teléfono (opcional)",
+      "phonePlaceholder": "+64 21 123 4567",
+      "interest": "Estilo de baile de interés"
+    },
+    "disciplines": {
+      "ballet": "Ballet",
+      "contemporary": "Danza contemporánea",
+      "jazz": "Jazz",
+      "hipHop": "Hip-Hop",
+      "tap": "Claqué",
+      "lyrical": "Lírico",
+      "acro": "Acrobacia",
+      "pointe": "Puntas",
+      "notSure": "Aún no lo sé"
+    },
+    "submitting": "Enviando…",
+    "submit": "Solicitar mi clase de prueba gratuita →",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "signIn": "Iniciar sesión",
+    "success": {
+      "title": "¡Ya estás en la lista!",
+      "body": "Nos pondremos en contacto contigo pronto, {name}. Presta atención a {email}.",
+      "backHome": "Volver al inicio"
+    },
+    "noStudio": {
+      "title": "Visita el sitio de tu estudio",
+      "body": "La reserva de clases de prueba está disponible en el subdominio de cada estudio — por ejemplo, tuestudio.olune.app/enrol",
+      "back": "Volver a Olune"
+    }
+  }
+}

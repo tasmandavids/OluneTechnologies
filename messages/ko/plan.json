@@ -1,0 +1,115 @@
+{
+  "plan": {
+    "page": {
+      "title": "내 Olune 요금제",
+      "subtitle": "현재 이용 중인 요금제, 비용, 변경 방법을 확인하세요."
+    },
+    "banner": {
+      "title": "{days, plural, one {무료 체험 #일 남음} other {무료 체험 #일 남음}}",
+      "titleUnknown": "무료 체험을 이용 중입니다",
+      "body": "언제든 요금제를 선택하세요 — 선택하시기 전까지는 요금이 청구되지 않습니다.",
+      "cta": "요금제 선택"
+    },
+    "interval": {
+      "monthly": "월간",
+      "annual": "연간",
+      "saving": "연간 결제 시 2개월 무료."
+    },
+    "mostPopular": "가장 인기",
+    "perMonth": "/월",
+    "perYear": "/년",
+    "choosePlan": "이 요금제 선택",
+    "currentPlan": "현재 요금제",
+    "opening": "여는 중…",
+    "manageBilling": "결제 관리",
+    "moreModules": "{count, plural, one {외 #개 더} other {외 #개 더}}",
+    "unlimitedStudents": "모든 요금제에 무제한 수강생이 포함됩니다. 인원이 늘어나도 추가 요금은 없습니다.",
+    "modules": {
+      "classes": "수업 일정 관리",
+      "attendance": "출석 및 출석부",
+      "billing": "청구 및 결제",
+      "messaging": "메시지",
+      "leads": "잠재 고객 및 문의",
+      "forms": "양식 및 동의서",
+      "staff": "직원 기록 및 근태 관리",
+      "availability": "강사 가능 시간",
+      "substitutes": "대체 강사",
+      "privateLessons": "개인 레슨",
+      "site": "웹사이트 및 소셜 게시",
+      "shop": "온라인 샵",
+      "passes": "수업 이용권",
+      "badges": "배지 및 보상",
+      "progress": "수강생 진도",
+      "production": "발표회 및 공연",
+      "costumes": "의상 관리",
+      "fixtures": "일정 및 결과",
+      "competitions": "대회 및 등급 심사",
+      "skills": "스킬 프레임워크",
+      "venues": "다중 시설"
+    },
+    "plans": {
+      "solo": {
+        "name": "Solo",
+        "tagline": "강사 1인, 시간표 1개",
+        "body": "수업을 운영하고, 출석을 체크하고, 결제를 받으세요. 개인 강사가 실제로 사용하는 기능만 담았습니다."
+      },
+      "studio": {
+        "name": "Studio",
+        "tagline": "팀과 프런트 데스크",
+        "body": "다른 사람이 나를 대신해 강의하고, 아직 등록하지 않은 사람들과 소통해야 할 때 필요한 기능을 더했습니다."
+      },
+      "scale": {
+        "name": "Scale",
+        "tagline": "다중 시설, 다중 프로그램",
+        "body": "대회, 발표회, 스킬 프레임워크, 다중 시설 등 활동에 따라 추가되는 기능을 포함한 Olune의 모든 모듈을 이용할 수 있습니다."
+      }
+    },
+    "status": {
+      "trialing": "무료 체험",
+      "active": "활성",
+      "past_due": "결제 실패",
+      "canceled": "취소됨",
+      "comped": "무료 제공"
+    },
+    "current": {
+      "heading": "현재 요금제",
+      "status": "상태",
+      "comped": "무상 제공",
+      "trialEnds": "체험 종료일 {date}",
+      "daysLeft": "{days, plural, one {#일 남음} other {#일 남음}}",
+      "renewsOn": "{date} 갱신",
+      "endsOn": "{date} 접근 종료",
+      "portalHint": "카드 정보 변경, 청구서 다운로드, 해지는 Stripe를 통해 진행하세요."
+    },
+    "choose": {
+      "trialHeading": "요금제 선택",
+      "changeHeading": "요금제 변경",
+      "body": "언제든지 변경할 수 있습니다. Stripe가 당일 차액을 일할 계산합니다."
+    },
+    "locked": {
+      "othersUnaffected": "강사, 부모, 수강생에게는 영향이 없으며, 웹사이트와 예약, 수강 등록도 계속 정상적으로 운영됩니다.",
+      "contactSupport": "이 스튜디오는 Olune에 의해 이용이 정지되었습니다. 이용을 재개하려면 지원팀에 문의하세요.",
+      "trial_expired": {
+        "title": "무료 체험이 종료되었습니다",
+        "body": "스튜디오와 모든 데이터는 그대로 보존되어 있습니다. 요금제를 선택하시면 다시 이용하실 수 있습니다."
+      },
+      "payment_failed": {
+        "title": "결제를 진행할 수 없었습니다",
+        "body": "최근 결제가 처리되지 않았습니다. 카드 정보를 업데이트하시면 바로 다시 이용하실 수 있습니다.",
+        "orUpdateCard": "이미 요금제를 이용 중이신가요? 카드 정보를 수정해 주세요."
+      },
+      "canceled": {
+        "title": "구독이 종료되었습니다",
+        "body": "삭제된 데이터는 없습니다. 준비되시면 언제든 요금제를 선택해 다시 시작하세요."
+      },
+      "suspended": {
+        "title": "이 스튜디오는 이용이 정지되었습니다",
+        "body": "결제 문제가 아니라 Olune에 의해 접근이 일시 중단되었습니다."
+      }
+    },
+    "errors": {
+      "checkoutFailed": "결제를 시작할 수 없습니다. 다시 시도해 주세요.",
+      "portalFailed": "결제 관리 페이지를 열 수 없습니다. 다시 시도해 주세요."
+    }
+  }
+}
