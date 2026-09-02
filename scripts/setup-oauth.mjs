@@ -5,6 +5,7 @@
  * Usage:
  *   node --env-file=.env.local scripts/setup-oauth.mjs
  *   node --env-file=.env.local scripts/setup-oauth.mjs --enable-google
+ *   node --env-file=.env.local scripts/setup-oauth.mjs --check   (read-only)
  *
  * Optional env vars for provider credentials:
  *   GOOGLE_OAUTH_CLIENT_ID
@@ -23,7 +24,31 @@ if (!TOKEN) {
 }
 
 const args = new Set(process.argv.slice(2));
-const enableGoogle = args.has("--enable-google") || Boolean(process.env.GOOGLE_OAUTH_CLIENT_ID);
+const checkOnly = args.has("--check");
+const enableGoogle =
+  !checkOnly && (args.has("--enable-google") || Boolean(process.env.GOOGLE_OAUTH_CLIENT_ID));
+
+/**
+ * A Site URL that points at the developer's own machine. Supabase falls back to
+ * the Site URL whenever a redirect target is not in the allow-list, so a
+ * loopback value there sends real users on the live site to a dead tab —
+ * ERR_CONNECTION_REFUSED on 127.0.0.1 — after an otherwise successful sign-in.
+ * It is also the value a project starts life with, so it survives by default.
+ */
+function isLoopbackUrl(url) {
+  try {
+    const { hostname } = new URL(url);
+    return (
+      hostname === "localhost" ||
+      hostname.endsWith(".localhost") ||
+      hostname === "127.0.0.1" ||
+      hostname === "0.0.0.0" ||
+      hostname === "[::1]"
+    );
+  } catch {
+    return false;
+  }
+}
 
 function callbackUrls() {
   const urls = new Set();
@@ -87,12 +112,68 @@ async function api(path, init = {}) {
   return body;
 }
 
+/**
+ * Read-only diagnosis (--check): print what Auth is actually configured with
+ * and name anything that would strand a signing-in user. Changes nothing, so
+ * it is safe to run against production while someone is reporting a problem.
+ * Exits non-zero when it finds a fault, so CI or a script can gate on it.
+ */
+function report(current, existing) {
+  const siteUrl = (current.site_url ?? "").trim();
+  // Only the "/**" globs are load-bearing — the bare "/auth/callback" twins are
+  // there for readability and never match a redirect carrying a query string
+  // (see callbackUrls()). Reporting them as missing would bury the real fault.
+  const expected = callbackUrls().filter((u) => u.endsWith("/**"));
+  const missing = expected.filter((u) => !existing.includes(u));
+  const problems = [];
+
+  console.log("\nSite URL:", siteUrl || "(unset)");
+  if (!siteUrl) {
+    problems.push("Site URL is unset — Supabase has nowhere to fall back to.");
+  } else if (isLoopbackUrl(siteUrl)) {
+    problems.push(
+      `Site URL is ${siteUrl} — a developer machine. Every redirect Supabase ` +
+        "cannot match against the allow-list lands there, so live sign-ins end " +
+        "on a dead tab (ERR_CONNECTION_REFUSED).",
+    );
+  }
+
+  console.log("\nRedirect URLs (%d):", existing.length);
+  for (const url of existing) console.log("  •", url);
+
+  if (missing.length) {
+    console.log("\nMissing from the allow-list (%d):", missing.length);
+    for (const url of missing) console.log("  ✗", url);
+    problems.push(
+      "Redirects to the hosts above are rejected and fall back to the Site URL.",
+    );
+  }
+
+  console.log("\nProviders:");
+  console.log("  Google:", current.external_google_enabled ? "enabled" : "disabled");
+
+  if (!problems.length) {
+    console.log("\n✓ Auth redirect configuration looks correct.\n");
+    return;
+  }
+
+  console.log("\n✗ Problems found:");
+  for (const p of problems) console.log("  •", p);
+  console.log("\nRun without --check to repair (sets the Site URL and adds the missing entries):");
+  console.log("  node --env-file=.env.local scripts/setup-oauth.mjs\n");
+  process.exitCode = 1;
+}
+
 async function main() {
   const current = await api("/config/auth");
   const existing = (current.uri_allow_list ?? "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
+
+  if (checkOnly) {
+    return report(current, existing);
+  }
 
   const merged = [...new Set([...existing, ...callbackUrls()])];
   const productionSite =
