@@ -1,0 +1,115 @@
+{
+  "plan": {
+    "page": {
+      "title": "Oluneプラン",
+      "subtitle": "現在のプラン内容、料金、変更方法をご確認いただけます。"
+    },
+    "banner": {
+      "title": "{days, plural, one {トライアル残り#日} other {トライアル残り#日}}",
+      "titleUnknown": "現在無料トライアル中です",
+      "body": "いつでもプランをお選びいただけます — 選択するまで料金は発生しません。",
+      "cta": "プランを選ぶ"
+    },
+    "interval": {
+      "monthly": "月払い",
+      "annual": "年払い",
+      "saving": "年払いなら2か月分無料です。"
+    },
+    "mostPopular": "一番人気",
+    "perMonth": "/月",
+    "perYear": "/年",
+    "choosePlan": "このプランを選ぶ",
+    "currentPlan": "現在のプラン",
+    "opening": "開いています…",
+    "manageBilling": "請求を管理",
+    "moreModules": "{count, plural, one {ほか#件} other {ほか#件}}",
+    "unlimitedStudents": "すべてのプランで生徒数は無制限です。生徒が増えても追加料金はかかりません。",
+    "modules": {
+      "classes": "クラス管理",
+      "attendance": "出席・出席簿",
+      "billing": "請求・支払い",
+      "messaging": "メッセージ機能",
+      "leads": "見込み客・問い合わせ",
+      "forms": "フォーム・同意書",
+      "staff": "スタッフ記録・タイムクロック",
+      "availability": "講師の空き状況",
+      "substitutes": "代講手配",
+      "privateLessons": "プライベートレッスン",
+      "site": "ウェブサイト・SNS投稿",
+      "shop": "オンラインショップ",
+      "passes": "クラスパス",
+      "badges": "バッジ・報奨",
+      "progress": "生徒の進捗",
+      "production": "発表会・公演",
+      "costumes": "衣装管理",
+      "fixtures": "試合・結果",
+      "competitions": "大会・審査",
+      "skills": "スキルフレームワーク",
+      "venues": "複数会場対応"
+    },
+    "plans": {
+      "solo": {
+        "name": "Solo",
+        "tagline": "講師1名、時間割ひとつ",
+        "body": "クラスの運営、出席の記録、支払いの受け取りまで。個人経営の講師に本当に必要な機能だけを揃えました。"
+      },
+      "studio": {
+        "name": "Studio",
+        "tagline": "チームとフロントデスク",
+        "body": "スタッフが増え、未入会のお客様とのやり取りが発生した段階で必要になる機能を追加しました。"
+      },
+      "scale": {
+        "name": "Scale",
+        "tagline": "複数会場・複数プログラム対応",
+        "body": "Oluneの全モジュールをご利用いただけます。大会、発表会、スキルフレームワーク、複数会場管理まで対応します。"
+      }
+    },
+    "status": {
+      "trialing": "無料トライアル中",
+      "active": "有効",
+      "past_due": "支払い失敗",
+      "canceled": "キャンセル済み",
+      "comped": "無償提供"
+    },
+    "current": {
+      "heading": "現在のプラン",
+      "status": "ステータス",
+      "comped": "無償提供中",
+      "trialEnds": "トライアル終了日 {date}",
+      "daysLeft": "{days, plural, one {残り#日} other {残り#日}}",
+      "renewsOn": "更新日 {date}",
+      "endsOn": "利用終了日 {date}",
+      "portalHint": "カードの更新、請求書のダウンロード、解約はStripeから行えます。"
+    },
+    "choose": {
+      "trialHeading": "プランを選ぶ",
+      "changeHeading": "プランを変更する",
+      "body": "いつでも切り替え可能です。差額はStripeにより同日中に日割り計算されます。"
+    },
+    "locked": {
+      "othersUnaffected": "講師、保護者、生徒への影響はありません。ウェブサイト、予約、入会情報も引き続き公開されています。",
+      "contactSupport": "このスタジオはOluneにより利用停止となっています。復旧についてはサポートまでお問い合わせください。",
+      "trial_expired": {
+        "title": "無料トライアルが終了しました",
+        "body": "スタジオのデータはすべてそのまま残っています。プランを選択すると再度ご利用いただけます。"
+      },
+      "payment_failed": {
+        "title": "お支払いを完了できませんでした",
+        "body": "前回のお支払いが処理できませんでした。カード情報を更新すればすぐにご利用を再開できます。",
+        "orUpdateCard": "すでにプランをご利用中ですか？カード情報の更新はこちら。"
+      },
+      "canceled": {
+        "title": "サブスクリプションが終了しました",
+        "body": "データは何も削除されていません。ご準備ができ次第、いつでもプランをお選びください。"
+      },
+      "suspended": {
+        "title": "このスタジオは利用停止中です",
+        "body": "これは請求上の問題ではなく、Oluneによる一時停止です。"
+      }
+    },
+    "errors": {
+      "checkoutFailed": "チェックアウトを開始できませんでした。もう一度お試しください。",
+      "portalFailed": "請求ポータルを開けませんでした。もう一度お試しください。"
+    }
+  }
+}

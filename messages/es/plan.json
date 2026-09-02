@@ -1,0 +1,115 @@
+{
+  "plan": {
+    "page": {
+      "title": "Tu plan de Olune",
+      "subtitle": "Qué plan tienes, cuánto cuesta y cómo cambiarlo."
+    },
+    "banner": {
+      "title": "{days, plural, one {queda # día de tu prueba} other {quedan # días de tu prueba}}",
+      "titleUnknown": "Tienes una prueba gratuita",
+      "body": "Elige un plan cuando quieras — no se cobra nada hasta que lo hagas.",
+      "cta": "Elegir un plan"
+    },
+    "interval": {
+      "monthly": "Mensual",
+      "annual": "Anual",
+      "saving": "Dos meses gratis con la facturación anual."
+    },
+    "mostPopular": "Más popular",
+    "perMonth": "/mes",
+    "perYear": "/año",
+    "choosePlan": "Elegir este plan",
+    "currentPlan": "Tu plan actual",
+    "opening": "Abriendo…",
+    "manageBilling": "Gestionar facturación",
+    "moreModules": "{count, plural, one {y # más} other {y # más}}",
+    "unlimitedStudents": "Todos los planes incluyen estudiantes ilimitados. No te cobramos por crecer.",
+    "modules": {
+      "classes": "Programación de clases",
+      "attendance": "Asistencia y registros",
+      "billing": "Facturación y pagos",
+      "messaging": "Mensajería",
+      "leads": "Prospectos y consultas",
+      "forms": "Formularios y exenciones",
+      "staff": "Registros de personal y reloj de fichaje",
+      "availability": "Disponibilidad de profesores",
+      "substitutes": "Cobertura de suplentes",
+      "privateLessons": "Clases particulares",
+      "site": "Sitio web y publicaciones en redes sociales",
+      "shop": "Tienda en línea",
+      "passes": "Bonos de clase",
+      "badges": "Insignias y recompensas",
+      "progress": "Progreso del estudiante",
+      "production": "Recitales y producciones",
+      "costumes": "Gestión de vestuario",
+      "fixtures": "Encuentros y resultados",
+      "competitions": "Competencias y evaluaciones",
+      "skills": "Marcos de habilidades",
+      "venues": "Múltiples sedes"
+    },
+    "plans": {
+      "solo": {
+        "name": "Solo",
+        "tagline": "Un profesor, un horario",
+        "body": "Dirige tus clases, pasa lista y cobra. Todo lo que un profesor autónomo realmente usa, y nada más."
+      },
+      "studio": {
+        "name": "Studio",
+        "tagline": "Un equipo y una recepción",
+        "body": "Añade lo que solo importa cuando alguien más enseña por ti, y cuando hablas con personas que aún no se han inscrito."
+      },
+      "scale": {
+        "name": "Scale",
+        "tagline": "Múltiples sedes, múltiples programas",
+        "body": "Todos los módulos de Olune, incluidos los que suma tu actividad — competencias, recitales, marcos de habilidades, sedes."
+      }
+    },
+    "status": {
+      "trialing": "Prueba gratuita",
+      "active": "Activo",
+      "past_due": "Pago fallido",
+      "canceled": "Cancelado",
+      "comped": "Cortesía"
+    },
+    "current": {
+      "heading": "Plan actual",
+      "status": "Estado",
+      "comped": "Por cuenta de la casa",
+      "trialEnds": "La prueba termina el {date}",
+      "daysLeft": "{days, plural, one {queda # día} other {quedan # días}}",
+      "renewsOn": "Se renueva el {date}",
+      "endsOn": "El acceso termina el {date}",
+      "portalHint": "Actualiza tu tarjeta, descarga facturas o cancela a través de Stripe."
+    },
+    "choose": {
+      "trialHeading": "Elige un plan",
+      "changeHeading": "Cambiar plan",
+      "body": "Cambia cuando quieras. Stripe prorratea la diferencia el mismo día."
+    },
+    "locked": {
+      "othersUnaffected": "Tus profesores, madres, padres y estudiantes no se ven afectados, y tu sitio web, reservas e inscripciones siguen activos.",
+      "contactSupport": "Olune ha suspendido este estudio. Ponte en contacto con soporte para restaurar el acceso.",
+      "trial_expired": {
+        "title": "Tu prueba gratuita ha terminado",
+        "body": "Tu estudio y todo lo que contiene están exactamente donde los dejaste. Elige un plan para volver a entrar."
+      },
+      "payment_failed": {
+        "title": "No pudimos procesar tu pago",
+        "body": "Tu último pago no se completó. Actualiza tu tarjeta y volverás a entrar de inmediato.",
+        "orUpdateCard": "¿Ya tienes un plan? Actualiza tu tarjeta en su lugar."
+      },
+      "canceled": {
+        "title": "Tu suscripción ha terminado",
+        "body": "No se ha eliminado nada. Elige un plan cuando estés listo/a para retomarlo."
+      },
+      "suspended": {
+        "title": "Este estudio está suspendido",
+        "body": "El acceso ha sido pausado por Olune y no por un problema de facturación."
+      }
+    },
+    "errors": {
+      "checkoutFailed": "No pudimos iniciar el pago. Inténtalo de nuevo.",
+      "portalFailed": "No pudimos abrir tu portal de facturación. Inténtalo de nuevo."
+    }
+  }
+}
