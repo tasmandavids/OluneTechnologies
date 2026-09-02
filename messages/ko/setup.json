@@ -1,0 +1,266 @@
+{
+  "setup": {
+    "header": "{studioName} 설정 중",
+    "schemaPending": {
+      "title": "데이터베이스 마이그레이션 대기 중",
+      "body": "설정 진행 상황 저장을 사용하려면 {command}를 실행해 주세요.",
+      "command": "supabase db push"
+    },
+    "progressAria": "설정 진행 상황",
+    "steps": {
+      "path": "시작하기",
+      "profile": "스튜디오 정보",
+      "students": "학생",
+      "classes": "수업",
+      "pricing": "요금",
+      "tour": "둘러보기"
+    },
+    "actions": {
+      "back": "뒤로",
+      "skip": "나중에 하기",
+      "working": "처리 중…",
+      "continue": "계속",
+      "saveLater": "진행 상황 저장 후 나중에 마치기 →"
+    },
+    "path": {
+      "title": "어떻게 시작하시나요?",
+      "subtitle": "신규 스튜디오이든 다른 시스템에서 이전하시든, 상황에 맞게 다음 단계를 안내해 드립니다.",
+      "scratch": {
+        "title": "처음부터 시작하기",
+        "body": "새로 시작하시거나, 소규모 명단을 직접 입력하실 예정입니다."
+      },
+      "import": {
+        "title": "기존에 운영 중인 스튜디오가 있습니다",
+        "body": "StudioPro, Class Manager 또는 스프레드시트에서 일괄로 가져옵니다."
+      },
+      "sourcePrompt": "현재 데이터는 어디에 있나요?"
+    },
+    "profile": {
+      "title": "스튜디오에 대해 알려주세요",
+      "subtitle": "사이트, 수업 추천, 지역 설정을 맞춤화하는 데 활용됩니다.",
+      "city": "도시",
+      "cityPlaceholder": "예: 오클랜드",
+      "region": "지역",
+      "regionPlaceholder": "지역 선택…",
+      "country": "국가",
+      "about": "우리 스튜디오만의 특별한 점은 무엇인가요?",
+      "aboutPlaceholder": "지역 밀착형 유아 발레, 대회 팀, 성인 오픈 클래스 등…",
+      "stylesLabel": "운영 중인 댄스 스타일",
+      "stylesRequired": "계속하려면 최소 한 가지 스타일을 선택해 주세요.",
+      "stylesHint": "선택하신 스타일은 수업 추천, 웹사이트 프로그램 페이지, 가족들이 보는 문의 양식에 활용됩니다."
+    },
+    "students": {
+      "title": "학생 추가하기",
+      "subtitle": "붙여넣기, CSV 업로드, 또는 직접 입력하세요 — 학부모/보호자 항목은 자동으로 연결됩니다.",
+      "tipTitle": "{source} 안내",
+      "uploadLabel": "CSV 또는 TSV 파일 업로드",
+      "pasteLabel": "또는 스프레드시트에서 붙여넣기",
+      "pastePlaceholder": "Name\tEmail\tPhone\tParent Name\tParent Email\nEmma Johnson\temma@example.com\t021 234 567\tJane Johnson\tjane@example.com",
+      "detected": "{count, plural, one {#명 감지됨} other {#명 감지됨}}",
+      "manualLabel": "또는 직접 추가하기",
+      "namePlaceholder": "학생 이름 *",
+      "emailPlaceholder": "학생 이메일",
+      "phonePlaceholder": "전화번호",
+      "parentNamePlaceholder": "학부모/보호자 이름",
+      "parentEmailPlaceholder": "학부모 이메일",
+      "addAnother": "+ 학생 추가",
+      "linkParents": "학부모 정보가 있으면 학부모 계정 생성 및 가족 연결",
+      "import": "{count, plural, one {학생 #명} other {학생 #명}} 가져오기",
+      "portalNote": "추가된 모든 인원에게 포털 로그인이 제공되며, 체크인 카드 발급 및 양식 발송이 가능합니다."
+    },
+    "classes": {
+      "title": "시간표 만들기",
+      "subtitle": "CSV를 업로드하거나, 수업 목록을 붙여넣거나, 운영 스타일에 맞는 추천으로 시작하세요.",
+      "suggest": "✨ 내 스타일에 맞는 수업 추천받기",
+      "suggestionsReady": "시작용 수업 {count}개 준비됨",
+      "tableClass": "수업",
+      "tableStyle": "스타일",
+      "tableDay": "요일",
+      "tableTime": "시간",
+      "uploadLabel": "수업 목록 업로드 (CSV / TSV)",
+      "pasteLabel": "또는 스프레드시트에서 붙여넣기",
+      "pastePlaceholder": "Class\tStyle\tDay\tStart\tEnd\tCapacity\tPrice\nJunior Ballet\tBallet\tMon\t16:00\t17:00\t15\t18",
+      "detected": "{count, plural, one {#개 수업 감지됨} other {#개 수업 감지됨}}",
+      "create": "{count, plural, one {수업 #개} other {수업 #개}} 만들기",
+      "productsNote": "입력한 각 요금은 청구 카탈로그의 상품으로 등록되어, 첫 청구서부터 올바른 GST와 회계 코드가 적용됩니다."
+    },
+    "pricing": {
+      "title": "요금은 어떻게 책정하시나요?",
+      "subtitle": "스튜디오에서 실제로 사용하는 수강료 책정 방식을 선택하세요 — 등록 시 가족들에게 이 방식으로 안내됩니다.",
+      "options": {
+        "per_class": {
+          "name": "수업별 요금",
+          "body": "각 수업마다 요금이 정해져 있습니다. 두 수업을 듣는 학생은 두 수업 요금을 모두 지불합니다.",
+          "example": "월요일 {each} + 수요일 {each} = {both}."
+        },
+        "hours": {
+          "name": "주간 수강 시간별",
+          "body": "주당 수강 시간에 따라 하나의 요금이 책정됩니다. 표 전체를 직접 입력하며, 계산이나 비율 적용은 필요 없습니다.",
+          "example": "주 2시간 = {twoHours}. 1시간을 추가하면 {threeHours}."
+        },
+        "per_class_combos": {
+          "name": "수업별 요금 + 조합 요금",
+          "body": "각 수업은 고유 요금을 유지하며, 조합에 이름을 붙여 하나의 요금을 적용할 수 있습니다.",
+          "example": "월요일과 수요일을 함께 들으면 {both}가 아닌 {each}."
+        }
+      },
+      "rateCard": {
+        "title": "시간당 요금표",
+        "description": "학생이 주당 수강하는 시간에 대해 지불하는 금액입니다. 합계 금액을 직접 입력하며, 비율로 계산되는 항목은 없습니다.",
+        "hours": "주당 시간",
+        "theyPay": "지불 금액",
+        "addRow": "+ 행 추가",
+        "removeRow": "이 행 삭제",
+        "overflowLabel": "마지막 행 이후,",
+        "overflowHint": "초과 시간당 요금입니다. 비워두면 마지막 행의 요금이 시간에 관계없이 그대로 적용됩니다.",
+        "previewTitle": "가족이 지불하는 금액"
+      },
+      "duplicateHours": "두 행의 시간 수가 동일합니다. 하나를 변경해 주세요.",
+      "perClassNote": "각 수업은 설정한 요금이 그대로 유지되며, 등록 시 가족에게 이 요금으로 안내됩니다.",
+      "combosNote": "각 수업은 고유 요금을 유지합니다. 하나의 요금이 적용될 조합은 정산 → 상품에서 이름을 지정하세요.",
+      "changeLater": "이 설정은 정산 → 상품에서 언제든 변경할 수 있습니다.",
+      "save": "저장하고 설정 마치기",
+      "rateCardRequired": "요금표에 최소 한 개의 행을 추가하거나, 수업별 요금제로 다시 전환해 주세요."
+    },
+    "tour": {
+      "title": "{studioName} 준비 완료",
+      "subtitle": "Olune에서 할 수 있는 일들입니다 — 대시보드에서 언제든 살펴보세요.",
+      "enterDashboard": "대시보드로 이동 →"
+    },
+    "importSummary": {
+      "added": "{count, plural, one {학생 #명} other {학생 #명}} 추가됨",
+      "parentsLinked": "{count, plural, one {학부모 연결 #건} other {학부모 연결 #건}}",
+      "skipped": "{count}건 건너뜀"
+    },
+    "resume": {
+      "title": "스튜디오 설정 마치기",
+      "body": "{step} 단계에서 중단하셨습니다 — 이어서 진행하세요.",
+      "openWizard": "마법사 열기",
+      "opening": "여는 중…",
+      "resume": "설정 이어하기",
+      "defaultStep": "시작하기"
+    },
+    "csvUpload": {
+      "loaded": "{fileName} 불러옴",
+      "readError": "파일을 읽을 수 없습니다"
+    },
+    "danceStyles": {
+      "ballet": "발레",
+      "jazz": "재즈",
+      "hipHop": "힙합",
+      "contemporary": "컨템포러리",
+      "tap": "탭",
+      "lyrical": "리리컬",
+      "acro": "아크로",
+      "pointe": "포인트",
+      "musicalTheatre": "뮤지컬 시어터",
+      "ballroom": "볼룸",
+      "latin": "라틴",
+      "aerial": "에어리얼",
+      "preschool": "유아 / 미취학",
+      "adultOpen": "성인 오픈",
+      "competitionTeam": "대회 팀"
+    },
+    "importSources": {
+      "studiopro": {
+        "name": "StudioPro",
+        "hint": "Reports → Students → Export CSV에서 학생 목록을 내보내세요.",
+        "sampleHeaders": "First Name · Last Name · Email · Phone · Parent Name · Parent Email"
+      },
+      "classmanager": {
+        "name": "Class Manager",
+        "hint": "Settings → Data export에서 명단을 다운로드하세요.",
+        "sampleHeaders": "Student · Email · Mobile · Guardian · Guardian Email · Class"
+      },
+      "jackrabbit": {
+        "name": "Jackrabbit Dance",
+        "hint": "Families → Export를 사용하거나, 수업 명단 그리드에서 직접 복사하세요.",
+        "sampleHeaders": "Student Name · Student Email · Family Email · Phone · Classes"
+      },
+      "dancestudio-pro": {
+        "name": "DanceStudio-Pro",
+        "hint": "Students 탭에서 학생 정보를 내보내거나, 스프레드시트에서 붙여넣으세요.",
+        "sampleHeaders": "Name · Email · Phone · Parent · Parent Email"
+      },
+      "spreadsheet": {
+        "name": "스프레드시트",
+        "hint": "Excel이나 Google 스프레드시트에서 행을 복사하세요 — 열은 자동으로 인식됩니다.",
+        "sampleHeaders": "Name · Email · Phone"
+      },
+      "other": {
+        "name": "다른 시스템",
+        "hint": "내보낸 데이터를 붙여넣으세요 — 이름, 이메일, 전화번호 열을 자동으로 매칭합니다.",
+        "sampleHeaders": "Name · Email · Phone"
+      }
+    },
+    "tourFeatures": {
+      "dashboard": {
+        "title": "오늘",
+        "body": "오늘의 수업, 체크인한 인원, 입금 및 미납 내역을 한눈에 확인하세요."
+      },
+      "classes": {
+        "title": "수업",
+        "body": "시간표를 만들고, 정원을 설정하고, 대기 명단을 관리하세요."
+      },
+      "students": {
+        "title": "인원",
+        "body": "학생, 가족, 직원을 하나의 디렉터리에서 관리하며 포털 초대도 가능합니다."
+      },
+      "products": {
+        "title": "상품 및 요금",
+        "body": "요금표, 수업료, 수강권, 조합 요금까지 하나의 카탈로그로 관리하세요."
+      },
+      "billing": {
+        "title": "정산",
+        "body": "청구서, Stripe 정산, Xero 연동까지 NZD로 처리하세요."
+      },
+      "website": {
+        "title": "웹사이트",
+        "body": "수업, 온라인 등록, 브랜드가 담긴 공개 사이트입니다."
+      },
+      "forms": {
+        "title": "양식",
+        "body": "등록 양식, 정책, 동의서에 화면에서 바로 서명받으세요."
+      },
+      "checkin": {
+        "title": "체크인",
+        "body": "NFC 카드, Apple Wallet 패스, 실시간 재실 인원 현황까지."
+      },
+      "connections": {
+        "title": "연동",
+        "body": "Stripe, Xero, 이메일, 캘린더를 설정에서 모두 연결하세요."
+      },
+      "leads": {
+        "title": "문의 및 메시지",
+        "body": "체험 문의와 가족들과의 양방향 메시지를 관리하세요."
+      }
+    },
+    "regions": {
+      "northland": "Northland",
+      "auckland": "Auckland",
+      "waikato": "Waikato",
+      "bayOfPlenty": "Bay of Plenty",
+      "gisborne": "Gisborne",
+      "hawkesBay": "Hawke's Bay",
+      "taranaki": "Taranaki",
+      "manawatuWhanganui": "Manawatū-Whanganui",
+      "wellington": "Wellington",
+      "tasman": "Tasman",
+      "nelson": "Nelson",
+      "marlborough": "Marlborough",
+      "westCoast": "West Coast",
+      "canterbury": "Canterbury",
+      "otago": "Otago",
+      "southland": "Southland"
+    },
+    "days": {
+      "sun": "일",
+      "mon": "월",
+      "tue": "화",
+      "wed": "수",
+      "thu": "목",
+      "fri": "금",
+      "sat": "토"
+    }
+  }
+}
