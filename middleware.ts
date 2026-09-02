@@ -18,6 +18,7 @@ import { portalHomeForAccount } from "@/lib/account/memberships";
 import type { AccountKind } from "@/lib/account/kinds";
 import { checkPlatformOperator } from "@/lib/platform/operator-edge";
 import { canAccessPortalPath } from "@/lib/portal/office-access";
+import { sanitizeNextPath } from "@/lib/auth/oauth";
 import { mergeSessionCookies, redirectWithSession, refreshSession } from "@/lib/supabase/middleware";
 import { isTenantHost } from "@/lib/tenant-host";
 import type { Role } from "@/lib/types";
@@ -49,8 +50,13 @@ function resolveHome(profile: ProfileAccess): string {
   return portalHomeForAccount(profile.accountKind, profile.role);
 }
 
+/**
+ * A `?next=` we are willing to redirect to. Same rule as the auth routes — see
+ * sanitizeNextPath, which also rejects "/\\evil.example": new URL() normalises
+ * the backslash to a slash, so that resolves to a different ORIGIN, not a path.
+ */
 function isSafeRelativePath(path: string): boolean {
-  return path.startsWith("/") && !path.startsWith("//");
+  return sanitizeNextPath(path, "") === path;
 }
 
 /**
