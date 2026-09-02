@@ -1,0 +1,89 @@
+{
+  "timeclock": {
+    "title": "근태 관리",
+    "clockedInSince": "{time}부터 근무 중",
+    "notClockedIn": "출근하지 않음",
+    "viaCard": "카드",
+    "onTheClock": "현재까지",
+    "thisWeek": "이번 주",
+    "working": "처리 중…",
+    "clockIn": "출근",
+    "clockOut": "퇴근",
+    "addNote": "메모 추가",
+    "notePlaceholder": "어떤 업무를 하셨나요? (선택)",
+    "weekTotal": "이번 주 {total}",
+    "rostered": "근무표상 {total}",
+    "overRoster": "근무표보다 {amount} 초과",
+    "underRoster": "근무표보다 {amount} 부족",
+    "openShift": "진행 중",
+    "approved": "승인됨",
+    "admin": {
+      "tabTitle": "근무 기록",
+      "range": "{from} ~ {to}",
+      "summary": "총 {count}건, {total}",
+      "openCount": "{count}건 진행 중",
+      "pendingOnly": "승인 대기만 보기",
+      "addEntry": "항목 추가",
+      "approveSelected": "선택 항목 승인 ({count})",
+      "selectAll": "전체 선택",
+      "selectNone": "선택 해제",
+      "selectEntry": "이 항목 선택",
+      "empty": "이 기간에 기록된 근무 시간이 없습니다.",
+      "unknownStaff": "알 수 없는 직원",
+      "openEnd": "아직 근무 중",
+      "approve": "승인",
+      "unapprove": "승인 취소",
+      "edit": "수정",
+      "delete": "삭제",
+      "save": "저장",
+      "cancel": "취소",
+      "stillOpen": "진행 중",
+      "notRostered": "근무표에 없음",
+      "onRoster": "근무표에 있음",
+      "overBy": "{amount} 초과",
+      "underBy": "{amount} 부족",
+      "source": {
+        "portal": "포털",
+        "nfc": "카드",
+        "manual": "수동 입력"
+      },
+      "hourType": {
+        "regular": "정규",
+        "overtime": "초과 근무",
+        "holiday": "공휴일",
+        "sick": "병가",
+        "vacation": "연차",
+        "unpaid": "무급"
+      },
+      "fields": {
+        "staff": "직원",
+        "date": "날짜",
+        "start": "시작",
+        "end": "종료",
+        "hourType": "근무 유형",
+        "note": "메모"
+      },
+      "errors": {
+        "needStart": "날짜와 시작 시간을 입력해야 합니다.",
+        "needStaffAndStart": "직원, 날짜, 시작 시간을 선택해 주세요."
+      },
+      "rates": {
+        "title": "시급",
+        "subtitle": "적용일 기준으로 관리됩니다. 새 시급은 이미 승인된 근무 기록에는 소급 적용되지 않습니다.",
+        "empty": "등록된 시급이 없어 이 직원의 근무 시간을 정산할 수 없습니다.",
+        "perHour": "시간당",
+        "from": "{date}부터",
+        "current": "현재",
+        "remove": "제거",
+        "add": "시급 추가",
+        "fields": {
+          "amount": "시급",
+          "effectiveFrom": "적용 시작일"
+        },
+        "errors": {
+          "needAmountAndDate": "시급과 적용 시작일을 입력해 주세요."
+        }
+      }
+    }
+  }
+}
