@@ -30,7 +30,7 @@ export async function POST() {
     return NextResponse.json({ error: access.error ?? "Not authorized" }, { status: 403 });
   }
 
-  if (!checkRateLimit(rateLimitKey("plan-portal", access.userId), { limit: 10, windowMs: 60_000 })) {
+  if (!(await checkRateLimit(rateLimitKey("plan-portal", access.userId), { limit: 10, windowMs: 60_000 }))) {
     return NextResponse.json({ error: "Too many attempts. Try again shortly." }, { status: 429 });
   }
 

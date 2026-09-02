@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
   // A door queue is bursty but human-paced; this only catches a stuck scanner
   // re-submitting in a loop.
-  if (!checkRateLimit(rateLimitKey("ticket-scan", user.id), { limit: 120, windowMs: 60_000 })) {
+  if (!(await checkRateLimit(rateLimitKey("ticket-scan", user.id), { limit: 120, windowMs: 60_000 }))) {
     return NextResponse.json({ error: "Too many scans — slow down a moment." }, { status: 429 });
   }
 

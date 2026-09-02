@@ -34,10 +34,10 @@ export async function submitTrialRequest(input: unknown): Promise<ActionResult> 
   // there is no user here, so it is keyed by address. 5/hour is far above what
   // a family filling in a trial form does and far below what makes flooding a
   // studio's lead inbox worthwhile.
-  if (!checkRateLimit(clientIpKey("enrol-trial", await headers()), {
+  if (!(await checkRateLimit(clientIpKey("enrol-trial", await headers()), {
     limit: 5,
     windowMs: 60 * 60_000,
-  })) {
+  }))) {
     return { ok: false, error: t("tooManyRequests") };
   }
 
