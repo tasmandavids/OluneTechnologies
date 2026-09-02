@@ -1373,6 +1373,173 @@
         "unknownHolder": "Titolare del biglietto",
         "noEventsTitle": "Nessun evento da scansionare",
         "noEventsBody": "Pubblica un evento con data odierna o successiva e comparirà qui."
+      },
+      "production": {
+        "steps": {
+          "details": "Dettagli",
+          "venue": "Sede",
+          "team": "Squadra",
+          "cast": "Cast",
+          "builder": "Editor",
+          "review": "Revisione"
+        },
+        "eventTypes": {
+          "recital": "Saggio",
+          "showcase": "Rassegna",
+          "concert": "Concerto",
+          "competition": "Concorso",
+          "workshop": "Workshop",
+          "other": "Altro"
+        },
+        "stageTypes": {
+          "proscenium": {
+            "label": "All'italiana",
+            "desc": "Palco classico con arcoscenico, pubblico frontale"
+          },
+          "thrust": {
+            "label": "Palco avanzato",
+            "desc": "Il palco si protende nel pubblico"
+          },
+          "in_the_round": {
+            "label": "Palco centrale",
+            "desc": "Il pubblico circonda il palco"
+          },
+          "black_box": {
+            "label": "Black box",
+            "desc": "Disposizione dei posti flessibile"
+          },
+          "other": {
+            "label": "Altro",
+            "desc": "Personalizzato / all'aperto / non tradizionale"
+          }
+        },
+        "crewRoles": {
+          "stageManager": "Direttore di scena",
+          "technicalDirector": "Direttore tecnico",
+          "lightingDesigner": "Light designer",
+          "soundOperator": "Fonico",
+          "choreographer": "Coreografo",
+          "costumeCoordinator": "Responsabile costumi",
+          "frontOfHouse": "Accoglienza pubblico",
+          "backstageAssistant": "Assistente di palco"
+        },
+        "details": {
+          "eventName": "Nome dell'evento",
+          "eventNamePlaceholder": "es. Saggio di primavera 2026",
+          "eventType": "Tipo di evento",
+          "description": "Descrizione",
+          "descriptionPlaceholder": "Breve presentazione dell'evento…",
+          "performanceDates": "Date delle repliche",
+          "addDate": "Aggiungi data",
+          "performanceNumbered": "Replica {number}",
+          "performanceSingle": "Data della replica",
+          "remove": "Rimuovi",
+          "date": "Data",
+          "doorsOpen": "Apertura porte",
+          "curtainUp": "Inizio spettacolo",
+          "expectedEnd": "Fine prevista",
+          "notes": "Note per questa replica",
+          "notesPlaceholder": "es. Matinée, senza intervallo"
+        },
+        "venue": {
+          "venueName": "Nome della sede",
+          "venueNamePlaceholder": "es. Teatro Comunale",
+          "address": "Indirizzo",
+          "addressPlaceholder": "Indirizzo completo",
+          "stageType": "Tipo di palco",
+          "stageWidth": "Larghezza palco (m)",
+          "stageWidthPlaceholder": "es. 12",
+          "stageDepth": "Profondità palco (m)",
+          "stageDepthPlaceholder": "es. 8",
+          "venueNotes": "Note sulla sede",
+          "venueNotesPlaceholder": "Parcheggio, accessibilità, area di carico, contatti chiave in sede…",
+          "techNotes": "Note tecniche",
+          "techNotesPlaceholder": "Specifiche audio, dettagli del service luci, contatti AV, requisiti particolari…",
+          "ticketPrice": "Prezzo del biglietto ({currency})",
+          "freeEntryHint": "Lascia 0 per ingresso gratuito",
+          "totalTickets": "Biglietti totali"
+        },
+        "team": {
+          "intro": "Aggiungi la squadra di produzione: direttore di scena, direttore tecnico, coreografi, personale di palco. Puoi collegare lo staff Olune o aggiungere persone esterne.",
+          "memberNumbered": "Membro della squadra {number}",
+          "remove": "Rimuovi",
+          "fromYourTeam": "Dalla tua squadra (facoltativo)",
+          "externalManual": "Esterno / inserimento manuale",
+          "name": "Nome",
+          "namePlaceholder": "Nome completo",
+          "role": "Ruolo",
+          "rolePlaceholder": "es. Direttore di scena",
+          "phone": "Telefono",
+          "email": "E-mail",
+          "addMember": "Aggiungi membro",
+          "optionalHint": "Puoi aggiungere membri in seguito. Questo passaggio è facoltativo."
+        },
+        "cast": {
+          "intro": "Organizza gli interpreti in gruppi (es. «Ensemble junior», «Compagnia senior»). Ogni membro del cast riceve un ruolo e una nota sul costume base. Puoi modificare i costumi per singolo numero nell'Editor.",
+          "groupNamePlaceholder": "Nome del gruppo",
+          "memberCount": "{count, plural, one {# membro} other {# membri}}",
+          "importClass": "Importa corso",
+          "removeGroup": "Rimuovi gruppo",
+          "importPrompt": "Importa tutti gli allievi iscritti a un corso:",
+          "noClasses": "Nessun corso trovato",
+          "noMembers": "Ancora nessun membro — aggiungi qui sotto o importa un corso",
+          "colName": "Nome",
+          "colRole": "Ruolo",
+          "colBaseCostume": "Costume base",
+          "addStudent": "+ Aggiungi allievo…",
+          "newGroupPlaceholder": "Nome del nuovo gruppo (es. Ensemble junior)",
+          "addGroup": "Aggiungi gruppo",
+          "quickChangeLabel": "Soglia di avviso cambio rapido (minuti)",
+          "quickChangeHint": "Segnala quando un interprete compare in numeri consecutivi con un intervallo inferiore",
+          "memberRolePlaceholder": "Ruolo (es. Solista)",
+          "memberCostumePlaceholder": "Costume"
+        },
+        "review": {
+          "unnamedEvent": "Evento senza nome",
+          "performances": "Repliche",
+          "venue": "Sede",
+          "stage": "Palco",
+          "teamMembers": "Membri della squadra",
+          "castGroups": "Gruppi del cast",
+          "tickets": "Biglietti",
+          "dateCount": "{count, plural, one {# data} other {# date}}",
+          "free": "Gratuito",
+          "castSummary": "{groups, plural, one {# gruppo} other {# gruppi}} · {performers, plural, one {# interprete} other {# interpreti}}",
+          "ticketSummary": "{price} · capienza {capacity}",
+          "readyTitle": "Pronto per la pubblicazione?",
+          "readyBody": "Pubblicando, l'evento diventa visibile alle famiglie e si attiva la vendita dei biglietti. Puoi ritirarlo in qualsiasi momento."
+        },
+        "shell": {
+          "close": "Chiudi procedura",
+          "editing": "Modifica: {name}",
+          "eventFallback": "Evento",
+          "newEvent": "Nuovo evento",
+          "headings": {
+            "details": "Dettagli dell'evento",
+            "venue": "Sede e palco",
+            "team": "Squadra di produzione",
+            "cast": "Cast",
+            "review": "Rivedi e pubblica"
+          },
+          "subheadings": {
+            "details": "Assegna nome e tipo all'evento e programma le date delle repliche.",
+            "venue": "Dove si tiene lo spettacolo? Imposta la sede e le caratteristiche del palco.",
+            "team": "Aggiungi chi manda avanti la produzione — direttori di scena, tecnici, coreografi.",
+            "cast": "Crea i gruppi del cast e assegna gli interpreti. Puoi importarli dai tuoi corsi.",
+            "review": "È tutto a posto — salva come bozza o pubblica per andare in scena."
+          },
+          "back": "Indietro",
+          "saveDraft": "Salva bozza",
+          "publish": "Pubblica evento",
+          "publishing": "Pubblicazione…",
+          "saving": "Salvataggio…",
+          "review": "Revisione",
+          "next": "Avanti"
+        },
+        "errors": {
+          "nameRequired": "Il nome dell'evento è obbligatorio",
+          "performanceIncomplete": "Ogni replica richiede una data e un orario di inizio"
+        }
       }
     },
     "leads": {

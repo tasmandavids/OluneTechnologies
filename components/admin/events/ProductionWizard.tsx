@@ -6,6 +6,7 @@
 // ============================================================================
 
 import { useState, useTransition, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import {
   type WizardFormState,
   type EventType,
@@ -26,29 +27,20 @@ import { BuilderStep } from "./builder/BuilderStep";
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STEPS = [
-  { id: 1, label: "Details"  },
-  { id: 2, label: "Venue"    },
-  { id: 3, label: "Team"     },
-  { id: 4, label: "Cast"     },
-  { id: 5, label: "Builder"  },
-  { id: 6, label: "Review"   },
+  { id: 1, key: "details" },
+  { id: 2, key: "venue"   },
+  { id: 3, key: "team"    },
+  { id: 4, key: "cast"    },
+  { id: 5, key: "builder" },
+  { id: 6, key: "review"  },
 ] as const;
 
-const EVENT_TYPES: { value: EventType; label: string }[] = [
-  { value: "recital",     label: "Recital"     },
-  { value: "showcase",    label: "Showcase"    },
-  { value: "concert",     label: "Concert"     },
-  { value: "competition", label: "Competition" },
-  { value: "workshop",    label: "Workshop"    },
-  { value: "other",       label: "Other"       },
+const EVENT_TYPES: EventType[] = [
+  "recital", "showcase", "concert", "competition", "workshop", "other",
 ];
 
-const STAGE_TYPES: { value: StageType; label: string; desc: string }[] = [
-  { value: "proscenium",   label: "Proscenium",     desc: "Classic arch stage, audience faces front" },
-  { value: "thrust",       label: "Thrust",          desc: "Stage extends into audience" },
-  { value: "in_the_round", label: "In the Round",    desc: "Audience surrounds the stage" },
-  { value: "black_box",    label: "Black Box",       desc: "Flexible seating arrangement" },
-  { value: "other",        label: "Other",            desc: "Custom / outdoor / non-traditional" },
+const STAGE_TYPES: StageType[] = [
+  "proscenium", "thrust", "in_the_round", "black_box", "other",
 ];
 
 // ─── Shared UI helpers ────────────────────────────────────────────────────────
@@ -127,12 +119,14 @@ function Step1Details({
       ),
     });
 
+  const t = useTranslations("admin.events.production");
+
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div>
-        <Label required>Event name</Label>
+        <Label required>{t("details.eventName")}</Label>
         <Input
-          placeholder="e.g. Spring Showcase 2026"
+          placeholder={t("details.eventNamePlaceholder")}
           value={state.name}
           onChange={e => update({ name: e.target.value })}
           autoFocus
@@ -140,29 +134,29 @@ function Step1Details({
       </div>
 
       <div>
-        <Label required>Event type</Label>
+        <Label required>{t("details.eventType")}</Label>
         <div className="grid grid-cols-3 gap-2">
-          {EVENT_TYPES.map(t => (
+          {EVENT_TYPES.map(value => (
             <button
-              key={t.value}
+              key={value}
               type="button"
-              onClick={() => update({ eventType: t.value })}
+              onClick={() => update({ eventType: value })}
               className={`rounded-xl border py-2.5 text-sm font-medium transition ${
-                state.eventType === t.value
+                state.eventType === value
                   ? "border-brand bg-brand/10 text-brand"
                   : "border-[--hair] bg-surface text-ink hover:border-brand/40"
               }`}
             >
-              {t.label}
+              {t(`eventTypes.${value}`)}
             </button>
           ))}
         </div>
       </div>
 
       <div>
-        <Label>Description</Label>
+        <Label>{t("details.description")}</Label>
         <Textarea
-          placeholder="Brief overview of the event…"
+          placeholder={t("details.descriptionPlaceholder")}
           value={state.description}
           onChange={e => update({ description: e.target.value })}
           rows={3}
@@ -172,7 +166,7 @@ function Step1Details({
       {/* Performances */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <Label>Performance dates</Label>
+          <Label>{t("details.performanceDates")}</Label>
           <button
             type="button"
             onClick={addPerf}
@@ -181,7 +175,7 @@ function Step1Details({
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
-            Add date
+            {t("details.addDate")}
           </button>
         </div>
 
@@ -190,7 +184,9 @@ function Step1Details({
             <div key={i} className="box rounded-xl p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-muted uppercase tracking-wide">
-                  {state.performances.length > 1 ? `Performance ${i + 1}` : "Performance date"}
+                  {state.performances.length > 1
+                    ? t("details.performanceNumbered", { number: i + 1 })
+                    : t("details.performanceSingle")}
                 </span>
                 {state.performances.length > 1 && (
                   <button
@@ -198,31 +194,31 @@ function Step1Details({
                     onClick={() => removePerf(i)}
                     className="text-xs text-red-500 hover:text-red-700 transition"
                   >
-                    Remove
+                    {t("details.remove")}
                   </button>
                 )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label required>Date</Label>
+                  <Label required>{t("details.date")}</Label>
                   <Input type="date" value={p.date} onChange={e => patchPerf(i, { date: e.target.value })} />
                 </div>
                 <div>
-                  <Label>Doors open</Label>
+                  <Label>{t("details.doorsOpen")}</Label>
                   <Input type="time" value={p.doorsOpen} onChange={e => patchPerf(i, { doorsOpen: e.target.value })} />
                 </div>
                 <div>
-                  <Label required>Curtain up</Label>
+                  <Label required>{t("details.curtainUp")}</Label>
                   <Input type="time" value={p.curtainUp} onChange={e => patchPerf(i, { curtainUp: e.target.value })} />
                 </div>
                 <div>
-                  <Label>Expected end</Label>
+                  <Label>{t("details.expectedEnd")}</Label>
                   <Input type="time" value={p.expectedEnd} onChange={e => patchPerf(i, { expectedEnd: e.target.value })} />
                 </div>
               </div>
               <div>
-                <Label>Notes for this performance</Label>
-                <Input placeholder="e.g. Matinee, No interval" value={p.notes} onChange={e => patchPerf(i, { notes: e.target.value })} />
+                <Label>{t("details.notes")}</Label>
+                <Input placeholder={t("details.notesPlaceholder")} value={p.notes} onChange={e => patchPerf(i, { notes: e.target.value })} />
               </div>
             </div>
           ))}
@@ -241,41 +237,43 @@ function Step2Venue({
   state: WizardFormState;
   update: (patch: Partial<WizardFormState>) => void;
 }) {
+  const t = useTranslations("admin.events.production");
+
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div>
-        <Label>Venue name</Label>
+        <Label>{t("venue.venueName")}</Label>
         <Input
-          placeholder="e.g. Wellington Town Hall"
+          placeholder={t("venue.venueNamePlaceholder")}
           value={state.venueName}
           onChange={e => update({ venueName: e.target.value })}
         />
       </div>
       <div>
-        <Label>Address</Label>
+        <Label>{t("venue.address")}</Label>
         <Input
-          placeholder="Full address"
+          placeholder={t("venue.addressPlaceholder")}
           value={state.venueAddress}
           onChange={e => update({ venueAddress: e.target.value })}
         />
       </div>
 
       <div>
-        <Label>Stage type</Label>
+        <Label>{t("venue.stageType")}</Label>
         <div className="grid grid-cols-1 gap-2">
-          {STAGE_TYPES.map(s => (
+          {STAGE_TYPES.map(value => (
             <button
-              key={s.value}
+              key={value}
               type="button"
-              onClick={() => update({ stageType: s.value })}
+              onClick={() => update({ stageType: value })}
               className={`rounded-xl border px-4 py-3 text-left transition ${
-                state.stageType === s.value
+                state.stageType === value
                   ? "border-brand bg-brand/10"
                   : "border-[--hair] bg-surface hover:border-brand/40"
               }`}
             >
-              <div className={`text-sm font-semibold ${state.stageType === s.value ? "text-brand" : "text-ink"}`}>{s.label}</div>
-              <div className="text-xs text-muted mt-0.5">{s.desc}</div>
+              <div className={`text-sm font-semibold ${state.stageType === value ? "text-brand" : "text-ink"}`}>{t(`stageTypes.${value}.label`)}</div>
+              <div className="text-xs text-muted mt-0.5">{t(`stageTypes.${value}.desc`)}</div>
             </button>
           ))}
         </div>
@@ -283,20 +281,20 @@ function Step2Venue({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label>Stage width (m)</Label>
+          <Label>{t("venue.stageWidth")}</Label>
           <Input
             type="number"
-            placeholder="e.g. 12"
+            placeholder={t("venue.stageWidthPlaceholder")}
             value={state.stageWidthM}
             onChange={e => update({ stageWidthM: e.target.value })}
             min="0" step="0.5"
           />
         </div>
         <div>
-          <Label>Stage depth (m)</Label>
+          <Label>{t("venue.stageDepth")}</Label>
           <Input
             type="number"
-            placeholder="e.g. 8"
+            placeholder={t("venue.stageDepthPlaceholder")}
             value={state.stageDepthM}
             onChange={e => update({ stageDepthM: e.target.value })}
             min="0" step="0.5"
@@ -305,18 +303,18 @@ function Step2Venue({
       </div>
 
       <div>
-        <Label>Venue notes</Label>
+        <Label>{t("venue.venueNotes")}</Label>
         <Textarea
-          placeholder="Parking, accessibility, load-in dock, key contacts at venue…"
+          placeholder={t("venue.venueNotesPlaceholder")}
           value={state.venueNotes}
           onChange={e => update({ venueNotes: e.target.value })}
           rows={3}
         />
       </div>
       <div>
-        <Label>Technical notes</Label>
+        <Label>{t("venue.techNotes")}</Label>
         <Textarea
-          placeholder="Sound system specs, lighting rig details, AV contacts, special requirements…"
+          placeholder={t("venue.techNotesPlaceholder")}
           value={state.techNotes}
           onChange={e => update({ techNotes: e.target.value })}
           rows={3}
@@ -325,7 +323,7 @@ function Step2Venue({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label>Ticket price (NZD)</Label>
+          <Label>{t("venue.ticketPrice", { currency: "NZD" })}</Label>
           <div className="relative">
             <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted text-sm">$</span>
             <Input
@@ -337,10 +335,10 @@ function Step2Venue({
               min="0" step="0.01"
             />
           </div>
-          <p className="text-xs text-muted mt-1">Leave at $0 for free entry</p>
+          <p className="text-xs text-muted mt-1">{t("venue.freeEntryHint")}</p>
         </div>
         <div>
-          <Label>Total tickets</Label>
+          <Label>{t("venue.totalTickets")}</Label>
           <Input
             type="number"
             placeholder="100"
@@ -356,11 +354,11 @@ function Step2Venue({
 
 // ─── Step 3: Team ─────────────────────────────────────────────────────────────
 
-const CREW_ROLE_PRESETS = [
-  "Stage Manager", "Technical Director", "Lighting Designer",
-  "Sound Operator", "Choreographer", "Costume Coordinator",
-  "Front of House", "Backstage Assistant",
-];
+const CREW_ROLE_KEYS = [
+  "stageManager", "technicalDirector", "lightingDesigner",
+  "soundOperator", "choreographer", "costumeCoordinator",
+  "frontOfHouse", "backstageAssistant",
+] as const;
 
 function Step3Team({
   state,
@@ -386,32 +384,31 @@ function Step3Team({
     update({ crew: state.crew.map((c, idx) => (idx === i ? { ...c, ...patch } : c)) });
 
   const staffProfiles = profiles.filter(p => p.role === "admin" || p.role === "teacher");
+  const t = useTranslations("admin.events.production");
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="box rounded-xl px-4 py-3">
-        <p className="text-xs text-muted">
-          Add the production team — stage manager, tech director, choreographers, backstage crew. You can link Olune staff or add external people.
-        </p>
+        <p className="text-xs text-muted">{t("team.intro")}</p>
       </div>
 
       <div className="space-y-4">
         {state.crew.map((c, i) => (
           <div key={i} className="box rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-muted uppercase tracking-wide">Team member {i + 1}</span>
+              <span className="text-xs font-bold text-muted uppercase tracking-wide">{t("team.memberNumbered", { number: i + 1 })}</span>
               <button
                 type="button"
                 onClick={() => removeCrew(i)}
                 className="text-xs text-red-500 hover:text-red-700 transition"
               >
-                Remove
+                {t("team.remove")}
               </button>
             </div>
 
             {/* Link to existing profile or enter manually */}
             <div>
-              <Label>From your team (optional)</Label>
+              <Label>{t("team.fromYourTeam")}</Label>
               <Select
                 value={c.profileId ?? ""}
                 onChange={e => {
@@ -429,7 +426,7 @@ function Step3Team({
                   }
                 }}
               >
-                <option value="">External / manual entry</option>
+                <option value="">{t("team.externalManual")}</option>
                 {staffProfiles.map(p => (
                   <option key={p.id} value={p.id}>{p.full_name ?? p.email ?? p.id}</option>
                 ))}
@@ -438,29 +435,29 @@ function Step3Team({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label required>Name</Label>
+                <Label required>{t("team.name")}</Label>
                 <Input
-                  placeholder="Full name"
+                  placeholder={t("team.namePlaceholder")}
                   value={c.displayName}
                   onChange={e => patchCrew(i, { displayName: e.target.value })}
                 />
               </div>
               <div>
-                <Label required>Role</Label>
+                <Label required>{t("team.role")}</Label>
                 <div className="relative">
                   <Input
-                    placeholder="e.g. Stage Manager"
+                    placeholder={t("team.rolePlaceholder")}
                     list={`crew-roles-${i}`}
                     value={c.roleLabel}
                     onChange={e => patchCrew(i, { roleLabel: e.target.value })}
                   />
                   <datalist id={`crew-roles-${i}`}>
-                    {CREW_ROLE_PRESETS.map(r => <option key={r} value={r} />)}
+                    {CREW_ROLE_KEYS.map(k => <option key={k} value={t(`crewRoles.${k}`)} />)}
                   </datalist>
                 </div>
               </div>
               <div>
-                <Label>Phone</Label>
+                <Label>{t("team.phone")}</Label>
                 <Input
                   type="tel"
                   placeholder="+64 21 000 0000"
@@ -469,7 +466,7 @@ function Step3Team({
                 />
               </div>
               <div>
-                <Label>Email</Label>
+                <Label>{t("team.email")}</Label>
                 <Input
                   type="email"
                   placeholder="name@example.com"
@@ -490,11 +487,11 @@ function Step3Team({
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
-        Add team member
+        {t("team.addMember")}
       </button>
 
       {state.crew.length === 0 && (
-        <p className="text-center text-xs text-muted">You can add team members later. This step is optional.</p>
+        <p className="text-center text-xs text-muted">{t("team.optionalHint")}</p>
       )}
     </div>
   );
@@ -511,19 +508,21 @@ function CastMemberRow({
   onUpdate: (patch: Partial<CastMemberDraft>) => void;
   onRemove: () => void;
 }) {
+  const t = useTranslations("admin.events.production");
+
   return (
     <div className="flex items-center gap-2 py-1.5">
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-ink truncate">{member.displayName}</p>
       </div>
       <Input
-        placeholder="Role (e.g. Lead)"
+        placeholder={t("cast.memberRolePlaceholder")}
         value={member.roleLabel}
         onChange={e => onUpdate({ roleLabel: e.target.value })}
         className="w-36 text-xs py-1.5 px-2.5"
       />
       <Input
-        placeholder="Costume"
+        placeholder={t("cast.memberCostumePlaceholder")}
         value={member.baseCostume}
         onChange={e => onUpdate({ baseCostume: e.target.value })}
         className="w-40 text-xs py-1.5 px-2.5"
@@ -608,12 +607,12 @@ function Step4Cast({
     setShowImport(null);
   };
 
+  const t = useTranslations("admin.events.production");
+
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
       <div className="box rounded-xl px-4 py-3">
-        <p className="text-xs text-muted">
-          Organise performers into groups (e.g. &ldquo;Junior Ensemble&rdquo;, &ldquo;Senior Company&rdquo;). Each cast member gets a role label and base costume note. You can override costumes per-act in the Builder.
-        </p>
+        <p className="text-xs text-muted">{t("cast.intro")}</p>
       </div>
 
       {/* Groups */}
@@ -622,32 +621,32 @@ function Step4Cast({
           {/* Group header */}
           <div className="flex items-center gap-3 px-4 py-3 bg-[--subtle]/40 border-b border-[--hair]">
             <Input
-              placeholder="Group name"
+              placeholder={t("cast.groupNamePlaceholder")}
               value={group.name}
               onChange={e => patchGroup(gi, { name: e.target.value })}
               className="flex-1 text-sm font-semibold"
             />
-            <span className="text-xs text-muted shrink-0">{group.members.length} members</span>
+            <span className="text-xs text-muted shrink-0">{t("cast.memberCount", { count: group.members.length })}</span>
             <button
               type="button"
               onClick={() => setShowImport(showImport === `${gi}` ? null : `${gi}`)}
               className="text-xs font-semibold text-brand hover:text-brand/80 transition shrink-0"
             >
-              Import class
+              {t("cast.importClass")}
             </button>
             <button
               type="button"
               onClick={() => removeGroup(gi)}
               className="text-xs text-red-500 hover:text-red-700 transition shrink-0"
             >
-              Remove group
+              {t("cast.removeGroup")}
             </button>
           </div>
 
           {/* Import class dropdown */}
           {showImport === `${gi}` && (
             <div className="box-tint px-4 py-3">
-              <p className="text-xs text-muted mb-2">Import all enrolled students from a class:</p>
+              <p className="text-xs text-muted mb-2">{t("cast.importPrompt")}</p>
               <div className="flex gap-2 flex-wrap">
                 {classes.map(c => (
                   <button
@@ -659,7 +658,7 @@ function Step4Cast({
                     {c.name} ({c.enrollments.length})
                   </button>
                 ))}
-                {classes.length === 0 && <span className="text-xs text-muted">No classes found</span>}
+                {classes.length === 0 && <span className="text-xs text-muted">{t("cast.noClasses")}</span>}
               </div>
             </div>
           )}
@@ -667,13 +666,13 @@ function Step4Cast({
           {/* Members list */}
           <div className="px-4 py-2">
             {group.members.length === 0 ? (
-              <p className="text-xs text-muted text-center py-3">No members yet — add from below or import a class</p>
+              <p className="text-xs text-muted text-center py-3">{t("cast.noMembers")}</p>
             ) : (
               <>
                 <div className="flex items-center gap-2 py-1 mb-1">
-                  <span className="flex-1 text-[10px] font-semibold text-muted uppercase tracking-wide">Name</span>
-                  <span className="w-36 text-[10px] font-semibold text-muted uppercase tracking-wide">Role</span>
-                  <span className="w-40 text-[10px] font-semibold text-muted uppercase tracking-wide">Base costume</span>
+                  <span className="flex-1 text-[10px] font-semibold text-muted uppercase tracking-wide">{t("cast.colName")}</span>
+                  <span className="w-36 text-[10px] font-semibold text-muted uppercase tracking-wide">{t("cast.colRole")}</span>
+                  <span className="w-40 text-[10px] font-semibold text-muted uppercase tracking-wide">{t("cast.colBaseCostume")}</span>
                   <span className="w-5" />
                 </div>
                 <div className="flex flex-col gap-0.5">
@@ -695,7 +694,7 @@ function Step4Cast({
                 value=""
                 onChange={e => { if (e.target.value) addMemberToGroup(gi, e.target.value); }}
               >
-                <option value="">+ Add student…</option>
+                <option value="">{t("cast.addStudent")}</option>
                 {studentProfiles
                   .filter(p => !group.members.some(m => m.profileId === p.id))
                   .map(p => (
@@ -711,7 +710,7 @@ function Step4Cast({
       {/* Add group */}
       <div className="flex gap-2">
         <Input
-          placeholder="New group name (e.g. Junior Ensemble)"
+          placeholder={t("cast.newGroupPlaceholder")}
           value={addGroupName}
           onChange={e => setAddGroupName(e.target.value)}
           onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addGroup(); } }}
@@ -722,12 +721,12 @@ function Step4Cast({
           disabled={!addGroupName.trim()}
           className="rounded-xl bg-brand text-white px-4 py-2.5 text-sm font-semibold hover:bg-brand/90 transition disabled:opacity-40 shrink-0"
         >
-          Add group
+          {t("cast.addGroup")}
         </button>
       </div>
 
       <div className="flex items-center gap-3 pt-2">
-        <Label>Quick-change warning threshold (minutes)</Label>
+        <Label>{t("cast.quickChangeLabel")}</Label>
         <Input
           type="number"
           className="w-24"
@@ -735,7 +734,7 @@ function Step4Cast({
           onChange={e => update({ quickChangeThresholdMins: parseInt(e.target.value || "10") })}
           min="1" max="60"
         />
-        <p className="text-xs text-muted">Flag when a performer appears in consecutive acts with less than this gap</p>
+        <p className="text-xs text-muted">{t("cast.quickChangeHint")}</p>
       </div>
     </div>
   );
@@ -749,35 +748,43 @@ function Step6Review({
   state: WizardFormState;
 }) {
   const totalCastMembers = state.castGroups.reduce((sum, g) => sum + g.members.length, 0);
+  const t = useTranslations("admin.events.production");
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="box rounded-2xl overflow-hidden">
         <div className="px-5 py-4 bg-[--subtle]/30 border-b border-[--hair]">
-          <h3 className="text-sm font-bold text-ink">{state.name || "Unnamed event"}</h3>
-          <p className="text-xs text-muted capitalize mt-0.5">{state.eventType}</p>
+          <h3 className="text-sm font-bold text-ink">{state.name || t("review.unnamedEvent")}</h3>
+          <p className="text-xs text-muted mt-0.5">{t(`eventTypes.${state.eventType}`)}</p>
         </div>
         <div className="flex flex-col">
           <ReviewRow
-            label="Performances"
-            value={`${state.performances.length} date${state.performances.length !== 1 ? "s" : ""}`}
+            label={t("review.performances")}
+            value={t("review.dateCount", { count: state.performances.length })}
           />
-          <ReviewRow label="Venue" value={state.venueName || "—"} />
-          <ReviewRow label="Stage" value={state.stageType.replace("_", " ")} />
-          <ReviewRow label="Team members" value={`${state.crew.length}`} />
-          <ReviewRow label="Cast groups" value={`${state.castGroups.length} groups · ${totalCastMembers} performers`} />
+          <ReviewRow label={t("review.venue")} value={state.venueName || "—"} />
+          <ReviewRow label={t("review.stage")} value={t(`stageTypes.${state.stageType}.label`)} />
+          <ReviewRow label={t("review.teamMembers")} value={`${state.crew.length}`} />
           <ReviewRow
-            label="Tickets"
-            value={`${state.ticketPrice === 0 ? "Free" : `$${(state.ticketPrice / 100).toFixed(2)}`} · ${state.totalTickets} capacity`}
+            label={t("review.castGroups")}
+            value={t("review.castSummary", {
+              groups: state.castGroups.length,
+              performers: totalCastMembers,
+            })}
+          />
+          <ReviewRow
+            label={t("review.tickets")}
+            value={t("review.ticketSummary", {
+              price: state.ticketPrice === 0 ? t("review.free") : `$${(state.ticketPrice / 100).toFixed(2)}`,
+              capacity: state.totalTickets,
+            })}
           />
         </div>
       </div>
 
       <div className="rounded-xl bg-green-50 border border-green-200 px-4 py-3">
-        <p className="text-sm text-green-800 font-medium">Ready to publish?</p>
-        <p className="text-xs text-green-700 mt-0.5">
-          Publishing makes this event visible to parents and enables ticket sales. You can unpublish at any time.
-        </p>
+        <p className="text-sm text-green-800 font-medium">{t("review.readyTitle")}</p>
+        <p className="text-xs text-green-700 mt-0.5">{t("review.readyBody")}</p>
       </div>
     </div>
   );
@@ -787,7 +794,7 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between px-5 py-3">
       <span className="text-xs text-muted font-medium">{label}</span>
-      <span className="text-sm text-ink font-medium capitalize">{value}</span>
+      <span className="text-sm text-ink font-medium">{value}</span>
     </div>
   );
 }
@@ -806,6 +813,7 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
   const [step, setStep]     = useState(initialState.eventId ? 5 : 1);
   const [error, setError]   = useState<string | null>(null);
   const [isPending, start]  = useTransition();
+  const t = useTranslations("admin.events.production");
 
   const update = useCallback((patch: Partial<WizardFormState>) => {
     setState(prev => ({ ...prev, ...patch }));
@@ -819,9 +827,9 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
   const goNext = () => {
     setError(null);
     if (step === 1) {
-      if (!state.name.trim()) { setError("Event name is required"); return; }
+      if (!state.name.trim()) { setError(t("errors.nameRequired")); return; }
       if (state.performances.some(p => !p.date || !p.curtainUp)) {
-        setError("Each performance needs a date and curtain-up time"); return;
+        setError(t("errors.performanceIncomplete")); return;
       }
       if (!isEditing) {
         // Create the event on step 1 completion
@@ -892,14 +900,16 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg hover:bg-[--subtle] text-muted hover:text-ink transition"
-            title="Close wizard"
+            title={t("shell.close")}
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
           <h1 className="text-base font-bold text-ink">
-            {isEditing ? `Editing: ${state.name || "Event"}` : "New Event"}
+            {isEditing
+              ? t("shell.editing", { name: state.name || t("shell.eventFallback") })
+              : t("shell.newEvent")}
           </h1>
         </div>
 
@@ -931,7 +941,7 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
                   ) : s.id}
                 </div>
                 <span className={`text-xs font-medium hidden sm:block ${current ? "text-brand" : done ? "text-muted" : "text-muted/60"}`}>
-                  {s.label}
+                  {t(`steps.${s.key}`)}
                 </span>
                 {i < STEPS.length - 1 && (
                   <div className={`w-4 h-0.5 rounded-full mx-1 ${done ? "bg-brand/30" : "bg-[--hair]"}`} />
@@ -949,18 +959,18 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
             {/* Step heading */}
             <div className="mb-8 max-w-2xl mx-auto">
               <h2 className="text-xl font-bold text-ink">
-                {step === 1 && "Event details"}
-                {step === 2 && "Venue & stage"}
-                {step === 3 && "Production team"}
-                {step === 4 && "Cast"}
-                {step === 6 && "Review & publish"}
+                {step === 1 && t("shell.headings.details")}
+                {step === 2 && t("shell.headings.venue")}
+                {step === 3 && t("shell.headings.team")}
+                {step === 4 && t("shell.headings.cast")}
+                {step === 6 && t("shell.headings.review")}
               </h2>
               <p className="text-sm text-muted mt-1">
-                {step === 1 && "Give your event a name, type, and schedule the performance dates."}
-                {step === 2 && "Where is the show happening? Set up the venue and stage specs."}
-                {step === 3 && "Add the people running the production — stage managers, tech crew, choreographers."}
-                {step === 4 && "Set up cast groups and assign performers. You can import from your class roster."}
-                {step === 6 && "Everything looks good — save as draft or publish to go live."}
+                {step === 1 && t("shell.subheadings.details")}
+                {step === 2 && t("shell.subheadings.venue")}
+                {step === 3 && t("shell.subheadings.team")}
+                {step === 4 && t("shell.subheadings.cast")}
+                {step === 6 && t("shell.subheadings.review")}
               </p>
             </div>
 
@@ -994,7 +1004,7 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
-          Back
+          {t("shell.back")}
         </button>
 
         <div className="flex items-center gap-3">
@@ -1005,14 +1015,14 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
                 disabled={isPending}
                 className="px-5 py-2.5 rounded-xl text-sm font-semibold text-ink bg-[--subtle] hover:bg-[--hair] transition disabled:opacity-40"
               >
-                Save draft
+                {t("shell.saveDraft")}
               </button>
               <button
                 onClick={() => handlePublish(true)}
                 disabled={isPending}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition disabled:opacity-40"
               >
-                {isPending ? "Publishing…" : "Publish event"}
+                {isPending ? t("shell.publishing") : t("shell.publish")}
                 {!isPending && (
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -1032,11 +1042,11 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Saving…
+                  {t("shell.saving")}
                 </>
               ) : (
                 <>
-                  {step === 5 ? "Review" : "Next"}
+                  {step === 5 ? t("shell.review") : t("shell.next")}
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                   </svg>
