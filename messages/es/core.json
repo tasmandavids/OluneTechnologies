@@ -27,7 +27,7 @@
     "date": "Fecha",
     "time": "Hora",
     "amount": "Monto",
-    "total": "Total",
+    "total": "Importe total",
     "yes": "Sí",
     "no": "No",
     "or": "o",
@@ -144,7 +144,7 @@
       "teamManagement": "Equipo",
       "clientManagement": "Gestión de clientes",
       "finance": "Finanzas",
-      "digital": "Digital",
+      "digital": "Presencia digital",
       "communications": "Comunicaciones"
     },
     "admin": {
