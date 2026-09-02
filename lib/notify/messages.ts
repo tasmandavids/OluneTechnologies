@@ -54,7 +54,7 @@ function absoluteLink(link: string | null): string | null {
  *
  * Rationale:
  *  • Time-sensitive / money events → email (durable record).
- *  • Imminent, action-now events (class tomorrow, waitlist spot) → email + SMS.
+ *  • Imminent, action-now events (a waitlist spot) → email + SMS.
  *  • Push goes on anything a parent would want to know *now*, which is a wider
  *    set than email: it is free, it is silent when the app is closed and the
  *    OS lets the recipient mute it per-app. It is the native app's entire
@@ -67,18 +67,33 @@ function absoluteLink(link: string | null): string | null {
  *  • checkin_tap — "Ruby checked in to Jazz Elite" is worth a lock screen and
  *    nothing more. An email per tap would be intolerable at studio volume.
  *
- * Email and SMS routing is unchanged from before push existed; every edit here
- * added a channel rather than moving one.
+ * And one type is deliberately NOT on email: class_reminder. See its case.
+ *
+ * Adding push moved no existing email or SMS destination; tests/notify.test.ts
+ * still guards that. Removing class_reminder's email is the one deliberate
+ * subtraction since, and those same tests pin it.
  */
 export function channelsForType(type: string): DeliveryChannel[] {
   switch (type as NotificationType) {
-    case "class_reminder":
     case "waitlist_promoted":
     // A cover request is the most time-critical message in the product — a
     // class starts in hours and nobody is going to teach it. Email alone
     // assumes the teacher is at a desk; they are not.
     case "substitute_needed":
       return ["email", "sms", "push"];
+    // The one type that fires on a schedule rather than in response to an
+    // event: the nightly cron generates one per active enrollee, per class,
+    // for every class running tomorrow. At studio volume that is an inbox full
+    // of "Class tomorrow" about a timetable the parent already has, and the
+    // only opt-out is a per-user preference row that defaults to on — so in
+    // practice every parent got one the night before every class.
+    //
+    // SMS and push are the right weight for a reminder: glanceable, gone in a
+    // second, muteable per-app by whoever doesn't want them. An email is a
+    // filed document, and this isn't one. Email is off; the reminder itself
+    // still goes out.
+    case "class_reminder":
+      return ["sms", "push"];
     case "substitute_filled":
     case "enrollment_confirmed":
     case "payment_failed":

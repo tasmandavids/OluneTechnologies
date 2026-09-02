@@ -25,8 +25,14 @@ const sample = (over: Partial<DeliverableNotification> = {}): DeliverableNotific
 
 describe("channelsForType", () => {
   it("routes imminent action events to email + SMS + push", () => {
-    expect(channelsForType("class_reminder")).toEqual(["email", "sms", "push"]);
     expect(channelsForType("waitlist_promoted")).toEqual(["email", "sms", "push"]);
+  });
+
+  // A reminder about a timetable the parent already has does not belong in an
+  // inbox, and this is the one type the cron generates on a schedule — every
+  // enrollee, every class, every night. It still goes out, just not by email.
+  it("reminds about class on SMS and push but never by email", () => {
+    expect(channelsForType("class_reminder")).toEqual(["sms", "push"]);
   });
 
   it("routes money + confirmation events to email + push", () => {
@@ -80,7 +86,6 @@ describe("channelsForType", () => {
 
   it("leaves the email set untouched by the arrival of push", () => {
     const emailTypes = [
-      "class_reminder",
       "waitlist_promoted",
       "substitute_needed",
       "substitute_filled",
@@ -93,7 +98,12 @@ describe("channelsForType", () => {
       "birthday_greeting",
       "schedule_updated",
     ];
-    const nonEmailTypes = ["message_received", "checkin_tap", "contractor_invoice_received"];
+    const nonEmailTypes = [
+      "message_received",
+      "checkin_tap",
+      "contractor_invoice_received",
+      "class_reminder",
+    ];
     for (const t of emailTypes) expect(channelsForType(t)).toContain("email");
     for (const t of nonEmailTypes) expect(channelsForType(t)).not.toContain("email");
   });
