@@ -1,0 +1,11 @@
+{
+  "payments": {
+    "paymentNotCompleted": "결제를 완료할 수 없습니다.",
+    "paymentIncomplete": "결제가 완료되지 않았습니다. 다른 결제 수단을 이용해 주세요.",
+    "paymentProcessing": "결제가 아직 처리 중입니다. 처리가 완료되면 계정에 자동으로 반영되니 다시 결제하지 않으셔도 됩니다.",
+    "processing": "처리 중…",
+    "payNow": "지금 결제하기",
+    "payAmount": "{amount} 결제하기",
+    "secureCheckout": "안전한 카드 결제"
+  }
+}
