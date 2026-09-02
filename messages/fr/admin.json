@@ -1373,6 +1373,173 @@
         "unknownHolder": "Détenteur du billet",
         "noEventsTitle": "Aucun événement à scanner",
         "noEventsBody": "Publiez un événement daté d'aujourd'hui ou plus tard et il apparaîtra ici."
+      },
+      "production": {
+        "steps": {
+          "details": "Détails",
+          "venue": "Lieu",
+          "team": "Équipe",
+          "cast": "Distribution",
+          "builder": "Éditeur",
+          "review": "Révision"
+        },
+        "eventTypes": {
+          "recital": "Récital",
+          "showcase": "Présentation",
+          "concert": "Concert",
+          "competition": "Concours",
+          "workshop": "Atelier",
+          "other": "Autre"
+        },
+        "stageTypes": {
+          "proscenium": {
+            "label": "À l'italienne",
+            "desc": "Scène à cadre classique, public face à la scène"
+          },
+          "thrust": {
+            "label": "Scène avancée",
+            "desc": "La scène s'avance dans le public"
+          },
+          "in_the_round": {
+            "label": "Scène centrale",
+            "desc": "Le public entoure la scène"
+          },
+          "black_box": {
+            "label": "Boîte noire",
+            "desc": "Disposition des sièges modulable"
+          },
+          "other": {
+            "label": "Autre",
+            "desc": "Sur mesure / en plein air / non traditionnel"
+          }
+        },
+        "crewRoles": {
+          "stageManager": "Régisseur de scène",
+          "technicalDirector": "Directeur technique",
+          "lightingDesigner": "Concepteur lumière",
+          "soundOperator": "Opérateur son",
+          "choreographer": "Chorégraphe",
+          "costumeCoordinator": "Coordinateur costumes",
+          "frontOfHouse": "Accueil du public",
+          "backstageAssistant": "Assistant de plateau"
+        },
+        "details": {
+          "eventName": "Nom de l'événement",
+          "eventNamePlaceholder": "p. ex. Gala de printemps 2026",
+          "eventType": "Type d'événement",
+          "description": "Description",
+          "descriptionPlaceholder": "Bref aperçu de l'événement…",
+          "performanceDates": "Dates de représentation",
+          "addDate": "Ajouter une date",
+          "performanceNumbered": "Représentation {number}",
+          "performanceSingle": "Date de représentation",
+          "remove": "Supprimer",
+          "date": "Date",
+          "doorsOpen": "Ouverture des portes",
+          "curtainUp": "Lever de rideau",
+          "expectedEnd": "Fin prévue",
+          "notes": "Notes pour cette représentation",
+          "notesPlaceholder": "p. ex. Matinée, sans entracte"
+        },
+        "venue": {
+          "venueName": "Nom du lieu",
+          "venueNamePlaceholder": "p. ex. Théâtre municipal",
+          "address": "Adresse",
+          "addressPlaceholder": "Adresse complète",
+          "stageType": "Type de scène",
+          "stageWidth": "Largeur de scène (m)",
+          "stageWidthPlaceholder": "p. ex. 12",
+          "stageDepth": "Profondeur de scène (m)",
+          "stageDepthPlaceholder": "p. ex. 8",
+          "venueNotes": "Notes sur le lieu",
+          "venueNotesPlaceholder": "Stationnement, accessibilité, quai de chargement, contacts clés sur place…",
+          "techNotes": "Notes techniques",
+          "techNotesPlaceholder": "Spécifications sonorisation, détails du parc lumière, contacts AV, exigences particulières…",
+          "ticketPrice": "Prix du billet ({currency})",
+          "freeEntryHint": "Laissez à 0 pour une entrée gratuite",
+          "totalTickets": "Nombre total de billets"
+        },
+        "team": {
+          "intro": "Ajoutez l'équipe de production : régisseur, directeur technique, chorégraphes, équipe de plateau. Vous pouvez relier du personnel Olune ou ajouter des personnes externes.",
+          "memberNumbered": "Membre de l'équipe {number}",
+          "remove": "Supprimer",
+          "fromYourTeam": "Depuis votre équipe (facultatif)",
+          "externalManual": "Externe / saisie manuelle",
+          "name": "Nom",
+          "namePlaceholder": "Nom complet",
+          "role": "Rôle",
+          "rolePlaceholder": "p. ex. Régisseur de scène",
+          "phone": "Téléphone",
+          "email": "E-mail",
+          "addMember": "Ajouter un membre",
+          "optionalHint": "Vous pourrez ajouter des membres plus tard. Cette étape est facultative."
+        },
+        "cast": {
+          "intro": "Organisez les interprètes en groupes (p. ex. « Ensemble junior », « Compagnie senior »). Chaque membre reçoit un rôle et une note de costume de base. Vous pourrez modifier les costumes par numéro dans l'Éditeur.",
+          "groupNamePlaceholder": "Nom du groupe",
+          "memberCount": "{count, plural, one {# membre} other {# membres}}",
+          "importClass": "Importer un cours",
+          "removeGroup": "Supprimer le groupe",
+          "importPrompt": "Importer tous les élèves inscrits à un cours :",
+          "noClasses": "Aucun cours trouvé",
+          "noMembers": "Aucun membre pour l'instant — ajoutez ci-dessous ou importez un cours",
+          "colName": "Nom",
+          "colRole": "Rôle",
+          "colBaseCostume": "Costume de base",
+          "addStudent": "+ Ajouter un élève…",
+          "newGroupPlaceholder": "Nom du nouveau groupe (p. ex. Ensemble junior)",
+          "addGroup": "Ajouter le groupe",
+          "quickChangeLabel": "Seuil d'alerte changement rapide (minutes)",
+          "quickChangeHint": "Signaler lorsqu'un interprète apparaît dans des numéros consécutifs avec un écart inférieur",
+          "memberRolePlaceholder": "Rôle (p. ex. Soliste)",
+          "memberCostumePlaceholder": "Costume"
+        },
+        "review": {
+          "unnamedEvent": "Événement sans nom",
+          "performances": "Représentations",
+          "venue": "Lieu",
+          "stage": "Scène",
+          "teamMembers": "Membres de l'équipe",
+          "castGroups": "Groupes de distribution",
+          "tickets": "Billets",
+          "dateCount": "{count, plural, one {# date} other {# dates}}",
+          "free": "Gratuit",
+          "castSummary": "{groups, plural, one {# groupe} other {# groupes}} · {performers, plural, one {# interprète} other {# interprètes}}",
+          "ticketSummary": "{price} · {capacity} places",
+          "readyTitle": "Prêt à publier ?",
+          "readyBody": "La publication rend l'événement visible aux familles et active la billetterie. Vous pouvez le dépublier à tout moment."
+        },
+        "shell": {
+          "close": "Fermer l'assistant",
+          "editing": "Modification : {name}",
+          "eventFallback": "Événement",
+          "newEvent": "Nouvel événement",
+          "headings": {
+            "details": "Détails de l'événement",
+            "venue": "Lieu et scène",
+            "team": "Équipe de production",
+            "cast": "Distribution",
+            "review": "Réviser et publier"
+          },
+          "subheadings": {
+            "details": "Donnez un nom et un type à votre événement, puis planifiez les dates de représentation.",
+            "venue": "Où se déroule le spectacle ? Configurez le lieu et les caractéristiques de la scène.",
+            "team": "Ajoutez les personnes qui font tourner la production — régisseurs, équipe technique, chorégraphes.",
+            "cast": "Créez des groupes de distribution et affectez les interprètes. Vous pouvez les importer depuis vos cours.",
+            "review": "Tout est en ordre — enregistrez un brouillon ou publiez pour le mettre en ligne."
+          },
+          "back": "Retour",
+          "saveDraft": "Enregistrer le brouillon",
+          "publish": "Publier l'événement",
+          "publishing": "Publication…",
+          "saving": "Enregistrement…",
+          "review": "Révision",
+          "next": "Suivant"
+        },
+        "errors": {
+          "nameRequired": "Le nom de l'événement est obligatoire",
+          "performanceIncomplete": "Chaque représentation nécessite une date et une heure de lever de rideau"
+        }
       }
     },
     "leads": {

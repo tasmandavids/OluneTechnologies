@@ -1,5 +1,7 @@
 "use client";
 
+import { useNumberFormat } from "@/lib/i18n/format";
+
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,7 +14,6 @@ import { InviteCoParentModal } from "./InviteCoParentModal";
 import { PayInvoiceModal } from "./PayInvoiceModal";
 import { CommandCentre, type CommandCentreProps } from "./CommandCentre";
 
-const NZD = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD", maximumFractionDigits: 2 });
 
 const STATUS_COLORS: Record<string, string> = {
   paid: "color-mix(in srgb, #22c55e 70%, transparent)",
@@ -55,6 +56,7 @@ export default function ParentHub({
   childProgressPath?: string;
   commandCentre?: CommandCentreProps;
 }) {
+  const NZD = useNumberFormat({ style: "currency", currency: "NZD", maximumFractionDigits: 2 });
   const t = useTranslations("parent.hub");
   const locale = useLocale();
   const dayShort = useShortDayNames();

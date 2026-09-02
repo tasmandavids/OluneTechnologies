@@ -1,5 +1,9 @@
 "use client";
 
+import { useLocale } from "next-intl";
+
+import { useNumberFormat } from "@/lib/i18n/format";
+
 import { useState, useTransition } from "react";
 import { motion } from "framer-motion";
 
@@ -49,7 +53,6 @@ const STATUS_COLORS: Record<string, string> = {
   ready: "#22c55e",
 };
 
-const NZD = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD", maximumFractionDigits: 2 });
 
 const COMMON_SIZES = [
   "Child 6", "Child 8", "Child 10", "Child 12", "Child 14",
@@ -66,6 +69,8 @@ export function CostumeHub({
   recitals: RecitalInfo[];
   onUpdateSize: (costumeId: string, sizeLabel: string, sizeNotes: string) => Promise<void>;
 }) {
+  const locale = useLocale();
+  const NZD = useNumberFormat({ style: "currency", currency: "NZD", maximumFractionDigits: 2 });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [sizeLabel, setSizeLabel] = useState("");
   const [sizeNotes, setSizeNotes] = useState("");
@@ -121,13 +126,13 @@ export function CostumeHub({
                 <p className="font-bold text-ink">{r.eventName}</p>
                 {r.eventDate && (
                   <p className="text-sm text-muted">
-                    📅 {new Date(r.eventDate).toLocaleDateString("en-NZ", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                    📅 {new Date(r.eventDate).toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
                   </p>
                 )}
                 {r.venue && <p className="text-sm text-muted">📍 {r.venue}</p>}
                 {r.photoDay && (
                   <p className="text-sm text-muted">
-                    📸 Photo day: {new Date(r.photoDay).toLocaleDateString("en-NZ", { day: "numeric", month: "short" })}
+                    📸 Photo day: {new Date(r.photoDay).toLocaleDateString(locale, { day: "numeric", month: "short" })}
                   </p>
                 )}
                 {r.runningOrder && (
@@ -208,7 +213,7 @@ export function CostumeHub({
                     )}
                     {c.fittingDate && (
                       <p className="text-xs text-muted">
-                        Fitting: {new Date(c.fittingDate).toLocaleDateString("en-NZ", { day: "numeric", month: "short" })}
+                        Fitting: {new Date(c.fittingDate).toLocaleDateString(locale, { day: "numeric", month: "short" })}
                       </p>
                     )}
                     {c.returnRequired && (

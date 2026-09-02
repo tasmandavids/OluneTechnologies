@@ -1373,6 +1373,173 @@
         "unknownHolder": "持票人",
         "noEventsTitle": "没有可扫描的活动",
         "noEventsBody": "发布一个日期为今天或之后的活动，它就会显示在这里。"
+      },
+      "production": {
+        "steps": {
+          "details": "详情",
+          "venue": "场地",
+          "team": "团队",
+          "cast": "演员",
+          "builder": "编排器",
+          "review": "复核"
+        },
+        "eventTypes": {
+          "recital": "汇报演出",
+          "showcase": "展演",
+          "concert": "音乐会",
+          "competition": "比赛",
+          "workshop": "工作坊",
+          "other": "其他"
+        },
+        "stageTypes": {
+          "proscenium": {
+            "label": "镜框式舞台",
+            "desc": "经典拱形舞台，观众正面观看"
+          },
+          "thrust": {
+            "label": "伸出式舞台",
+            "desc": "舞台向观众席延伸"
+          },
+          "in_the_round": {
+            "label": "中心式舞台",
+            "desc": "观众环绕舞台就座"
+          },
+          "black_box": {
+            "label": "黑匣子剧场",
+            "desc": "座位布局灵活可变"
+          },
+          "other": {
+            "label": "其他",
+            "desc": "定制 / 户外 / 非传统场地"
+          }
+        },
+        "crewRoles": {
+          "stageManager": "舞台监督",
+          "technicalDirector": "技术总监",
+          "lightingDesigner": "灯光设计",
+          "soundOperator": "音响操作员",
+          "choreographer": "编舞",
+          "costumeCoordinator": "服装统筹",
+          "frontOfHouse": "前厅接待",
+          "backstageAssistant": "后台助理"
+        },
+        "details": {
+          "eventName": "活动名称",
+          "eventNamePlaceholder": "例如：2026 春季展演",
+          "eventType": "活动类型",
+          "description": "简介",
+          "descriptionPlaceholder": "简要介绍这场活动…",
+          "performanceDates": "演出日期",
+          "addDate": "添加日期",
+          "performanceNumbered": "第 {number} 场",
+          "performanceSingle": "演出日期",
+          "remove": "移除",
+          "date": "日期",
+          "doorsOpen": "开场",
+          "curtainUp": "开演",
+          "expectedEnd": "预计结束",
+          "notes": "本场演出备注",
+          "notesPlaceholder": "例如：日场，无中场休息"
+        },
+        "venue": {
+          "venueName": "场地名称",
+          "venueNamePlaceholder": "例如：市音乐厅",
+          "address": "地址",
+          "addressPlaceholder": "完整地址",
+          "stageType": "舞台类型",
+          "stageWidth": "舞台宽度（米）",
+          "stageWidthPlaceholder": "例如：12",
+          "stageDepth": "舞台进深（米）",
+          "stageDepthPlaceholder": "例如：8",
+          "venueNotes": "场地备注",
+          "venueNotesPlaceholder": "停车、无障碍设施、装卸货区、场地主要联系人等…",
+          "techNotes": "技术备注",
+          "techNotesPlaceholder": "音响规格、灯光设备详情、AV 联系人、特殊要求等…",
+          "ticketPrice": "票价（{currency}）",
+          "freeEntryHint": "免费入场请保持为 0",
+          "totalTickets": "票数上限"
+        },
+        "team": {
+          "intro": "添加制作团队——舞台监督、技术总监、编舞、后台工作人员。可关联 Olune 员工，也可添加外部人员。",
+          "memberNumbered": "团队成员 {number}",
+          "remove": "移除",
+          "fromYourTeam": "从你的团队中选择（可选）",
+          "externalManual": "外部 / 手动录入",
+          "name": "姓名",
+          "namePlaceholder": "完整姓名",
+          "role": "职务",
+          "rolePlaceholder": "例如：舞台监督",
+          "phone": "电话",
+          "email": "电子邮箱",
+          "addMember": "添加团队成员",
+          "optionalHint": "团队成员可稍后添加，此步骤为可选。"
+        },
+        "cast": {
+          "intro": "将演员分组整理（例如“少年组”“高级团”）。每位演员可设定职务与基础服装备注，并可在编排器中按节目单独调整服装。",
+          "groupNamePlaceholder": "分组名称",
+          "memberCount": "{count} 人",
+          "importClass": "从班级导入",
+          "removeGroup": "删除分组",
+          "importPrompt": "导入某个班级的全部在读学员：",
+          "noClasses": "未找到班级",
+          "noMembers": "暂无成员——请在下方添加或从班级导入",
+          "colName": "姓名",
+          "colRole": "职务",
+          "colBaseCostume": "基础服装",
+          "addStudent": "+ 添加学员…",
+          "newGroupPlaceholder": "新分组名称（例如：少年组）",
+          "addGroup": "添加分组",
+          "quickChangeLabel": "快速换装预警阈值（分钟）",
+          "quickChangeHint": "当同一演员在相邻节目之间的间隔短于此值时发出提示",
+          "memberRolePlaceholder": "职务（例如：主演）",
+          "memberCostumePlaceholder": "服装"
+        },
+        "review": {
+          "unnamedEvent": "未命名活动",
+          "performances": "演出场次",
+          "venue": "场地",
+          "stage": "舞台",
+          "teamMembers": "团队成员",
+          "castGroups": "演员分组",
+          "tickets": "门票",
+          "dateCount": "{count} 个日期",
+          "free": "免费",
+          "castSummary": "{groups} 个分组 · {performers} 位演员",
+          "ticketSummary": "{price} · 容纳 {capacity} 人",
+          "readyTitle": "准备好发布了吗？",
+          "readyBody": "发布后家长即可看到该活动并开始售票。你可以随时取消发布。"
+        },
+        "shell": {
+          "close": "关闭向导",
+          "editing": "正在编辑：{name}",
+          "eventFallback": "活动",
+          "newEvent": "新建活动",
+          "headings": {
+            "details": "活动详情",
+            "venue": "场地与舞台",
+            "team": "制作团队",
+            "cast": "演员",
+            "review": "复核并发布"
+          },
+          "subheadings": {
+            "details": "为活动命名、选择类型，并安排演出日期。",
+            "venue": "演出在哪里举行？设置场地与舞台规格。",
+            "team": "添加负责制作的人员——舞台监督、技术人员、编舞。",
+            "cast": "建立演员分组并分配演员，可从班级名单导入。",
+            "review": "一切就绪——保存为草稿，或发布上线。"
+          },
+          "back": "上一步",
+          "saveDraft": "保存草稿",
+          "publish": "发布活动",
+          "publishing": "发布中…",
+          "saving": "保存中…",
+          "review": "复核",
+          "next": "下一步"
+        },
+        "errors": {
+          "nameRequired": "活动名称为必填项",
+          "performanceIncomplete": "每场演出都需要日期和开演时间"
+        }
       }
     },
     "leads": {

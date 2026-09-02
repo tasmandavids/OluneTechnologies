@@ -1373,6 +1373,173 @@
         "unknownHolder": "Titular de la entrada",
         "noEventsTitle": "No hay eventos para escanear",
         "noEventsBody": "Publica un evento con fecha de hoy o posterior y aparecerá aquí."
+      },
+      "production": {
+        "steps": {
+          "details": "Detalles",
+          "venue": "Recinto",
+          "team": "Equipo",
+          "cast": "Reparto",
+          "builder": "Editor",
+          "review": "Revisión"
+        },
+        "eventTypes": {
+          "recital": "Recital",
+          "showcase": "Muestra",
+          "concert": "Concierto",
+          "competition": "Competición",
+          "workshop": "Taller",
+          "other": "Otro"
+        },
+        "stageTypes": {
+          "proscenium": {
+            "label": "Proscenio",
+            "desc": "Escenario clásico con arco, el público mira al frente"
+          },
+          "thrust": {
+            "label": "Escenario saliente",
+            "desc": "El escenario se adentra en el público"
+          },
+          "in_the_round": {
+            "label": "Escenario central",
+            "desc": "El público rodea el escenario"
+          },
+          "black_box": {
+            "label": "Caja negra",
+            "desc": "Disposición de asientos flexible"
+          },
+          "other": {
+            "label": "Otro",
+            "desc": "Personalizado / al aire libre / no tradicional"
+          }
+        },
+        "crewRoles": {
+          "stageManager": "Regidor de escena",
+          "technicalDirector": "Director técnico",
+          "lightingDesigner": "Diseñador de iluminación",
+          "soundOperator": "Operador de sonido",
+          "choreographer": "Coreógrafo",
+          "costumeCoordinator": "Coordinador de vestuario",
+          "frontOfHouse": "Atención al público",
+          "backstageAssistant": "Asistente de bastidores"
+        },
+        "details": {
+          "eventName": "Nombre del evento",
+          "eventNamePlaceholder": "p. ej. Muestra de Primavera 2026",
+          "eventType": "Tipo de evento",
+          "description": "Descripción",
+          "descriptionPlaceholder": "Breve resumen del evento…",
+          "performanceDates": "Fechas de función",
+          "addDate": "Añadir fecha",
+          "performanceNumbered": "Función {number}",
+          "performanceSingle": "Fecha de función",
+          "remove": "Quitar",
+          "date": "Fecha",
+          "doorsOpen": "Apertura de puertas",
+          "curtainUp": "Inicio de función",
+          "expectedEnd": "Fin previsto",
+          "notes": "Notas para esta función",
+          "notesPlaceholder": "p. ej. Matinée, sin intermedio"
+        },
+        "venue": {
+          "venueName": "Nombre del recinto",
+          "venueNamePlaceholder": "p. ej. Teatro Municipal",
+          "address": "Dirección",
+          "addressPlaceholder": "Dirección completa",
+          "stageType": "Tipo de escenario",
+          "stageWidth": "Ancho del escenario (m)",
+          "stageWidthPlaceholder": "p. ej. 12",
+          "stageDepth": "Fondo del escenario (m)",
+          "stageDepthPlaceholder": "p. ej. 8",
+          "venueNotes": "Notas del recinto",
+          "venueNotesPlaceholder": "Aparcamiento, accesibilidad, muelle de carga, contactos clave en el recinto…",
+          "techNotes": "Notas técnicas",
+          "techNotesPlaceholder": "Especificaciones de sonido, detalles de iluminación, contactos AV, requisitos especiales…",
+          "ticketPrice": "Precio de entrada ({currency})",
+          "freeEntryHint": "Deja 0 para entrada gratuita",
+          "totalTickets": "Entradas totales"
+        },
+        "team": {
+          "intro": "Añade el equipo de producción: regidor, director técnico, coreógrafos, personal de bastidores. Puedes vincular personal de Olune o añadir personas externas.",
+          "memberNumbered": "Miembro del equipo {number}",
+          "remove": "Quitar",
+          "fromYourTeam": "De tu equipo (opcional)",
+          "externalManual": "Externo / entrada manual",
+          "name": "Nombre",
+          "namePlaceholder": "Nombre completo",
+          "role": "Función",
+          "rolePlaceholder": "p. ej. Regidor de escena",
+          "phone": "Teléfono",
+          "email": "Correo electrónico",
+          "addMember": "Añadir miembro del equipo",
+          "optionalHint": "Puedes añadir miembros del equipo más tarde. Este paso es opcional."
+        },
+        "cast": {
+          "intro": "Organiza a los intérpretes en grupos (p. ej. «Conjunto Juvenil», «Compañía Sénior»). Cada miembro del reparto recibe una función y una nota de vestuario base. Puedes cambiar el vestuario por número en el Editor.",
+          "groupNamePlaceholder": "Nombre del grupo",
+          "memberCount": "{count, plural, one {# miembro} other {# miembros}}",
+          "importClass": "Importar clase",
+          "removeGroup": "Quitar grupo",
+          "importPrompt": "Importar todos los alumnos matriculados de una clase:",
+          "noClasses": "No se encontraron clases",
+          "noMembers": "Aún no hay miembros: añade abajo o importa una clase",
+          "colName": "Nombre",
+          "colRole": "Función",
+          "colBaseCostume": "Vestuario base",
+          "addStudent": "+ Añadir alumno…",
+          "newGroupPlaceholder": "Nombre del nuevo grupo (p. ej. Conjunto Juvenil)",
+          "addGroup": "Añadir grupo",
+          "quickChangeLabel": "Umbral de aviso de cambio rápido (minutos)",
+          "quickChangeHint": "Avisar cuando un intérprete aparezca en números consecutivos con menos de este intervalo",
+          "memberRolePlaceholder": "Función (p. ej. Principal)",
+          "memberCostumePlaceholder": "Vestuario"
+        },
+        "review": {
+          "unnamedEvent": "Evento sin nombre",
+          "performances": "Funciones",
+          "venue": "Recinto",
+          "stage": "Escenario",
+          "teamMembers": "Miembros del equipo",
+          "castGroups": "Grupos del reparto",
+          "tickets": "Entradas",
+          "dateCount": "{count, plural, one {# fecha} other {# fechas}}",
+          "free": "Gratis",
+          "castSummary": "{groups, plural, one {# grupo} other {# grupos}} · {performers, plural, one {# intérprete} other {# intérpretes}}",
+          "ticketSummary": "{price} · aforo {capacity}",
+          "readyTitle": "¿Listo para publicar?",
+          "readyBody": "Al publicar, el evento será visible para las familias y se activará la venta de entradas. Puedes despublicarlo en cualquier momento."
+        },
+        "shell": {
+          "close": "Cerrar asistente",
+          "editing": "Editando: {name}",
+          "eventFallback": "Evento",
+          "newEvent": "Nuevo evento",
+          "headings": {
+            "details": "Detalles del evento",
+            "venue": "Recinto y escenario",
+            "team": "Equipo de producción",
+            "cast": "Reparto",
+            "review": "Revisar y publicar"
+          },
+          "subheadings": {
+            "details": "Ponle nombre y tipo al evento, y programa las fechas de función.",
+            "venue": "¿Dónde se celebra? Configura el recinto y las características del escenario.",
+            "team": "Añade a quienes dirigen la producción: regidores, equipo técnico, coreógrafos.",
+            "cast": "Crea grupos de reparto y asigna intérpretes. Puedes importarlos desde tus clases.",
+            "review": "Todo listo: guarda como borrador o publica para ponerlo en marcha."
+          },
+          "back": "Atrás",
+          "saveDraft": "Guardar borrador",
+          "publish": "Publicar evento",
+          "publishing": "Publicando…",
+          "saving": "Guardando…",
+          "review": "Revisión",
+          "next": "Siguiente"
+        },
+        "errors": {
+          "nameRequired": "El nombre del evento es obligatorio",
+          "performanceIncomplete": "Cada función necesita una fecha y una hora de inicio"
+        }
       }
     },
     "leads": {
