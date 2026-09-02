@@ -1,0 +1,11 @@
+{
+  "payments": {
+    "paymentNotCompleted": "お支払いを完了できませんでした。",
+    "paymentIncomplete": "お支払いが完了しませんでした。別のお支払い方法をお試しください。",
+    "paymentProcessing": "お支払いはまだ処理中です。処理が完了次第、自動的にアカウントに反映されますので、再度お支払いいただく必要はありません。",
+    "processing": "処理中…",
+    "payNow": "今すぐ支払う",
+    "payAmount": "{amount} を支払う",
+    "secureCheckout": "安全なカード決済"
+  }
+}

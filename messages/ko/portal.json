@@ -1,0 +1,76 @@
+{
+  "portal": {
+    "progress": {
+      "currentLevel": "현재 레벨",
+      "attendance": {
+        "title": "출석 · {count, plural, one {#건 기록} other {#건 기록}}",
+        "attendanceRate": "최근 수업 출석률 {rate}%",
+        "empty": "아직 기록된 출석이 없습니다.",
+        "date": "날짜",
+        "class": "수업",
+        "statusColumn": "상태",
+        "status": {
+          "present": "출석",
+          "late": "지각",
+          "absent": "결석",
+          "excused": "사유 결석"
+        }
+      },
+      "certificates": {
+        "title": "수료증 · {count}",
+        "subtitle": "각 수상에 대한 PDF 수료증을 다운로드하세요.",
+        "downloadPdf": "PDF 다운로드",
+        "downloadAria": "{title} PDF 수료증 다운로드"
+      },
+      "badges": {
+        "title": "배지 · {earned}/{total}",
+        "subtitle": "여정에서 획득한 성취",
+        "empty": "아직 획득한 배지가 없습니다 — 목표를 달성하면 여기에 표시됩니다.",
+        "secret": "비밀 배지",
+        "earnedOn": "{date} 획득",
+        "levelLabel": "레벨 {level}",
+        "xpTotal": "{xp} XP",
+        "toNext": "{level}까지 {xp} XP",
+        "maxLevel": "최고 레벨 달성 — 에투알!",
+        "familyTitle": "가족 배지 · {earned}/{total}",
+        "familySubtitle": "아카데미에서 이룬 우리 가족의 성취",
+        "categories": {
+          "founder": "설립 & 레거시",
+          "beginner": "입문 여정",
+          "commitment": "헌신 & 규율",
+          "technique": "테크닉",
+          "level": "레벨 진급",
+          "performance": "공연",
+          "character": "인성 & 가치",
+          "mentor": "강사 & 멘토 과정",
+          "community": "커뮤니티",
+          "secret": "비밀 & 재미",
+          "family": "가족"
+        },
+        "award": {
+          "title": "배지 수여하기",
+          "subtitle": "성취를 인정해 주세요. 무용수와 가족에게 알림이 전송됩니다.",
+          "search": "배지 검색…",
+          "note": "메모 (선택 사항)",
+          "awardCta": "수여",
+          "revoke": "제거",
+          "noResults": "검색 결과와 일치하는 배지가 없습니다."
+        }
+      }
+    },
+    "checkinCard": {
+      "title": "체크인 카드",
+      "unnamedDancer": "무용수",
+      "statusActive": "활성",
+      "statusFrozen": "일시 정지",
+      "issued": "{date} 발급",
+      "qrHint": "스튜디오 출입구에서 카드를 태그해 입퇴실하세요. 카드를 집에 두고 오셨다면 이 코드를 리더기에 대신 보여 주세요.",
+      "frozenHint": "이 카드는 일시 정지되어 체크인에 사용할 수 없습니다. 프런트 데스크에 정지 해제를 요청하세요.",
+      "qrAlt": "{name}의 체크인 QR 코드",
+      "enlarge": "QR 코드 확대",
+      "shrink": "QR 코드 축소",
+      "addToWallet": "Apple Wallet에 추가",
+      "walletHint": "iPhone에 스캔 가능한 사본을 보관합니다. 실물 카드도 리더기에 그대로 태그할 수 있습니다."
+    }
+  }
+}

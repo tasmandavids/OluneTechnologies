@@ -1,0 +1,89 @@
+{
+  "timeclock": {
+    "title": "タイムクロック",
+    "clockedInSince": "{time} から勤務中",
+    "notClockedIn": "未出勤",
+    "viaCard": "カード",
+    "onTheClock": "現在まで",
+    "thisWeek": "今週",
+    "working": "処理中…",
+    "clockIn": "出勤",
+    "clockOut": "退勤",
+    "addNote": "メモを追加",
+    "notePlaceholder": "何の作業をしていましたか？（任意）",
+    "weekTotal": "今週 {total}",
+    "rostered": "シフト予定 {total}",
+    "overRoster": "シフト予定より {amount} 超過",
+    "underRoster": "シフト予定より {amount} 不足",
+    "openShift": "未確定",
+    "approved": "承認済み",
+    "admin": {
+      "tabTitle": "タイムシート",
+      "range": "{from} 〜 {to}",
+      "summary": "{count}件の記録で合計 {total}",
+      "openCount": "{count}件が未確定",
+      "pendingOnly": "承認待ちのみ表示",
+      "addEntry": "記録を追加",
+      "approveSelected": "選択した項目を承認（{count}）",
+      "selectAll": "すべて選択",
+      "selectNone": "選択を解除",
+      "selectEntry": "この記録を選択",
+      "empty": "この期間に記録された勤務時間はありません。",
+      "unknownStaff": "不明なスタッフ",
+      "openEnd": "勤務中",
+      "approve": "承認",
+      "unapprove": "承認を取り消す",
+      "edit": "編集",
+      "delete": "削除",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "stillOpen": "未確定",
+      "notRostered": "シフト予定なし",
+      "onRoster": "シフト予定あり",
+      "overBy": "{amount} 超過",
+      "underBy": "{amount} 不足",
+      "source": {
+        "portal": "ポータル",
+        "nfc": "カード",
+        "manual": "手動追加"
+      },
+      "hourType": {
+        "regular": "通常勤務",
+        "overtime": "残業",
+        "holiday": "祝日",
+        "sick": "病気休暇",
+        "vacation": "年次休暇",
+        "unpaid": "無給"
+      },
+      "fields": {
+        "staff": "スタッフ",
+        "date": "日付",
+        "start": "開始",
+        "end": "終了",
+        "hourType": "勤務区分",
+        "note": "メモ"
+      },
+      "errors": {
+        "needStart": "日付と開始時刻を入力してください。",
+        "needStaffAndStart": "スタッフ、日付、開始時刻を選択してください。"
+      },
+      "rates": {
+        "title": "給与レート",
+        "subtitle": "適用開始日を指定します。新しいレートは承認済みのタイムシートを再計算しません。",
+        "empty": "レートが登録されていません — このスタッフの勤務時間はまだ計算できません。",
+        "perHour": "1時間あたり",
+        "from": "{date} から",
+        "current": "現在",
+        "remove": "削除",
+        "add": "レートを追加",
+        "fields": {
+          "amount": "時給",
+          "effectiveFrom": "適用開始日"
+        },
+        "errors": {
+          "needAmountAndDate": "時給と適用開始日を入力してください。"
+        }
+      }
+    }
+  }
+}

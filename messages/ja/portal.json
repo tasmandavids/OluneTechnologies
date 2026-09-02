@@ -1,0 +1,76 @@
+{
+  "portal": {
+    "progress": {
+      "currentLevel": "現在のレベル",
+      "attendance": {
+        "title": "出席 · {count, plural, one {#件の記録} other {#件の記録}}",
+        "attendanceRate": "直近のクラスでの出席率 {rate}%",
+        "empty": "まだ出席記録がありません。",
+        "date": "日付",
+        "class": "クラス",
+        "statusColumn": "状態",
+        "status": {
+          "present": "出席",
+          "late": "遅刻",
+          "absent": "欠席",
+          "excused": "公認欠席"
+        }
+      },
+      "certificates": {
+        "title": "修了証 · {count}",
+        "subtitle": "各賞のPDF修了証をダウンロードできます。",
+        "downloadPdf": "PDFをダウンロード",
+        "downloadAria": "{title} のPDF修了証をダウンロード"
+      },
+      "badges": {
+        "title": "バッジ · {earned}/{total}",
+        "subtitle": "これまでの歩みで獲得した実績",
+        "empty": "まだバッジはありません — 節目を達成するとここに表示されます。",
+        "secret": "シークレットバッジ",
+        "earnedOn": "{date} に獲得",
+        "levelLabel": "レベル {level}",
+        "xpTotal": "{xp} XP",
+        "toNext": "{level} まであと {xp} XP",
+        "maxLevel": "最高レベルに到達 — エトワール！",
+        "familyTitle": "ファミリーバッジ · {earned}/{total}",
+        "familySubtitle": "アカデミーでのご家族の実績",
+        "categories": {
+          "founder": "創設者・レガシー",
+          "beginner": "ビギナージャーニー",
+          "commitment": "継続と規律",
+          "technique": "テクニック",
+          "level": "レベルアップ",
+          "performance": "パフォーマンス",
+          "character": "人間性・価値観",
+          "mentor": "講師・メンターへの道",
+          "community": "コミュニティ",
+          "secret": "シークレット＆お楽しみ",
+          "family": "ファミリー"
+        },
+        "award": {
+          "title": "バッジを授与",
+          "subtitle": "節目の達成を称えます。ダンサーとご家族に通知が届きます。",
+          "search": "バッジを検索…",
+          "note": "メモ（任意）",
+          "awardCta": "授与",
+          "revoke": "取り消す",
+          "noResults": "検索条件に一致するバッジがありません。"
+        }
+      }
+    },
+    "checkinCard": {
+      "title": "チェックインカード",
+      "unnamedDancer": "ダンサー",
+      "statusActive": "有効",
+      "statusFrozen": "一時停止中",
+      "issued": "発行日 {date}",
+      "qrHint": "スタジオの入り口でタップしてチェックイン／チェックアウトしてください。カードをお忘れの場合は、この画面のコードをリーダーにご提示ください。",
+      "frozenHint": "このカードは一時停止中のため、チェックインできません。フロントデスクに解除を依頼してください。",
+      "qrAlt": "{name} のチェックイン用QRコード",
+      "enlarge": "QRコードを拡大",
+      "shrink": "QRコードを縮小",
+      "addToWallet": "Apple Walletに追加",
+      "walletHint": "iPhoneにスキャン可能なコピーを保存します。物理カードでも引き続きリーダーにタップできます。"
+    }
+  }
+}

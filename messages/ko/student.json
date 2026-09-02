@@ -1,0 +1,58 @@
+{
+  "student": {
+    "timetable": {
+      "title": "내 시간표",
+      "greetingWithName": "{greeting}, {name}님.",
+      "greetingOnly": "{greeting}.",
+      "today": "오늘 · {day}",
+      "noClassesToday": "오늘 예정된 수업이 없습니다 — 편안한 휴식일 보내세요.",
+      "until": "{time}까지",
+      "weeklySchedule": "주간 시간표",
+      "myClasses": "내 수업 · {count}개 등록됨",
+      "noEnrolments": "등록된 수업이 없습니다.",
+      "noEnrolmentsHint": "스튜디오 관리자가 수업을 배정해 드릴 것입니다.",
+      "withTeacher": "{name} 강사",
+      "viewProgress": "진도 및 수료증 보기 →"
+    },
+    "progress": {
+      "back": "← 시간표로 돌아가기",
+      "unnamedStudent": "수강생",
+      "emptyProgress": "아직 기록된 진도가 없습니다. 새로운 단계에 도달하면 강사가 이 항목을 업데이트합니다."
+    },
+    "classPass": {
+      "title": "단일 수업 이용권",
+      "subtitle": "모든 성인 발레 수업 1회 이용 가능",
+      "allSet": "🎉 준비가 완료되었습니다!",
+      "qrAlt": "수업 이용권 QR 코드",
+      "qrHint": "스튜디오에서 이 QR 코드를 제시하면 수업을 이용할 수 있습니다.",
+      "done": "완료",
+      "payAmount": "{amount} 결제하기",
+      "back": "뒤로",
+      "description": "1회 이용권으로 모든 성인 발레 수업에 참여할 수 있습니다. 스튜디오에서 QR 코드를 제시하면 직원이 체크인해 드립니다.",
+      "total": "합계",
+      "processing": "처리 중…",
+      "buyPass": "이용권 구매하기 →",
+      "cardAtCheckout": "카드 결제는 결제 단계에서 진행됩니다.",
+      "purchaseFailed": "구매에 실패했습니다",
+      "paymentStartFailed": "결제를 시작할 수 없습니다. 다시 시도해 주세요.",
+      "networkError": "네트워크 오류입니다. 다시 시도해 주세요.",
+      "viewQr": "QR 코드 보기",
+      "buyAnother": "이용권 추가 구매",
+      "yourPass": "내 이용권",
+      "purchasedOn": "{date} 구매",
+      "myPasses": "내 이용권",
+      "myPassesSubtitle": "이용권을 눌러 스튜디오에서 제시할 QR 코드를 표시하세요.",
+      "passesHeldCount": "{count, plural, one {보유 이용권 #장} other {보유 이용권 #장}}",
+      "viewPasses": "보기 →",
+      "noPassesYet": "아직 보유한 이용권이 없습니다"
+    },
+    "completeProfile": {
+      "heading": "계정 설정 마무리하기",
+      "subheading": "대시보드를 이용하시려면 성명과 생년월일을 입력해 주셔야 합니다.",
+      "fullNameLabel": "성명",
+      "birthdayLabel": "생년월일",
+      "saving": "저장 중…",
+      "continue": "계속"
+    }
+  }
+}

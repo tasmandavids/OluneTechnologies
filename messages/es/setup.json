@@ -1,0 +1,266 @@
+{
+  "setup": {
+    "header": "Configurando {studioName}",
+    "schemaPending": {
+      "title": "Migración de base de datos pendiente",
+      "body": "Ejecuta {command} para habilitar el guardado del progreso de configuración.",
+      "command": "supabase db push"
+    },
+    "progressAria": "Progreso de configuración",
+    "steps": {
+      "path": "Empezar",
+      "profile": "Tu estudio",
+      "students": "Bailarines",
+      "classes": "Clases",
+      "pricing": "Tarifas",
+      "tour": "Recorrido"
+    },
+    "actions": {
+      "back": "Atrás",
+      "skip": "Omitir por ahora",
+      "working": "Trabajando…",
+      "continue": "Continuar",
+      "saveLater": "Guardar progreso y terminar más tarde →"
+    },
+    "path": {
+      "title": "¿Cómo vas a empezar?",
+      "subtitle": "Estudio totalmente nuevo o migración desde otro sistema — adaptaremos los siguientes pasos.",
+      "scratch": {
+        "title": "Empezar desde cero",
+        "body": "Estás empezando de nuevo o tienes una lista pequeña que introducir a mano."
+      },
+      "import": {
+        "title": "Ya tengo un estudio",
+        "body": "Importación masiva desde StudioPro, Class Manager o cualquier hoja de cálculo."
+      },
+      "sourcePrompt": "¿Dónde están tus datos actualmente?"
+    },
+    "profile": {
+      "title": "Cuéntanos sobre tu estudio",
+      "subtitle": "Esto nos ayuda a personalizar tu sitio, las sugerencias de clases y la configuración local.",
+      "city": "Ciudad / localidad",
+      "cityPlaceholder": "p. ej. Auckland",
+      "region": "Región",
+      "regionPlaceholder": "Selecciona una región…",
+      "country": "País",
+      "about": "¿Qué hace especial a tu estudio?",
+      "aboutPlaceholder": "Ballet preescolar centrado en la comunidad, equipos de competición, clases abiertas para adultos…",
+      "stylesLabel": "Estilos de baile que ofreces",
+      "stylesRequired": "Elige al menos un estilo para continuar.",
+      "stylesHint": "Estos alimentan las sugerencias de clases, las páginas de programas de tu sitio web y el formulario de consultas que ven las familias."
+    },
+    "students": {
+      "title": "Añade a tus bailarines",
+      "subtitle": "Pega, sube un archivo CSV o escribe filas — las columnas de padre/tutor se vinculan automáticamente.",
+      "tipTitle": "Consejo de {source}",
+      "uploadLabel": "Subir archivo CSV o TSV",
+      "pasteLabel": "O pega desde una hoja de cálculo",
+      "pastePlaceholder": "Nombre\tCorreo\tTeléfono\tNombre del padre/madre\tCorreo del padre/madre\nEmma Johnson\temma@ejemplo.com\t021 234 567\tJane Johnson\tjane@ejemplo.com",
+      "detected": "{count, plural, one {# bailarín detectado} other {# bailarines detectados}}",
+      "manualLabel": "O añade manualmente",
+      "namePlaceholder": "Nombre del alumno *",
+      "emailPlaceholder": "Correo del alumno",
+      "phonePlaceholder": "Teléfono",
+      "parentNamePlaceholder": "Nombre del padre/madre o tutor",
+      "parentEmailPlaceholder": "Correo del padre/madre",
+      "addAnother": "+ Añadir otro alumno",
+      "linkParents": "Crear cuentas de padres y vincular familias cuando se proporcionen sus datos",
+      "import": "Importar {count, plural, one {# bailarín} other {# bailarines}}",
+      "portalNote": "Todos los que añadas obtienen acceso al portal y pueden recibir una tarjeta de acceso y tus formularios."
+    },
+    "classes": {
+      "title": "Crea tu horario",
+      "subtitle": "Sube un archivo CSV, pega una lista de clases o empieza a partir de sugerencias según tus estilos.",
+      "suggest": "✨ Sugerir clases según mis estilos",
+      "suggestionsReady": "{count} clases iniciales listas",
+      "tableClass": "Clase",
+      "tableStyle": "Estilo",
+      "tableDay": "Día",
+      "tableTime": "Hora",
+      "uploadLabel": "Subir lista de clases (CSV / TSV)",
+      "pasteLabel": "O pega desde una hoja de cálculo",
+      "pastePlaceholder": "Clase\tEstilo\tDía\tInicio\tFin\tAforo\tPrecio\nBallet Infantil\tBallet\tLun\t16:00\t17:00\t15\t18",
+      "detected": "{count, plural, one {# clase detectada} other {# clases detectadas}}",
+      "create": "Crear {count, plural, one {# clase} other {# clases}}",
+      "productsNote": "Cada precio que escribas se convierte en un producto de tu catálogo de facturación, para que las facturas lleven los códigos de IVA y contabilidad correctos desde la primera."
+    },
+    "pricing": {
+      "title": "¿Cómo vas a cobrar?",
+      "subtitle": "Elige la forma en que tu estudio realmente fija las tarifas — esto es lo que se les cotiza a las familias al inscribirse.",
+      "options": {
+        "per_class": {
+          "name": "Por clase",
+          "body": "Cada clase tiene su propio precio. Un bailarín en dos clases paga por dos clases.",
+          "example": "Lunes {each} + miércoles {each} = {both}."
+        },
+        "hours": {
+          "name": "Por horas semanales",
+          "body": "Un precio según las horas semanales que haga cada bailarín. Escribes toda la tabla — sin cálculos ni porcentajes.",
+          "example": "2 horas a la semana = {twoHours}. Añade una hora y son {threeHours}."
+        },
+        "per_class_combos": {
+          "name": "Por clase, con combinaciones",
+          "body": "Las clases mantienen sus propios precios, y tú defines las combinaciones que tienen un precio único.",
+          "example": "Lunes y miércoles juntos = {each}, no {both}."
+        }
+      },
+      "rateCard": {
+        "title": "Tu tabla de tarifas por hora",
+        "description": "Lo que paga un bailarín por las horas que hace cada semana. Escribe los totales — nada aquí se calcula a partir de un porcentaje.",
+        "hours": "Horas semanales",
+        "theyPay": "Pagan",
+        "addRow": "+ Añadir una fila",
+        "removeRow": "Quitar esta fila",
+        "overflowLabel": "Más allá de la última fila,",
+        "overflowHint": "por cada hora adicional. Déjalo en blanco para cobrar la última fila sin importar cuántas horas hagan.",
+        "previewTitle": "Lo que paga una familia"
+      },
+      "duplicateHours": "Dos filas tienen el mismo número de horas. Cambia una de ellas.",
+      "perClassNote": "Cada clase conserva el precio que le asignaste, y eso es lo que se cotiza a una familia al inscribirse.",
+      "combosNote": "Las clases mantienen sus propios precios. Define las combinaciones que tienen un precio único en Dinero → Productos.",
+      "changeLater": "Puedes cambiar esto cuando quieras en Dinero → Productos.",
+      "save": "Guardar y finalizar configuración",
+      "rateCardRequired": "Añade al menos una fila a tu tabla de tarifas, o vuelve a la tarificación por clase."
+    },
+    "tour": {
+      "title": "{studioName} está listo",
+      "subtitle": "Esto es lo que puedes hacer en Olune — explóralo cuando quieras desde tu panel.",
+      "enterDashboard": "Entrar a tu panel →"
+    },
+    "importSummary": {
+      "added": "Añadidos {count, plural, one {# bailarín} other {# bailarines}}",
+      "parentsLinked": "{count, plural, one {# vínculo de padre/madre} other {# vínculos de padres}}",
+      "skipped": "{count} omitidos"
+    },
+    "resume": {
+      "title": "Termina de configurar tu estudio",
+      "body": "Te quedaste en {step} — continúa donde lo dejaste.",
+      "openWizard": "Abrir asistente",
+      "opening": "Abriendo…",
+      "resume": "Reanudar configuración",
+      "defaultStep": "Empezar"
+    },
+    "csvUpload": {
+      "loaded": "Se cargó {fileName}",
+      "readError": "No se pudo leer el archivo"
+    },
+    "danceStyles": {
+      "ballet": "Ballet",
+      "jazz": "Jazz",
+      "hipHop": "Hip-Hop",
+      "contemporary": "Contemporáneo",
+      "tap": "Claqué",
+      "lyrical": "Lírico",
+      "acro": "Acrobacia",
+      "pointe": "Puntas",
+      "musicalTheatre": "Teatro Musical",
+      "ballroom": "Baile de Salón",
+      "latin": "Latino",
+      "aerial": "Aéreo",
+      "preschool": "Preescolar / Pequeños Pasos",
+      "adultOpen": "Adultos - Nivel Abierto",
+      "competitionTeam": "Equipo de Competición"
+    },
+    "importSources": {
+      "studiopro": {
+        "name": "StudioPro",
+        "hint": "Exporta tu lista de alumnos desde Informes → Alumnos → Exportar CSV.",
+        "sampleHeaders": "Nombre · Apellido · Correo · Teléfono · Nombre del padre/madre · Correo del padre/madre"
+      },
+      "classmanager": {
+        "name": "Class Manager",
+        "hint": "Descarga tu lista desde Configuración → Exportar datos.",
+        "sampleHeaders": "Alumno · Correo · Móvil · Tutor · Correo del tutor · Clase"
+      },
+      "jackrabbit": {
+        "name": "Jackrabbit Dance",
+        "hint": "Usa Familias → Exportar, o copia directamente desde tu tabla de clases.",
+        "sampleHeaders": "Nombre del alumno · Correo del alumno · Correo de la familia · Teléfono · Clases"
+      },
+      "dancestudio-pro": {
+        "name": "DanceStudio-Pro",
+        "hint": "Exporta a los alumnos desde la pestaña Alumnos, o pega desde tu hoja de cálculo.",
+        "sampleHeaders": "Nombre · Correo · Teléfono · Padre/madre · Correo del padre/madre"
+      },
+      "spreadsheet": {
+        "name": "Hoja de cálculo",
+        "hint": "Copia filas desde Excel o Google Sheets — detectaremos las columnas automáticamente.",
+        "sampleHeaders": "Nombre · Correo · Teléfono"
+      },
+      "other": {
+        "name": "Otro sistema",
+        "hint": "Pega cualquier exportación — intentaremos hacer coincidir las columnas de nombre, correo y teléfono.",
+        "sampleHeaders": "Nombre · Correo · Teléfono"
+      }
+    },
+    "tourFeatures": {
+      "dashboard": {
+        "title": "Hoy",
+        "body": "Las clases de hoy, quién se ha registrado, lo que ha entrado y lo que se debe."
+      },
+      "classes": {
+        "title": "Clases",
+        "body": "Crea tu horario, define el aforo y gestiona listas de espera."
+      },
+      "students": {
+        "title": "Personas",
+        "body": "Bailarines, familias y personal en un solo directorio, con invitaciones al portal."
+      },
+      "products": {
+        "title": "Productos y tarifas",
+        "body": "Tu tabla de tarifas, cuotas de clases, bonos y combinaciones — un solo catálogo."
+      },
+      "billing": {
+        "title": "Dinero",
+        "body": "Facturas, pagos de Stripe y Xero, en NZD."
+      },
+      "website": {
+        "title": "Sitio web",
+        "body": "Tu sitio público — clases, inscripción en línea y tu marca."
+      },
+      "forms": {
+        "title": "Formularios",
+        "body": "Formularios de inscripción, políticas y exenciones de responsabilidad, firmados en pantalla."
+      },
+      "checkin": {
+        "title": "Registro de acceso",
+        "body": "Tarjetas NFC, pases de Apple Wallet y una lista en vivo de quién está en el edificio."
+      },
+      "connections": {
+        "title": "Conexiones",
+        "body": "Stripe, Xero, correo electrónico y calendarios, todo conectado en Configuración."
+      },
+      "leads": {
+        "title": "Contactos y mensajes",
+        "body": "Consultas de prueba y mensajería bidireccional con las familias."
+      }
+    },
+    "regions": {
+      "northland": "Northland",
+      "auckland": "Auckland",
+      "waikato": "Waikato",
+      "bayOfPlenty": "Bay of Plenty",
+      "gisborne": "Gisborne",
+      "hawkesBay": "Hawke's Bay",
+      "taranaki": "Taranaki",
+      "manawatuWhanganui": "Manawatū-Whanganui",
+      "wellington": "Wellington",
+      "tasman": "Tasman",
+      "nelson": "Nelson",
+      "marlborough": "Marlborough",
+      "westCoast": "West Coast",
+      "canterbury": "Canterbury",
+      "otago": "Otago",
+      "southland": "Southland"
+    },
+    "days": {
+      "sun": "Dom",
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mié",
+      "thu": "Jue",
+      "fri": "Vie",
+      "sat": "Sáb"
+    }
+  }
+}

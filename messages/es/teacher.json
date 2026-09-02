@@ -1,0 +1,44 @@
+{
+  "teacher": {
+    "schedule": {
+      "title": "Horario y lista de asistencia",
+      "greetingWithName": "{greeting}, {name}.",
+      "greetingOnly": "{greeting}.",
+      "todayRoll": "Lista de hoy · {day}",
+      "noClassesToday": "No hay clases hoy.",
+      "marked": "registrada",
+      "noStudents": "No hay alumnos inscritos.",
+      "unknownStudent": "Alumno desconocido",
+      "attendance": {
+        "present": "Presente",
+        "late": "Tarde",
+        "absent": "Ausente",
+        "excused": "Justificado"
+      },
+      "thisWeek": "Esta semana · {count, plural, one {# clase en total} other {# clases en total}}",
+      "studentCount": "{count, plural, one {# alumno} other {# alumnos}}",
+      "noClassesAssigned": "Todavía no tienes clases asignadas.",
+      "noClassesAssignedHint": "Pide al administrador del estudio que asigne clases a tu cuenta de profesor.",
+      "noClassesAssignedInstructorHint": "Pide a un estudio que te invite y luego acepta la invitación a continuación.",
+      "viewAffiliations": "Ver afiliaciones con estudios"
+    },
+    "affiliations": {
+      "title": "Afiliaciones con estudios",
+      "subtitle": "Los estudios en los que enseñas y tu espacio de trabajo personal.",
+      "homeWorkspace": "Tu espacio de trabajo",
+      "linkedStudios": "Estudios vinculados",
+      "noneYet": "Todavía no tienes afiliaciones con estudios. Acepta una invitación de un administrador de estudio para empezar.",
+      "roleAtStudio": "Acceso de {role}",
+      "acceptInvite": "Aceptar una invitación",
+      "acceptInviteHint": "Pega el token de invitación del correo o el enlace de invitación del administrador de tu estudio.",
+      "tokenPlaceholder": "Token de invitación",
+      "acceptButton": "Vincular estudio",
+      "accepting": "Vinculando…",
+      "acceptSuccess": "Estudio vinculado correctamente."
+    },
+    "studentProgress": {
+      "back": "← Volver al horario",
+      "progressLog": "Registro de progreso"
+    }
+  }
+}

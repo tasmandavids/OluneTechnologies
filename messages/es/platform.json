@@ -1,0 +1,195 @@
+{
+  "platform": {
+    "dashboard": {
+      "title": "Resumen de la plataforma",
+      "greeting": "{greeting},",
+      "stats": {
+        "totalStudios": "Total de estudios",
+        "activeHint": "{count} activos",
+        "onTrial": "En prueba",
+        "suspended": "Suspendidos",
+        "studentsPlatformWide": "Alumnos en toda la plataforma"
+      },
+      "recentSignups": "Registros recientes",
+      "allStudios": "Todos los estudios →",
+      "noStudios": "Todavía no hay estudios.",
+      "openSupport": "Soporte abierto",
+      "inbox": "Bandeja de entrada →",
+      "inboxClear": "Bandeja de entrada vacía.",
+      "opsQueue": "Cola de tareas operativas",
+      "allTasks": "Todas las tareas →",
+      "noOpenTasks": "No hay tareas abiertas.",
+      "dueDate": "vence el {date}",
+      "unknownStudio": "Desconocido"
+    },
+    "studios": {
+      "title": "Estudios",
+      "subtitle": "Todos los clientes de la plataforma Olune.",
+      "filters": {
+        "all": "todos",
+        "trial": "prueba",
+        "active": "activo",
+        "suspended": "suspendido"
+      },
+      "updated": "Actualizado",
+      "tableStudio": "Estudio",
+      "tableOwner": "Propietario",
+      "tableStudents": "Alumnos",
+      "tableStatus": "Estado",
+      "tableJoined": "Fecha de alta",
+      "tableActions": "Acciones",
+      "noMatch": "Ningún estudio coincide con este filtro.",
+      "delete": "Eliminar",
+      "deleted": "Eliminado",
+      "confirmDelete": "Escribe \"{name}\" para eliminar permanentemente este estudio y todos sus datos. Esta acción no se puede deshacer.",
+      "plan": {
+        "column": "Plan de Olune",
+        "comp": "Cortesía",
+        "uncomp": "Finalizar cortesía",
+        "extend": "+14 días",
+        "trialExtended": "Prueba ampliada 14 días",
+        "missing": "No hay fila de suscripción",
+        "compReasonPrompt": "¿Por qué se ofrece {name} de cortesía? Esto queda registrado en el estudio.",
+        "status": {
+          "trialing": "Prueba gratuita",
+          "active": "Activo",
+          "past_due": "Pago fallido",
+          "canceled": "Cancelado",
+          "comped": "Cortesía"
+        }
+      }
+    },
+    "owners": {
+      "title": "Propietarios de negocio",
+      "subtitle": "Administradores de estudio — tu línea directa con cada cliente.",
+      "searchPlaceholder": "Buscar por estudio, nombre o correo electrónico…",
+      "unnamedOwner": "Propietario sin nombre",
+      "ownerFallback": "Propietario",
+      "adminSince": "Administrador desde {date}",
+      "privateNotes": "Notas privadas",
+      "notesPlaceholder": "Notas de relación, resúmenes de llamadas, preferencias…",
+      "saveNotes": "Guardar notas",
+      "messageOwner": "Enviar mensaje al propietario",
+      "subjectDefault": "Re: {studioName}",
+      "messagePlaceholder": "Tu mensaje aparecerá en su hilo de soporte…",
+      "sendViaSupport": "Enviar por soporte",
+      "notesSaved": "Notas guardadas",
+      "messageSent": "Mensaje enviado — ver bandeja de soporte"
+    },
+    "support": {
+      "title": "Bandeja de soporte",
+      "noThreads": "Todavía no hay hilos de soporte.",
+      "selectThread": "Selecciona un hilo para ver la conversación.",
+      "status": {
+        "open": "abierto",
+        "pending": "pendiente",
+        "resolved": "resuelto"
+      },
+      "senderOperator": "Olune",
+      "senderOwner": "Propietario",
+      "replyPlaceholder": "Responder al propietario del estudio…",
+      "sendReply": "Enviar respuesta"
+    },
+    "tasks": {
+      "title": "Tareas operativas",
+      "subtitle": "Cola de trabajo interno — revisiones de incorporación, facturación, dominios, lanzamientos y más.",
+      "newTask": "Nueva tarea",
+      "cancel": "Cancelar",
+      "type": "Tipo",
+      "priority": "Prioridad",
+      "priorities": {
+        "low": "Baja",
+        "normal": "Normal",
+        "high": "Alta",
+        "urgent": "Urgente"
+      },
+      "titleLabel": "Título",
+      "studioOptional": "Estudio (opcional)",
+      "platformWide": "Toda la plataforma",
+      "detailsPlaceholder": "Detalles, enlaces, contexto…",
+      "createTask": "Crear tarea",
+      "columns": {
+        "todo": "Por hacer",
+        "in_progress": "En curso",
+        "blocked": "Bloqueada",
+        "done": "Hecha"
+      }
+    },
+    "features": {
+      "title": "Indicadores de funciones",
+      "subtitle": "Activa módulos de la plataforma globalmente o por estudio — tienda, eventos, SMS, beta de IA y más.",
+      "globalDefaults": "Valores globales predeterminados",
+      "studioOverrides": "Anulaciones por estudio",
+      "on": "Activado",
+      "off": "Desactivado"
+    },
+    "announcements": {
+      "title": "Anuncios",
+      "subtitle": "Envía actualizaciones a los administradores de estudio — mantenimiento, nuevas funciones, cambios de política.",
+      "titlePlaceholder": "Título",
+      "bodyPlaceholder": "Cuerpo del mensaje (se muestra en el portal de administración del estudio)…",
+      "severity": {
+        "info": "Información",
+        "warning": "Advertencia",
+        "critical": "Crítico"
+      },
+      "target": {
+        "all": "Todos los estudios",
+        "trial": "Solo en prueba",
+        "active": "Solo activos",
+        "suspended": "Solo suspendidos"
+      },
+      "draft": "Anuncio en borrador",
+      "publishedAt": "publicado el {date}",
+      "draftStatus": "borrador",
+      "publishNow": "Publicar ahora",
+      "stop": "Detener",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar este anuncio? Esta acción no se puede deshacer."
+    },
+    "settings": {
+      "title": "Configuración de la plataforma",
+      "subtitle": "Configuración global de Olune — registro, pruebas, mantenimiento.",
+      "maintenanceMode": "Modo de mantenimiento",
+      "signupEnabled": "Registro habilitado",
+      "defaultTrialDays": "Días de prueba predeterminados",
+      "supportEmail": "Correo de soporte",
+      "welcomeMessage": "Mensaje de bienvenida",
+      "saveSettings": "Guardar configuración",
+      "saved": "Guardado",
+      "operatorAccessTitle": "Acceso de operador",
+      "operatorAccessBody": "Concede acceso a la plataforma añadiendo correos a <envVar></envVar> en tu entorno, o inserta una fila en <table></table> vinculada a un usuario autenticado."
+    },
+    "audit": {
+      "title": "Registro de auditoría",
+      "subtitle": "Registro inmutable de las acciones de los operadores de la plataforma.",
+      "when": "Cuándo",
+      "operator": "Operador",
+      "action": "Acción",
+      "target": "Objetivo",
+      "noEntries": "Todavía no hay entradas de auditoría."
+    },
+    "badges": {
+      "title": "Catálogo de insignias",
+      "subtitle": "{active} de {total} insignias globales activas",
+      "iconLabel": "Emoji",
+      "xpLabel": "Valor en XP",
+      "active": "Activa",
+      "inactive": "Oculta",
+      "save": "Guardar"
+    },
+    "plans": {
+      "title": "Precios de los planes",
+      "subtitle": "IDs de precios de Stripe para cada plan e intervalo. El modo de prueba y el modo real generan IDs distintos, por lo que son específicos de cada entorno. Lo que cuesta y desbloquea un plan se define en el código, no aquí.",
+      "emptyWarning": "Todavía no hay precios de Stripe configurados en este entorno — el proceso de pago no podrá iniciarse hasta que los haya.",
+      "interval": {
+        "month": "Mensual",
+        "year": "Anual"
+      },
+      "moduleCount": "{count, plural, one {# módulo} other {# módulos}}",
+      "save": "Guardar",
+      "saved": "Guardado",
+      "notSet": "No definido — este plan todavía no se puede comprar."
+    }
+  }
+}

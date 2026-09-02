@@ -1,0 +1,20 @@
+{
+  "join": {
+    "title": "Únete al estudio",
+    "subtitle": "Crea tu cuenta para inscribirte y gestionar tus clases.",
+    "pathParentTitle": "Estoy inscribiendo a mi hijo/a",
+    "pathParentDescription": "Cuenta de madre, padre o tutor — añade bailarines, inscríbelos y paga las cuotas.",
+    "pathAdultTitle": "Me estoy inscribiendo yo mismo/a (18+)",
+    "pathAdultDescription": "Cuenta de estudiante adulto/a — inscríbete, firma las exenciones de responsabilidad y paga directamente.",
+    "changePath": "← Elegir otra opción",
+    "yourBirthday": "Tu fecha de nacimiento",
+    "optionalChild": "Añade a tu bailarín/bailarina ahora (opcional)",
+    "childNamePlaceholder": "Nombre completo del niño/a",
+    "fullNamePlaceholder": "Tu nombre completo",
+    "createAccount": "Crear cuenta y continuar",
+    "creatingAccount": "Creando cuenta…",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "completeRegistration": "Completar registro",
+    "joining": "Uniéndote…"
+  }
+}
