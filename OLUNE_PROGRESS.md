@@ -723,6 +723,60 @@ Tenant-scoping fixes, admin delete flows, and CI/security hardening ahead of go-
 
 ---
 
+## 🔄 SESSION — IN PROGRESS (2026-09-02) · i18n: Spanish, Japanese, Korean locales
+
+> **Note on this log:** the last entry above (Session 26, 22 June) is where this file stopped
+> being updated, but the repo kept moving — migration frontier is now **0126** (SOC2 remediation,
+> Olune's own Stripe billing, RLS hardening, audit events, parent mobile app, and more landed
+> since, per `git log` / `MARKET_READINESS.md`'s 6 Aug audit). That gap wasn't reconciled here;
+> treat everything below Session 26 as the only entry actually current as of this session.
+
+Branch: `jarvis/vibrant-albattani-y4u465` · PR: [#57](https://github.com/tasmandavids/NZAD/pull/57) (draft)
+
+### Why
+A scheduled "drive to General Release" run asked for Spanish + Mandarin/Japanese/Korean i18n.
+Existing locales were `fr`/`it`/`ru`/`zh` (see `docs/i18n-audit-2026-08-07.md` — ~100% key
+coverage, with known open gaps: 428 hardcoded strings outside `next-intl`, and ~45 date/number
+call sites bypassing `lib/i18n/format.ts`). `zh` already covers Mandarin, so the net-new asks
+were Spanish, Japanese, and Korean; confirmed with the user before starting rather than guessing.
+Flagged first and held off on any Supabase migration / Vercel deploy — `MARKET_READINESS.md`
+still shows an unresolved live-Stripe-keys-vs-staging-DB risk (§0.1) and this is a real system
+with paying studios and children's data, so that's out of scope for an unattended run.
+
+### What shipped so far ✅
+- `lib/i18n/config.ts` — added `es` (Español), `ja` (日本語), `ko` (한국어) to `locales` +
+  `localeLabels`. `LanguageSwitcher` and everywhere else that reads from `lib/i18n/config`
+  picks these up automatically — no other UI wiring needed.
+- `messages/es/`, `messages/ja/`, `messages/ko/` directories created; translation of all 18
+  message modules (`core`, `errors`, `onboarding`, `plan`, `setup`, `marketing`, `enrol`, `join`,
+  `programmes`, `admin`, `parent`, `portal`, `teacher`, `student`, `platform`, `site`, `payments`,
+  `office`, `timeclock`) into each locale, run as parallel background translation passes
+  (`admin.json` split out per-locale since it's the largest module at ~2,000 lines).
+- `next-intl`'s `loadMessages` (`lib/i18n/load-messages.ts`) deep-merges each locale over the
+  English base per module, so a module not yet translated falls back to English at runtime
+  rather than breaking — safe to land this incrementally, which is what the commits on the PR do.
+- Japanese/Korean plural strings keep the source's `one`/`other` ICU categories (so the argument
+  set still matches English for `scripts/check-i18n.mjs`'s parity check) even though neither
+  language grammatically distinguishes count — the two categories just read identically.
+
+### Still open (finish before marking the PR ready)
+- [ ] Confirm all 18 modules × 3 locales are written and every file is valid JSON with full key
+      parity against `messages/en/`.
+- [ ] `node scripts/check-i18n.mjs` — zero drift, no untranslated critical-namespace strings.
+- [ ] `npx tsc --noEmit`, `npm run lint`, `npm test`.
+- [ ] Native-speaker review before these reach customers — same caveat the Aug 7 audit gave for
+      fr/it/ru/zh: translations are Claude-produced, mechanically correct (ICU, plurals, key
+      parity) but unverified by a native speaker, and the financial/GST vocabulary in `admin.money.*`
+      is the highest-risk surface if misread.
+- [ ] Not done in this pass (carried over from the Aug 7 audit, applies to es/ja/ko too): the 428
+      hardcoded strings outside `next-intl` and the ~45 hardcoded `en-NZ`/`en-CA` date/number call
+      sites in `lib/i18n/format.ts` bypass — new locales inherit these same gaps.
+
+### Migrations to apply: none (UI/i18n only, no schema change)
+### Tests: pending — see checklist above
+
+---
+
 ## 🔄 NEXT SESSION — Start here
 
 > **Migration frontier:** local + remote are at **0056**. Per `STAGING_AUDIT.md`, staging
