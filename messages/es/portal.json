@@ -1,0 +1,76 @@
+{
+  "portal": {
+    "progress": {
+      "currentLevel": "Nivel actual",
+      "attendance": {
+        "title": "Asistencia · {count, plural, one {# registro} other {# registros}}",
+        "attendanceRate": "{rate}% de asistencia en las clases recientes",
+        "empty": "Aún no hay asistencia registrada.",
+        "date": "Fecha",
+        "class": "Clase",
+        "statusColumn": "Estado",
+        "status": {
+          "present": "Presente",
+          "late": "Tarde",
+          "absent": "Ausente",
+          "excused": "Justificado"
+        }
+      },
+      "certificates": {
+        "title": "Certificados · {count}",
+        "subtitle": "Descarga un certificado en PDF por cada premio.",
+        "downloadPdf": "Descargar PDF",
+        "downloadAria": "Descargar certificado en PDF de {title}"
+      },
+      "badges": {
+        "title": "Insignias · {earned}/{total}",
+        "subtitle": "Logros obtenidos en el recorrido",
+        "empty": "Aún no hay insignias — aparecerán aquí a medida que se alcancen hitos.",
+        "secret": "Insignia secreta",
+        "earnedOn": "Obtenida el {date}",
+        "levelLabel": "Nivel {level}",
+        "xpTotal": "{xp} XP",
+        "toNext": "{xp} XP para {level}",
+        "maxLevel": "¡Nivel máximo alcanzado — Étoile!",
+        "familyTitle": "Insignias familiares · {earned}/{total}",
+        "familySubtitle": "Los logros de tu familia en la academia",
+        "categories": {
+          "founder": "Fundador y legado",
+          "beginner": "Camino del principiante",
+          "commitment": "Compromiso y disciplina",
+          "technique": "Técnica",
+          "level": "Progresión de nivel",
+          "performance": "Actuación",
+          "character": "Carácter y valores",
+          "mentor": "Camino de profesor y mentor",
+          "community": "Comunidad",
+          "secret": "Secretas y divertidas",
+          "family": "Familia"
+        },
+        "award": {
+          "title": "Otorgar una insignia",
+          "subtitle": "Reconoce un hito. Se notifica al bailarín/a y a su familia.",
+          "search": "Buscar insignias…",
+          "note": "Nota (opcional)",
+          "awardCta": "Otorgar",
+          "revoke": "Quitar",
+          "noResults": "Ninguna insignia coincide con tu búsqueda."
+        }
+      }
+    },
+    "checkinCard": {
+      "title": "Tarjeta de acceso",
+      "unnamedDancer": "Bailarín/a",
+      "statusActive": "Activa",
+      "statusFrozen": "Congelada",
+      "issued": "emitida el {date}",
+      "qrHint": "Registra tu entrada y salida en la puerta del estudio. ¿Olvidaste la tarjeta en casa? Muestra este código al lector en su lugar.",
+      "frozenHint": "Esta tarjeta está pausada, por lo que no registrará el acceso de nadie. Pide a recepción que la reactive.",
+      "qrAlt": "Código QR de acceso para {name}",
+      "enlarge": "Ampliar código QR",
+      "shrink": "Reducir código QR",
+      "addToWallet": "Agregar a Apple Wallet",
+      "walletHint": "Guarda una copia escaneable en tu iPhone. La tarjeta física sigue funcionando en el lector."
+    }
+  }
+}

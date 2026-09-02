@@ -1,0 +1,20 @@
+{
+  "join": {
+    "title": "スタジオに参加する",
+    "subtitle": "アカウントを作成して、入会申込やクラス管理を行いましょう。",
+    "pathParentTitle": "子どもを入会させる",
+    "pathParentDescription": "保護者アカウント — ダンサーを追加し、入会申込を行い、月謝を支払います。",
+    "pathAdultTitle": "自分自身が入会する（18歳以上）",
+    "pathAdultDescription": "成人生徒アカウント — 自分で入会し、同意書に署名し、直接支払いを行います。",
+    "changePath": "← 別の選択肢を選ぶ",
+    "yourBirthday": "生年月日",
+    "optionalChild": "今すぐダンサーを追加する（任意）",
+    "childNamePlaceholder": "お子様の氏名",
+    "fullNamePlaceholder": "氏名",
+    "createAccount": "アカウントを作成して続ける",
+    "creatingAccount": "アカウントを作成中…",
+    "alreadyHaveAccount": "すでにアカウントをお持ちですか？",
+    "completeRegistration": "登録を完了する",
+    "joining": "参加中…"
+  }
+}

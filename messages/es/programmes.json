@@ -1,0 +1,10 @@
+{
+  "programmes": {
+    "eyebrow": "{studioName} · Programas",
+    "title": "Nuestras clases",
+    "body": "Explora el horario de clases actual de este estudio. Reserva una clase de prueba gratuita y te ayudaremos a encontrar el programa adecuado.",
+    "empty": "Aún no hay clases publicadas — reserva una clase de prueba y el estudio te ubicará.",
+    "bookTrial": "Reservar clase de prueba gratuita →",
+    "backHome": "Volver al inicio"
+  }
+}

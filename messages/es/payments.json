@@ -1,0 +1,11 @@
+{
+  "payments": {
+    "paymentNotCompleted": "No se pudo completar el pago.",
+    "paymentIncomplete": "El pago no se completó. Prueba con otro método.",
+    "paymentProcessing": "Tu pago aún se está procesando. Actualizaremos tu cuenta automáticamente en cuanto se confirme — no es necesario pagar de nuevo.",
+    "processing": "Procesando…",
+    "payNow": "Pagar ahora",
+    "payAmount": "Pagar {amount}",
+    "secureCheckout": "Pago seguro con tarjeta"
+  }
+}

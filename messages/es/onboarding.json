@@ -1,0 +1,103 @@
+{
+  "onboarding": {
+    "progress": {
+      "account": "Cuenta",
+      "studio": "Estudio",
+      "profile": "Perfil",
+      "brand": "Marca"
+    },
+    "vertical": {
+      "title": "¿Qué diriges?",
+      "subtitle": "Configuraremos Olune según tu actividad — clases, niveles y el vocabulario que usan tus familias.",
+      "comingSoon": "Próximamente",
+      "options": {
+        "dance": "Estudio de baile",
+        "gymnastics": "Club de gimnasia",
+        "sports-club": "Club deportivo",
+        "swim": "Escuela de natación",
+        "martial-arts": "Artes marciales",
+        "music": "Escuela de música",
+        "cheer": "Porrismo",
+        "tutoring": "Tutorías"
+      }
+    },
+    "waitlist": {
+      "title": "{vertical} está en camino",
+      "subtitle": "Estamos desarrollando Olune para tu actividad ahora mismo. Déjanos tus datos y serás de los primeros en enterarte cuando esté disponible.",
+      "emailPlaceholder": "tu@tuclub.co.nz",
+      "orgPlaceholder": "Nombre de tu club o escuela (opcional)",
+      "submit": "Mantenerme informado/a",
+      "submitting": "Agregándote…",
+      "doneTitle": "Ya estás en la lista",
+      "doneBody": "Te enviaremos un correo en cuanto Olune esté listo para {vertical}.",
+      "pickAnother": "Elegir otra opción"
+    },
+    "system": {
+      "title": "¿Cómo usarás Olune?",
+      "subtitle": "Elige la configuración que mejor te convenga — siempre puedes ajustarla más adelante.",
+      "back": "Atrás",
+      "studioOwner": {
+        "title": "Dirijo un estudio o club",
+        "desc": "Gestiona clases, familias, facturación y tu sitio web."
+      },
+      "instructor": {
+        "title": "Soy entrenador/a o profesor/a independiente",
+        "desc": "Trabaja en varios clubes, controla tu horario y gestiona tu perfil docente."
+      }
+    },
+    "account": {
+      "title": "Comienza tu estudio",
+      "subtitle": "Crea tu cuenta de propietario/a para empezar.",
+      "instructorTitle": "Crea tu cuenta de instructor/a",
+      "instructorSubtitle": "Tu espacio de trabajo personal para enseñar en varios estudios.",
+      "divider": "o regístrate con correo electrónico",
+      "emailPlaceholder": "tu@estudio.co.nz",
+      "passwordPlaceholder": "Crea una contraseña",
+      "submitting": "Creando…",
+      "submit": "Crear cuenta con correo electrónico",
+      "hasAccount": "¿Ya tienes una?",
+      "logIn": "Iniciar sesión"
+    },
+    "confirmEmail": {
+      "title": "Revisa tu bandeja de entrada",
+      "body": "Enviamos un enlace de confirmación a {email}. Haz clic en él y luego vuelve — retomaremos justo donde lo dejaste."
+    },
+    "studio": {
+      "title": "Nombra tu organización",
+      "subtitle": "Esto es lo que verán tus miembros y sus familias.",
+      "namePlaceholder": "Sunrise Dance Studio",
+      "slugPlaceholder": "tu-estudio",
+      "checking": "Comprobando…",
+      "available": "✓ {slug}.{root} está disponible",
+      "taken": "✗ Ese subdominio ya está ocupado",
+      "invalid": "Usa 3 o más letras minúsculas, números o guiones",
+      "back": "Atrás",
+      "continue": "Continuar"
+    },
+    "profile": {
+      "title": "Tu nombre público",
+      "subtitle": "Cómo te conocerán los estudios y estudiantes.",
+      "namePlaceholder": "Jane Smith",
+      "slugPlaceholder": "jane-smith"
+    },
+    "brand": {
+      "title": "Hazlo tuyo",
+      "subtitle": "Elige un color de marca — puedes ajustar todo más adelante.",
+      "fallbackName": "Tu perfil",
+      "previewCta": "Reservar una prueba",
+      "customColour": "Color personalizado",
+      "back": "Atrás",
+      "submitting": "Creando tu estudio…",
+      "submit": "Crear estudio",
+      "submittingInstructor": "Creando tu espacio de trabajo…",
+      "submitInstructor": "Crear espacio de trabajo"
+    },
+    "done": {
+      "title": "Bienvenido/a, {studioName}",
+      "subtitle": "Tu estudio ya está en línea. Vamos a configurarlo…",
+      "instructorSubtitle": "Tu espacio de trabajo de instructor/a está listo.",
+      "continue": "Continuar configuración →",
+      "instructorContinue": "Ir a tu horario →"
+    }
+  }
+}

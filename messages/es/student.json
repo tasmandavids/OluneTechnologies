@@ -1,0 +1,58 @@
+{
+  "student": {
+    "timetable": {
+      "title": "Mi horario",
+      "greetingWithName": "{greeting}, {name}.",
+      "greetingOnly": "{greeting}.",
+      "today": "Hoy · {day}",
+      "noClassesToday": "No hay clases hoy — disfruta el día de descanso.",
+      "until": "hasta las {time}",
+      "weeklySchedule": "Horario semanal",
+      "myClasses": "Mis clases · {count} inscritas",
+      "noEnrolments": "No se encontraron inscripciones activas.",
+      "noEnrolmentsHint": "El administrador de tu estudio te asignará a las clases.",
+      "withTeacher": "con {name}",
+      "viewProgress": "Ver progreso y certificados →"
+    },
+    "progress": {
+      "back": "← Volver al horario",
+      "unnamedStudent": "Estudiante",
+      "emptyProgress": "Aún no hay progreso registrado. Tu instructor/a lo actualizará cuando alcances nuevos hitos."
+    },
+    "classPass": {
+      "title": "Bono de clase individual",
+      "subtitle": "Cualquier clase individual de ballet para adultos",
+      "allSet": "🎉 ¡Todo listo!",
+      "qrAlt": "Código QR del bono de clase",
+      "qrHint": "Muestra este código QR en el estudio para canjear tu clase.",
+      "done": "Listo",
+      "payAmount": "Pagar {amount}",
+      "back": "Atrás",
+      "description": "Un bono válido para cualquier clase individual de ballet para adultos. Muestra el código QR en el estudio y el personal registrará tu entrada.",
+      "total": "Total",
+      "processing": "Procesando…",
+      "buyPass": "Comprar bono →",
+      "cardAtCheckout": "El pago con tarjeta se realiza al finalizar la compra.",
+      "purchaseFailed": "La compra falló",
+      "paymentStartFailed": "No se pudo iniciar el pago. Inténtalo de nuevo.",
+      "networkError": "Error de red. Inténtalo de nuevo.",
+      "viewQr": "Ver QR",
+      "buyAnother": "Comprar otro bono",
+      "yourPass": "Tu bono",
+      "purchasedOn": "Comprado el {date}",
+      "myPasses": "Mis bonos",
+      "myPassesSubtitle": "Toca un bono para mostrar su código QR en el estudio.",
+      "passesHeldCount": "{count, plural, one {# bono disponible} other {# bonos disponibles}}",
+      "viewPasses": "Ver →",
+      "noPassesYet": "Aún no hay bonos"
+    },
+    "completeProfile": {
+      "heading": "Termina de configurar tu cuenta",
+      "subheading": "Necesitamos tu nombre completo y fecha de nacimiento antes de que puedas acceder a tu panel.",
+      "fullNameLabel": "Nombre completo",
+      "birthdayLabel": "Fecha de nacimiento",
+      "saving": "Guardando…",
+      "continue": "Continuar"
+    }
+  }
+}

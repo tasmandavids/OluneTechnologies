@@ -1,0 +1,13 @@
+{
+  "office": {
+    "welcome": "환영합니다, {name}님",
+    "welcomeFallback": "회원님",
+    "weekOf": "{date} · {weekStart} 주",
+    "upcomingShifts": "예정된 근무",
+    "noShiftsThisWeek": "이번 주 예정된 근무가 없습니다.",
+    "workingToday": "오늘 근무자",
+    "noShiftsToday": "오늘 등록된 근무가 없습니다.",
+    "quickLinks": "빠른 링크",
+    "staffFallback": "직원"
+  }
+}

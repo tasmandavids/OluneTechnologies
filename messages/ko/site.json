@@ -1,0 +1,827 @@
+{
+  "site": {
+    "brand": {
+      "poweredBy": "제공",
+      "logoLabel": "Olune",
+      "poweredByOlune": "Olune 제공"
+    },
+    "payments": {
+      "paymentNotCompleted": "결제를 완료할 수 없습니다.",
+      "paymentIncomplete": "결제가 완료되지 않았습니다. 다른 결제 수단을 이용해 주세요.",
+      "processing": "처리 중…",
+      "payNow": "지금 결제하기"
+    },
+    "manager": {
+      "title": "웹사이트",
+      "subtitle": "스튜디오의 공개 페이지를 만들고 게시하세요.",
+      "domainSetup": "도메인 설정",
+      "cancel": "취소",
+      "newPage": "+ 새 페이지",
+      "pageTitle": "페이지 제목",
+      "pageTitlePlaceholder": "예: 소개",
+      "createPage": "페이지 만들기",
+      "createAsHomepage": "홈페이지로 만들기",
+      "somethingWrong": "문제가 발생했습니다.",
+      "chooseHomepageStyle": "홈페이지 스타일 선택",
+      "homepageBrowse": "완성형 레이아웃 {count}개를 둘러보세요 — 모든 블록을 자유롭게 편집할 수 있으며, 준비되면 게시하세요.",
+      "addPageFromTemplate": "템플릿으로 페이지 추가",
+      "addPageFromTemplateHint": "완성된 문구와 레이아웃이 갖춰진 일반적인 페이지로 시작하세요.",
+      "noPagesYet": "아직 페이지가 없습니다. 위에서 템플릿을 선택하거나, \"+ 새 페이지\"로 처음부터 만들어 보세요.",
+      "home": "홈",
+      "edit": "수정",
+      "unpublish": "게시 취소",
+      "publish": "게시",
+      "setAsHome": "홈으로 설정",
+      "confirm": "확인",
+      "delete": "삭제",
+      "statusDraft": "임시 저장",
+      "statusPublished": "게시됨",
+      "defaultHomeTitle": "홈",
+      "defaultPageTitle": "새 페이지"
+    },
+    "setup": {
+      "websiteReady": "웹사이트가 준비되었습니다",
+      "openingEditor": "비주얼 편집기를 여는 중…",
+      "title": "웹사이트 설정",
+      "subtitle": "시작 레이아웃 20종과 서체 스타일 30종을 둘러보세요. 브랜드를 적용하고 미리 본 뒤 생성하면, 비주얼 편집기에서 계속 편집할 수 있습니다.",
+      "setupTab": "설정",
+      "previewTab": "미리보기",
+      "homepagePreview": "홈페이지 미리보기",
+      "pagesWillBeCreated": "{count, plural, one {페이지 #개} other {페이지 #개}} 생성 예정 · 생성 시 홈페이지가 게시됩니다",
+      "backToSetup": "설정으로 돌아가기",
+      "generating": "생성하는 중…",
+      "generateWebsite": "웹사이트 생성하기",
+      "homepageTemplate": "홈페이지 템플릿",
+      "homepageTemplateHint": "레이아웃 {count}개를 살펴보세요 — 모두 자유롭게 편집 가능한 시작점입니다.",
+      "typography": "타이포그래피",
+      "typographyHint": "엄선된 서체 조합 30종 — 탭하면 사이트에 어떻게 표시될지 미리 볼 수 있습니다.",
+      "starterPages": "시작 페이지",
+      "starterPagesHint": "아직 필요 없는 페이지는 선택 해제하세요.",
+      "sitePlan": "내 사이트 구성",
+      "sitePlanTemplate": "{template} 템플릿으로 {studio}의 사이트를 만드는 중입니다.",
+      "homepage": "홈페이지",
+      "liveMiniPreview": "실시간 미니 미리보기",
+      "openFullPreview": "전체 미리보기 열기",
+      "connectDomain": "내 도메인 연결하기 →",
+      "templateFallback": "클래식",
+      "portalLabel": "포털"
+    },
+    "setupPages": {
+      "page-about": "소개",
+      "page-classes": "수업",
+      "page-contact": "연락처",
+      "page-schedule": "시간표",
+      "page-people": "구성원 / 강사진",
+      "page-news": "소식 및 이벤트",
+      "page-shop": "샵"
+    },
+    "branding": {
+      "title": "내 브랜드",
+      "subtitle": "로고와 색상을 등록하면 아래 미리보기에 즉시 반영됩니다.",
+      "taglineFallback": "태그라인",
+      "logoUrl": "로고 URL",
+      "logoUrlPlaceholder": "https://…/logo.png",
+      "tagline": "태그라인",
+      "taglinePlaceholder": "예: 오클랜드 · 전 연령 환영",
+      "brandColor": "브랜드 색상",
+      "brandColorAria": "브랜드 색상",
+      "siteTheme": "사이트 테마",
+      "dark": "다크",
+      "light": "라이트",
+      "colorPresets": {
+        "iris": "아이리스",
+        "crimson": "크림슨",
+        "voltage": "볼티지",
+        "aurum": "오럼",
+        "bloom": "블룸",
+        "jade": "제이드",
+        "forest": "포레스트",
+        "slate": "슬레이트"
+      }
+    },
+    "templateGallery": {
+      "noTemplatesInCategory": "이 카테고리에는 템플릿이 없습니다.",
+      "selected": "선택됨",
+      "blockLabels": {
+        "hero": "히어로",
+        "features": "특징",
+        "classGrid": "수업",
+        "testimonials": "후기",
+        "cta": "CTA",
+        "contact": "연락처",
+        "gallery": "갤러리",
+        "statsRow": "통계",
+        "classStreams": "스트림",
+        "newsFeed": "소식",
+        "richText": "스토리",
+        "peopleGrid": "팀",
+        "schedule": "시간표",
+        "faq": "자주 묻는 질문",
+        "pageHeader": "헤더",
+        "videoBlock": "동영상",
+        "classTabs": "수업 탭",
+        "imageBlock": "이미지",
+        "heading": "제목",
+        "paragraph": "텍스트",
+        "linkBlock": "버튼",
+        "divider": "구분선",
+        "spacer": "여백",
+        "shopGrid": "샵",
+        "locations": "지점"
+      }
+    },
+    "templateCategories": {
+      "all": "전체 템플릿",
+      "minimal": "미니멀",
+      "bold": "볼드",
+      "visual": "비주얼",
+      "community": "커뮤니티",
+      "professional": "프로페셔널",
+      "elegant": "엘레강스",
+      "modern": "모던",
+      "editorial": "에디토리얼",
+      "dramatic": "드라마틱",
+      "playful": "플레이풀",
+      "luxe": "럭셔리",
+      "retro": "레트로",
+      "complete": "올인원"
+    },
+    "typography": {
+      "sampleText": "다람쥐 헌 쳇바퀴에 타고파",
+      "categories": {
+        "all": "전체 스타일",
+        "elegant": "엘레강스",
+        "modern": "모던",
+        "classic": "클래식",
+        "bold": "볼드",
+        "friendly": "프렌들리",
+        "minimal": "미니멀",
+        "creative": "크리에이티브",
+        "editorial": "에디토리얼"
+      },
+      "pairs": {
+        "fraunces-hanken": {
+          "label": "아이리스 & 잉크",
+          "description": "따뜻한 세리프 헤드라인과 산뜻한 산세리프 본문."
+        },
+        "cormorant-inter": {
+          "label": "에디토리얼 클래식",
+          "description": "하이패션 에디토리얼 느낌의 조합."
+        },
+        "playfair-source": {
+          "label": "갤러리 화이트",
+          "description": "이미지 중심 사이트를 위한 세련된 대비."
+        },
+        "libre-lato": {
+          "label": "헤리티지",
+          "description": "신뢰감 있고 읽기 편안한 스타일."
+        },
+        "merriweather-opensans": {
+          "label": "스콜라",
+          "description": "따뜻함을 더한 학구적 명료함."
+        },
+        "lora-nunito": {
+          "label": "소프트 세리프",
+          "description": "친근하고 부드러운 느낌."
+        },
+        "dm-serif-dm-sans": {
+          "label": "DM 듀오",
+          "description": "한 서체군에서 나오는 기하학적 조화."
+        },
+        "cinzel-raleway": {
+          "label": "그랜드 스테이지",
+          "description": "공연 예술을 위한 드라마틱한 디스플레이 서체."
+        },
+        "bodoni-work": {
+          "label": "아틀리에",
+          "description": "럭셔리 패션 하우스 감성."
+        },
+        "oswald-roboto": {
+          "label": "임팩트",
+          "description": "강렬한 헤드라인과 중립적인 본문."
+        },
+        "bebas-montserrat": {
+          "label": "포스터 볼드",
+          "description": "올캡 에너지와 깔끔한 본문."
+        },
+        "space-inter": {
+          "label": "테크 스튜디오",
+          "description": "현대적인 스타트업 감성."
+        },
+        "archivo": {
+          "label": "모노 모던",
+          "description": "단일 서체군의 기하학적 명료함."
+        },
+        "poppins": {
+          "label": "라운디드 팝",
+          "description": "친근하고 누구나 읽기 쉬운 스타일."
+        },
+        "nunito": {
+          "label": "버블 웜",
+          "description": "가족 브랜드를 위한 부드러운 곡선."
+        },
+        "lexend": {
+          "label": "리더블 퍼스트",
+          "description": "편안한 가독성에 최적화."
+        },
+        "rubik": {
+          "label": "라운디드 엣지",
+          "description": "과하지 않은 재미있는 기하학적 형태."
+        },
+        "manrope": {
+          "label": "뉴트럴 프로",
+          "description": "균형 잡힌 전문적인 스타일."
+        },
+        "jakarta": {
+          "label": "스타트업 클린",
+          "description": "산뜻한 SaaS 랜딩페이지 감성."
+        },
+        "eb-karla": {
+          "label": "북숍",
+          "description": "모던한 본문과 어우러진 문학적 따뜻함."
+        },
+        "crimson-franklin": {
+          "label": "브로드시트",
+          "description": "웹으로 옮겨온 신문의 전통."
+        },
+        "josefin-lato": {
+          "label": "아르데코",
+          "description": "명료함을 더한 빈티지 글래머."
+        },
+        "albert": {
+          "label": "스위스 라이트",
+          "description": "초미니멀한 단일 서체군."
+        },
+        "quicksand": {
+          "label": "플레이그라운드",
+          "description": "아이들을 위한 가볍고 친근한 스타일."
+        },
+        "figtree": {
+          "label": "피그 & 플로우",
+          "description": "현대적인 휴머니스트 산세리프."
+        },
+        "urbanist": {
+          "label": "어반 그리드",
+          "description": "도시 스튜디오의 모더니즘."
+        },
+        "instrument": {
+          "label": "인스트루먼트",
+          "description": "개성 있는 에디토리얼 스타일."
+        },
+        "bricolage": {
+          "label": "브리콜라주",
+          "description": "표현력 있는 가변 산세리프."
+        },
+        "syne-inter": {
+          "label": "사인 펄스",
+          "description": "실험적인 디스플레이와 차분한 본문."
+        },
+        "sora-outfit": {
+          "label": "소라 & 아웃핏",
+          "description": "깔끔하고 친근하며 다가가기 쉬운 스타일."
+        }
+      }
+    },
+    "templates": {
+      "home-classic": {
+        "label": "클래식",
+        "description": "히어로, 특징 그리드, 수업 소개, 후기, CTA, 연락처로 구성됩니다."
+      },
+      "home-showcase": {
+        "label": "쇼케이스",
+        "description": "이미지 중심 레이아웃: 강렬한 히어로, 수업 소개, 갤러리, 후기."
+      },
+      "home-minimal": {
+        "label": "미니멀",
+        "description": "깔끔하고 메시지에 집중한 홈페이지: 히어로, 소개, 수업, CTA."
+      },
+      "home-bold": {
+        "label": "볼드",
+        "description": "풀블리드 히어로, 통계 스트립, 수업 스트림, 소식 미리보기, 등록 CTA."
+      },
+      "page-schedule": {
+        "label": "시간표",
+        "description": "요일 및 지점 필터가 있는 주간 시간표."
+      },
+      "page-people": {
+        "label": "구성원",
+        "description": "직원 프로필 기반의 강사진 그리드."
+      },
+      "page-studios": {
+        "label": "스튜디오",
+        "description": "다지점 스튜디오 카드와 연락처."
+      },
+      "page-news": {
+        "label": "소식 및 이벤트",
+        "description": "필터 가능한 소식 및 이벤트 피드."
+      },
+      "page-shop": {
+        "label": "샵",
+        "description": "카테고리 필터와 결제 기능이 있는 상품 카탈로그."
+      },
+      "page-about": {
+        "label": "소개",
+        "description": "스토리를 전달하세요: 인트로 히어로, 서술형 텍스트, 가치, 마무리 CTA."
+      },
+      "page-classes": {
+        "label": "수업",
+        "description": "FAQ와 등록 CTA가 포함된 전용 수업 목록 페이지."
+      },
+      "page-contact": {
+        "label": "연락처",
+        "description": "연락처 정보와 운영 시간, 간단한 FAQ."
+      },
+      "home-academy": {
+        "label": "아카데미",
+        "description": "기관형 레이아웃: 강렬한 히어로, 자격 정보 스트립, 프로그램, 교수진."
+      },
+      "home-spotlight": {
+        "label": "스포트라이트",
+        "description": "공연자 중심: 드라마틱한 히어로, 강사 스포트라이트, 사진 갤러리."
+      },
+      "home-magazine": {
+        "label": "매거진",
+        "description": "소식 중심의 에디토리얼 구성 — 수업 하이라이트가 담긴 스튜디오 저널 느낌."
+      },
+      "home-gallery": {
+        "label": "갤러리",
+        "description": "포토 포트폴리오 중심 — 최소한의 문구, 최대한의 비주얼 임팩트."
+      },
+      "home-community": {
+        "label": "커뮤니티",
+        "description": "사회적 신뢰 강조 — 후기, 가치, 환영하는 느낌의 수업 그리드."
+      },
+      "home-momentum": {
+        "label": "모멘텀",
+        "description": "역동적인 피트니스 분위기 — 통계, 수업, 등록 중심 CTA."
+      },
+      "home-elegant": {
+        "label": "엘레강스",
+        "description": "세련된 럭셔리 느낌 — 좌측 정렬 히어로, 스토리, 교수진."
+      },
+      "home-modern": {
+        "label": "모던 엣지",
+        "description": "깔끔한 테크 스타트업 감성 — 스트림, 통계, 강렬한 CTA."
+      },
+      "home-festival": {
+        "label": "페스티벌",
+        "description": "이벤트 중심 — 소식, 시간표 미리보기, 등록 CTA."
+      },
+      "home-streams": {
+        "label": "프로그램",
+        "description": "FAQ가 포함된 수업 스트림 탐색기 — 다종목 스튜디오에 적합합니다."
+      },
+      "home-family": {
+        "label": "패밀리 웰컴",
+        "description": "따뜻하고 다가가기 쉬운 느낌 — 신규 학부모를 위한 가치, 수업, FAQ."
+      },
+      "home-professional": {
+        "label": "프로페셔널",
+        "description": "깔끔한 기업형 레이아웃 — 스토리, 가치, 팀, 연락처."
+      },
+      "home-creative": {
+        "label": "크리에이티브 볼드",
+        "description": "에이전시 스타일의 임팩트 — 비대칭 히어로, 갤러리, 통계."
+      },
+      "home-story": {
+        "label": "스토리텔러",
+        "description": "내러티브 여정 — 브랜드 스토리를 쌓아가는 여러 겹의 텍스트 섹션."
+      },
+      "home-enrol": {
+        "label": "등록 중심",
+        "description": "전환에 최적화 — 수업, 사회적 신뢰, 다수의 등록 유도 문구."
+      },
+      "home-complete": {
+        "label": "올인원",
+        "description": "한 페이지에 모든 것을 — 스크롤 한 번으로 스튜디오 전체 경험."
+      },
+      "home-cinematic": {
+        "label": "시네마틱",
+        "description": "다크 톤의 풀블리드 히어로, 스튜디오 갤러리, 통계, 갈채, 마무리 CTA."
+      },
+      "home-noir": {
+        "label": "느와르",
+        "description": "블랙 앤 골드의 드라마: 강렬한 히어로, 소속 무용단, 백스테이지 갤러리, 후기."
+      },
+      "home-eclipse": {
+        "label": "이클립스",
+        "description": "강렬한 다크 히어로, 통계, 인터랙티브 수업 탭, 후기."
+      },
+      "home-playful": {
+        "label": "플레이풀",
+        "description": "밝고 친근한 느낌: 특징 3종, 연령별 수업, 갤러리, FAQ, 연락처."
+      },
+      "home-carnival": {
+        "label": "카니발",
+        "description": "역동적인 히어로, 통계, 수업 스트림, 후기, 쇼타임 갤러리."
+      },
+      "home-sunny": {
+        "label": "써니",
+        "description": "따뜻하고 밝은 히어로에 특징, 수업, 예정된 이벤트, CTA까지."
+      },
+      "home-atelier": {
+        "label": "아틀리에",
+        "description": "세련된 부티크 레이아웃: 스토리, 지도자 소개, 갤러리, 후기."
+      },
+      "home-couture": {
+        "label": "쿠튀르",
+        "description": "패션 에디토리얼 헤더, 컬렉션 갤러리, 스토리, 대표 프로그램."
+      },
+      "home-retro": {
+        "label": "레트로",
+        "description": "빈티지 포스터 스타일: 강렬한 히어로, 통계, 라인업, 후기, 연락처."
+      },
+      "home-marquee": {
+        "label": "마퀴",
+        "description": "극장 간판풍 다크 히어로, 주요 이벤트, 공연 시간, 갤러리."
+      },
+      "home-journal": {
+        "label": "저널",
+        "description": "롱폼 에디토리얼: 히어로, 두 편의 에세이, 구분선, 소식 피드."
+      },
+      "home-broadsheet": {
+        "label": "브로드시트",
+        "description": "신문 느낌: 인쇄물 스타일 헤더, 헤드라인, 수업, 후기."
+      },
+      "home-lookbook": {
+        "label": "룩북",
+        "description": "여유로운 갤러리, 통계, 후기가 이끄는 이미지 중심 레이아웃."
+      },
+      "home-reel": {
+        "label": "릴",
+        "description": "모션 중심: 시네마틱 히어로, 영상 쇼릴, 갤러리, CTA."
+      },
+      "home-grid": {
+        "label": "그리드",
+        "description": "인터랙티브 수업 탭, 통계, 특징을 갖춘 체계적인 모던 레이아웃."
+      },
+      "home-pulse": {
+        "label": "펄스",
+        "description": "역동적인 피트니스 히어로, 통계, 수업, 후기, FAQ, CTA."
+      },
+      "home-impact": {
+        "label": "임팩트",
+        "description": "강렬한 다크 히어로, 통계, 수업 스트림, 갤러리, 임팩트 있는 CTA."
+      },
+      "home-whitespace": {
+        "label": "화이트스페이스",
+        "description": "초미니멀: 하나의 강력한 메시지, 단일 아이디어, 수업, CTA."
+      }
+    },
+    "editor": {
+      "backToPages": "← 페이지",
+      "untitled": "제목 없음",
+      "unsavedChanges": "저장되지 않은 변경 사항",
+      "saved": "저장됨",
+      "published": "게시됨",
+      "undoTitle": "실행 취소 (⌘Z)",
+      "redoTitle": "다시 실행 (⌘⇧Z)",
+      "add": "+ 추가",
+      "background": "배경",
+      "settings": "설정",
+      "preview": "미리보기",
+      "openLiveSite": "실제 사이트 열기",
+      "previewMode": "실시간 미리보기",
+      "exitPreview": "미리보기 종료",
+      "previewModeBanner": "실시간 미리보기 — 블록이 방문자에게 보이는 그대로 표시됩니다. 편집하려면 미리보기 종료를 클릭하세요.",
+      "saving": "저장하는 중…",
+      "saveDraft": "임시 저장",
+      "publish": "게시",
+      "confirmLeave": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠어요?",
+      "previewLiveTitle": "{url}에서 실제 페이지 열기",
+      "previewDraftTitle": "임시 저장본 미리보기 (관리자 화면에서 열립니다 — 공개하려면 게시하세요)",
+      "elementsSelected": "요소 {count}개 선택됨",
+      "multiSelectHint": "방향키로 선택한 모든 요소를 이동합니다. Delete 키로 삭제합니다. Shift 없이 요소를 클릭하면 개별적으로 편집할 수 있습니다.",
+      "deleteSelected": "선택 항목 삭제",
+      "clickToEdit": "페이지의 요소를 클릭하여 편집하세요.",
+      "rightClickHint": "또는 캔버스를 우클릭하면 제목, 텍스트 박스, 이미지, 버튼을 추가할 수 있습니다.",
+      "addElement": "요소 추가",
+      "addElementHint": "클릭하면 맨 아래에 추가되며, 특정 위치에 추가하려면 캔버스를 우클릭하세요. 모든 요소는 12열 그리드에 맞춰 정렬됩니다.",
+      "groupBasic": "기본 — 텍스트, 이미지, 버튼",
+      "groupSections": "섹션",
+      "groupStudioContent": "스튜디오 콘텐츠",
+      "quickActions": "빠른 작업",
+      "alignLeft": "⬅ 정렬",
+      "alignCenter": "↔ 가운데 정렬",
+      "alignRight": "➡ 정렬",
+      "rotateMinus": "↺ −15°",
+      "rotatePlus": "↻ +15°",
+      "layerUp": "▲ 레이어",
+      "layerDown": "▼ 레이어",
+      "keyboardHint": "방향키로 이동 · ⌘D 복제 · ⌘Z 실행 취소 · Shift+클릭 다중 선택",
+      "sectionAppearance": "섹션 스타일",
+      "frameEffects": "프레임 및 효과",
+      "positionSize": "위치 및 크기",
+      "selectedMore": "(+{count} 선택됨)",
+      "itemN": "항목 {n}",
+      "addItem": "+ 항목 추가",
+      "pageSettings": "페이지 설정",
+      "pageTitle": "제목",
+      "urlSlug": "URL 슬러그",
+      "homepageSlugHint": "홈페이지는 항상 / 주소에 위치합니다.",
+      "publicUrlHint": "공개 URL: /{slug}",
+      "showInNav": "내비게이션에 표시",
+      "navLabel": "내비게이션 이름 (선택)",
+      "navOrder": "내비게이션 순서",
+      "seoTitle": "SEO 제목",
+      "seoDescription": "SEO 설명",
+      "boldText": "굵은 텍스트",
+      "linkText": "링크 텍스트",
+      "boldTitle": "굵게",
+      "insertLinkTitle": "링크 삽입",
+      "linkButton": "🔗 링크",
+      "emptyPage": "페이지가 비어 있습니다",
+      "emptyPageHint": "우클릭하여 콘텐츠를 추가하세요. Shift+클릭으로 다중 선택할 수 있습니다. 요소 정렬 시 분홍색 안내선이 표시됩니다.",
+      "canvasHint": "우클릭으로 추가 · Shift+클릭 다중 선택 · ⌘Z 실행 취소",
+      "editPageBackground": "페이지 배경 편집",
+      "backgroundLabel": "배경",
+      "duplicate": "복제",
+      "delete": "삭제",
+      "locked": "잠김",
+      "dragToMove": "드래그하여 이동 (그리드와 안내선에 맞춰 정렬)",
+      "resize": "크기 조절",
+      "resizeWidth": "너비 조절",
+      "resizeHeight": "높이 조절",
+      "previewCopyPlaceholder": "여기에 문구를 입력하세요.",
+      "previewFeature": "특징",
+      "previewBlock": "{label} 미리보기"
+    },
+    "contextMenu": {
+      "addElement": "요소 추가",
+      "groups": {
+        "basic": "기본 요소",
+        "section": "섹션",
+        "content": "콘텐츠 블록"
+      },
+      "actions": {
+        "heading": "제목",
+        "paragraph": "텍스트 박스",
+        "imageBlock": "이미지",
+        "linkBlock": "버튼",
+        "spacer": "여백",
+        "divider": "구분선",
+        "videoBlock": "동영상",
+        "pageHeader": "페이지 헤더",
+        "hero": "히어로",
+        "richText": "텍스트 섹션",
+        "cta": "행동 유도(CTA)",
+        "gallery": "갤러리",
+        "features": "특징",
+        "testimonials": "후기"
+      }
+    },
+    "background": {
+      "title": "페이지 배경",
+      "subtitle": "모든 요소 뒤에 있는 캔버스입니다. 그 위에 블록을 자유롭게 배치하세요.",
+      "type": "배경 유형",
+      "image": "배경 이미지",
+      "video": "배경 동영상",
+      "autoplayMuted": "자동 재생 (음소거)",
+      "opacity": "불투명도 (%)",
+      "kinds": {
+        "base": "페이지 색상",
+        "surface": "서페이스 / 카드",
+        "tint": "브랜드 색조",
+        "brand": "브랜드 그라데이션",
+        "image": "이미지",
+        "video": "동영상"
+      }
+    },
+    "linkPicker": {
+      "pickPage": "페이지 선택…",
+      "customPath": "사용자 지정 경로…",
+      "externalUrl": "외부 URL",
+      "placeholder": "/about 또는 https://…",
+      "hint": "기존 페이지를 선택하거나 경로를 직접 입력하세요. 외부 링크는 https://를 사용하세요."
+    },
+    "media": {
+      "none": "없음",
+      "imagePlaceholder": "이미지 URL을 붙여넣거나 업로드하세요",
+      "uploading": "업로드하는 중…",
+      "replace": "교체",
+      "upload": "업로드",
+      "remove": "삭제",
+      "uploadFailed": "업로드에 실패했습니다.",
+      "videoPlaceholder": "동영상 URL을 붙여넣거나 MP4 / WebM 파일을 업로드하세요",
+      "replaceVideo": "동영상 교체",
+      "uploadVideo": "동영상 업로드"
+    },
+    "domain": {
+      "eyebrow": "도메인 설정",
+      "title": "웹사이트 주소 연결하기",
+      "subtitle": "{studio}를 위한 간단한 단계별 안내입니다. 어려운 용어 없이 — 복사, 붙여넣기만 하면 바로 연결됩니다.",
+      "steps": {
+        "intro": "시작",
+        "decide": "선택",
+        "kind": "유형",
+        "domain": "도메인",
+        "dns": "DNS",
+        "connect": "연결",
+        "done": "완료"
+      },
+      "stepOf": "{total}단계 중 {current}단계",
+      "intro": {
+        "title": "사이트에는 이미 주소가 있습니다",
+        "subtitle": "모든 스튜디오는 무료 Olune 주소를 제공받으며, 바로 사용할 수 있습니다.",
+        "freeAddress": "무료 주소",
+        "shareToday": "오늘부터 이 링크를 공유하세요. 가족들은 이 주소로 웹사이트와 포털을 확인할 수 있습니다.",
+        "wantOwn": "{example}처럼 나만의 도메인을 원하시나요? 다음 단계에서 안내해 드립니다."
+      },
+      "decide": {
+        "title": "나만의 도메인을 사용하시겠어요?",
+        "subtitle": "선택 사항입니다 — 무료 Olune 주소는 언제나 사용할 수 있습니다.",
+        "yesTitle": "네, 제 도메인을 사용할게요",
+        "yesDesc": "www.mystudio.co.nz (또는 유사한 주소)를 연결하겠습니다",
+        "noTitle": "지금은 괜찮습니다",
+        "noDesc": "{address}를 계속 사용하겠습니다"
+      },
+      "kind": {
+        "title": "어떤 형태의 주소를 원하시나요?",
+        "subtitle": "도메인 제공업체에서 구매한 형태와 일치하는 유형을 선택하세요.",
+        "www": {
+          "label": "www 주소",
+          "hint": "가장 일반적인 형태 — 가족들이 www.yoursite.com처럼 입력합니다"
+        },
+        "subdomain": {
+          "label": "하위 주소",
+          "hint": "전용 예약이나 안내 페이지에 적합합니다"
+        },
+        "apex": {
+          "label": "루트 도메인",
+          "hint": "www 없이 — yoursite.com 형태입니다"
+        }
+      },
+      "domain": {
+        "title": "도메인을 입력하세요",
+        "subtitle": "가족들이 브라우저에 입력할 주소를 정확히 입력하세요.",
+        "label": "도메인",
+        "placeholder": "www.mystudio.co.nz",
+        "familiesVisit": "가족들은 {url}로 방문하게 됩니다"
+      },
+      "dns": {
+        "title": "DNS 레코드 하나 추가하기",
+        "subtitle": "도메인을 구매한 곳(GoDaddy, Cloudflare, Namecheap 등)에 로그인하여 이 레코드를 추가하세요.",
+        "step1": "도메인 제공업체의 DNS 설정을 여세요.",
+        "step2": "아래 레코드를 추가하세요 (각 값을 복사하세요).",
+        "step3": "저장하세요 — 반영에는 15분에서 최대 48시간이 걸릴 수 있습니다.",
+        "tip": "제공업체에서 \"TTL\"을 요청하면 기본값을 사용하거나 3600으로 설정하세요. \"Host\" 항목은 Name 또는 Subdomain으로 표시될 수 있습니다.",
+        "nextLabel": "레코드를 추가했습니다",
+        "showSteps": "DNS 단계 보기"
+      },
+      "connect": {
+        "title": "Olune에 연결하기",
+        "subtitle": "도메인을 Olune에 알려주시면 방문자가 접속했을 때 웹사이트를 보여드립니다.",
+        "hint": "아래에서 연결을 클릭하세요. 그 다음 \"DNS 확인\"을 눌러보세요 — 아직 준비되지 않았다면 30분 후 다시 시도해 주세요.",
+        "connecting": "연결하는 중…",
+        "connectDomain": "도메인 연결",
+        "checkDns": "DNS 확인"
+      },
+      "done": {
+        "connectedTitle": "연결되었습니다!",
+        "connectedSubtitle": "사용자 지정 도메인이 Olune에 연결되었습니다.",
+        "readyTitle": "모든 준비가 끝났습니다",
+        "readySubtitle": "무료 Olune 주소를 바로 공유할 수 있습니다.",
+        "customDomain": "사용자 지정 도메인",
+        "checking": "확인하는 중…",
+        "checkAgain": "DNS 다시 확인",
+        "removeDomain": "사용자 지정 도메인 제거",
+        "yourAddress": "내 주소",
+        "connectAnytime": "웹사이트 → 도메인 설정에서 언제든 사용자 지정 도메인을 연결할 수 있습니다.",
+        "backToWebsite": "웹사이트로 돌아가기",
+        "connectDomain": "도메인 연결하기"
+      },
+      "dnsFields": {
+        "type": "유형",
+        "host": "Host / Name",
+        "value": "연결 대상 / Value",
+        "copied": "복사됨",
+        "copy": "복사"
+      },
+      "continue": "계속",
+      "back": "뒤로",
+      "verification": {
+        "title": "도메인 소유권을 증명할 레코드 하나 더",
+        "note": "위 레코드와 함께 이 레코드도 추가한 뒤 다시 확인하세요."
+      }
+    },
+    "urlBanner": {
+      "title": "공개 웹사이트 URL",
+      "openPreviewBefore": "열기",
+      "openPreviewAfter": "를 눌러 가족들에게 보이는 화면을 미리 보세요.",
+      "localhostNote": "일반 localhost 페이지는 스튜디오 사이트가 아닌 Olune 플랫폼입니다.",
+      "connectDomain": "도메인 연결하기 →"
+    },
+    "preview": {
+      "draftTitle": "임시 저장본 미리보기",
+      "publishedTitle": "미리보기",
+      "refreshHint": "편집기에서 저장한 뒤 새로고침하면 최신 변경 사항을 볼 수 있습니다.",
+      "backToEditor": "← 편집기",
+      "openLiveSite": "실제 사이트 열기"
+    },
+    "blocks": {
+      "select": "수직 간격",
+      "number": "수직 위치 (px)",
+      "boolean": "위치 고정",
+      "color": "글꼴 크기",
+      "text": "크기",
+      "textarea": "정렬",
+      "image": "동영상",
+      "video": "버튼",
+      "list": "수업 스트림",
+      "heading": "제목",
+      "paragraph": "텍스트",
+      "imageBlock": "이미지",
+      "videoBlock": "동영상",
+      "linkBlock": "버튼",
+      "hero": "히어로",
+      "pageHeader": "페이지 헤더",
+      "statsRow": "통계",
+      "classStreams": "스트림",
+      "classTabs": "수업 탭",
+      "richText": "텍스트 섹션",
+      "features": "특징",
+      "classGrid": "수업",
+      "schedule": "시간표",
+      "gallery": "갤러리",
+      "testimonials": "후기",
+      "newsFeed": "소식",
+      "peopleGrid": "팀",
+      "shopGrid": "샵",
+      "locations": "지점",
+      "cta": "CTA",
+      "faq": "자주 묻는 질문",
+      "contact": "연락처",
+      "spacer": "여백",
+      "divider": "구분선"
+    },
+    "public": {
+      "emptyPage": "이 페이지에는 아직 콘텐츠가 없습니다.",
+      "addImage": "이미지 추가",
+      "addVideo": "동영상 추가",
+      "teamComingSoon": "팀 구성원 정보가 곧 공개됩니다.",
+      "classesComingSoon": "수업 정보가 곧 공개됩니다.",
+      "allLevels": "전체 레벨",
+      "perMonth": "/ 월",
+      "galleryEmpty": "이미지 URL을 추가하여 갤러리를 채워보세요.",
+      "contactLabels": {
+        "address": "주소",
+        "phone": "전화번호",
+        "email": "이메일",
+        "hours": "운영 시간"
+      },
+      "spacerLabel": "여백 · {height}px",
+      "defaultFooterTagline": "차원이 다른 댄스 교육. 모든 연령과 실력을 위한 세계적 수준의 트레이닝.",
+      "defaultPortalLabel": "포털",
+      "defaultHeading": "제목",
+      "defaultImageAlt": "이미지",
+      "defaultLinkLabel": "링크",
+      "navigation": "내비게이션",
+      "studios": "스튜디오",
+      "contact": "연락처",
+      "copyright": "© {year} {studio}. All rights reserved.",
+      "closeMenu": "메뉴 닫기",
+      "openMenu": "메뉴 열기",
+      "portalArrow": "{label} →"
+    },
+    "shop": {
+      "categoryAll": "전체",
+      "categoryGeneral": "일반",
+      "checkoutFailed": "결제에 실패했습니다. 구매하려면 로그인해 주세요.",
+      "orderCreated": "주문이 생성되었습니다 — 회원 포털에서 결제를 완료하세요.",
+      "orderPlaced": "주문이 완료되었습니다!",
+      "noProducts": "아직 구매 가능한 상품이 없습니다.",
+      "outOfStock": "품절",
+      "addToCart": "장바구니에 담기",
+      "cartItems": "장바구니 ({count}개)",
+      "processing": "처리 중…",
+      "checkout": "결제하기",
+      "signInToPurchase": "구매하려면 로그인하세요"
+    },
+    "schedule": {
+      "days": [
+        "일요일",
+        "월요일",
+        "화요일",
+        "수요일",
+        "목요일",
+        "금요일",
+        "토요일"
+      ],
+      "allStudios": "전체 스튜디오",
+      "noClassesDay": "이 요일에는 예정된 수업이 없습니다.",
+      "streamComingSoon": "이 스트림의 수업 정보가 곧 공개됩니다.",
+      "fromPerTerm": "학기당 {price}부터"
+    },
+    "news": {
+      "categories": {
+        "all": "전체",
+        "news": "소식",
+        "events": "이벤트",
+        "term_dates": "학기 일정",
+        "productions": "공연",
+        "announcements": "공지사항"
+      },
+      "noItems": "아직 표시할 항목이 없습니다."
+    }
+  }
+}

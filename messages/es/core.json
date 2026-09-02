@@ -1,0 +1,276 @@
+{
+  "common": {
+    "loading": "Cargando…",
+    "signOut": "Cerrar sesión →",
+    "you": "Tú",
+    "operator": "Operador",
+    "yourStudio": "Tu estudio",
+    "language": "Idioma",
+    "selectLanguage": "Seleccionar idioma",
+    "back": "Atrás",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "create": "Crear",
+    "update": "Actualizar",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "actions": "Acciones",
+    "status": "Estado",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "date": "Fecha",
+    "time": "Hora",
+    "amount": "Monto",
+    "total": "Importe total",
+    "yes": "Sí",
+    "no": "No",
+    "or": "o",
+    "and": "y",
+    "none": "Ninguno",
+    "all": "Todos",
+    "unknown": "Desconocido",
+    "student": "Estudiante",
+    "parent": "Padre/Madre",
+    "teacher": "Profesor/a",
+    "comingSoon": "Próximamente",
+    "poweredByOlune": "Desarrollado con Olune",
+    "days": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mié",
+      "thu": "Jue",
+      "fri": "Vie",
+      "sat": "Sáb",
+      "sun": "Dom",
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado",
+      "sunday": "Domingo"
+    },
+    "greeting": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches"
+    }
+  },
+  "roles": {
+    "admin": "Administrador/a del estudio",
+    "teacher": "Profesor/a",
+    "office": "Personal de recepción",
+    "parent": "Padre/Madre",
+    "student": "Estudiante"
+  },
+  "shell": {
+    "keepSidebarOpen": "Mantener la barra lateral abierta",
+    "hideSidebar": "Ocultar barra lateral",
+    "showSidebar": "Mostrar barra lateral",
+    "toggleMenu": "Alternar menú",
+    "theme": "Tema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "selectTheme": "Seleccionar tema",
+    "studioLabel": "Estudio",
+    "rail": {
+      "today": "Hoy",
+      "people": "Personas",
+      "schedule": "Horario",
+      "team": "Equipo",
+      "money": "Dinero",
+      "inbox": "Bandeja de entrada",
+      "studio": "Estudio",
+      "settings": "Configuración",
+      "account": "Cuenta",
+      "appearance": "Apariencia",
+      "toggleTheme": "Claro u oscuro",
+      "workspace": "Espacio de trabajo",
+      "everythingByTyping": "Todo se puede buscar escribiendo."
+    },
+    "palette": {
+      "placeholder": "Buscar cualquier cosa…",
+      "empty": "Sin coincidencias",
+      "new": "Nuevo",
+      "pages": "Páginas",
+      "students": "Estudiantes",
+      "staff": "Personal",
+      "parents": "Padres y madres",
+      "classes": "Clases",
+      "leads": "Prospectos",
+      "searching": "Buscando…"
+    },
+    "appearance": {
+      "title": "Apariencia",
+      "subtitle": "Ajusta cuánto cristal y color se ven en el espacio de trabajo. Esto es solo para ti — no cambia lo que ve tu equipo.",
+      "accent": {
+        "label": "Tono del estudio",
+        "hint": "Personal — no cambia la identidad visual real de tu estudio.",
+        "custom": "Color personalizado",
+        "useStudioColor": "Usar color del estudio"
+      },
+      "reset": "Restablecer",
+      "apply": "Aplicar",
+      "sliders": {
+        "tint": {
+          "label": "Intensidad del tono",
+          "hint": "Cuánto se filtra el color de tu estudio en las superficies."
+        },
+        "glass": {
+          "label": "Claridad del cristal",
+          "hint": "Esmerilado y opaco, o casi imperceptible."
+        },
+        "blur": {
+          "label": "Profundidad del desenfoque",
+          "hint": "Cuánto difuminan los paneles lo que hay detrás."
+        },
+        "ambience": {
+          "label": "Ambiente",
+          "hint": "Luz que se desplaza detrás del espacio de trabajo."
+        }
+      }
+    }
+  },
+  "nav": {
+    "sections": {
+      "people": "Personas",
+      "schedule": "Horario",
+      "teamManagement": "Equipo",
+      "clientManagement": "Gestión de clientes",
+      "finance": "Finanzas",
+      "digital": "Presencia digital",
+      "communications": "Comunicaciones"
+    },
+    "admin": {
+      "dashboard": "Panel",
+      "classes": "Clases",
+      "events": "Eventos",
+      "staff": "Personal",
+      "people": "Estudiantes y familias",
+      "parents": "Padres y madres",
+      "students": "Estudiantes",
+      "leads": "Prospectos",
+      "money": "Dinero",
+      "products": "Productos",
+      "billing": "Facturación",
+      "accounting": "Contabilidad",
+      "website": "Sitio web",
+      "advertising": "Publicaciones en redes sociales",
+      "shop": "Tienda",
+      "messages": "Mensajes",
+      "support": "Soporte de Olune",
+      "settings": "Configuración",
+      "substitutes": "Suplentes",
+      "availability": "Disponibilidad de profesores",
+      "privateLessons": "Clases particulares",
+      "inbox": "Bandeja de entrada",
+      "badges": "Insignias",
+      "passes": "Bonos de clase",
+      "checkin": "Registro de entrada",
+      "forms": "Creación de formularios",
+      "plan": "Plan y facturación"
+    },
+    "portal": {
+      "forms": "Formularios y políticas"
+    },
+    "teacher": {
+      "schedule": "Horario y asistencia",
+      "clients": "Clientes particulares",
+      "invoices": "Facturas",
+      "messages": "Mensajes",
+      "affiliations": "Mis estudios",
+      "availability": "Disponibilidad",
+      "privateLessons": "Clases particulares",
+      "substitutes": "Solicitudes de cobertura",
+      "expenses": "Gastos",
+      "vault": "Documentos",
+      "notifications": "Configuración de notificaciones",
+      "profile": "Perfil público"
+    },
+    "office": {
+      "dashboard": "Recepción"
+    },
+    "parent": {
+      "familyHub": "Centro familiar",
+      "schedule": "Horario",
+      "privateLessons": "Clases particulares",
+      "billing": "Facturación",
+      "absences": "Ausencias",
+      "recital": "Vestuario y recital",
+      "notifications": "Notificaciones",
+      "forms": "Formularios y permisos",
+      "messages": "Mensajes"
+    },
+    "student": {
+      "timetable": "Mi horario",
+      "progress": "Progreso",
+      "hub": "Mi cuenta",
+      "messages": "Chat del estudio"
+    },
+    "platform": {
+      "overview": "Resumen",
+      "studios": "Estudios",
+      "owners": "Propietarios",
+      "supportInbox": "Bandeja de soporte",
+      "opsTasks": "Tareas operativas",
+      "featureFlags": "Funciones experimentales",
+      "announcements": "Anuncios",
+      "settings": "Configuración",
+      "auditLog": "Registro de auditoría",
+      "consoleTitle": "Plataforma Olune",
+      "consoleSubtitle": "Consola de operador",
+      "badges": "Catálogo de insignias",
+      "plans": "Precios de planes"
+    },
+    "shared": {
+      "notifications": "Configuración de notificaciones"
+    }
+  },
+  "auth": {
+    "welcomeBack": "Bienvenido/a de nuevo",
+    "signInSubtitle": "Inicia sesión en tu estudio.",
+    "emailPlaceholder": "tu@estudio.co.nz",
+    "passwordPlaceholder": "Contraseña",
+    "signingIn": "Iniciando sesión…",
+    "signInWithEmail": "Iniciar sesión con correo electrónico",
+    "callbackError": "El inicio de sesión se interrumpió. Inténtalo de nuevo.",
+    "newStudio": "¿Estudio nuevo?",
+    "getStarted": "Comenzar",
+    "platformAdmin": "¿Administrador/a de la plataforma Olune?",
+    "signInToPlatform": "Iniciar sesión en /platform",
+    "joinStudio": "¿Unirte a un estudio?",
+    "joinLink": "Regístrate aquí",
+    "continueWithGoogle": "Continuar con Google",
+    "continueWithApple": "Continuar con Apple",
+    "redirecting": "Redirigiendo…",
+    "orContinueWithEmail": "o continúa con correo electrónico",
+    "googleForgotPassword": "¿Olvidaste tu contraseña de Google?",
+    "googleForgotPasswordLink": "Restablécela en Google",
+    "emailLoginGoogleHint": "¿Te registraste con Google? Usa el botón de arriba en su lugar — esta cuenta podría no tener contraseña.",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "sendResetLink": "Enviar enlace de restablecimiento",
+    "sendingResetLink": "Enviando…",
+    "resetLinkSent": "Revisa tu correo — te hemos enviado un enlace para restablecer la contraseña.",
+    "resetLinkError": "No se pudo enviar el correo de restablecimiento. Inténtalo de nuevo."
+  },
+  "marketing": {
+    "features": "Funciones",
+    "pricing": "Precios",
+    "about": "Acerca de",
+    "compare": "Comparar",
+    "signIn": "Iniciar sesión",
+    "startFree": "Empezar gratis",
+    "tagline": "La forma tranquila de dirigir un estudio.",
+    "livePreview": "Vista previa en vivo"
+  },
+  "meta": {
+    "title": "Olune — Dirige todo tu estudio desde un solo lugar, con calma",
+    "description": "Olune gestiona la parte administrativa de un estudio de baile o fitness — inscripciones, horarios, facturación y pagos, y un sitio web para clientes que editas tú mismo."
+  }
+}

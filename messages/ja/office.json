@@ -1,0 +1,13 @@
+{
+  "office": {
+    "welcome": "ようこそ、{name}様",
+    "welcomeFallback": "こんにちは",
+    "weekOf": "{date} · {weekStart}の週",
+    "upcomingShifts": "今後のシフト",
+    "noShiftsThisWeek": "今週予定されているシフトはありません。",
+    "workingToday": "本日の勤務スタッフ",
+    "noShiftsToday": "本日はシフトの予定がありません。",
+    "quickLinks": "クイックリンク",
+    "staffFallback": "スタッフ"
+  }
+}

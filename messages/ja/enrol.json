@@ -1,0 +1,49 @@
+{
+  "enrol": {
+    "title": "無料体験レッスンを予約",
+    "subtitle": "クラスをお選びください。ダンサーの枠を確保するため、こちらからご連絡いたします。",
+    "steps": {
+      "pickClass": "クラスを選択"
+    },
+    "continue": "続ける →",
+    "backToClasses": "クラスを変更",
+    "selectedClass": "クラス",
+    "noClassesForStyle": "そのスタイルに一致するクラスがありません — 別の条件を選ぶか、「まだ決めていない」をお選びください。",
+    "fields": {
+      "name": "保護者名",
+      "namePlaceholder": "山田 花子",
+      "childName": "ダンサーの名前",
+      "childNamePlaceholder": "山田 絵美",
+      "email": "メールアドレス",
+      "emailPlaceholder": "you@example.com",
+      "phone": "電話番号（任意）",
+      "phonePlaceholder": "+64 21 123 4567",
+      "interest": "興味のあるダンススタイル"
+    },
+    "disciplines": {
+      "ballet": "バレエ",
+      "contemporary": "コンテンポラリー",
+      "jazz": "ジャズ",
+      "hipHop": "ヒップホップ",
+      "tap": "タップ",
+      "lyrical": "リリカル",
+      "acro": "アクロ",
+      "pointe": "ポワント",
+      "notSure": "まだ決めていない"
+    },
+    "submitting": "送信中…",
+    "submit": "無料体験レッスンを申し込む →",
+    "hasAccount": "すでにアカウントをお持ちですか？",
+    "signIn": "サインイン",
+    "success": {
+      "title": "登録が完了しました！",
+      "body": "{name}様、近日中にご連絡いたします。{email}宛のメールをご確認ください。",
+      "backHome": "ホームへ戻る"
+    },
+    "noStudio": {
+      "title": "スタジオのサイトへアクセスしてください",
+      "body": "体験レッスンの予約は各スタジオのサブドメインでご利用いただけます — 例：yourstudio.olune.app/enrol",
+      "back": "Oluneへ戻る"
+    }
+  }
+}

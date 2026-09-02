@@ -1,0 +1,195 @@
+{
+  "platform": {
+    "dashboard": {
+      "title": "プラットフォーム概要",
+      "greeting": "{greeting}、",
+      "stats": {
+        "totalStudios": "スタジオ数（合計）",
+        "activeHint": "{count}件が有効",
+        "onTrial": "トライアル中",
+        "suspended": "利用停止中",
+        "studentsPlatformWide": "全体の生徒数"
+      },
+      "recentSignups": "最近の登録",
+      "allStudios": "すべてのスタジオ →",
+      "noStudios": "スタジオはまだありません。",
+      "openSupport": "対応中のサポート",
+      "inbox": "受信箱 →",
+      "inboxClear": "受信箱は空です。",
+      "opsQueue": "運用タスクキュー",
+      "allTasks": "すべてのタスク →",
+      "noOpenTasks": "未対応のタスクはありません。",
+      "dueDate": "期限 {date}",
+      "unknownStudio": "不明"
+    },
+    "studios": {
+      "title": "スタジオ",
+      "subtitle": "Oluneプラットフォーム上の全テナントです。",
+      "filters": {
+        "all": "すべて",
+        "trial": "トライアル中",
+        "active": "有効",
+        "suspended": "利用停止中"
+      },
+      "updated": "更新日",
+      "tableStudio": "スタジオ",
+      "tableOwner": "オーナー",
+      "tableStudents": "生徒数",
+      "tableStatus": "ステータス",
+      "tableJoined": "登録日",
+      "tableActions": "操作",
+      "noMatch": "この条件に一致するスタジオがありません。",
+      "delete": "削除",
+      "deleted": "削除済み",
+      "confirmDelete": "「{name}」と入力すると、このスタジオとすべてのデータを完全に削除します。この操作は取り消せません。",
+      "plan": {
+        "column": "Oluneプラン",
+        "comp": "無償提供",
+        "uncomp": "無償提供を終了",
+        "extend": "+14日延長",
+        "trialExtended": "トライアルを14日延長しました",
+        "missing": "サブスクリプション行がありません",
+        "compReasonPrompt": "{name}を無償提供する理由は？このスタジオに記録されます。",
+        "status": {
+          "trialing": "無料トライアル中",
+          "active": "有効",
+          "past_due": "支払い失敗",
+          "canceled": "キャンセル済み",
+          "comped": "無償提供"
+        }
+      }
+    },
+    "owners": {
+      "title": "事業オーナー",
+      "subtitle": "スタジオ管理者 — 全テナントへの直接の連絡窓口です。",
+      "searchPlaceholder": "スタジオ名、氏名、メールアドレスで検索…",
+      "unnamedOwner": "名前未設定のオーナー",
+      "ownerFallback": "オーナー",
+      "adminSince": "管理者登録日 {date}",
+      "privateNotes": "非公開メモ",
+      "notesPlaceholder": "関係性のメモ、通話の要約、好みなど…",
+      "saveNotes": "メモを保存",
+      "messageOwner": "オーナーにメッセージを送る",
+      "subjectDefault": "Re: {studioName}",
+      "messagePlaceholder": "メッセージはサポートスレッドに表示されます…",
+      "sendViaSupport": "サポート経由で送信",
+      "notesSaved": "メモを保存しました",
+      "messageSent": "メッセージを送信しました — サポート受信箱をご確認ください"
+    },
+    "support": {
+      "title": "サポート受信箱",
+      "noThreads": "サポートスレッドはまだありません。",
+      "selectThread": "スレッドを選択すると会話が表示されます。",
+      "status": {
+        "open": "対応中",
+        "pending": "保留中",
+        "resolved": "解決済み"
+      },
+      "senderOperator": "Olune",
+      "senderOwner": "オーナー",
+      "replyPlaceholder": "スタジオオーナーへ返信…",
+      "sendReply": "返信を送信"
+    },
+    "tasks": {
+      "title": "運用タスク",
+      "subtitle": "バックエンド作業キュー — オンボーディング確認、請求、ドメイン、リリースなど。",
+      "newTask": "新規タスク",
+      "cancel": "キャンセル",
+      "type": "種類",
+      "priority": "優先度",
+      "priorities": {
+        "low": "低",
+        "normal": "中",
+        "high": "高",
+        "urgent": "緊急"
+      },
+      "titleLabel": "タイトル",
+      "studioOptional": "スタジオ（任意）",
+      "platformWide": "プラットフォーム全体",
+      "detailsPlaceholder": "詳細、リンク、背景情報など…",
+      "createTask": "タスクを作成",
+      "columns": {
+        "todo": "未着手",
+        "in_progress": "対応中",
+        "blocked": "保留",
+        "done": "完了"
+      }
+    },
+    "features": {
+      "title": "機能フラグ",
+      "subtitle": "プラットフォームのモジュールをグローバルまたはスタジオごとに切り替えます — ショップ、イベント、SMS、AIベータなど。",
+      "globalDefaults": "グローバル既定値",
+      "studioOverrides": "スタジオ別の上書き設定",
+      "on": "オン",
+      "off": "オフ"
+    },
+    "announcements": {
+      "title": "お知らせ",
+      "subtitle": "スタジオ管理者へ一斉配信 — メンテナンス、新機能、ポリシー変更など。",
+      "titlePlaceholder": "タイトル",
+      "bodyPlaceholder": "メッセージ本文（スタジオ管理者ポータルに表示されます）…",
+      "severity": {
+        "info": "お知らせ",
+        "warning": "警告",
+        "critical": "重要"
+      },
+      "target": {
+        "all": "全スタジオ",
+        "trial": "トライアル中のみ",
+        "active": "有効なスタジオのみ",
+        "suspended": "利用停止中のみ"
+      },
+      "draft": "お知らせの下書き",
+      "publishedAt": "{date}公開",
+      "draftStatus": "下書き",
+      "publishNow": "今すぐ公開",
+      "stop": "停止",
+      "delete": "削除",
+      "confirmDelete": "このお知らせを削除しますか？この操作は取り消せません。"
+    },
+    "settings": {
+      "title": "プラットフォーム設定",
+      "subtitle": "Oluneのグローバル設定 — サインアップ、トライアル、メンテナンスなど。",
+      "maintenanceMode": "メンテナンスモード",
+      "signupEnabled": "サインアップを有効化",
+      "defaultTrialDays": "デフォルトのトライアル日数",
+      "supportEmail": "サポート用メールアドレス",
+      "welcomeMessage": "ウェルカムメッセージ",
+      "saveSettings": "設定を保存",
+      "saved": "保存しました",
+      "operatorAccessTitle": "運営者アクセス",
+      "operatorAccessBody": "環境変数の<envVar></envVar>にメールアドレスを追加するか、認証ユーザーにリンクされた行を<table></table>に挿入することでプラットフォームへのアクセス権を付与できます。"
+    },
+    "audit": {
+      "title": "監査ログ",
+      "subtitle": "プラットフォーム運営者の操作履歴です（変更不可）。",
+      "when": "日時",
+      "operator": "運営者",
+      "action": "操作",
+      "target": "対象",
+      "noEntries": "監査ログはまだありません。"
+    },
+    "badges": {
+      "title": "バッジカタログ",
+      "subtitle": "グローバルバッジ全{total}件中{active}件が有効",
+      "iconLabel": "絵文字",
+      "xpLabel": "XP値",
+      "active": "有効",
+      "inactive": "非表示",
+      "save": "保存"
+    },
+    "plans": {
+      "title": "プラン価格",
+      "subtitle": "各プラン・支払い間隔ごとのStripe Price IDです。テストモードと本番モードではIDが異なるため、環境ごとに設定します。プランの料金と機能はここではなくコードで設定されます。",
+      "emptyWarning": "この環境にはまだStripe料金が設定されていません — 設定が完了するまでチェックアウトを開始できません。",
+      "interval": {
+        "month": "月払い",
+        "year": "年払い"
+      },
+      "moduleCount": "{count, plural, one {#モジュール} other {#モジュール}}",
+      "save": "保存",
+      "saved": "保存しました",
+      "notSet": "未設定 — このプランはまだ購入できません。"
+    }
+  }
+}
