@@ -7,6 +7,9 @@ import frErrors from "@/messages/fr/errors.json";
 import itErrors from "@/messages/it/errors.json";
 import ruErrors from "@/messages/ru/errors.json";
 import zhErrors from "@/messages/zh/errors.json";
+import esErrors from "@/messages/es/errors.json";
+import jaErrors from "@/messages/ja/errors.json";
+import koErrors from "@/messages/ko/errors.json";
 
 const ERROR_MESSAGES: Record<Locale, typeof enErrors> = {
   en: enErrors,
@@ -14,6 +17,9 @@ const ERROR_MESSAGES: Record<Locale, typeof enErrors> = {
   it: itErrors,
   ru: ruErrors,
   zh: zhErrors,
+  es: esErrors,
+  ja: jaErrors,
+  ko: koErrors,
 };
 
 function resolveClientLocale(): Locale {
