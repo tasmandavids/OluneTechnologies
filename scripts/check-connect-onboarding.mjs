@@ -26,9 +26,11 @@
 //    STRIPE_SECRET_KEY=sk_live_... node scripts/check-connect-onboarding.mjs --live
 //
 //  Flags:
-//    --live   Required acknowledgement when STRIPE_SECRET_KEY is a live key.
-//    --keep   Leave the probe account open (to inspect it in the dashboard).
-//             Close it yourself afterwards.
+//    --live            Required acknowledgement when STRIPE_SECRET_KEY is a live key.
+//    --expect <acct_>  Refuse to run unless the key belongs to this account.
+//                      Checked BEFORE anything is created.
+//    --keep            Leave the probe account open (to inspect it in the
+//                      dashboard). Close it yourself afterwards.
 // ============================================================================
 
 import Stripe from "stripe";
@@ -66,6 +68,8 @@ async function main() {
   const argv = process.argv.slice(2);
   const live = argv.includes("--live");
   const keep = argv.includes("--keep");
+  const expectIdx = argv.indexOf("--expect");
+  const expect = expectIdx === -1 ? null : (argv[expectIdx + 1] ?? null);
   const key = process.env.STRIPE_SECRET_KEY;
 
   if (!key) {
@@ -87,6 +91,15 @@ async function main() {
     `Platform: ${platform.id} (${platform.business_profile?.name ?? "unnamed"}) — ` +
       `${key.startsWith("sk_live_") ? "LIVE" : "test"} mode`,
   );
+  if (expect && platform.id !== expect) {
+    // Stop before creating anything. A probe on the wrong platform is not just
+    // uninformative — it makes a real connected account on someone else's live
+    // Stripe account.
+    console.log("");
+    console.error(`Expected ${expect}, but STRIPE_SECRET_KEY belongs to ${platform.id}.`);
+    console.error("Nothing was created. Fix the key and re-run.");
+    process.exit(1);
+  }
   console.log("");
 
   let account;
@@ -100,10 +113,25 @@ async function main() {
     const detail = describeStripeError(err);
     if (detail) console.log(`  ${detail}`);
     console.log("");
-    console.log("  Connect onboarding is still blocked. If the message mentions the");
-    console.log("  platform profile, the questionnaire at");
-    console.log("  dashboard.stripe.com/connect/accounts/overview is not fully accepted yet");
-    console.log("  — saving it and Stripe approving it are two different things.");
+
+    // Two very different failures land here and the advice for one is actively
+    // misleading for the other. This code means the key's account is not a
+    // Connect platform at all — which is a wrong-key problem, not a
+    // questionnaire problem, and no amount of dashboard form-filling on the
+    // intended platform will change it.
+    const code = err?.code ?? err?.raw?.code;
+    if (code === "non_connect_platform_accounts_v2_access_blocked") {
+      console.log(`  ${platform.id} is not a Connect platform, so this run says NOTHING`);
+      console.log("  about whether onboarding works on the account you meant.");
+      console.log("");
+      console.log("  Check the Platform line above. If it is not the account you intended,");
+      console.log("  fix STRIPE_SECRET_KEY (in .env.local for a local run) and try again.");
+    } else {
+      console.log("  Connect onboarding is still blocked. If the message mentions the");
+      console.log("  platform profile, the questionnaire at");
+      console.log("  dashboard.stripe.com/connect/accounts/overview is not fully accepted yet");
+      console.log("  — saving it and Stripe approving it are two different things.");
+    }
     process.exit(2);
   }
 
