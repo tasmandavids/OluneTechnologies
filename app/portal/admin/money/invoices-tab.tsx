@@ -5,6 +5,8 @@
 //  the old route is retired (tracked separately) so both can coexist safely.
 // ============================================================================
 
+import { PageLinks } from "@/components/ui/PageLinks";
+import { PAGE_SIZE } from "@/lib/pagination";
 import { requirePortalSession } from "@/lib/portal/session";
 import { getTranslations } from "@/lib/i18n/server";
 import { BillingDashboard } from "@/components/admin/billing/BillingDashboard";
@@ -50,10 +52,16 @@ function mapInvoice(
   };
 }
 
-export async function InvoicesTab({ initialInvoiceId }: { initialInvoiceId: string | null }) {
+export async function InvoicesTab({ initialInvoiceId, page = 1, query = "", statuses }: { initialInvoiceId: string | null; page?: number; query?: string; statuses?: string }) {
   const { supabase, studioId } = await requirePortalSession();
   const tCommon = await getTranslations("common");
 
+  const selectedStatuses = statuses === undefined ? ["draft", "sent", "overdue", "refunded"] : statuses.split(",").filter(Boolean);
+  const { data: history, error: historyError } = await supabase.rpc("portal_invoice_page", {
+    p_studio_id: studioId, p_query: query.trim().slice(0,200), p_statuses: selectedStatuses, p_offset: (page-1)*PAGE_SIZE,
+  });
+  if (historyError || !history) throw new Error("Unable to load invoice history");
+  const historyPage = history as { ids: string[]; count: number; draftCount: number };
   const invoiceSelect = `
     id, invoice_number, payer_id, student_id, amount_cents, status, description, due_date, issued_at, paid_at,
     stripe_payment_intent_id, xero_invoice_id,
@@ -77,8 +85,8 @@ export async function InvoicesTab({ initialInvoiceId }: { initialInvoiceId: stri
       .from("invoices")
       .select(invoiceSelect)
       .eq("studio_id", studioId)
-      .order("issued_at", { ascending: false })
-      .limit(100),
+      .order("issued_at", { ascending: false }).order("id", { ascending: false })
+      .in("id", historyPage.ids.length ? historyPage.ids : ["00000000-0000-0000-0000-000000000000"]),
 
     supabase
       .from("invoices")
@@ -147,6 +155,14 @@ export async function InvoicesTab({ initialInvoiceId }: { initialInvoiceId: stri
       .order("name"),
   ]);
 
+  if (invoicesRes.error || unpaidRes.error) throw new Error("Unable to load invoices");
+  // Keep invoice deep links usable even when the target is on another page.
+  if (initialInvoiceId && !(invoicesRes.data ?? []).some(i => i.id === initialInvoiceId)) {
+    const { data: target, error } = await supabase.from("invoices").select(invoiceSelect)
+      .eq("studio_id", studioId).eq("id", initialInvoiceId).maybeSingle();
+    if (error) throw new Error("Unable to load selected invoice");
+    if (target) invoicesRes.data = [target, ...(invoicesRes.data ?? [])];
+  }
   const invoiceIds = [
     ...new Set([
       ...(invoicesRes.data ?? []).map((inv) => inv.id as string),
@@ -306,6 +322,7 @@ export async function InvoicesTab({ initialInvoiceId }: { initialInvoiceId: stri
   const totalPaidCents = sum(ytdPaidRes.data, netCents);
 
   return (
+    <>
     <BillingDashboard
       invoices={invoices}
       unpaidInvoices={unpaidInvoices}
@@ -321,6 +338,9 @@ export async function InvoicesTab({ initialInvoiceId }: { initialInvoiceId: stri
       templates={templates}
       products={products}
       initialInvoiceId={initialInvoiceId}
+      draftCount={historyPage.draftCount}
     />
+    <PageLinks page={page} total={historyPage.count} baseHref={`/portal/admin/money?${new URLSearchParams({ tab: "invoices", q: query, statuses: selectedStatuses.join(",") })}`} />
+    </>
   );
 }

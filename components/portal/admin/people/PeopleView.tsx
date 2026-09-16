@@ -8,17 +8,20 @@
 // ============================================================================
 
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { loadPeopleOptions } from "@/app/portal/admin/people/options";
+import dynamic from "next/dynamic";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import { onGlowMove, onGlowLeave } from "@/components/portal/admin/glass/useMicroInteractions";
 import { confirmDialog } from "@/lib/feedback";
-import AddStudentPanel from "@/components/admin/students/AddStudentPanel";
-import BulkEditStudentsPanel from "@/components/admin/students/BulkEditStudentsPanel";
-import AddFamilyPanel from "@/components/admin/parents/AddFamilyPanel";
-import MassEmailParentsPanel, { type ClassOption } from "@/components/admin/parents/MassEmailParentsPanel";
+const AddStudentPanel = dynamic(() => import("@/components/admin/students/AddStudentPanel"));
+const BulkEditStudentsPanel = dynamic(() => import("@/components/admin/students/BulkEditStudentsPanel"));
+const AddFamilyPanel = dynamic(() => import("@/components/admin/parents/AddFamilyPanel"));
+import type { ClassOption } from "@/components/admin/parents/MassEmailParentsPanel";
+const MassEmailParentsPanel = dynamic(() => import("@/components/admin/parents/MassEmailParentsPanel"));
 import { bulkDeleteStudents, createDraftInvoiceFromEnrollments } from "@/app/portal/admin/students/actions";
 import { bulkInviteMembers } from "@/app/portal/admin/parents/actions";
 import type { ParentRow, StudentOption } from "@/lib/parents/types";
@@ -38,8 +41,7 @@ function attendanceColor(pct: number): string {
   return "var(--muted)";
 }
 
-const matches = (haystack: (string | null | undefined)[], needle: string) =>
-  haystack.some((v) => (v ?? "").toLowerCase().includes(needle));
+
 
 // ─── shared chrome ───────────────────────────────────────────────────────────
 
@@ -130,38 +132,65 @@ export function PeopleView({
   families,
   leads,
   studioTracksAttendance,
-  parentRows,
-  studentOptions,
   classOptions,
   canMassEmail,
   initialTab = "students",
+  serverCounts,
+  serverClassNames,
 }: {
   students: PeopleStudentRow[];
   families: PeopleFamilyRow[];
   leads: PeopleLeadRow[];
   studioTracksAttendance: boolean;
-  parentRows: ParentRow[];
-  studentOptions: StudentOption[];
   classOptions: ClassOption[];
   canMassEmail: boolean;
   initialTab?: PeopleTab;
+  serverCounts: Record<PeopleTab, number>;
+  serverClassNames: string[];
 }) {
   const t = useTranslations("admin.people");
   const tStudents = useTranslations("admin.students");
   const tParents = useTranslations("admin.parents");
   const tShared = useTranslations("admin.shared");
+  const tError = useTranslations("errors.generic");
   const locale = useLocale();
   const router = useRouter();
 
-  const [tab, setTab] = useState<PeopleTab>(initialTab);
+  const searchParams = useSearchParams();
+  const tab = initialTab;
+  const updateFilters = (changes: Record<string, string>) => {
+    const next = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(changes)) next.set(key, value);
+    next.delete("page");
+    router.replace(`/portal/admin/people?${next}`, { scroll: false });
+  };
   const [openId, setOpenId] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
-  const [studentFilter, setStudentFilter] = useState<StudentFilter>("all");
-  const [classFilter, setClassFilter] = useState("all");
-  const [familyFilter, setFamilyFilter] = useState<FamilyFilter>("all");
-  const [leadFilter, setLeadFilter] = useState<LeadFilter>("all");
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const urlQuery = searchParams.get("q") ?? "";
+  const submittedQuery = useRef(urlQuery);
+  useEffect(() => { if (urlQuery !== submittedQuery.current) setQuery(urlQuery); }, [urlQuery]);
+  useEffect(() => {
+    if (query === urlQuery) return;
+    const timer = setTimeout(() => {
+      const next = new URLSearchParams(searchParams.toString());
+      submittedQuery.current = query;
+      next.set("q", query); next.delete("page");
+      router.replace(`/portal/admin/people?${next}`, { scroll: false });
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [query, urlQuery, searchParams, router]);
+  const studentFilter = (searchParams.get("filter") ?? "all") as StudentFilter;
+  const setStudentFilter = (value: string) => updateFilters({ filter: value });
+  const classFilter = searchParams.get("class") ?? "all";
+  const setClassFilter = (value: string) => updateFilters({ class: value });
+  const familyFilter = (searchParams.get("filter") ?? "all") as FamilyFilter;
+  const setFamilyFilter = (value: string) => updateFilters({ filter: value });
+  const leadFilter = (searchParams.get("filter") ?? "all") as LeadFilter;
+  const setLeadFilter = (value: string) => updateFilters({ filter: value });
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [studentOptions, setStudentOptions] = useState<StudentOption[]>([]);
+  const [parentRows, setParentRows] = useState<Pick<ParentRow, "id" | "name" | "email">[]>([]);
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [showBulkEdit, setShowBulkEdit] = useState(false);
   const [showAddFamily, setShowAddFamily] = useState(false);
@@ -177,48 +206,13 @@ export function PeopleView({
 
   const needle = query.trim().toLowerCase();
 
-  const allClassNames = useMemo(
-    () => [...new Set(students.flatMap((s) => s.classNames))].sort((a, b) => a.localeCompare(b)),
-    [students],
-  );
-
-  const visibleStudents = useMemo(
-    () =>
-      students.filter((s) => {
-        if (needle && !matches([s.name, s.email, s.phone, s.guardianName, ...s.classNames], needle)) return false;
-        if (classFilter !== "all" && !s.classNames.includes(classFilter)) return false;
-        if (studentFilter === "overdue" && s.flag !== "overdue") return false;
-        if (studentFilter === "new" && s.flag !== "new") return false;
-        if (studentFilter === "unenrolled" && s.classNames.length > 0) return false;
-        return true;
-      }),
-    [students, needle, classFilter, studentFilter],
-  );
-
-  const visibleFamilies = useMemo(
-    () =>
-      families.filter((f) => {
-        if (needle && !matches([f.name, f.email, f.phone, ...f.childrenNames], needle)) return false;
-        if (familyFilter === "owing" && f.balanceCents <= 0) return false;
-        if (familyFilter === "noChildren" && f.childrenNames.length > 0) return false;
-        return true;
-      }),
-    [families, needle, familyFilter],
-  );
-
-  const visibleLeads = useMemo(
-    () =>
-      leads.filter((l) => {
-        if (needle && !matches([l.name, l.email, l.phone, l.source, l.notes], needle)) return false;
-        if (leadFilter !== "all" && l.status !== leadFilter) return false;
-        return true;
-      }),
-    [leads, needle, leadFilter],
-  );
-
-  const counts: Record<PeopleTab, number> = { students: students.length, families: families.length, leads: leads.length };
-  const totalRecords = students.length + families.length + leads.length;
-  const shownCount = tab === "students" ? visibleStudents.length : tab === "families" ? visibleFamilies.length : visibleLeads.length;
+  const allClassNames = serverClassNames;
+  const visibleStudents = students;
+  const visibleFamilies = families;
+  const visibleLeads = leads;
+  const counts = serverCounts;
+  const totalRecords = counts.students + counts.families + counts.leads;
+  const shownCount = tab === "students" ? students.length : tab === "families" ? families.length : leads.length;
   const totalForTab = counts[tab];
   const isFiltered =
     needle.length > 0 ||
@@ -230,10 +224,12 @@ export function PeopleView({
     () => students.filter((s) => selectedIds.includes(s.id)),
     [students, selectedIds],
   );
+  useEffect(() => { setSelectedIds([]); setOpenId(null); }, [students, families, leads]);
   const allShownSelected = visibleStudents.length > 0 && visibleStudents.every((s) => selectedIds.includes(s.id));
 
   const switchTab = (next: PeopleTab) => {
-    setTab(next);
+    setQuery("");
+    updateFilters({ tab: next, q: "", filter: "all", class: "all" });
     setOpenId(null);
     setSelectedIds([]);
     setNotice(null);
@@ -242,10 +238,7 @@ export function PeopleView({
 
   const clearFilters = () => {
     setQuery("");
-    setStudentFilter("all");
-    setClassFilter("all");
-    setFamilyFilter("all");
-    setLeadFilter("all");
+    updateFilters({ q: "", filter: "all", class: "all" });
   };
 
   const toggleSelectAll = () => {
@@ -278,6 +271,15 @@ export function PeopleView({
       router.refresh();
     });
   };
+
+  const openDirectoryPanel = (kind: "student" | "parent") => startAction(async () => {
+    setError(null);
+    try {
+      const options = await loadPeopleOptions(kind);
+      if (kind === "student") { setStudentOptions(options); setShowAddFamily(true); }
+      else { setParentRows(options); setShowMassEmail(true); }
+    } catch { setError(tError("body")); }
+  });
 
   const inviteAll = async () => {
     if (!(await confirmDialog({ title: t("invite.confirm") }))) return;
@@ -391,12 +393,12 @@ export function PeopleView({
           {tab === "families" && (
             <>
               {canMassEmail && (
-                <ToolbarButton onClick={() => setShowMassEmail(true)}>{tParents("massEmail.button")}</ToolbarButton>
+                <ToolbarButton disabled={pending} onClick={() => openDirectoryPanel("parent")}>{tParents("massEmail.button")}</ToolbarButton>
               )}
               <ToolbarButton onClick={inviteAll} disabled={pending}>
                 {pending ? t("invite.sending") : t("invite.button")}
               </ToolbarButton>
-              <ToolbarButton onClick={() => setShowAddFamily(true)} primary>
+              <ToolbarButton disabled={pending} onClick={() => openDirectoryPanel("student")} primary>
                 {tParents("addFamilyButton")}
               </ToolbarButton>
             </>

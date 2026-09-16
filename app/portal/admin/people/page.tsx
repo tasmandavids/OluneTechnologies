@@ -8,11 +8,11 @@
 // ============================================================================
 
 import { requirePortalSession } from "@/lib/portal/session";
-import { listStudioMemberProfileIds } from "@/lib/portal/studio-members";
+import { PageLinks } from "@/components/ui/PageLinks";
+import { parsePage, PAGE_SIZE } from "@/lib/pagination";
 import { fetchBadgeCatalogue } from "@/lib/portal/badges-data";
 import { PeopleView, type PeopleTab } from "@/components/portal/admin/people/PeopleView";
 import type { PeopleStudentRow, PeopleFamilyRow, PeopleLeadRow, PeopleBadge } from "@/components/portal/admin/people/types";
-import type { ParentRow, StudentOption } from "@/lib/parents/types";
 
 export const dynamic = "force-dynamic";
 
@@ -50,20 +50,25 @@ const TABS = ["students", "families", "leads"] as const;
 export default async function PeoplePage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; q?: string; filter?: string; class?: string; page?: string }>;
 }) {
-  const { tab } = await searchParams;
+  const params = await searchParams;
+  const { tab } = params;
+  const page = parsePage(params.page);
   const initialTab = (TABS as readonly string[]).includes(tab ?? "") ? (tab as PeopleTab) : "students";
 
   const { supabase, studioId, role } = await requirePortalSession();
   const canMassEmail = role === "admin";
 
-  const [studentIds, parentIds] = await Promise.all([
-    listStudioMemberProfileIds(supabase, studioId, "student"),
-    listStudioMemberProfileIds(supabase, studioId, "parent"),
-  ]);
-
-  const twelveWeeksAgo = new Date(Date.now() - 12 * 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const { data: directory, error: directoryError } = await supabase.rpc("portal_people_page", {
+    p_studio_id: studioId, p_tab: initialTab, p_query: (params.q ?? "").trim().slice(0, 200),
+    p_filter: params.filter ?? "all", p_class: params.class ?? "all", p_offset: (page - 1) * PAGE_SIZE,
+  });
+  if (directoryError || !directory) throw new Error("Unable to load people");
+  const result = directory as { ids: string[]; childIds: string[]; total: number; counts: Record<PeopleTab, number>; classNames: string[] };
+  const studentIds = initialTab === "students" ? result.ids : result.childIds;
+  const parentIds = initialTab === "families" ? result.ids : [];
+  const emptyId = "00000000-0000-0000-0000-000000000000";
 
   const [
     studentsRes,
@@ -86,7 +91,9 @@ export default async function PeoplePage({
           `)
           .in("id", studentIds)
           .eq("role", "student")
-          .order("full_name"),
+          .eq("enrollments.studio_id", studioId)
+          .eq("enrollments.status", "active")
+          .order("full_name").order("id"),
 
     parentIds.length === 0
       ? Promise.resolve({ data: [] as never[] })
@@ -95,36 +102,29 @@ export default async function PeoplePage({
           .select("id, full_name, email, phone, created_at")
           .in("id", parentIds)
           .eq("role", "parent")
-          .order("full_name"),
+          .order("full_name").order("id"),
 
     supabase
       .from("leads")
       .select("id, first_name, last_name, email, phone, source, status, notes, created_at, updated_at")
       .eq("studio_id", studioId)
-      .order("updated_at", { ascending: false }),
+      .in("id", initialTab === "leads" && result.ids.length ? result.ids : [emptyId])
+      .order("updated_at", { ascending: false }).order("id"),
 
     supabase
       .from("guardianships")
       .select("guardian_id, student_id, is_primary, profiles!guardian_id ( id, full_name, email, phone )")
-      .eq("studio_id", studioId),
+      .eq("studio_id", studioId).in("student_id", studentIds.length ? studentIds : [emptyId]),
 
-    supabase
-      .from("invoices")
-      .select("student_id, payer_id, amount_cents, status")
-      .eq("studio_id", studioId)
-      .in("status", ["sent", "overdue"]),
+    supabase.rpc("portal_people_balances", { p_studio_id: studioId,
+      p_ids: initialTab === "leads" ? [] : result.ids, p_families: initialTab === "families" }),
 
-    studentIds.length === 0
-      ? Promise.resolve({ data: [] as never[] })
-      : supabase
-          .from("attendance")
-          .select("student_id, date, status")
-          .in("student_id", studentIds)
-          .gte("date", twelveWeeksAgo),
+    supabase.rpc("portal_people_attendance", { p_studio_id: studioId,
+      p_student_ids: initialTab === "students" ? studentIds : [] }),
 
     studentIds.length === 0
       ? Promise.resolve({ data: [] as never[] })
-      : supabase.from("profile_badges").select("recipient_id, badge_id, awarded_at").in("recipient_id", studentIds),
+      : supabase.from("profile_badges").select("recipient_id, badge_id, awarded_at").in("recipient_id", studentIds).eq("studio_id", studioId),
 
     fetchBadgeCatalogue(supabase, studioId, "student"),
 
@@ -133,6 +133,10 @@ export default async function PeoplePage({
       ? supabase.from("classes").select("id, name").eq("studio_id", studioId).order("name")
       : Promise.resolve({ data: [] as { id: string; name: string }[] }),
   ]);
+
+  for (const response of [studentsRes, parentsRes, leadsRes, guardianshipsRes, invoicesRes, attendanceRes, profileBadgesRes]) {
+    if ("error" in response && response.error) throw new Error("Unable to load people details");
+  }
 
   // ── shared lookups ─────────────────────────────────────────────────────
   type GuardianProfile = { id: string; full_name: string | null; email: string | null; phone: string | null };
@@ -153,7 +157,7 @@ export default async function PeoplePage({
     childrenByGuardian.set(guardianId, [...(childrenByGuardian.get(guardianId) ?? []), studentId]);
   }
 
-  const invoiceRows = invoicesRes.data ?? [];
+  const invoiceRows = (invoicesRes.data ?? []) as { student_id: string | null; payer_id: string | null; amount_cents: number; status: string }[];
   const balanceByStudent = new Map<string, number>();
   const balanceByPayer = new Map<string, number>();
   for (const inv of invoiceRows) {
@@ -167,15 +171,9 @@ export default async function PeoplePage({
     invoiceRows.filter((r) => r.status === "overdue" && r.student_id).map((r) => r.student_id as string),
   );
 
-  const attendanceRows = attendanceRes.data ?? [];
-  const studioTracksAttendance = attendanceRows.length > 0;
-  const attendanceByStudent = new Map<string, { date: string; present: boolean }[]>();
-  for (const row of attendanceRows) {
-    const sId = row.student_id as string;
-    const list = attendanceByStudent.get(sId) ?? [];
-    list.push({ date: row.date as string, present: row.status === "present" || row.status === "late" });
-    attendanceByStudent.set(sId, list);
-  }
+  const attendance = attendanceRes.data as { tracked: boolean; rows: { studentId: string; percent: number | null; weeks: number[] }[] };
+  const studioTracksAttendance = attendance.tracked;
+  const attendanceByStudent = new Map(attendance.rows.map(row => [row.studentId, row]));
 
   const badgeById = new Map(catalogue.map((b) => [b.id, b]));
   const badgesByStudent = new Map<string, PeopleBadge[]>();
@@ -199,22 +197,9 @@ export default async function PeoplePage({
     const classNames = [...new Set(enrollmentRows.map((e) => e.classes!.name))];
     const programme = classNames.length === 0 ? null : classNames.length === 1 ? classNames[0] : `${classNames[0]} +${classNames.length - 1}`;
 
-    let attendancePercent: number | null = null;
-    let attendanceWeeks: number[] | null = null;
-    const marks = attendanceByStudent.get(p.id) ?? [];
-    if (studioTracksAttendance) {
-      const weekBuckets: { present: number; total: number }[] = Array.from({ length: 12 }, () => ({ present: 0, total: 0 }));
-      for (const m of marks) {
-        const ageMs = now - new Date(m.date).getTime();
-        const weekIdx = 11 - Math.min(11, Math.floor(ageMs / (7 * 24 * 60 * 60 * 1000)));
-        if (weekIdx < 0 || weekIdx > 11) continue;
-        weekBuckets[weekIdx].total += 1;
-        if (m.present) weekBuckets[weekIdx].present += 1;
-      }
-      attendanceWeeks = weekBuckets.map((w) => (w.total > 0 ? Math.round((w.present / w.total) * 100) : 0));
-      const recent = marks.filter((m) => now - new Date(m.date).getTime() < 28 * 24 * 60 * 60 * 1000);
-      attendancePercent = recent.length > 0 ? Math.round((recent.filter((m) => m.present).length / recent.length) * 100) : null;
-    }
+    const marks = attendanceByStudent.get(p.id);
+    const attendancePercent = marks?.percent ?? null;
+    const attendanceWeeks = studioTracksAttendance ? (marks?.weeks ?? null) : null;
 
     const joinedAt = p.created_at as string;
     const isNew = now - new Date(joinedAt).getTime() < 14 * 24 * 60 * 60 * 1000;
@@ -251,38 +236,6 @@ export default async function PeoplePage({
     joinedAt: p.created_at as string,
   }));
 
-  // Richer parent shape the mass-email panel needs (children + co-parents),
-  // built from the same guardianship rows the family cards already use.
-  const parentRows: ParentRow[] = (parentsRes.data ?? []).map((p) => {
-    const mine = guardianshipRows.filter((g) => g.guardian_id === p.id);
-    const myStudentIds = new Set(mine.map((g) => g.student_id as string));
-
-    const coParentMap = new Map<string, GuardianProfile>();
-    for (const g of guardianshipRows) {
-      if (g.guardian_id === p.id) continue;
-      if (!myStudentIds.has(g.student_id as string)) continue;
-      const prof = g.profiles as unknown as GuardianProfile | null;
-      if (prof) coParentMap.set(prof.id, prof);
-    }
-
-    return {
-      id: p.id,
-      name: p.full_name,
-      email: p.email,
-      phone: p.phone,
-      createdAt: p.created_at as string,
-      children: [...myStudentIds].map((sid) => ({ id: sid, name: studentNameById.get(sid) ?? null })),
-      isPrimaryContact: mine.some((g) => g.is_primary),
-      coParents: [...coParentMap.values()].map((c) => ({
-        id: c.id,
-        name: c.full_name,
-        email: c.email,
-        phone: c.phone,
-      })),
-    };
-  });
-
-  const studentOptions: StudentOption[] = students.map((s) => ({ id: s.id, name: s.name }));
   const classOptions = (classesRes.data ?? []).map((c) => ({
     id: c.id as string,
     name: (c.name as string) || "Untitled class",
@@ -300,17 +253,21 @@ export default async function PeoplePage({
     createdAt: l.created_at,
   }));
 
+  const pagingQuery = new URLSearchParams({ tab: initialTab, q: params.q ?? "", filter: params.filter ?? "all", class: params.class ?? "all" });
   return (
+    <>
     <PeopleView
       students={students}
       families={families}
       leads={leads}
       studioTracksAttendance={studioTracksAttendance}
-      parentRows={parentRows}
-      studentOptions={studentOptions}
       classOptions={classOptions}
       canMassEmail={canMassEmail}
       initialTab={initialTab}
+      serverCounts={result.counts}
+      serverClassNames={result.classNames}
     />
+    <PageLinks page={page} total={result.total} baseHref={`/portal/admin/people?${pagingQuery}`} />
+    </>
   );
 }

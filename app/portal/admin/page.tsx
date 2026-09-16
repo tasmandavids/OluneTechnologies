@@ -30,12 +30,9 @@ export default async function AdminDashboardPage() {
 
   const [
     studentsRes,
-    paidRes,
+    totalsRes,
     capacityRes,
     teachersRes,
-    overdueRes,
-    leadsRes,
-    cashInRes,
     dashboardLayoutRes,
     buildingRoster,
   ] = await Promise.all([
@@ -45,17 +42,14 @@ export default async function AdminDashboardPage() {
         .eq("role", "student")
         .eq("studio_id", studioId),
 
-      supabase
-        .from("invoices")
-        .select("amount_cents")
-        .eq("studio_id", studioId)
-        .eq("status", "paid")
-        .gte("created_at", startOfMonth),
+      supabase.rpc("portal_dashboard_totals", {
+        p_studio_id: studioId, p_month_start: startOfMonth, p_cash_start: sevenDaysAgo,
+      }),
 
       supabase
         .from("class_capacity")
         .select(
-          "id, name, discipline, level, room, day_of_week, start_time, end_time, enrolled, capacity, teacher_id",
+          "id, name, discipline, level, room, day_of_week, start_time, end_time, enrolled, capacity, teacher_id, price_cents, recurring_group_id",
         )
         .eq("studio_id", studioId)
         .order("name"),
@@ -68,26 +62,6 @@ export default async function AdminDashboardPage() {
         .order("full_name"),
 
       supabase
-        .from("invoices")
-        .select("amount_cents, payer_id, due_date")
-        .eq("studio_id", studioId)
-        .eq("status", "overdue"),
-
-      supabase
-        .from("leads")
-        .select("id, first_name, last_name, created_at")
-        .eq("studio_id", studioId)
-        .in("status", ["new", "trial"])
-        .order("created_at", { ascending: true }),
-
-      supabase
-        .from("payments")
-        .select("amount_cents, created_at")
-        .eq("studio_id", studioId)
-        .eq("status", "succeeded")
-        .gte("created_at", sevenDaysAgo),
-
-      supabase
         .from("dashboard_layouts")
         .select("layout")
         .eq("studio_id", studioId)
@@ -96,34 +70,25 @@ export default async function AdminDashboardPage() {
       listWhosIn(supabase, studioId),
     ]);
 
-  const classRows = capacityRes.data ?? [];
-  const classIds = classRows.map((r) => r.id as string);
-
-  const priceMap = new Map<string, number>();
-  const groupMap = new Map<string, string | null>();
-  if (classIds.length) {
-    const { data: priceRows } = await supabase
-      .from("classes")
-      .select("id, price_cents, recurring_group_id")
-      .in("id", classIds);
-    (priceRows ?? []).forEach((r) => {
-      priceMap.set(r.id, r.price_cents ?? 0);
-      groupMap.set(r.id, (r.recurring_group_id as string | null) ?? null);
-    });
+  // A failed money query must never be presented as a zero balance.
+  if (totalsRes.error || !totalsRes.data || studentsRes.error || capacityRes.error || teachersRes.error || dashboardLayoutRes.error) {
+    throw new Error("Unable to load dashboard");
   }
+  const totals = totalsRes.data as {
+    paidCents: number;
+    overdue: { count: number; amountCents: number; families: number; oldestDueDate: string | null };
+    leads: { count: number; oldestCreatedAt: string | null };
+    cash: { count: number; amountCents: number };
+    days: CashInDay[];
+  };
+  const classRows = capacityRes.data ?? [];
+  const teacherMap = new Map((teachersRes.data ?? []).map(t => [t.id, t.full_name]));
 
-  const teacherIds = [
-    ...new Set(classRows.map((c) => c.teacher_id).filter(Boolean) as string[]),
-  ];
-  const teacherMap = new Map<string, string>();
-  if (teacherIds.length) {
-    const { data: teacherRows } = await supabase
-      .from("profiles")
-      .select("id, full_name")
-      .in("id", teacherIds);
-    (teacherRows ?? []).forEach((t) => {
-      if (t.full_name) teacherMap.set(t.id, t.full_name);
-    });
+  const missingTeacherIds = [...new Set(classRows.map(c => c.teacher_id).filter((id): id is string => !!id && !teacherMap.has(id)))];
+  if (missingTeacherIds.length) {
+    const { data, error } = await supabase.from("profiles").select("id, full_name").in("id", missingTeacherIds);
+    if (error) throw new Error("Unable to load assigned teachers");
+    for (const teacher of data ?? []) teacherMap.set(teacher.id, teacher.full_name);
   }
 
   const scheduleClasses: ScheduleClass[] = classRows.map((r) => {
@@ -151,10 +116,10 @@ export default async function AdminDashboardPage() {
       endTime,
       enrolled: Number(r.enrolled ?? 0),
       capacity: Number(r.capacity ?? 0),
-      priceCents: priceMap.get(r.id as string) ?? 0,
+      priceCents: r.price_cents ?? 0,
       teacherId,
       teacherName: teacherId ? (teacherMap.get(teacherId) ?? null) : null,
-      recurringGroupId: groupMap.get(r.id as string) ?? null,
+      recurringGroupId: r.recurring_group_id ?? null,
     };
   });
 
@@ -206,33 +171,22 @@ export default async function AdminDashboardPage() {
   const totalCapacity = scheduleClasses.reduce((s, c) => s + c.capacity, 0);
   const occupancyPercent = totalCapacity > 0 ? Math.round((totalEnrolled / totalCapacity) * 100) : 0;
 
-  const overdueRows = overdueRes.data ?? [];
-  const overdueDueDates = overdueRows
-    .map((r) => (r.due_date ? new Date(r.due_date as string).getTime() : null))
-    .filter((t): t is number => t !== null);
-  const now = Date.now();
-  const oneDayMs = 24 * 60 * 60 * 1000;
-
-  const leadsRows = leadsRes.data ?? [];
-
+  const ageDays = (date: string | null) => date
+    ? Math.max(0, Math.floor((Date.now() - new Date(date).getTime()) / 86_400_000)) : 0;
   const attention: AttentionData = {
-    overdueCount: overdueRows.length,
-    overdueAmountCents: overdueRows.reduce((sum, r) => sum + (r.amount_cents ?? 0), 0),
-    overdueFamilies: new Set(overdueRows.map((r) => r.payer_id)).size,
-    overdueOldestDays: overdueDueDates.length
-      ? Math.max(0, Math.floor((now - Math.min(...overdueDueDates)) / oneDayMs))
-      : 0,
-    leadsCount: leadsRows.length,
-    leadsOldestDays: leadsRows.length
-      ? Math.max(0, Math.floor((now - new Date(leadsRows[0].created_at as string).getTime()) / oneDayMs))
-      : 0,
+    overdueCount: totals.overdue.count,
+    overdueAmountCents: totals.overdue.amountCents,
+    overdueFamilies: totals.overdue.families,
+    overdueOldestDays: ageDays(totals.overdue.oldestDueDate),
+    leadsCount: totals.leads.count,
+    leadsOldestDays: ageDays(totals.leads.oldestCreatedAt),
     unassignedCount: unassigned.length,
     unassignedNextLabel,
     conflictCount,
     conflictLabel,
   };
 
-  const paidCentsThisMonth = (paidRes.data ?? []).reduce((sum, r) => sum + (r.amount_cents ?? 0), 0);
+  const paidCentsThisMonth = totals.paidCents;
   const collectedDenomCents = paidCentsThisMonth + attention.overdueAmountCents;
   const collectedPercent = collectedDenomCents > 0 ? Math.round((paidCentsThisMonth / collectedDenomCents) * 100) : 100;
 
@@ -242,17 +196,16 @@ export default async function AdminDashboardPage() {
     { id: "collected", value: collectedPercent, format: "percent" },
   ];
 
-  const cashInRows = cashInRes.data ?? [];
-  const cashInTotalCents = cashInRows.reduce((sum, r) => sum + (r.amount_cents ?? 0), 0);
+  const cashInTotalCents = totals.cash.amountCents;
   const dayBuckets = new Map<string, number>();
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     dayBuckets.set(d.toISOString().slice(0, 10), 0);
   }
-  for (const row of cashInRows) {
-    const key = (row.created_at as string).slice(0, 10);
-    if (dayBuckets.has(key)) dayBuckets.set(key, (dayBuckets.get(key) ?? 0) + (row.amount_cents ?? 0));
+  for (const row of totals.days) {
+    const key = row.date;
+    if (dayBuckets.has(key)) dayBuckets.set(key, (dayBuckets.get(key) ?? 0) + row.amountCents);
   }
   const cashInDays: CashInDay[] = [...dayBuckets.entries()].map(([date, amountCents]) => ({ date, amountCents }));
 
@@ -264,7 +217,7 @@ export default async function AdminDashboardPage() {
       attention={attention}
       pulse={pulse}
       cashInTotalCents={cashInTotalCents}
-      cashInPaymentCount={cashInRows.length}
+      cashInPaymentCount={totals.cash.count}
       cashInDays={cashInDays}
       buildingCount={buildingRoster.length}
       savedLayout={dashboardLayoutRes.data?.layout ?? null}

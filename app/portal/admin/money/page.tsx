@@ -11,6 +11,9 @@
 // ============================================================================
 
 import Link from "next/link";
+import { parsePage } from "@/lib/pagination";
+import { Suspense } from "react";
+import AdminLoading from "../loading";
 import { getTranslations } from "@/lib/i18n/server";
 import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import { OverviewTab } from "./overview-tab";
@@ -54,7 +57,7 @@ function ComingSoonTab({ title, body, note }: { title: string; body: string; not
 export default async function MoneyPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string; invoice?: string; error?: string }>;
+  searchParams: Promise<{ tab?: string; invoice?: string; error?: string; page?: string; q?: string; statuses?: string }>;
 }) {
   const params = await searchParams;
   const tab = resolveTab(params.tab);
@@ -102,17 +105,19 @@ export default async function MoneyPage({
         </div>
       </div>
 
+      <Suspense key={`${tab}-${params.page ?? 1}`} fallback={<AdminLoading />}>
       {tab === "overview" && <OverviewTab />}
-      {tab === "invoices" && <InvoicesTab initialInvoiceId={params.invoice ?? null} />}
+      {tab === "invoices" && <InvoicesTab initialInvoiceId={params.invoice ?? null} page={parsePage(params.page)} query={params.q ?? ""} statuses={params.statuses} />}
       {tab === "products" && <ProductsTab />}
       {tab === "collections" && <CollectionsTab />}
       {tab === "plans" && <PlansTab />}
-      {tab === "ledger" && <LedgerTab />}
+      {tab === "ledger" && <LedgerTab page={parsePage(params.page)} />}
       {tab === "reconcile" && (
         <ComingSoonTab title={reconcileTitle} body={reconcileBody} note={reconcileNote} />
       )}
       {tab === "payouts" && <PayoutsTab bannerError={params.error ?? null} />}
       {tab === "reports" && <ReportsTab />}
+      </Suspense>
     </div>
   );
 }

@@ -59,6 +59,7 @@ export default async function RootLayout({
     getLocale(),
     getMessages(),
   ]);
+  const sharedMessages = Object.fromEntries(Object.entries(messages).filter(([key]) => key !== "admin" && key !== "platform"));
   const studio = await resolveStudio(host);
 
   const [branding, measurementId] = studio
@@ -80,7 +81,7 @@ export default async function RootLayout({
         ) : null}
       </head>
       <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={sharedMessages}>
           <OluneMoonDefs />
           <MotionProvider>
             {children}

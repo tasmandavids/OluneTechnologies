@@ -18,12 +18,13 @@
 //      have taken it.
 //    • A real send error → left queued with a `next_attempt_at` set from the
 //      backoff schedule in lib/notify/backoff.ts, and retried once that time
-//      passes. After the budget is exhausted (~4h20m across 5 attempts) it's
+//      passes. After the budget is exhausted (5 attempts; elapsed time depends on scheduling) it's
 //      marked delivered with the last error kept.
 //
 //  This route is safe to run frequently: the batch is bounded, every write is
 //  keyed by row id, and a row waiting out a backoff is skipped rather than
-//  re-sent. It is scheduled every 5 minutes.
+//  re-sent. The current Hobby deployment schedules it daily; five-minute delivery
+//  requires a supported scheduler (see docs/optimization-2026-09.md).
 //
 //  Auth: `Authorization: Bearer <CRON_SECRET>` or `?secret=<CRON_SECRET>`.
 //  Fails closed in production when CRON_SECRET is unset. Service-role client.
@@ -33,6 +34,7 @@
 //  TWILIO_ACCOUNT_SID + TWILIO_AUTH_TOKEN + TWILIO_FROM, EXPO_ACCESS_TOKEN.
 // ============================================================================
 
+import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { authorizedCron } from "@/lib/cron/auth";
@@ -54,7 +56,7 @@ const DEFAULT_BATCH = 200;
 
 type ProfileContact = { id: string; email: string | null; phone: string | null };
 
-export async function GET(req: NextRequest) {
+async function deliver(req: NextRequest) {
   if (!authorizedCron(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -382,4 +384,25 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json({ ok: true, ranAt: new Date().toISOString(), summary });
+}
+
+// The 10-minute lease exceeds the current Hobby maximum execution window.
+// Revisit its TTL if changing hosting execution limits. A terminated worker
+// recovers automatically; a stale worker cannot release a newer lease.
+export async function GET(req: NextRequest) {
+  if (!authorizedCron(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const supabase = createAdminClient();
+  const token = randomUUID();
+  const { data: acquired, error } = await supabase.rpc("acquire_notification_delivery_lease", { p_token: token });
+  if (error) {
+    await reportHandledMessage("Notification delivery lease unavailable", { route: "cron.deliver-notifications" });
+    return NextResponse.json({ error: "delivery_temporarily_unavailable" }, { status: 503 });
+  }
+  if (!acquired) return NextResponse.json({ ok: true, skipped: "already-running" });
+  try {
+    return await deliver(req);
+  } finally {
+    const { error: releaseError } = await supabase.rpc("release_notification_delivery_lease", { p_token: token });
+    if (releaseError) await reportHandledMessage("Notification delivery lease release failed", { route: "cron.deliver-notifications" });
+  }
 }

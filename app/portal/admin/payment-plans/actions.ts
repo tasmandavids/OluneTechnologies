@@ -1,5 +1,6 @@
 "use server";
 
+import { getTranslations } from "@/lib/i18n/server";
 import { z } from "zod";
 import { requirePortalSession } from "@/lib/portal/session";
 
@@ -59,7 +60,12 @@ export async function cancelTermPaymentPlan(planId: string) {
 }
 
 export async function recordInstallmentPayment(planId: string, amountCents: number) {
-  const { supabase } = await requirePortalSession();
+  const t = await getTranslations("errors.installment");
+  const input = z.object({ planId: z.string().uuid(), amountCents: z.number().int().positive().max(2147483647) })
+    .safeParse({ planId, amountCents });
+  if (!input.success) return { error: t("invalid") };
+  const { supabase, role } = await requirePortalSession();
+  if (role !== "admin" && role !== "office") return { error: t("permission") };
   const { error } = await supabase.rpc("admin_record_installment_payment", {
     p_plan_id: planId,
     p_amount_cents: amountCents,

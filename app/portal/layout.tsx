@@ -5,8 +5,11 @@
 //  Auth + role are also enforced by middleware; this is a presentation layer.
 // ============================================================================
 
+import { MessageScope } from "@/components/i18n/MessageScope";
+import { getMessages } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getPortalMemberships } from "@/lib/portal/session";
+import { getPortalIdentity } from "@/lib/portal/identity";
 import { PortalShell } from "@/components/portal/PortalShell";
 import { PlatformAnnouncementsBanner } from "@/components/admin/PlatformAnnouncementsBanner";
 import { SetupResumeBanner } from "@/components/setup/SetupResumeBanner";
@@ -37,18 +40,8 @@ export default async function PortalLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { supabase, user, profile } = await getPortalIdentity();
   if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, full_name, studio_id, active_studio_id, account_kind, self_managed")
-    .eq("id", user.id)
-    .single();
 
   if (!profile?.studio_id) redirect("/onboarding");
 
@@ -59,7 +52,7 @@ export default async function PortalLayout({
   const now = new Date().toISOString();
 
   const [
-    { count: membershipCount },
+    memberships,
     activeStudioRes,
     setupResult,
     announcementsResult,
@@ -69,11 +62,7 @@ export default async function PortalLayout({
     portalTheme,
     subscription,
   ] = await Promise.all([
-    supabase
-      .from("studio_memberships")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .eq("status", "active"),
+    getPortalMemberships(),
     supabase.from("studios").select("name, kind, status").eq("id", studioId).single(),
     profile.role === "admin"
       ? fetchStudioSetupState(supabase, studioId)
@@ -141,13 +130,15 @@ export default async function PortalLayout({
         ? buildSelfManagedStudentNav(entitlements)
         : buildPortalNav(role, entitlements);
 
+  const messages = await getMessages();
   return (
+    <MessageScope messages={{ admin: messages.admin }}>
     <PortalShell
       role={role}
       studioName={displayName}
       logoUrl={branding.logoUrl}
       userName={profile.full_name}
-      showAffiliations={showAffiliationsNav(accountKind, membershipCount ?? 0)}
+      showAffiliations={showAffiliationsNav(accountKind, memberships.filter(m => m.status === "active").length)}
       selfManagedStudent={selfManagedStudent}
       portalTheme={portalTheme}
       adminNav={buildAdminNav(entitlements)}
@@ -168,5 +159,6 @@ export default async function PortalLayout({
       )}
       {children}
     </PortalShell>
+    </MessageScope>
   );
 }

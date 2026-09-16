@@ -20,7 +20,7 @@ export default function MassEmailParentsPanel({
   onClose,
   onResult,
 }: {
-  parents: ParentRow[];
+  parents: Pick<ParentRow, "id" | "name" | "email">[];
   classes: ClassOption[];
   onClose: () => void;
   onResult: (message: string) => void;

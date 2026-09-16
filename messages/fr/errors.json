@@ -83,6 +83,10 @@
       "templateNotFound": "Modèle introuvable.",
       "onlyDraftsCanBeSent": "Seules les factures en brouillon peuvent être envoyées ainsi.",
       "noDraftInvoices": "Aucune facture brouillon à envoyer."
+    },
+    "installment": {
+      "invalid": "Indiquez un échéancier valide et un montant de paiement positif.",
+      "permission": "Vous ne pouvez pas enregistrer ce paiement."
     }
   }
 }

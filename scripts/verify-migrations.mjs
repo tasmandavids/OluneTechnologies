@@ -17,7 +17,7 @@ const token = process.env.SUPABASE_ACCESS_TOKEN;
 function localVersions() {
   return readdirSync(resolve(root, "supabase/migrations"))
     .filter((f) => f.endsWith(".sql"))
-    .map((f) => f.slice(0, 4))
+    .map((f) => f.split("_", 1)[0])
     .sort();
 }
 

@@ -60,6 +60,12 @@
       "morning": "Доброе утро",
       "afternoon": "Добрый день",
       "evening": "Добрый вечер"
+    },
+    "pagination": {
+      "label": "Навигация по страницам",
+      "previous": "Назад",
+      "next": "Далее",
+      "page": "Страница {page} из {pages} · {total} записей"
     }
   },
   "roles": {

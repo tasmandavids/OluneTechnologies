@@ -83,6 +83,10 @@
       "templateNotFound": "Modello non trovato.",
       "onlyDraftsCanBeSent": "Solo le fatture in bozza possono essere inviate in questo modo.",
       "noDraftInvoices": "Nessuna fattura in bozza da inviare."
+    },
+    "installment": {
+      "invalid": "Inserisci un piano valido e un importo di pagamento positivo.",
+      "permission": "Non hai il permesso di registrare questo pagamento."
     }
   }
 }

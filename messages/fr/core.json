@@ -60,6 +60,12 @@
       "morning": "Bonjour",
       "afternoon": "Bon après-midi",
       "evening": "Bonsoir"
+    },
+    "pagination": {
+      "label": "Navigation des pages",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "Page {page} sur {pages} · {total} résultats"
     }
   },
   "roles": {

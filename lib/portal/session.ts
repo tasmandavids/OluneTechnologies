@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { getPortalIdentity } from "@/lib/portal/identity";
 import { mapMembershipRow, type MembershipRow } from "@/lib/account/memberships";
 import { resolveEffectiveStudioId } from "@/lib/portal/access";
 import { resolveTenantStudioId } from "@/lib/portal/tenant-studio";
@@ -16,23 +17,11 @@ export type PortalSession = {
   memberships: StudioMembershipSummary[];
 };
 
-/** Request-scoped portal auth context shared by layout and pages. */
-export const getPortalSession = cache(async (): Promise<PortalSession | null> => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("studio_id, role, account_kind, active_studio_id")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile?.studio_id) return null;
-
-  const { data: membershipRows } = await supabase
+/** Shared by the portal shell and pages within one verified request. */
+export const getPortalMemberships = cache(async (): Promise<StudioMembershipSummary[]> => {
+  const { supabase, user } = await getPortalIdentity();
+  if (!user) return [];
+  const { data: membershipRows, error } = await supabase
     .from("studio_memberships")
     .select(`
       id, studio_id, role, status, is_primary, linked_via, linked_at,
@@ -41,6 +30,7 @@ export const getPortalSession = cache(async (): Promise<PortalSession | null> =>
     .eq("user_id", user.id)
     .order("is_primary", { ascending: false });
 
+  if (error) throw new Error("Unable to load studio memberships");
   const memberships = (membershipRows ?? []).map((row) => {
     const mapped = mapMembershipRow(row as unknown as MembershipRow);
     return {
@@ -55,7 +45,20 @@ export const getPortalSession = cache(async (): Promise<PortalSession | null> =>
     };
   });
 
-  const tenantScope = await resolveTenantStudioId(supabase, user.id, profile);
+  return memberships;
+});
+
+/** Request-scoped portal auth context shared by layout and pages. */
+export const getPortalSession = cache(async (): Promise<PortalSession | null> => {
+  const { supabase, user, profile } = await getPortalIdentity();
+  if (!user) return null;
+
+  if (!profile?.studio_id) return null;
+
+  const [memberships, tenantScope] = await Promise.all([
+    getPortalMemberships(),
+    resolveTenantStudioId(supabase, user.id, profile),
+  ]);
   if (tenantScope.error) return null;
 
   const studioId = tenantScope.studioId ?? resolveEffectiveStudioId(profile);
