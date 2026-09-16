@@ -2,7 +2,7 @@
 
 ## Release status
 
-Release prepared on `release/portal-optimization-2026-09` directly from production main (`93ebcd0`). Only the optimisation commit was transplanted; unrelated Stripe PR #64 is excluded. The founder authorised production deployment on 17 September 2026. Apply and verify the migration before merging this release.
+Release prepared on `release/portal-optimization-2026-09` directly from production main (`93ebcd0`). Only the optimisation commit was transplanted; unrelated Stripe PR #64 is excluded. The founder authorised production deployment on 17 September 2026. Migration `20260916001938` was applied successfully to production before the application release.
 
 ## Changes
 
@@ -41,3 +41,7 @@ Previous local browser checks verified desktop login, protected-route redirectio
 - Existing audit items such as operator MFA, credential hygiene and unsupported public feature claims remain separate follow-up work.
 
 No production data was changed, messages sent, hosting plan upgraded, or new runtime dependency added by this work.
+
+## Release-branch verification
+
+The isolated release excludes 12 Stripe tests: all 725 remaining tests pass (71 files). Type checking, lint, translation parity, the stricter main-branch literal budget (873/874), and isolated database checks pass. The final dependency scan found newly reported advisories; compatible updates pin Next.js 15.5.25, Nodemailer 9.1.1, Sharp 0.35.4 and Joi 17.13.8. ImapFlow's nested Nodemailer uses the same patched version through an override. The production dependency audit reports zero vulnerabilities.
