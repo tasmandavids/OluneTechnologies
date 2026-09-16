@@ -2,7 +2,7 @@
 
 ## Release status
 
-Implemented locally on `optimization/portal-performance-and-safety`; not deployed and no production migration applied. This branch starts from `stripe-v2-connect-status`, not production main. Review its existing Stripe changes separately or transplant the optimisation commit onto the intended release branch before publishing.
+Release prepared on `release/portal-optimization-2026-09` directly from production main (`93ebcd0`). Only the optimisation commit was transplanted; unrelated Stripe PR #64 is excluded. The founder authorised production deployment on 17 September 2026. Apply and verify the migration before merging this release.
 
 ## Changes
 
