@@ -83,6 +83,10 @@
       "templateNotFound": "Plantilla no encontrada.",
       "onlyDraftsCanBeSent": "Solo las facturas en borrador se pueden enviar de esta forma.",
       "noDraftInvoices": "No hay facturas en borrador para enviar."
+    },
+    "installment": {
+      "invalid": "Introduce un plan válido y un importe de pago positivo.",
+      "permission": "No tienes permiso para registrar este pago."
     }
   }
 }

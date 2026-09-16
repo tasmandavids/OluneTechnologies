@@ -83,6 +83,10 @@
       "templateNotFound": "テンプレートが見つかりません。",
       "onlyDraftsCanBeSent": "この方法で送信できるのは下書きの請求書のみです。",
       "noDraftInvoices": "送信する下書きの請求書がありません。"
+    },
+    "installment": {
+      "invalid": "有効なプランと正の支払金額を入力してください。",
+      "permission": "この支払いを記録する権限がありません。"
     }
   }
 }

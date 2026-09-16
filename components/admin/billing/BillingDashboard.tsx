@@ -2,8 +2,8 @@
 
 import { confirmDialog } from "@/lib/feedback";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { useMemo, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import {
@@ -650,6 +650,7 @@ export function BillingDashboard({
   templates: initialTemplates,
   products,
   initialInvoiceId = null,
+  draftCount,
 }: {
   invoices: InvoiceRow[];
   unpaidInvoices: InvoiceRow[];
@@ -666,8 +667,10 @@ export function BillingDashboard({
   /** Catalogue entries offered per line when itemizing an invoice. */
   products: LineProductOption[];
   initialInvoiceId?: string | null;
+  draftCount: number;
 }) {
   const t = useTranslations("admin.billing");
+  const tSearch = useTranslations("common");
   const tShared = useTranslations("admin.shared");
   const tStatus = useTranslations("admin.shared.status");
   const router = useRouter();
@@ -679,22 +682,30 @@ export function BillingDashboard({
       ? initialInvoices.find((i) => i.id === initialInvoiceId) ?? null
       : null,
   );
-  const [activeStatuses, setActiveStatuses] = useState<Set<string>>(defaultActiveStatuses);
-  const [search, setSearch] = useState("");
-
-  const toggleStatus = (status: string) =>
-    setActiveStatuses((prev) => {
-      const next = new Set(prev);
-      if (next.has(status)) next.delete(status);
-      else next.add(status);
-      return next;
-    });
+  const searchParams = useSearchParams();
+  const activeStatuses = new Set(searchParams.has("statuses") ? (searchParams.get("statuses") ?? "").split(",").filter(Boolean) : defaultActiveStatuses());
+  const [search, setSearch] = useState(searchParams.get("q") ?? "");
+  const urlQuery = searchParams.get("q") ?? "";
+  useEffect(() => { setSearch(urlQuery); }, [urlQuery]);
+  const searchHistory = (statuses = activeStatuses) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", "invoices"); params.set("q", search); params.set("statuses", [...statuses].join(","));
+    params.delete("page"); params.delete("invoice");
+    router.replace(`/portal/admin/money?${params}`, { scroll: false });
+  };
+  const setActiveStatuses = (next: Set<string>) => searchHistory(next);
+  const toggleStatus = (status: string) => {
+    const next = new Set(activeStatuses);
+    if (next.has(status)) next.delete(status); else next.add(status);
+    setActiveStatuses(next);
+  };
 
   const allStatusesActive = FILTERABLE_STATUSES.every((s) => activeStatuses.has(s));
   const isDefaultStatusFilter =
     activeStatuses.size === FILTERABLE_STATUSES.length - DEFAULT_HIDDEN_STATUSES.length &&
     FILTERABLE_STATUSES.every((s) => activeStatuses.has(s) !== DEFAULT_HIDDEN_STATUSES.includes(s));
   const [invoices, setInvoices] = useState<InvoiceRow[]>(initialInvoices);
+  useEffect(() => { setInvoices(initialInvoices); }, [initialInvoices]);
   const [templates, setTemplates] = useState<InvoiceTemplate[]>(initialTemplates);
   const [bulkPending, startBulk] = useTransition();
   const [bulkError, setBulkError] = useState<string | null>(null);
@@ -741,7 +752,6 @@ export function BillingDashboard({
     });
   };
 
-  const draftIds = useMemo(() => invoices.filter((i) => i.status === "draft").map((i) => i.id), [invoices]);
 
   const sendAllDrafts = () => {
     setDraftBulkError(null);
@@ -756,20 +766,7 @@ export function BillingDashboard({
     });
   };
 
-  const filtered = invoices.filter((inv) => {
-    // Only hide statuses we render a chip for — never silently drop an unknown status.
-    const isFilterable = (FILTERABLE_STATUSES as readonly string[]).includes(inv.status);
-    if (isFilterable && !activeStatuses.has(inv.status)) return false;
-    if (search) {
-      const q = search.toLowerCase();
-      return (
-        inv.studentName?.toLowerCase().includes(q) ||
-        inv.payerName?.toLowerCase().includes(q) ||
-        inv.id.toLowerCase().includes(q)
-      );
-    }
-    return true;
-  });
+  const filtered = invoices;
 
   const chartData = revenue.map((r) => ({
     month: formatMonthKey(r.month),
@@ -1004,7 +1001,7 @@ export function BillingDashboard({
               {t("allInvoices.title")}
               <span className="ml-2 font-normal text-muted">({filtered.length})</span>
             </h2>
-            {draftIds.length > 0 && (
+            {draftCount > 0 && (
               <button
                 type="button"
                 onClick={sendAllDrafts}
@@ -1013,7 +1010,7 @@ export function BillingDashboard({
               >
                 {draftBulkPending
                   ? tShared("sending")
-                  : t("allInvoices.sendAllDrafts", { count: draftIds.length })}
+                  : t("allInvoices.sendAllDrafts", { count: draftCount })}
               </button>
             )}
             <input
@@ -1021,8 +1018,10 @@ export function BillingDashboard({
               placeholder={t("allInvoices.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") searchHistory(); }}
               className="w-44 rounded-lg border border-[--hair] bg-base px-3 py-1.5 text-xs text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
             />
+            <button type="button" onClick={() => searchHistory()} className="rounded-lg border border-[--hair] px-3 py-1.5 text-xs">{tSearch("search")}</button>
           </div>
 
           <div className="flex flex-wrap items-center gap-1.5 border-b border-[--hair] px-6 py-3">

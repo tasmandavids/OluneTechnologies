@@ -96,7 +96,7 @@ export default function PricingPage() {
   const pricingFaq = [
     {
       q: "How much does Olune cost?",
-      a: `Plans are ${plans.map((p) => `${p.monthly}/month for ${p.name}`).join(", ")}, in New Zealand dollars and GST-inclusive. Olune is free to use as much as you like until general release in December.`,
+      a: `Plans are ${plans.map((p) => `${p.monthly}/month for ${p.name}`).join(", ")}, in New Zealand dollars and GST-inclusive. Olune is free to use as much as you like through 31 December 2026 (New Zealand time).`,
     },
     {
       q: "Does the price go up as I enrol more students?",
@@ -112,7 +112,7 @@ export default function PricingPage() {
     },
     {
       q: "Is there a free trial?",
-      a: "Olune is completely free to use until general release in December, which is long enough to run a full term through it. After that, every plan starts with 14 days free and no card is needed to sign up.",
+      a: "Olune is completely free to use through 31 December 2026 (New Zealand time), which is long enough to run a full term through it. After that, every plan starts with 14 days free and no card is needed to sign up.",
     },
     {
       q: "Are there setup fees?",
@@ -200,7 +200,7 @@ export default function PricingPage() {
           ))}
         </div>
         <p style={{ maxWidth: 1060, margin: "18px auto 0", fontSize: 13.5, color: FAINT, textAlign: "center" }}>
-          Free to use until general release in December. After that, 14 days free on every plan — no card needed.
+          Free to use through 31 December 2026 (New Zealand time). After that, 14 days free on every plan — no card needed.
         </p>
       </section>
 
@@ -240,7 +240,7 @@ export default function PricingPage() {
       </section>
 
       <ContentFaq items={pricingFaq} />
-      <ContentCta note="Free to use until general release in December — long enough to run a full term through it before you decide." />
+      <ContentCta note="Free to use through 31 December 2026 (New Zealand time) — long enough to run a full term through it before you decide." />
     </ContentShell>
   );
 }

@@ -48,9 +48,9 @@
     "html5-qrcode": "^2.3.8",
     "imapflow": "^1.4.2",
     "immer": "^11.1.8",
-    "next": "^15.5.22",
+    "next": "15.5.25",
     "next-intl": "^4.13.0",
-    "nodemailer": "^9.0.1",
+    "nodemailer": "9.1.1",
     "passkit-generator": "^3.5.7",
     "pdf-lib": "^1.17.1",
     "qrcode": "^1.5.4",
@@ -66,11 +66,12 @@
   },
   "overrides": {
     "postcss": "^8.5.26",
-    "sharp": "^0.35.3",
-    "joi": "^17.13.4",
+    "sharp": "0.35.4",
+    "joi": "17.13.8",
     "ip-address": "^10.4.0",
     "js-yaml": "^4.3.0",
-    "nanoid": "^3.3.18"
+    "nanoid": "^3.3.18",
+    "nodemailer": "$nodemailer"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
