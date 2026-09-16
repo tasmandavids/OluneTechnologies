@@ -83,6 +83,10 @@
       "templateNotFound": "Template not found.",
       "onlyDraftsCanBeSent": "Only draft invoices can be sent this way.",
       "noDraftInvoices": "No draft invoices to send."
+    },
+    "installment": {
+      "invalid": "Enter a valid plan and positive payment amount.",
+      "permission": "You do not have permission to record this payment."
     }
   }
 }

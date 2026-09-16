@@ -10,11 +10,14 @@
 
 import type { MouseEvent } from "react";
 
+const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 const MAGNET_STRENGTH = 9;
 const MAGNET_Y_OFFSET = -2;
 
 /** Nudges the element a few px toward the cursor. Pair with onMagnetLeave. */
 export function onMagnetMove(e: MouseEvent<HTMLElement>) {
+  if (reduceMotion()) return;
   const el = e.currentTarget;
   const rect = el.getBoundingClientRect();
   const px = (e.clientX - rect.left) / rect.width - 0.5;
@@ -31,6 +34,7 @@ export function onMagnetLeave(e: MouseEvent<HTMLElement>) {
  *  overlay with a long `transition: opacity`, see GlassPanel/AttentionQueue/
  *  PeopleView row markup) fades out gradually instead of snapping off. */
 export function onGlowMove(e: MouseEvent<HTMLElement>) {
+  if (reduceMotion()) return;
   const el = e.currentTarget;
   const rect = el.getBoundingClientRect();
   el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
@@ -45,6 +49,7 @@ export function onGlowLeave(e: MouseEvent<HTMLElement>) {
 /** Spawns a short-lived expanding circle from the click point. Requires the
  *  element to be `position: relative; overflow: hidden`. */
 export function onRipple(e: MouseEvent<HTMLElement>) {
+  if (reduceMotion()) return;
   const el = e.currentTarget;
   const rect = el.getBoundingClientRect();
   const size = Math.max(rect.width, rect.height) * 1.1;

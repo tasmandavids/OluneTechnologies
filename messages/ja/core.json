@@ -60,6 +60,12 @@
       "morning": "おはようございます",
       "afternoon": "こんにちは",
       "evening": "こんばんは"
+    },
+    "pagination": {
+      "label": "ページ切り替え",
+      "previous": "前へ",
+      "next": "次へ",
+      "page": "{page} / {pages}ページ · {total}件"
     }
   },
   "roles": {

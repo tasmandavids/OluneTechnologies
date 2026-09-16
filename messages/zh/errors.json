@@ -83,6 +83,10 @@
       "templateNotFound": "未找到模板。",
       "onlyDraftsCanBeSent": "只有草稿状态的账单才能以此方式发送。",
       "noDraftInvoices": "没有可发送的草稿账单。"
+    },
+    "installment": {
+      "invalid": "请输入有效的付款计划和大于零的付款金额。",
+      "permission": "您无权记录这笔付款。"
     }
   }
 }

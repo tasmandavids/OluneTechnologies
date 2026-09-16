@@ -31,11 +31,11 @@ function StatCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function LedgerDashboard({ rows }: { rows: LedgerRow[] }) {
+export function LedgerDashboard({ rows, totalCount, netCents }: { rows: LedgerRow[]; totalCount: number; netCents: number }) {
   const t = useTranslations("admin.money.ledger");
   const tStatus = useTranslations("admin.shared.status");
 
-  const netCents = rows[0]?.runningTotalCents ?? 0;
+
 
   return (
     <motion.div
@@ -55,7 +55,7 @@ export function LedgerDashboard({ rows }: { rows: LedgerRow[] }) {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <StatCard label={t("stats.net")} value={formatMoney(netCents)} />
-        <StatCard label={t("stats.count")} value={String(rows.length)} />
+        <StatCard label={t("stats.count")} value={String(totalCount)} />
       </div>
 
       {rows.length === 0 ? (
