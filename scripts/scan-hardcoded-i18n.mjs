@@ -131,7 +131,18 @@ if (process.argv.includes("--json")) {
 } else if (process.argv.includes("--check")) {
   // Ratchet: these two numbers may fall, never rise. Lower them as areas are
   // migrated — that is the point. Raising one needs a reason in the diff.
-  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 874);
+  //
+  // 874 → 881 (2026-09-03): /api/webhooks/stripe-v2 and
+  // /api/cron/sync-connect-accounts added 7 JSON error bodies of the same kind
+  // the existing Stripe webhook routes already contribute ("Missing signature",
+  // "Handler failed"). These are read by Stripe's delivery log and Vercel's cron
+  // log, never by a person, so translating them would be meaningless.
+  //
+  // Not fixed by excluding app/api/ wholesale, tempting as that is at 137 of the
+  // total: app/api/stripe/connect/route.ts passes its messages through a
+  // redirect query param that the Connections page renders, so some route
+  // literals genuinely are user-facing and must keep being counted.
+  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 881);
   const MAX_LOCALE_SITES = Number(process.env.I18N_MAX_LOCALE_SITES ?? 30);
 
   let failed = false;
