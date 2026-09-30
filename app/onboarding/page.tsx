@@ -30,10 +30,6 @@ export default async function OnboardingPage({
       const role = await userRoleForStudio(supabase, user.id, profile, studioId);
       if (!role) notFound();
 
-      if (accountKind === "instructor") {
-        redirect("/portal/teacher");
-      }
-
       // Only admins need to go through the setup flow. Students, parents, and
       // teachers should go directly to their portal home.
       if (role !== "admin") {

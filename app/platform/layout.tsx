@@ -9,6 +9,10 @@ import { redirect } from "next/navigation";
 import { PlatformShell } from "@/components/platform/PlatformShell";
 import { requirePlatformOperator } from "@/lib/platform/auth";
 
+// Privileged operator data must be loaded only for authenticated requests,
+// never during static generation with build-time service-role credentials.
+export const dynamic = "force-dynamic";
+
 export default async function PlatformLayout({
   children,
 }: {
