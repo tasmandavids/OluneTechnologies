@@ -147,6 +147,23 @@
       "delete": "Elimina",
       "confirmDelete": "Eliminare questo annuncio? Questa azione non può essere annullata."
     },
+    "mfa": {
+      "eyebrow": "Accesso operatore protetto",
+      "setupTitle": "Configura l’autenticazione a più fattori",
+      "setupBody": "Scansiona questo codice con l’app di autenticazione, poi inserisci il codice a sei cifre. L’accesso alla piattaforma resterà bloccato finché la configurazione non sarà completata.",
+      "verifyTitle": "Verifica la tua identità",
+      "verifyBody": "Inserisci il codice a sei cifre dell’app di autenticazione per aprire la console della piattaforma.",
+      "loading": "Preparazione dell’accesso sicuro…",
+      "qrAlt": "Codice QR per l’autenticazione della piattaforma Olune",
+      "manualLabel": "Non riesci a scansionarlo? Inserisci manualmente questa chiave:",
+      "codeLabel": "Codice di autenticazione",
+      "continue": "Verifica e continua",
+      "verifying": "Verifica in corso…",
+      "loadError": "Impossibile caricare i fattori di autenticazione. Esci e riprova.",
+      "enrollError": "Impossibile avviare la configurazione multifattore. Esci e riprova.",
+      "invalidCode": "Il codice non è stato accettato. Inserisci il codice più recente e riprova.",
+      "signOut": "Esci"
+    },
     "settings": {
       "title": "Impostazioni piattaforma",
       "subtitle": "Configurazione globale Olune — registrazione, prove, manutenzione.",
