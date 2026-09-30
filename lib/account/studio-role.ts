@@ -20,4 +20,3 @@ export async function userRoleForStudio(
   if (profile.studio_id === studioId) return profile.role ?? null;
   return (membership?.role as Role | undefined) ?? null;
 }
-

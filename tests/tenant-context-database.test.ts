@@ -23,8 +23,6 @@ beforeAll(async () => {
   await db.exec(readFileSync(new URL("./fixtures/tenant-context.sql", import.meta.url), "utf8"));
   await db.exec(readFileSync(new URL("../supabase/migrations/20260930024829_onboarding_tenant_context.sql", import.meta.url), "utf8"));
   await db.exec(`
-    create trigger profiles_guard_privileges before update on public.profiles
-      for each row execute function private.guard_profile_privileges();
     create policy classes_member_read on public.classes for select to authenticated
       using (studio_id = private.current_studio());
     create policy classes_admin_all on public.classes for all to authenticated
@@ -48,6 +46,15 @@ beforeEach(async () => {
 afterEach(async () => { await db.exec("rollback; reset role;"); });
 
 describe("database workspace boundary", () => {
+  it("keeps the deployed profile trigger wired to the hardened private guard", async () => {
+    const result = await db.query<{definition:string}>(`
+      select pg_get_triggerdef(oid) as definition
+      from pg_trigger
+      where tgname = 'profiles_guard_privileges' and not tgisinternal
+    `);
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].definition).toContain("private.guard_profile_privileges()");
+  });
   it.each([[user, a, "A class"], [ownerB, b, "B class"]])(
     "owner %s can read and write only studio %s",
     async (id, studio, name) => {

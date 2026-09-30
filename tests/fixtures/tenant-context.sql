@@ -31,6 +31,18 @@ create table public.studio_memberships (
 );
 create unique index on public.studio_memberships(user_id) where is_primary;
 create table public.classes (id uuid primary key default gen_random_uuid(), studio_id uuid references public.studios(id), name text);
+-- Migration 0048 already moved the production trigger into the private schema.
+-- Keep that dependency in the fixture so CREATE OR REPLACE is tested against
+-- the same trigger wiring that exists in a fully migrated environment.
+create function private.guard_profile_privileges()
+returns trigger language plpgsql as $$
+begin
+  return new;
+end
+$$;
+create trigger profiles_guard_privileges
+  before update on public.profiles
+  for each row execute function private.guard_profile_privileges();
 grant usage on schema public,auth,private to authenticated,anon;
 grant select,insert,update,delete on all tables in schema public to authenticated;
 alter table public.profiles enable row level security;
