@@ -5,8 +5,8 @@
 //    2. On /portal/**, /platform/**, /login, /join, / — enforce auth routing.
 //  Row-level access is still enforced in Postgres (RLS); this is just routing.
 //
-//  Profile data (role, studio_id, account_kind) is read from the JWT claims
-//  embedded by custom_access_token_hook — zero DB round-trips per request.
+//  Workspace and role are checked against current database rows so revoked
+//  memberships and workspace changes do not wait for JWT expiry.
 //  Enable the hook in: Supabase Dashboard → Auth → Hooks → Custom Access Token
 // ============================================================================
 
@@ -21,6 +21,7 @@ import { canAccessPortalPath } from "@/lib/portal/office-access";
 import { sanitizeNextPath } from "@/lib/auth/oauth";
 import { mergeSessionCookies, redirectWithSession, refreshSession } from "@/lib/supabase/middleware";
 import { isTenantHost } from "@/lib/tenant-host";
+import { userRoleForStudio } from "@/lib/account/studio-role";
 import type { Role } from "@/lib/types";
 
 type ProfileAccess = {
@@ -28,23 +29,6 @@ type ProfileAccess = {
   studioId: string | null;
   accountKind: AccountKind | null;
 };
-
-/** Decode profile fields from the JWT claims set by custom_access_token_hook. */
-function profileFromJwt(accessToken: string | undefined): ProfileAccess | null {
-  if (!accessToken) return null;
-  try {
-    const payload = JSON.parse(atob(accessToken.split(".")[1]));
-    const role = payload.user_role as Role | undefined;
-    if (!role) return null;
-    return {
-      role,
-      studioId: (payload.studio_id as string | null) ?? null,
-      accountKind: (payload.account_kind as AccountKind | null) ?? null,
-    };
-  } catch {
-    return null;
-  }
-}
 
 function resolveHome(profile: ProfileAccess): string {
   return portalHomeForAccount(profile.accountKind, profile.role);
@@ -68,40 +52,25 @@ function noStudioDestination(request: NextRequest): string {
   return isTenantHost(request.headers.get("host")) ? "/join" : "/onboarding";
 }
 
-/** DB fallback for sessions that pre-date the JWT claims hook being enabled. */
+/** Current workspace permissions; JWTs establish identity, not mutable roles. */
 async function getProfileFromDb(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<ProfileAccess | null> {
   const { data } = await supabase
     .from("profiles")
-    .select("role, studio_id, account_kind")
+    .select("role, studio_id, active_studio_id, account_kind")
     .eq("id", userId)
     .single();
   if (!data?.role) return null;
+  const studioId = data.active_studio_id ?? data.studio_id;
+  const role = studioId ? await userRoleForStudio(supabase, userId, data, studioId) : data.role;
+  if (!role) return null;
   return {
-    role: data.role as Role,
-    studioId: (data.studio_id as string | null) ?? null,
+    role: role as Role,
+    studioId,
     accountKind: (data.account_kind as AccountKind | null) ?? null,
   };
-}
-
-/**
- * Resolve the user's access profile. JWT claims are authoritative ONLY when they
- * carry a studio_id; otherwise the token is likely stale (minted at signup,
- * before the user joined/created a studio — profiles.role defaults to 'parent',
- * so the JWT has a role but no studio_id), and we must consult the DB. Trusting
- * a studio-less JWT here short-circuited the DB fallback and caused
- * post-registration redirect loops (/portal/* → /onboarding → /portal/* → …).
- */
-async function resolveProfileAccess(
-  supabase: SupabaseClient,
-  accessToken: string | undefined,
-  userId: string,
-): Promise<ProfileAccess | null> {
-  const fromJwt = profileFromJwt(accessToken);
-  if (fromJwt?.studioId) return fromJwt;
-  return getProfileFromDb(supabase, userId);
 }
 
 export async function middleware(request: NextRequest) {
@@ -114,7 +83,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const { supabase, response, user: sessionUser, accessToken } = await refreshSession(request);
+  const { supabase, response, user: sessionUser } = await refreshSession(request);
 
   const { pathname } = request.nextUrl;
   const inPortal   = pathname === "/portal" || pathname.startsWith("/portal/");
@@ -135,7 +104,7 @@ export async function middleware(request: NextRequest) {
     if (!user) return redirectWithSession(request, "/login", response, { next: pathname });
     const isOperator = await checkPlatformOperator(supabase, user.id, user.email);
     if (!isOperator) {
-      const profile = await resolveProfileAccess(supabase, accessToken ?? undefined, user.id);
+      const profile = await getProfileFromDb(supabase, user.id);
       const dest = profile?.studioId ? resolveHome(profile) : noStudioDestination(request);
       return mergeSessionCookies(NextResponse.redirect(new URL(dest, request.url)), response);
     }
@@ -148,7 +117,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
-    const profile = await resolveProfileAccess(supabase, accessToken ?? undefined, user.id);
+    const profile = await getProfileFromDb(supabase, user.id);
 
     if (!profile?.studioId) {
       if (inJoin) return response;

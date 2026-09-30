@@ -36,5 +36,7 @@ jsconfig.json
 
 # local tooling artifacts (never commit — large binaries / scratch deps)
 .tmp_pydeps/
+playwright-report/
+test-results/
 supabase_*.tar.gz
 *.tar.gz

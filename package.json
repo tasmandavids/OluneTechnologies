@@ -17,6 +17,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "INTEGRATION_TEST=1 node --env-file=.env.local ./node_modules/vitest/vitest.mjs run --config vitest.integration.config.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:install": "playwright install chromium",
     "db:status": "supabase migration list",
     "db:push": "supabase db push --linked --yes",
     "db:push:remote": "supabase db push --linked --yes",
@@ -50,7 +53,7 @@
     "immer": "^11.1.8",
     "next": "15.5.25",
     "next-intl": "^4.13.0",
-    "nodemailer": "9.1.1",
+    "nodemailer": "10.0.13",
     "passkit-generator": "^3.5.7",
     "pdf-lib": "^1.17.1",
     "qrcode": "^1.5.4",
@@ -74,6 +77,8 @@
     "nodemailer": "$nodemailer"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.3.14",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.0.0",
     "@types/nodemailer": "^8.0.1",
