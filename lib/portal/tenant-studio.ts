@@ -1,8 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { headers } from "next/headers";
 import { resolveStudio } from "@/lib/tenant";
+import { isTenantHost } from "@/lib/tenant-host";
 import { isStudioOpsRole, resolveEffectiveStudioId } from "@/lib/portal/access";
 import type { Role } from "@/lib/types";
+import { userRoleForStudio } from "@/lib/account/studio-role";
+export { userRoleForStudio } from "@/lib/account/studio-role";
 
 /** Whether the user may manage (admin/office) the given studio. */
 export async function userHasOpsAccessToStudio(
@@ -15,20 +18,7 @@ export async function userHasOpsAccessToStudio(
   },
   studioId: string,
 ): Promise<boolean> {
-  const homeStudioId = resolveEffectiveStudioId(profile);
-  if (isStudioOpsRole(profile.role) && homeStudioId === studioId) {
-    return true;
-  }
-
-  const { data: membership } = await supabase
-    .from("studio_memberships")
-    .select("role")
-    .eq("user_id", userId)
-    .eq("studio_id", studioId)
-    .eq("status", "active")
-    .maybeSingle();
-
-  return !!membership && isStudioOpsRole(membership.role as Role);
+  return isStudioOpsRole(await userRoleForStudio(supabase, userId, profile, studioId));
 }
 
 /** Whether the user belongs to the studio (home profile or active membership). */
@@ -41,20 +31,15 @@ export async function userBelongsToStudio(
   },
   studioId: string,
 ): Promise<boolean> {
-  const homeStudioId = resolveEffectiveStudioId(profile);
-  if (homeStudioId === studioId || profile.studio_id === studioId) {
-    return true;
-  }
-
-  const { data: membership } = await supabase
+  const { data: membership, error } = await supabase
     .from("studio_memberships")
-    .select("id")
+    .select("id, status")
     .eq("user_id", userId)
     .eq("studio_id", studioId)
-    .eq("status", "active")
     .maybeSingle();
 
-  return !!membership;
+  if (error) return false;
+  return membership ? membership.status === "active" : profile.studio_id === studioId;
 }
 
 /**
@@ -76,14 +61,16 @@ export async function resolveTenantStudioId(
   const tenant = await resolveStudio(host);
   const profileStudioId = resolveEffectiveStudioId(profile);
 
-  if (!tenant) {
-    return {
-      studioId: profileStudioId,
-      error: profileStudioId ? null : "No studio found.",
-    };
+  if (!tenant && isTenantHost(host)) return { studioId: null, error: "Studio not found." };
+  const studioId = tenant?.id ?? profileStudioId;
+  if (!studioId) return { studioId: null, error: "No studio found." };
+  // Database policies use the active workspace, not the request hostname.
+  // Refuse a host/workspace mismatch instead of querying under another scope.
+  if (studioId !== profileStudioId) {
+    return { studioId: null, error: "Switch to this studio before using its portal." };
   }
 
-  const belongs = await userBelongsToStudio(supabase, userId, profile, tenant.id);
+  const belongs = await userBelongsToStudio(supabase, userId, profile, studioId);
   if (!belongs) {
     return {
       studioId: null,
@@ -92,7 +79,7 @@ export async function resolveTenantStudioId(
   }
 
   if (options?.requireOpsAccess) {
-    const hasOps = await userHasOpsAccessToStudio(supabase, userId, profile, tenant.id);
+    const hasOps = await userHasOpsAccessToStudio(supabase, userId, profile, studioId);
     if (!hasOps) {
       return {
         studioId: null,
@@ -101,5 +88,5 @@ export async function resolveTenantStudioId(
     }
   }
 
-  return { studioId: tenant.id, error: null };
+  return { studioId, error: null };
 }

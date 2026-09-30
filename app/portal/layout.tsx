@@ -7,8 +7,8 @@
 
 import { MessageScope } from "@/components/i18n/MessageScope";
 import { getMessages } from "next-intl/server";
-import { redirect } from "next/navigation";
-import { getPortalMemberships } from "@/lib/portal/session";
+import { notFound, redirect } from "next/navigation";
+import { getPortalSession } from "@/lib/portal/session";
 import { getPortalIdentity } from "@/lib/portal/identity";
 import { PortalShell } from "@/components/portal/PortalShell";
 import { PlatformAnnouncementsBanner } from "@/components/admin/PlatformAnnouncementsBanner";
@@ -28,9 +28,7 @@ import { loadStudioSubscription, planAccessFor } from "@/lib/plans/server";
 import { isLocked, needsTrialBanner } from "@/lib/plans/gate";
 import { isBillingRole } from "@/lib/plans/roles";
 import { showAffiliationsNav } from "@/lib/account/memberships";
-import { resolveEffectiveStudioId } from "@/lib/portal/access";
 import type { AccountKind } from "@/lib/account/kinds";
-import type { Role } from "@/lib/types";
 import { getTranslations } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
@@ -45,14 +43,14 @@ export default async function PortalLayout({
 
   if (!profile?.studio_id) redirect("/onboarding");
 
-  const studioId = resolveEffectiveStudioId(profile);
-  if (!studioId) redirect("/onboarding");
+  const session = await getPortalSession();
+  if (!session) notFound();
+  const { studioId, role, memberships } = session;
 
   const accountKind = (profile.account_kind as AccountKind | null) ?? null;
   const now = new Date().toISOString();
 
   const [
-    memberships,
     activeStudioRes,
     setupResult,
     announcementsResult,
@@ -62,12 +60,11 @@ export default async function PortalLayout({
     portalTheme,
     subscription,
   ] = await Promise.all([
-    getPortalMemberships(),
     supabase.from("studios").select("name, kind, status").eq("id", studioId).single(),
-    profile.role === "admin"
+    role === "admin"
       ? fetchStudioSetupState(supabase, studioId)
       : Promise.resolve({ state: null }),
-    profile.role === "admin"
+    role === "admin"
       ? supabase
           .from("platform_announcements")
           .select("id, title, body, severity, expires_at")
@@ -82,7 +79,7 @@ export default async function PortalLayout({
     resolvePortalTheme(),
     // Only the people who can do something about a lapsed bill pay the cost of
     // reading it. Teachers, parents and students skip the query entirely.
-    isBillingRole(profile.role as Role)
+    isBillingRole(role)
       ? loadStudioSubscription(supabase, studioId)
       : Promise.resolve(null),
   ]);
@@ -90,7 +87,7 @@ export default async function PortalLayout({
   const studio = activeStudioRes.data as { name: string; kind: string; status: string } | null;
   const isStudioOwner =
     accountKind === "studio_owner" || (accountKind === null && studio?.kind !== "instructor");
-  const isAdmin = profile.role === "admin" && isStudioOwner;
+  const isAdmin = role === "admin" && isStudioOwner;
 
   const setupState = setupResult.state;
   if (isAdmin && setupState && setupBlocksPortal(setupState)) {
@@ -104,7 +101,7 @@ export default async function PortalLayout({
   // relationship. /plan/locked lives outside this layout, which is the only
   // thing keeping this from being a redirect loop — same reason /setup does.
   const planAccess = planAccessFor(subscription, studio?.status ?? null);
-  if (isBillingRole(profile.role as Role) && isLocked(planAccess)) {
+  if (isBillingRole(role) && isLocked(planAccess)) {
     redirect("/plan/locked");
   }
 
@@ -121,7 +118,6 @@ export default async function PortalLayout({
   // Nav is filtered server-side so a module the studio does not have never
   // reaches the client. This is presentation only — requireModule()/
   // assertModule() on the pages and server actions do the enforcing.
-  const role = profile.role as Role;
   const selfManagedStudent = role === "student" && !!profile.self_managed;
   const roleNav =
     role === "admin"
