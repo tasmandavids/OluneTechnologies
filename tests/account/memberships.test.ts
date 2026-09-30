@@ -87,6 +87,10 @@ describe("portalHomeForAccount", () => {
   it("routes studio owners by role", () => {
     expect(portalHomeForAccount("studio_owner", "admin")).toBe("/portal/admin");
   });
+
+  it("routes an instructor who is a parent at the active studio to the parent portal", () => {
+    expect(portalHomeForAccount("instructor", "parent")).toBe("/portal/parent");
+  });
 });
 
 describe("showAffiliationsNav", () => {

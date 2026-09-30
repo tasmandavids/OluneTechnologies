@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
-import { resolveTenantStudioId } from "@/lib/portal/tenant-studio";
+import { resolveTenantStudioId, userRoleForStudio } from "@/lib/portal/tenant-studio";
 import { loadPlanAccessForStudio } from "@/lib/plans/server";
 import { isLocked } from "@/lib/plans/gate";
 import type { Role } from "@/lib/types";
@@ -60,13 +60,13 @@ async function getStudioAccess(
     .eq("id", user.id)
     .single();
 
-  const role = (profile?.role as Role | undefined) ?? null;
-  if (!role || !allowed(role)) {
+  let role: Role | null = null;
+  if (!profile) {
     return { error: "Not authorized.", supabase, studioId: null, userId: user.id, role };
   }
 
   const tenantScope = profile
-    ? await resolveTenantStudioId(supabase, user.id, profile, { requireOpsAccess: true })
+    ? await resolveTenantStudioId(supabase, user.id, profile)
     : { studioId: null, error: "No studio found." as string | null };
 
   if (tenantScope.error) {
@@ -88,6 +88,11 @@ async function getStudioAccess(
       userId: user.id,
       role,
     };
+  }
+
+  role = await userRoleForStudio(supabase, user.id, profile, studioId);
+  if (!role || !allowed(role)) {
+    return { error: "Not authorized.", supabase, studioId: null, userId: user.id, role };
   }
 
   // ── The paywall ───────────────────────────────────────────────────────────
@@ -162,25 +167,20 @@ export async function getParentStudio(): Promise<
     .eq("id", user.id)
     .single();
 
-  const role = (profile?.role as Role | undefined) ?? null;
+  const tenantScope = profile
+    ? await resolveTenantStudioId(supabase, user.id, profile)
+    : { studioId: null, error: "No studio found." };
+  const studioId = tenantScope.studioId;
+  const role = profile && studioId
+    ? await userRoleForStudio(supabase, user.id, profile, studioId)
+    : null;
   const selfManaged = Boolean(profile?.self_managed);
+  if (tenantScope.error || !studioId || !role) {
+    return { error: tenantScope.error ?? "Not authorized.", supabase, studioId: null,
+      userId: user.id, role, mode: null };
+  }
 
   if (role === "parent") {
-    const tenantScope = await resolveTenantStudioId(supabase, user.id, profile!, {
-      requireOpsAccess: false,
-    });
-    const studioId =
-      tenantScope.studioId ?? (profile ? resolveEffectiveStudioId(profile) : null);
-    if (tenantScope.error || !studioId) {
-      return {
-        error: tenantScope.error ?? "No studio found.",
-        supabase,
-        studioId: null,
-        userId: user.id,
-        role,
-        mode: null,
-      };
-    }
     return {
       error: null,
       supabase,
@@ -192,17 +192,6 @@ export async function getParentStudio(): Promise<
   }
 
   if (role === "student" && selfManaged) {
-    const studioId = profile ? resolveEffectiveStudioId(profile) : null;
-    if (!studioId) {
-      return {
-        error: "No studio found.",
-        supabase,
-        studioId: null,
-        userId: user.id,
-        role,
-        mode: null,
-      };
-    }
     return {
       error: null,
       supabase,

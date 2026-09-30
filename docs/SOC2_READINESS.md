@@ -205,21 +205,26 @@ tamper-evidence — an auditor will ask how you prove entries were not altered.
 
 ---
 
-### SOC2-03 — No MFA on any account · **High**
+### SOC2-03 — Operator MFA activation incomplete · **High**
 **TSC:** CC6.1
 
+> **Status: code remediation prepared.** `requirePlatformOperator` now fails closed
+> unless the session is `aal2`; the platform layout presents TOTP enrollment or a
+> challenge without loading platform data; and every platform mutation retains the
+> strict default guard. Unit coverage proves the environment allowlist cannot bypass
+> MFA. This finding remains open until the change is deployed, production TOTP is
+> confirmed enabled, and every current operator has completed enrollment.
+
 `supabase/config.toml:36-41` enables TOTP enrolment and verification at the project
-level, but no application code enrolls a factor, issues a challenge, or requires `aal2`
-— a search for `mfa`, `totp`, `aal2`, or `authenticator` across `app/` and `lib/`
-returns no functional hits. Password policy is a client-side `length < 8` check
-(`app/reset-password/page.tsx:57`, `app/welcome/page.tsx:32`).
+level. Password policy remains a separate weakness: it is a client-side `length < 8`
+check (`app/reset-password/page.tsx:57`, `app/welcome/page.tsx:32`).
 
 Platform operators hold `permissions: ["*"]` across all tenants behind a password
 alone. Combined with SOC2-01, that password is public.
 
-**Remediate:** mandatory TOTP for `/platform` operators (enforce `aal2` in
-`requirePlatformOperator`), offered and strongly encouraged for studio admins; raise
-the password minimum and enable Supabase's leaked-password protection.
+**Remaining:** deploy the operator gate, confirm TOTP in the production Auth settings,
+enroll every current operator, raise the password minimum, enable Supabase's
+leaked-password protection, and decide whether to offer MFA to studio admins.
 
 ---
 

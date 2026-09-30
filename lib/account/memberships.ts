@@ -62,7 +62,7 @@ export function affiliatedStudios(memberships: StudioMembership[]): StudioMember
 
 /** Portal home path based on account kind. */
 export function portalHomeForAccount(accountKind: AccountKind | null, role: Role): string {
-  if (accountKind === "instructor") return "/portal/teacher";
+  if (accountKind === "instructor" && role === "teacher") return "/portal/teacher";
   const homes: Record<Role, string> = {
     admin: "/portal/admin",
     teacher: "/portal/teacher",
