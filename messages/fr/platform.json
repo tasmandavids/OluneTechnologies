@@ -147,6 +147,23 @@
       "delete": "Supprimer",
       "confirmDelete": "Supprimer cette annonce ? Cette action est irréversible."
     },
+    "mfa": {
+      "eyebrow": "Accès opérateur protégé",
+      "setupTitle": "Configurer l’authentification multifacteur",
+      "setupBody": "Scannez ce code avec votre application d’authentification, puis saisissez le code à six chiffres. L’accès à la plateforme restera verrouillé jusqu’à la fin de la configuration.",
+      "verifyTitle": "Vérifiez votre identité",
+      "verifyBody": "Saisissez le code à six chiffres de votre application d’authentification pour ouvrir la console de la plateforme.",
+      "loading": "Préparation de l’accès sécurisé…",
+      "qrAlt": "Code QR pour l’authentification de la plateforme Olune",
+      "manualLabel": "Impossible de le scanner ? Saisissez cette clé manuellement :",
+      "codeLabel": "Code d’authentification",
+      "continue": "Vérifier et continuer",
+      "verifying": "Vérification…",
+      "loadError": "Impossible de charger vos facteurs d’authentification. Déconnectez-vous et réessayez.",
+      "enrollError": "Impossible de démarrer la configuration multifacteur. Déconnectez-vous et réessayez.",
+      "invalidCode": "Ce code n’a pas été accepté. Saisissez le code le plus récent et réessayez.",
+      "signOut": "Se déconnecter"
+    },
     "settings": {
       "title": "Paramètres de la plateforme",
       "subtitle": "Configuration globale Olune — inscription, essais, maintenance.",

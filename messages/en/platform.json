@@ -147,6 +147,23 @@
       "delete": "Delete",
       "confirmDelete": "Delete this announcement? This cannot be undone."
     },
+    "mfa": {
+      "eyebrow": "Protected operator access",
+      "setupTitle": "Set up multi-factor authentication",
+      "setupBody": "Scan this code with your authenticator app, then enter the six-digit code. Platform access will remain locked until setup is complete.",
+      "verifyTitle": "Verify it’s you",
+      "verifyBody": "Enter the six-digit code from your authenticator app to open the platform console.",
+      "loading": "Preparing secure access…",
+      "qrAlt": "QR code for Olune platform authentication",
+      "manualLabel": "Can’t scan it? Enter this setup key manually:",
+      "codeLabel": "Authentication code",
+      "continue": "Verify and continue",
+      "verifying": "Verifying…",
+      "loadError": "We couldn’t load your authentication factors. Sign out and try again.",
+      "enrollError": "We couldn’t start multi-factor setup. Sign out and try again.",
+      "invalidCode": "That code wasn’t accepted. Enter the latest code and try again.",
+      "signOut": "Sign out"
+    },
     "settings": {
       "title": "Platform settings",
       "subtitle": "Global Olune configuration — signup, trials, maintenance.",
