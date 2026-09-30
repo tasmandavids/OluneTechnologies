@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getPortalIdentity } from "@/lib/portal/identity";
 import { mapMembershipRow, type MembershipRow } from "@/lib/account/memberships";
 import { resolveEffectiveStudioId } from "@/lib/portal/access";
-import { resolveTenantStudioId } from "@/lib/portal/tenant-studio";
+import { resolveTenantStudioId, userRoleForStudio } from "@/lib/portal/tenant-studio";
 import type { AccountKind } from "@/lib/account/kinds";
 import type { Role, StudioMembershipSummary } from "@/lib/types";
 
@@ -63,12 +63,14 @@ export const getPortalSession = cache(async (): Promise<PortalSession | null> =>
 
   const studioId = tenantScope.studioId ?? resolveEffectiveStudioId(profile);
   if (!studioId) return null;
+  const role = await userRoleForStudio(supabase, user.id, profile, studioId);
+  if (!role) return null;
 
   return {
     supabase,
     userId: user.id,
     studioId,
-    role: profile.role as Role,
+    role,
     accountKind: (profile.account_kind as AccountKind | null) ?? null,
     activeStudioId: studioId,
     memberships,
