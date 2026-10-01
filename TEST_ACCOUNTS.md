@@ -3,8 +3,9 @@
 There is no shared, pre-set test password in this repository, and no account is
 seeded automatically. Until August 2026 there was one — `platform-admin@olune.test`
 with a password printed in this file — and CI recreated it on the production
-project on every merge to `main`, resetting the password each time. See
-`docs/SOC2_READINESS.md` (SOC2-01) for the full write-up.
+project on every merge to `main`, resetting the password each time. That account is
+**banned in production** (1 Oct 2026). See `docs/SOC2_READINESS.md` (SOC2-01) for the
+full write-up.
 
 ## Creating a platform operator
 
@@ -26,7 +27,9 @@ PLATFORM_ADMIN_PASSWORD="$(openssl rand -base64 24)" \
 
 Generate the password, use it once, and keep it in a password manager — not in a
 file in this repo. `PLATFORM_ADMIN_EMAIL` overrides the default address of
-`platform-admin@olune.test`.
+`platform-admin@olune.test`. Always set it when targeting production: the default
+address is banned there, and re-running the script would recreate its operator row.
+Operators must enroll TOTP before `/platform` will load.
 
 The script is idempotent and resets the password of an existing account to the
 one you supply, so re-running it is also how you rotate.

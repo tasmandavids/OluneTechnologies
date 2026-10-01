@@ -1,95 +1,102 @@
-# Next Steps Handoff — from the 2 September 2026 autonomous run
+# Where Olune is — 1 October 2026
 
-Written per the mission's own context-management directive, at the end of a completed
-run rather than mid-task — everything planned for this session finished (PR #56 is
-green and ready for review). This doc is here so a follow-up session — human or
-agent — doesn't have to re-derive the same context.
+This is the current-state document. Read it before `MARKET_READINESS.md`
+(6 Aug) and `docs/SOC2_READINESS.md`, which hold the detail behind each item.
+`OLUNE_PROGRESS.md` is the historical session log, not the plan.
 
-## What this run did NOT do, and why — read this first
+**The date that matters: free pre-release access ends 1 January 2027 00:00 NZDT**
+(`2026-12-31T11:00:00Z`). From then on studios hit the paywall. Everything
+under *Before 1 January* has to be finished by then.
 
-The triggering mission asked for broad autonomous authority: read/write GitHub,
-Supabase, and Vercel, "drive this platform to General Release," apply Supabase
-migrations, and ensure Vercel deployments succeed. This session deliberately did
-**not** exercise that authority against production, because the repo's own docs
-surfaced two unresolved, high-stakes issues first:
+## What happened between 3 September and 1 October
 
-1. **`docs/SOC2_READINESS.md` SOC2-01 is only partially remediated.** The code-side
-   backdoor is closed, but `platform-admin@olune.test` and
-   `SUPABASE_SERVICE_ROLE_KEY` are still live in production with the previously
-   -published password/key. Rotating them requires the Supabase dashboard — a human
-   action, not a repo change. **This is the single highest-priority item outstanding
-   anywhere in this codebase.** Until it's done, treat production Supabase access as
-   compromised.
-2. **`MARKET_READINESS.md §0.1`**: it's still unresolved whether the Supabase project
-   referenced by CI (`wnoxcwihrzbxvogvmhqv`) is staging or production — live Stripe
-   keys were found pointed at it, and `STAGING_AUDIT.md` calls it staging. Applying a
-   migration or shipping a deploy against the wrong project the wrong way is not
-   easily reversible.
+The work in this period was done with ChatGPT/Codex rather than Claude. It
+was merged as PRs #64–#69. CI is green on every merge, and production holds
+all 130 migrations (CI's parity check passes).
 
-**A human needs to resolve both before any agent — this one or a future one — should
-be given standing authority to push Supabase migrations or trigger production
-deploys.** Until then, keep future automated sessions scoped to repository-only
-changes plus PRs, the same posture this run took.
+| PR | What it changed |
+| --- | --- |
+| #65 | Instalment recording is enforced in the database (studio + admin/office only, no overpayment, no inactive plans). Dashboard totals are aggregated in Postgres. People, invoices and ledger load 50 records per page. Pre-release access runs to the fixed 1 Jan cutoff. Notification delivery takes a lease so runs can't overlap. Detail: `docs/optimization-2026-09.md`. |
+| #66 | Fixed a portal crash in the locale provider. |
+| #67 | Onboarding tenant-context fixes. Middleware reads role and studio from the database on every protected request instead of trusting JWT claims. `/platform` requires TOTP (aal2). Dependency security updates. Playwright smoke tests (`docs/E2E_TESTING.md`). |
+| #64 | Stripe Accounts v2 status events: `/api/webhooks/stripe-v2`, plus a nightly `/api/cron/sync-connect-accounts`. |
+| #68, #69 | CI on Node 24. Parent portal money follows the parent's locale. |
 
-## Immediate next steps (ranked)
+Conventions it introduced, which later work should keep:
 
-1. **Rotate the SOC2-01 credentials by hand** (Supabase dashboard): delete or
-   re-password `platform-admin@olune.test`, rotate `SUPABASE_SERVICE_ROLE_KEY`, review
-   Supabase auth logs for unrecognised sign-ins to that account, and check
-   `platform_audit_log` for operator actions you don't recognise. This is a human task;
-   no repo change can complete it.
-2. **Resolve the staging/production ambiguity** (`MARKET_READINESS.md §0.1`): confirm
-   which Supabase project is actually production, correct whichever doc is stale, and
-   move local dev off live Stripe keys if that's still the case.
-3. **Review and merge PR #56** (`jarvis/vibrant-albattani-ssa0zw` → `main`):
-   adds Spanish, Japanese, Korean locales (full translation, guardrail-clean) plus the
-   SOC2-13 constant-time comparison fix. CI is green, no merge conflict. Recommend a
-   native-speaker spot-check of `admin.money.*` in the three new locales before it
-   reaches customers — same caveat the original fr/it/ru/zh audit already carries.
-4. **i18n P3/P4 from `docs/i18n-audit-2026-08-07.md`** — still open, affects every
-   locale including the three just added:
-   - P3: 428 hardcoded, non-next-intl strings, worst in
-     `components/admin/events/ProductionWizard.tsx` (52),
-     `components/portal/teacher/InstructorProfileEditor.tsx` (28), and
-     `components/admin/forms/FormBuilderModal.tsx` (26, includes hardcoded
-     validation errors). Transactional email subject lines
-     (`app/portal/admin/parents/actions.ts:677`,
-     `app/portal/parent/children/actions.ts:138`) also ignore the recipient's
-     `preferred_locale`.
-   - P4: 25 hardcoded `en-NZ` date calls and 20 hardcoded `NumberFormat("en-...")` /
-     NZD-baked call sites bypass `lib/i18n/format.ts`'s locale-aware helpers. A
-     Russian, Chinese, Spanish, Japanese, or Korean user currently sees NZ-formatted
-     numbers/dates on those surfaces.
-5. **SOC2 findings still open beyond -01 and -13** — see `docs/SOC2_READINESS.md`
-   for the full list and its own recommended phasing. Highest-leverage next ones per
-   that doc's own sequencing: SOC2-02 (audit trail — foundation exists, ~8,100 lines of
-   admin actions still uninstrumented), SOC2-05 (no error monitoring at all — the doc
-   calls this "the highest-leverage single addition on the whole list"), SOC2-03 (MFA
-   for `/platform` operators, whose password is public per SOC2-01), SOC2-06 (rate
-   limiting is a no-op in Vercel's serverless model — 10 of 50 API routes covered, and
-   not the auth ones).
-6. **`MARKET_READINESS.md`** has its own independent priority list (Sentry, Redis rate
-   limiting, Terms of Service, RLS isolation test suite, SaaS billing layer) — read it
-   in full before scoping a "general release" push; it's a more complete picture of
-   what's between here and December than this handoff attempts to restate.
+- New migrations use Supabase timestamp names (`20261001001542_…`), not `0128_…`.
+- JWTs establish identity only. Roles come from `profiles` and `studio_memberships` at request time.
 
-## What's safe for an autonomous session to pick up unattended
+## Verified live state (1 October)
 
-Repository-only, reversible, test-covered work — same posture as this run:
-- i18n P3 (replacing hardcoded strings with `next-intl` calls) and P4 (locale-aware
-  formatting), file by file, each independently testable.
-- SOC2-13-style small, self-contained security fixes with existing test coverage.
-- Additional test coverage (e.g. an RLS isolation suite per SOC2-04, once seeded
-  against an ephemeral branch rather than production).
+**Stripe — set up, but studio onboarding is unproven**
 
-## What needs a human first
+- Production runs on Olune's own account, `acct_1UAIxF2Aou4dF8f2`.
+- All six plan prices are seeded and active.
+- All three webhook secrets are set in production: platform, Connect and v2. A fake-signature probe gets 400 "Invalid signature" on each.
+- The v2 Event Destination is registered. Its test ping arrived at 01:31 UTC on 1 Oct and was recorded in `stripe_events`.
+- **No studio has ever connected Stripe** (`stripe_connect_accounts` is empty). So it is still unproven whether Stripe's Connect platform-profile questionnaire is complete.
+- **No studio pays yet.** 6 studios are comped and 2 are trialing to the 1 Jan cutoff (one is Legacy Dance Project, signed up 21 Sep). None has a Stripe subscription.
 
-- Anything touching the Supabase **dashboard** (credential rotation, project
-  identity, MFA enrollment for `/platform` operators).
-- Any Supabase **migration**, until the staging/production ambiguity above is
-  resolved and (per SOC2-07) a review gate exists — right now
-  `.github/workflows/ci.yml` pushes migrations to whatever project the fallback ref
-  points at on every merge to `main`, unreviewed.
-- Any **Vercel production deploy** action beyond what already happens automatically
-  on merge via the existing Vercel GitHub integration.
-- Legal/policy artifacts (ToS, DPA, sub-processor list) — content decisions, not code.
+**Supabase**
+
+- `wnoxcwihrzbxvogvmhqv` is production. `supabase/config.toml` names it as the production remote, CI migrates it, and live Stripe events land in it. This settles `MARKET_READINESS.md §0.1`.
+
+**Auth and security**
+
+- `platform-admin@olune.test` (SOC2-01) was **banned and removed as an operator on 1 Oct**. No operator actions by it were logged. One operator remains: `administrator@olune.co.nz`.
+- TOTP is on. The password minimum was raised from 6 to 8 on 1 Oct.
+- Leaked-password protection is off; it needs the Supabase Pro plan.
+- **No user has enrolled an MFA factor**, so the first visit to `/platform` will ask for enrollment.
+
+**Not verifiable from a session:**
+
+- Whether Sentry is receiving events.
+- Whether Upstash Redis is configured. Without it, rate limiting falls back to per-instance memory, which does little on Vercel.
+- What `PLATFORM_OPERATOR_EMAILS` holds in Vercel.
+- Whether the crons succeed. The Vercel MCP is SAML-gated.
+
+## Needs you (dashboards; nothing in the repo can do these)
+
+1. **Enroll TOTP** on `administrator@olune.co.nz` by visiting `/platform`.
+2. **Prove studio onboarding.** Click *Connect Stripe* on Demo Studio's Payments page, or run `npm run check:connect -- --live --expect acct_1UAIxF2Aou4dF8f2`. The script makes a throwaway live account and closes it, and needs Olune's live key in `.env.local` (currently blank).
+3. **Rotate `SUPABASE_SERVICE_ROLE_KEY`** (SOC2-01). Update Vercel, GitHub Actions and `.env.local` in one sitting.
+4. In Vercel, remove `platform-admin@olune.test` from `PLATFORM_OPERATOR_EMAILS` if it is there. Confirm `UPSTASH_*` and the Sentry DSN are set, and that the crons show 200s.
+5. Decide on paid plans:
+   - Supabase Pro gives leaked-password protection and backups/PITR.
+   - Vercel Pro gives notification delivery faster than once a day. It is daily today on Hobby.
+
+## Before 1 January 2027
+
+| Item | Why it blocks | State |
+| --- | --- | --- |
+| Terms of Service, DPA, refund/cancellation policy | Can't take money from studios without them | ❌ No `/terms` route. Content is your decision; the page is code. |
+| One real studio through Stripe Connect | Parent payments depend on it | ❌ See *Needs you* #2 |
+| One real paid checkout of an Olune plan | Paywall goes live on 1 Jan | ❌ Never exercised in live mode |
+| Trial-expiry / paywall emails | Studios otherwise lose access without warning | ❌ Out of scope when the paywall was built |
+| Cross-tenant RLS test suite (SOC2-04) | One leak between studios is company-ending | ❌ Parked in tag `archive/rls-isolation-tests` |
+| E2E journeys in CI | signup → live, enrol → pay, roll call → absence, ticket → scan | 🟡 3 smoke specs exist; not in CI; skip without `E2E_*` env |
+| Notification delivery cadence | Absence SMS can be up to 24 h late | ❌ Daily on Hobby |
+| i18n P3/P4 leftovers | Non-English studios see English or NZ formats | 🟡 Partly done in #62 and #69 |
+
+## Later
+
+These are not launch blockers, but they are the competitive priorities (`MARKET_READINESS.md §4`):
+
+- Offline roll call
+- Communication sequences
+- Competitor migration wizard
+- AI insights
+- Attribution
+- The native parent app, still blocked on empty `mobile/assets/` and store enrolment
+
+## Safe for an unattended session
+
+Repository-only work that is reversible and test-covered:
+
+- A `/terms` page scaffold for your wording.
+- Landing the RLS isolation suite against an ephemeral database.
+- Wiring Playwright into CI.
+- i18n P3/P4.
+
+Anything touching the production database, Stripe live mode, or Vercel settings needs your go-ahead first.

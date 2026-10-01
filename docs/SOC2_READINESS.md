@@ -5,9 +5,10 @@
 schema (119 migrations), CI/CD pipeline, and repository documentation.
 **Framework:** AICPA Trust Services Criteria (2017, rev. 2022) — Security (common
 criteria), Availability, Confidentiality, Processing Integrity, Privacy.
-**Status:** SOC2-01 partially remediated on this branch (31 Aug 2026); its credential
-rotation remains outstanding. SOC2-02 foundation landed 1 Sep 2026 with partial call-site
-coverage. Every other finding is as-assessed.
+**Status (1 Oct 2026):** SOC2-01's exposed account is banned and stripped of operator
+rights; rotating the service-role key is still outstanding. SOC2-03's operator MFA gate
+is deployed but no operator has enrolled yet. SOC2-02 foundation landed 1 Sep 2026 with
+partial call-site coverage. Every other finding is as-assessed.
 **Type:** Readiness / gap assessment. This is *not* an audit opinion and confers no
 attestation. It identifies what an auditor would test and where the evidence is
 currently absent.
@@ -77,10 +78,11 @@ Recorded because an examination needs the positive evidence as much as the gaps.
 ### SOC2-01 — CI provisions a cross-tenant superuser with a published password · **Critical**
 **TSC:** CC6.1 (logical access), CC6.2 (credential issuance), CC6.3 (least privilege)
 
-> **Status: partially remediated (31 Aug 2026).** The code-side exposure is closed on
-> this branch — see *Remediation applied* below. **The credential itself is still live
-> and must be rotated by hand**; that requires Supabase dashboard access and is not
-> something a repository change can do.
+> **Status: account neutralised (1 Oct 2026); service-role key rotation outstanding.**
+> The code-side exposure closed on 31 Aug — see *Remediation applied* below. On 1 Oct
+> the production account `platform-admin@olune.test` was banned until 2126 and its
+> `platform_operators` row deleted. Banning blocks sign-in even if a
+> `PLATFORM_OPERATOR_EMAILS` value still names the address.
 
 `.github/workflows/ci.yml:126-130` ran `scripts/seed-platform-admin.mjs` on **every
 push to `main`**, against the production Supabase project (`secrets.NEXT_PUBLIC_SUPABASE_URL`
@@ -126,14 +128,26 @@ date; a breach notification obligation may already exist.
 4. `tests/seed-platform-admin-guard.test.ts` holds the refusals in CI, including the
    ordering that makes the burned-password message reachable.
 
+#### Done 1 Oct 2026
+
+- **`platform-admin@olune.test` is banned and is no longer an operator.** Its row
+  (`full_name` "Platform Admin", `permissions: ["*"]`, created 27 Jun 2026) was
+  deleted; the user is kept, banned, so the ban is reversible and its history stays
+  attributable. It had no open sessions. Its last sign-in was 6 Aug 2026.
+- **`platform_audit_log` holds no actions by that account.** `auth.audit_log_entries`
+  is empty on this project (Supabase now keeps auth logs in the log explorer), so the
+  sign-in history beyond `last_sign_in_at` was not reviewed.
+- `scripts/purge-non-admin-users.mjs` no longer defaults to keeping that address,
+  which would have deleted every real account, and `.env.local.example` no longer
+  suggests it for `PLATFORM_OPERATOR_EMAILS`.
+
 #### Still outstanding — needs dashboard access
 
-1. **Rotate or delete `platform-admin@olune.test`.** It exists in production now with
-   the published password. Nothing in this repository can change that.
-2. **Rotate `SUPABASE_SERVICE_ROLE_KEY`** — it has been used from CI in runs that also
-   logged the password.
-3. **Review Supabase auth logs** for sign-ins to that account that were not yours, and
-   `platform_audit_log` for operator actions you do not recognise.
+1. **Rotate `SUPABASE_SERVICE_ROLE_KEY`** — it has been used from CI in runs that also
+   logged the password. Update Vercel, GitHub Actions secrets and `.env.local` in the
+   same sitting, or the app loses database access.
+2. **Check the auth log explorer** for sign-ins to `platform-admin@olune.test` that
+   were not yours, and confirm whether Vercel's `PLATFORM_OPERATOR_EMAILS` still names it.
 4. **Remove the `PLATFORM_OPERATOR_EMAILS` bypass** (`lib/platform/auth.ts:23`), which
    grants operator rights on an email match alone with no table row and no audit trail.
    Left in place deliberately: if any current operator is configured by env var without
@@ -208,7 +222,12 @@ tamper-evidence — an auditor will ask how you prove entries were not altered.
 ### SOC2-03 — Operator MFA activation incomplete · **High**
 **TSC:** CC6.1
 
-> **Status: code remediation prepared.** `requirePlatformOperator` now fails closed
+> **Status (1 Oct 2026): deployed; enrollment outstanding.** Production has TOTP
+> enroll and verify enabled and an 8-character password minimum. **No user has an MFA
+> factor yet**, so the one remaining operator must enroll on next visit to `/platform`.
+> Leaked-password protection needs the Supabase Pro plan.
+>
+> **Original note:** `requirePlatformOperator` now fails closed
 > unless the session is `aal2`; the platform layout presents TOTP enrollment or a
 > challenge without loading platform data; and every platform mutation retains the
 > strict default guard. Unit coverage proves the environment allowlist cannot bypass
@@ -222,9 +241,9 @@ check (`app/reset-password/page.tsx:57`, `app/welcome/page.tsx:32`).
 Platform operators hold `permissions: ["*"]` across all tenants behind a password
 alone. Combined with SOC2-01, that password is public.
 
-**Remaining:** deploy the operator gate, confirm TOTP in the production Auth settings,
-enroll every current operator, raise the password minimum, enable Supabase's
-leaked-password protection, and decide whether to offer MFA to studio admins.
+**Remaining:** enroll every current operator, enable Supabase's leaked-password
+protection (Pro plan), and decide whether to offer MFA to studio admins. Deploying the
+gate, confirming TOTP and raising the minimum to 8 were done by 1 Oct 2026.
 
 ---
 

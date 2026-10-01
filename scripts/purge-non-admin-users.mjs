@@ -3,13 +3,20 @@
  * Delete all Supabase auth users except the main admin, then remove orphaned studios.
  *
  * Usage:
- *   node --env-file=.env.local scripts/purge-non-admin-users.mjs
  *   KEEP_ADMIN_EMAIL=you@example.com node --env-file=.env.local scripts/purge-non-admin-users.mjs
+ *
+ * KEEP_ADMIN_EMAIL is required. It used to default to the seeded
+ * platform-admin@olune.test, which is now banned, so a bare run would have
+ * deleted every real account.
  */
 
 import { createServiceClient } from "./lib/supabase-admin.mjs";
 
-const KEEP_EMAIL = (process.env.KEEP_ADMIN_EMAIL ?? "platform-admin@olune.test").toLowerCase();
+const KEEP_EMAIL = (process.env.KEEP_ADMIN_EMAIL ?? "").trim().toLowerCase();
+if (!KEEP_EMAIL) {
+  console.error("Set KEEP_ADMIN_EMAIL to the account that must survive the purge.");
+  process.exit(1);
+}
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;

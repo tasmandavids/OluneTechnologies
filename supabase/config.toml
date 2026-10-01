@@ -28,10 +28,14 @@ sql_paths = ["./seed.sql"]
 project_id = "wnoxcwihrzbxvogvmhqv"
 
 # Auth hardening (local dev; mirror in Dashboard → Authentication for hosted).
+# Production was set to an 8-character minimum on 2026-10-01, matching the
+# client-side checks in app/reset-password and app/welcome.
 # Leaked-password protection (HaveIBeenPwned) is Dashboard-only on hosted
-# projects: Authentication → Providers → Email → Prevent use of leaked passwords.
+# projects and needs the Supabase Pro plan: Authentication → Providers →
+# Email → Prevent use of leaked passwords.
 [auth]
 enabled = true
+minimum_password_length = 8
 
 [auth.mfa]
 max_enrolled_factors = 10
