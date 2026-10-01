@@ -32,9 +32,11 @@ import { reportHandledError, reportHandledMessage } from "@/lib/observability/re
 import { syncStripeAccountStatus } from "@/lib/stripe/connect";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 300;
 
 /** Ceiling on accounts touched per run, so one sweep cannot exhaust the function's time budget. */
-const DEFAULT_LIMIT = 200;
+const DEFAULT_LIMIT = 1000;
+const CONCURRENCY = 5;
 
 export async function GET(req: NextRequest) {
   if (!authorizedCron(req)) {
@@ -76,35 +78,40 @@ export async function GET(req: NextRequest) {
 
   const summary = { checked: 0, changed: 0, lost: 0, failed: 0 };
   const lostAccess: string[] = [];
+  const failedAccounts: string[] = [];
 
-  for (const row of accounts ?? []) {
-    summary.checked += 1;
-    let updated;
-    try {
-      updated = await syncStripeAccountStatus(supabase, row.stripe_account_id as string);
-    } catch (e) {
-      // One unreadable account must not abort the sweep — the rest of the
-      // studios still need checking.
-      summary.failed += 1;
-      console.warn(
-        `[sync-connect-accounts] ${row.stripe_account_id} failed:`,
-        e instanceof Error ? e.message : e,
-      );
-      continue;
-    }
-    if (!updated) continue;
+  const rows = accounts ?? [];
+  for (let offset = 0; offset < rows.length; offset += CONCURRENCY) {
+    await Promise.all(rows.slice(offset, offset + CONCURRENCY).map(async (row) => {
+      summary.checked += 1;
+      let updated;
+      try {
+        updated = await syncStripeAccountStatus(supabase, row.stripe_account_id as string);
+      } catch (e) {
+        // One unreadable account must not abort the sweep — the rest of the
+        // studios still need checking.
+        summary.failed += 1;
+        failedAccounts.push(`${row.studio_id}/${row.stripe_account_id}`);
+        console.warn(
+          `[sync-connect-accounts] ${row.stripe_account_id} failed:`,
+          e instanceof Error ? e.message : e,
+        );
+        return;
+      }
+      if (!updated) return;
 
-    const was = row.charges_enabled === true;
-    if (was !== updated.charges_enabled) {
-      summary.changed += 1;
-      console.log(
-        `[sync-connect-accounts] ${row.stripe_account_id} charges_enabled ${was} → ${updated.charges_enabled}`,
-      );
-    }
-    if (was && !updated.charges_enabled) {
-      summary.lost += 1;
-      lostAccess.push(`${row.studio_id}/${row.stripe_account_id}`);
-    }
+      const was = row.charges_enabled === true;
+      if (was !== updated.charges_enabled) {
+        summary.changed += 1;
+        console.log(
+          `[sync-connect-accounts] ${row.stripe_account_id} charges_enabled ${was} → ${updated.charges_enabled}`,
+        );
+      }
+      if (was && !updated.charges_enabled) {
+        summary.lost += 1;
+        lostAccess.push(`${row.studio_id}/${row.stripe_account_id}`);
+      }
+    }));
   }
 
   // A studio losing the ability to charge is the whole point of this sweep. If
@@ -121,5 +128,20 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  return NextResponse.json({ ok: true, ranAt: new Date().toISOString(), summary });
+  if (summary.failed > 0) {
+    await reportHandledMessage(
+      `Nightly Stripe account sweep failed for ${summary.failed} studio(s)`,
+      {
+        route: "cron.sync-connect-accounts",
+        tags: { reason: "account-sync-failed" },
+        extra: { accounts: failedAccounts },
+      },
+    );
+  }
+
+  const allFailed = summary.checked > 0 && summary.failed === summary.checked;
+  return NextResponse.json(
+    { ok: summary.failed === 0, ranAt: new Date().toISOString(), summary },
+    { status: allFailed ? 500 : 200 },
+  );
 }

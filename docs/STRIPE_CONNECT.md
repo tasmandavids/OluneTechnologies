@@ -144,10 +144,12 @@ normal payment success and refund reconciliation.
 - Apply migration `0090_stripe_connect.sql`.
 - Configure both platform and Connect Stripe webhook endpoints with their own
   signing secrets.
-- Register the v2 Event Destination and set `STRIPE_V2_WEBHOOK_SECRET`:
+- Register the v2 Event Destination and set `STRIPE_V2_WEBHOOK_SECRET`. For a
+  live account, pin the expected platform account ID so a stale key cannot
+  mutate the wrong Stripe account:
   `node --env-file=.env.local scripts/setup-v2-event-destination.mjs --url
-  https://<host>/api/webhooks/stripe-v2 --ping`. Without it, studio status only
-  refreshes on the nightly sweep and on demand.
+  https://<host>/api/webhooks/stripe-v2 --live --expect acct_... --ping`.
+  Without it, studio status only refreshes on the nightly sweep and on demand.
 - Confirm the destination's `events_from` is `["@accounts"]`. Set to `@self` it
   looks healthy and delivers no studio events at all.
 - Set `CRON_SECRET` so `/api/cron/sync-connect-accounts` can run.

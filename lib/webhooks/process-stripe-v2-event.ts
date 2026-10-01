@@ -45,6 +45,7 @@ export const V2_ACCOUNT_EVENT_TYPES = [
   "v2.core.account[configuration.merchant].updated",
   "v2.core.account[configuration.merchant].capability_status_updated",
   "v2.core.account[requirements].updated",
+  "v2.core.account[future_requirements].updated",
 ] as const;
 
 /**
@@ -85,9 +86,8 @@ export type V2EventOutcome = {
 function accountIdOf(notification: StripeV2Notification): string | null {
   const related = notification.related_object;
   if (!related?.id) return null;
-  // Every account event's related_object is the account itself. Guard on the
-  // id shape too so a future event type carrying some other object cannot be
-  // fed to syncStripeAccountStatus by accident.
+  // The signed event type already establishes that this is an account event.
+  // Guard the id shape too so malformed input never reaches Stripe retrieval.
   if (!related.id.startsWith("acct_")) return null;
   return related.id;
 }
@@ -105,7 +105,7 @@ async function markClosed(
   stripeAccountId: string,
 ): Promise<boolean> {
   const now = new Date().toISOString();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("stripe_connect_accounts")
     .update({
       charges_enabled: false,
@@ -117,6 +117,7 @@ async function markClosed(
     .eq("stripe_account_id", stripeAccountId)
     .select("id")
     .maybeSingle();
+  if (error) throw new Error(`Failed to mark closed Stripe account: ${error.message}`);
   return Boolean(data);
 }
 
@@ -159,11 +160,14 @@ export async function processStripeV2Event(
   // What Olune believed a moment ago, so a studio losing the ability to charge
   // can be reported rather than only written down. The read is cheap and the
   // transition is the entire point of this endpoint existing.
-  const { data: before } = await supabase
+  const { data: before, error: beforeError } = await supabase
     .from("stripe_connect_accounts")
     .select("studio_id, charges_enabled")
     .eq("stripe_account_id", accountId)
     .maybeSingle();
+  if (beforeError) {
+    throw new Error(`Failed to read Stripe account status: ${beforeError.message}`);
+  }
 
   if (!before) {
     // An account Olune does not track — a leftover from a deleted studio, or

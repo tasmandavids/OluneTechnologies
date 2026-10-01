@@ -13,6 +13,8 @@
 // ============================================================================
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 const syncStripeAccountStatus = vi.fn();
@@ -31,21 +33,39 @@ import {
   V2_ACCOUNT_EVENT_TYPES,
   V2_DESTINATION_EVENT_TYPES,
 } from "@/lib/webhooks/process-stripe-v2-event";
-import { DESTINATION_EVENT_TYPES, DESTINATION_PARAMS } from "../scripts/setup-v2-event-destination.mjs";
+import {
+  assertImmutableConfiguration,
+  DESTINATION_EVENT_TYPES,
+  DESTINATION_PARAMS,
+  parseArgs,
+} from "../scripts/setup-v2-event-destination.mjs";
 
 /** Records the update payload so the closed-account path can be asserted on. */
-function supabaseFor(row: Record<string, unknown> | null) {
+function supabaseFor(
+  row: Record<string, unknown> | null,
+  failures: { read?: string; update?: string } = {},
+) {
   const updates: Record<string, unknown>[] = [];
   const client = {
     from: () => ({
       select: () => ({
-        eq: () => ({ maybeSingle: async () => ({ data: row, error: null }) }),
+        eq: () => ({
+          maybeSingle: async () => ({
+            data: failures.read ? null : row,
+            error: failures.read ? { message: failures.read } : null,
+          }),
+        }),
       }),
       update: (payload: Record<string, unknown>) => {
         updates.push(payload);
         return {
           eq: () => ({
-            select: () => ({ maybeSingle: async () => ({ data: row ? { id: "row_1" } : null }) }),
+            select: () => ({
+              maybeSingle: async () => ({
+                data: failures.update || !row ? null : { id: "row_1" },
+                error: failures.update ? { message: failures.update } : null,
+              }),
+            }),
           }),
         };
       },
@@ -90,6 +110,23 @@ describe("event destination ↔ handler pairing", () => {
     // delivers, which is indistinguishable from "no studio has had a problem".
     expect(DESTINATION_PARAMS.events_from).toEqual(["@accounts"]);
     expect(DESTINATION_PARAMS.event_payload).toBe("thin");
+  });
+
+  it("refuses immutable destination drift instead of claiming an update fixed it", () => {
+    expect(() =>
+      assertImmutableConfiguration({
+        id: "ed_test",
+        type: "webhook_endpoint",
+        event_payload: "thin",
+        events_from: ["@self"],
+      }),
+    ).toThrow(/immutable configuration drift/);
+  });
+
+  it("rejects unknown setup arguments", () => {
+    expect(() => parseArgs(["--url", "https://example.com", "--typo"])).toThrow(
+      /Unknown argument/,
+    );
   });
 });
 
@@ -194,6 +231,26 @@ describe("processStripeV2Event", () => {
     expect(syncStripeAccountStatus).not.toHaveBeenCalled();
   });
 
+  it("throws on a status read failure so Stripe retries the event", async () => {
+    const { client } = supabaseFor(null, { read: "database unavailable" });
+
+    await expect(
+      processStripeV2Event(notification("v2.core.account.updated"), client),
+    ).rejects.toThrow(/database unavailable/);
+    expect(syncStripeAccountStatus).not.toHaveBeenCalled();
+  });
+
+  it("throws when a closed account cannot be persisted", async () => {
+    const { client } = supabaseFor(
+      { studio_id: "st_1", charges_enabled: true },
+      { update: "write failed" },
+    );
+
+    await expect(
+      processStripeV2Event(notification("v2.core.account.closed"), client),
+    ).rejects.toThrow(/write failed/);
+  });
+
   it("acts on every account event type it claims to handle", async () => {
     // Guards the list itself: adding a name to V2_ACCOUNT_EVENT_TYPES without
     // a branch would leave a subscribed event silently doing nothing.
@@ -203,5 +260,21 @@ describe("processStripeV2Event", () => {
       const outcome = await processStripeV2Event(notification(type), client);
       expect(outcome.handled, `${type} was subscribed but not handled`).toBe(true);
     }
+  });
+});
+
+describe("webhook retry semantics", () => {
+  const routeSource = readFileSync(
+    fileURLToPath(new URL("../app/api/webhooks/stripe-v2/route.ts", import.meta.url)),
+    "utf8",
+  );
+
+  it("does not process an event when its idempotency claim fails", () => {
+    expect(routeSource).toContain('error: "Event ledger unavailable"');
+    expect(routeSource).not.toContain("ledger insert failed (continuing)");
+  });
+
+  it("releases the idempotency claim when processing fails", () => {
+    expect(routeSource).toMatch(/from\("stripe_events"\)[\s\S]*?\.delete\(\)[\s\S]*?notification\.id/);
   });
 });

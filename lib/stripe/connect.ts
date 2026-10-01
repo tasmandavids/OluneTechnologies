@@ -214,11 +214,14 @@ export async function syncStripeAccountStatus(
   supabase: SupabaseClient,
   stripeAccountId: string,
 ): Promise<StripeConnectAccountRow | null> {
-  const { data: existing } = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from("stripe_connect_accounts")
     .select("onboarding_completed_at")
     .eq("stripe_account_id", stripeAccountId)
     .maybeSingle();
+  if (existingError) {
+    throw new Error(`Failed to read Stripe Connect account: ${existingError.message}`);
+  }
 
   const account = await stripe.v2.core.accounts.retrieve(stripeAccountId, {
     include: ["configuration.merchant", "requirements"],
@@ -229,7 +232,7 @@ export async function syncStripeAccountStatus(
   const now = new Date().toISOString();
   const justCompleted = !existing?.onboarding_completed_at && detailsSubmitted && chargesEnabled;
 
-  const { data } = await supabase
+  const { data, error: updateError } = await supabase
     .from("stripe_connect_accounts")
     .update({
       charges_enabled: chargesEnabled,
@@ -243,6 +246,9 @@ export async function syncStripeAccountStatus(
     .eq("stripe_account_id", stripeAccountId)
     .select("*")
     .maybeSingle();
+  if (updateError) {
+    throw new Error(`Failed to persist Stripe Connect status: ${updateError.message}`);
+  }
 
   return (data as StripeConnectAccountRow | null) ?? null;
 }

@@ -90,7 +90,20 @@ export async function POST(req: NextRequest) {
       console.log(`[stripe-v2-webhook] duplicate event ${notification.id} ignored`);
       return NextResponse.json({ received: true, duplicate: true });
     }
-    console.warn(`[stripe-v2-webhook] ledger insert failed (continuing):`, ledgerError.message);
+    // Processing without a claim makes concurrent deliveries race and lets a
+    // later retry apply the same transition twice. Return 500 so Stripe retries
+    // after the ledger is healthy again.
+    console.error(`[stripe-v2-webhook] ledger insert failed:`, ledgerError.message);
+    await reportHandledMessage("Stripe v2 idempotency ledger insert failed", {
+      route: "webhook.stripe-v2",
+      tags: { reason: "ledger" },
+      extra: {
+        eventType: notification.type,
+        code: ledgerError.code,
+        message: ledgerError.message,
+      },
+    });
+    return NextResponse.json({ error: "Event ledger unavailable" }, { status: 500 });
   }
 
   try {
@@ -103,10 +116,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true, handled: outcome.handled });
   } catch (err) {
     console.error("[stripe-v2-webhook] handler error:", err);
+    // The insert above is a processing claim, not proof of success. Release it
+    // so Stripe's retry can actually run the handler again.
+    const { error: releaseError } = await supabase
+      .from("stripe_events")
+      .delete()
+      .eq("id", notification.id);
     await reportHandledError(err, {
       route: "webhook.stripe-v2",
       tags: { reason: "handler" },
-      extra: { eventType: notification.type, eventId: notification.id },
+      extra: {
+        eventType: notification.type,
+        eventId: notification.id,
+        claimReleased: !releaseError,
+        releaseError: releaseError?.message,
+      },
     });
     return NextResponse.json({ error: "Handler failed" }, { status: 500 });
   }

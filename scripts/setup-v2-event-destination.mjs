@@ -22,8 +22,10 @@
 //  Flags:
 //    --url <url>  Required. The endpoint to deliver to. Must be https.
 //    --live       Required acknowledgement when STRIPE_SECRET_KEY is a live key.
+//    --expect <acct_>  Refuse a live mutation unless the key belongs to this account.
 //    --dry-run    Print what would change; touch nothing.
 //    --ping       After create/update, send a test ping through the destination.
+//    --secret-file <path>  Write a newly-created secret to a mode-0600 file.
 //
 //  On create, the signing secret is printed ONCE — Stripe will not show it
 //  again. Put it in STRIPE_V2_WEBHOOK_SECRET for the matching environment.
@@ -37,6 +39,7 @@
 // ============================================================================
 
 import Stripe from "stripe";
+import { writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
 /**
@@ -52,6 +55,7 @@ export const DESTINATION_EVENT_TYPES = [
   "v2.core.account[configuration.merchant].updated",
   "v2.core.account[configuration.merchant].capability_status_updated",
   "v2.core.account[requirements].updated",
+  "v2.core.account[future_requirements].updated",
   "v2.core.event_destination.ping",
 ];
 
@@ -76,16 +80,50 @@ export const DESTINATION_PARAMS = {
   metadata: { olune_destination: DESTINATION_MARKER },
 };
 
-function parseArgs(argv) {
-  const args = { url: null, live: false, dryRun: false, ping: false };
+export function parseArgs(argv) {
+  const args = {
+    url: null,
+    expect: null,
+    secretFile: null,
+    live: false,
+    dryRun: false,
+    ping: false,
+  };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--url") args.url = argv[++i] ?? null;
+    else if (arg === "--expect") args.expect = argv[++i] ?? null;
+    else if (arg === "--secret-file") args.secretFile = argv[++i] ?? null;
     else if (arg === "--live") args.live = true;
     else if (arg === "--dry-run") args.dryRun = true;
     else if (arg === "--ping") args.ping = true;
+    else throw new Error(`Unknown argument: ${arg}`);
   }
   return args;
+}
+
+function sameValues(actual, expected) {
+  return (
+    Array.isArray(actual) &&
+    [...actual].sort().join("\n") === [...expected].sort().join("\n")
+  );
+}
+
+export function assertImmutableConfiguration(existing) {
+  const problems = [];
+  if (existing.type !== DESTINATION_PARAMS.type) problems.push(`type=${existing.type}`);
+  if (existing.event_payload !== DESTINATION_PARAMS.event_payload) {
+    problems.push(`event_payload=${existing.event_payload}`);
+  }
+  if (!sameValues(existing.events_from, DESTINATION_PARAMS.events_from)) {
+    problems.push(`events_from=${JSON.stringify(existing.events_from ?? [])}`);
+  }
+  if (problems.length > 0) {
+    throw new Error(
+      `Existing destination ${existing.id} has immutable configuration drift (${problems.join(", ")}). ` +
+        "Create a replacement and rotate its signing secret deliberately.",
+    );
+  }
 }
 
 async function findExisting(stripe) {
@@ -118,6 +156,10 @@ async function main() {
     );
     process.exit(1);
   }
+  if (key.startsWith("sk_live_") && !args.dryRun && !args.expect) {
+    console.error("--expect acct_... is required before changing a live Stripe account.");
+    process.exit(1);
+  }
 
   const stripe = new Stripe(key, { apiVersion: "2026-05-27.dahlia" });
 
@@ -128,8 +170,14 @@ async function main() {
   console.log(
     `Account: ${account.id} (${account.business_profile?.name ?? "unnamed"}) — ${mode} mode`,
   );
+  if (args.expect && account.id !== args.expect) {
+    console.error(`Expected ${args.expect}, but STRIPE_SECRET_KEY belongs to ${account.id}.`);
+    console.error("Nothing was changed. Fix the key and re-run.");
+    process.exit(1);
+  }
 
   const existing = await findExisting(stripe);
+  if (existing) assertImmutableConfiguration(existing);
 
   if (args.dryRun) {
     console.log(existing ? `Would UPDATE ${existing.id}` : "Would CREATE a new destination");
@@ -156,10 +204,20 @@ async function main() {
     });
     console.log(`Created ${destination.id} → ${args.url}`);
     const secret = destination.webhook_endpoint?.signing_secret;
-    console.log("");
-    console.log("  STRIPE_V2_WEBHOOK_SECRET=" + (secret ?? "<not returned — check the dashboard>"));
-    console.log("");
-    console.log("Shown once. Set it for the matching Vercel environment before the next deploy.");
+    if (!secret) throw new Error("Stripe did not return the new destination's signing secret.");
+    if (args.secretFile) {
+      await writeFile(args.secretFile, `${secret}\n`, {
+        encoding: "utf8",
+        mode: 0o600,
+        flag: "wx",
+      });
+      console.log(`Signing secret written to ${args.secretFile} (mode 0600).`);
+    } else {
+      console.log("");
+      console.log("  STRIPE_V2_WEBHOOK_SECRET=" + secret);
+      console.log("");
+      console.log("Shown once. Set it for the matching Vercel environment before the next deploy.");
+    }
   }
 
   if (destination.status !== "enabled") {
