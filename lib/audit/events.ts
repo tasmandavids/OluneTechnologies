@@ -61,6 +61,19 @@ export const AUDIT_ACTIONS = {
   "invoice.voided": "high",
   "payment.refunded": "high",
 
+  // ─── Olune Books (built-in ledger) ───────────────────────────────────────
+  //  Filing a return locks a period; voiding a journal or paying a bill moves
+  //  money on paper. Those are what an accountant asks about first.
+  "books.enabled": "high",
+  "books.settings_updated": "notable",
+  "books.journal_posted": "notable",
+  "books.journal_voided": "high",
+  "books.bill_approved": "notable",
+  "books.bill_paid": "high",
+  "books.bill_voided": "high",
+  "books.bank_imported": "notable",
+  "books.tax_return_filed": "high",
+
   // ─── Configuration that changes who can reach what ───────────────────────
   "integration.connected": "high",
   "integration.disconnected": "notable",

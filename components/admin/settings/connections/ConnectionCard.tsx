@@ -81,7 +81,9 @@ export function ConnectionCard({
   const planned = provider.stage === "planned";
   // Deleting the Stripe Connect row would orphan live subscriptions and
   // in-flight payouts — that one is unwound from Stripe's own dashboard.
-  const canDisconnect = provider.store !== "stripe_connect_accounts";
+  // Olune Books holds the studio's own ledger; disconnecting it from a card
+  // would orphan its books.
+  const canDisconnect = provider.store !== "stripe_connect_accounts" && provider.auth.kind !== "internal";
   const unavailable = !state.connected && (!state.configured || planned);
   const last = relativeTime(state.lastActivityAt);
 
@@ -199,7 +201,9 @@ export function ConnectionCard({
                 Disconnect
               </button>
             ) : (
-              <span className="ml-auto text-[11px] text-muted">Managed in Stripe</span>
+              <span className="ml-auto text-[11px] text-muted">
+                {provider.auth.kind === "internal" ? "Built into Olune" : "Managed in Stripe"}
+              </span>
             )}
           </>
         ) : planned ? (
@@ -214,7 +218,7 @@ export function ConnectionCard({
               background: "linear-gradient(150deg, var(--tg), var(--brand) 60%, var(--brand-deep))",
             }}
           >
-            {provider.auth.kind === "api_key" ? "Add keys" : `Connect ${provider.name}`}
+            {provider.auth.kind === "api_key" ? "Add keys" : provider.auth.kind === "internal" ? `Set up ${provider.name}` : `Connect ${provider.name}`}
           </button>
         )}
       </div>

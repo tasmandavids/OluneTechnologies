@@ -116,7 +116,9 @@ async function invoicePricingContext(
   return {
     products,
     taxSettings,
-    provider: active?.provider ?? null,
+    // Olune Books reads codes straight off the product; per-provider
+    // overrides only exist for external ledgers.
+    provider: active && active.provider !== "olune" ? active.provider : null,
     defaults: { salesAccountCode: settings.sales_account_code ?? null } satisfies LineCodeDefaults,
   };
 }

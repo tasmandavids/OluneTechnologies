@@ -48,6 +48,8 @@ export type IntegrationAuth =
   | { kind: "api_key"; fields: IntegrationField[] }
   /** Host/username/password style (IMAP, SMTP). Handled by a bespoke dialog. */
   | { kind: "credentials"; dialog: "email-imap" | "telegram-bot" }
+  /** Built into Olune: "connecting" is a setup flow inside the app. */
+  | { kind: "internal"; setupPath: string }
   /** Nothing to connect yet. */
   | { kind: "none" };
 
@@ -74,6 +76,7 @@ export type IntegrationProvider = {
    */
   store:
     | "studio_integrations"
+    | "ledger_settings"
     | "xero_connections"
     | "stripe_connect_accounts"
     | "email_accounts"

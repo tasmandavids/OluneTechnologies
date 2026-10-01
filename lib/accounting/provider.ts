@@ -48,6 +48,9 @@ export const ACCOUNTING_CAPABILITIES: Record<
     lineItemCoding: true,
   },
   myob: { id: "myob", name: "MYOB Business", syncSupported: false, lineItemCoding: true },
+  // The built-in ledger. "Sync" here means pushing to an external system, which
+  // Books never needs: it reads Olune's own records (lib/ledger/server/sync.ts).
+  olune: { id: "olune", name: "Olune Books", syncSupported: false, lineItemCoding: true },
 };
 
 export type ActiveAccountingProvider = {
@@ -64,7 +67,7 @@ export type ActiveAccountingProvider = {
  * Resolve the studio's active ledger. Preference order:
  *   1. studios.accounting_provider, when that provider is actually connected
  *   2. Xero, if connected (the historical default)
- *   3. Whichever of QuickBooks/MYOB is connected
+ *   3. Whichever of QuickBooks/MYOB/Olune Books is connected
  *   4. null — no ledger connected
  */
 export async function resolveAccountingProvider(
@@ -86,13 +89,17 @@ export async function resolveAccountingProvider(
     }
   };
 
-  const [studioRows, xeroRows, genericRows] = await Promise.all([
+  const [studioRows, xeroRows, genericRows, booksRows] = await Promise.all([
     readMany("studios", "accounting_provider", "id"),
     readMany("xero_connections", "tenant_name"),
     readMany("studio_integrations", "provider, display_name, status"),
+    readMany("ledger_settings", "jurisdiction, base_currency"),
   ]);
 
   const connected = new Map<AccountingProviderId, string | null>();
+  if (booksRows[0]) {
+    connected.set("olune", `${booksRows[0].jurisdiction as string} · ${booksRows[0].base_currency as string}`);
+  }
   if (xeroRows[0]) {
     connected.set("xero", (xeroRows[0].tenant_name as string | null) ?? null);
   }

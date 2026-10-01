@@ -61,6 +61,26 @@ export const CATEGORY_META: Record<
 export const INTEGRATIONS: IntegrationProvider[] = [
   // ─── Accounting ──────────────────────────────────────────────────────────
   {
+    // The built-in ledger (Olune Books). Same exclusive group as Xero et al.:
+    // a studio keeps its books in exactly one place.
+    id: "olune",
+    name: "Olune Books",
+    category: "accounting",
+    tagline: "Built-in accounting, set up for your country's tax rules. No other software needed.",
+    stage: "live",
+    auth: { kind: "internal", setupPath: "/portal/admin/books/setup" },
+    color: "#5B4BDB",
+    exclusiveGroup: "accounting",
+    store: "ledger_settings",
+    capabilities: [
+      "Pick your country: currency, tax rates, chart of accounts and return forms set up automatically",
+      "Invoices, card payments, refunds, shop and ticket sales post themselves",
+      "Bills, bank reconciliation, GST/VAT/sales tax returns with period locking",
+      "Profit & loss, balance sheet, trial balance, general ledger, aged receivables/payables",
+    ],
+    usedBy: { href: "/portal/admin/books", label: "Open Books" },
+  },
+  {
     id: "xero",
     name: "Xero",
     category: "accounting",
@@ -526,7 +546,7 @@ export function connectableIntegrations(): IntegrationProvider[] {
   return INTEGRATIONS.filter((p) => p.auth.kind !== "none");
 }
 
-export const ACCOUNTING_PROVIDER_IDS = ["xero", "quickbooks", "myob"] as const;
+export const ACCOUNTING_PROVIDER_IDS = ["xero", "quickbooks", "myob", "olune"] as const;
 export type AccountingProviderId = (typeof ACCOUNTING_PROVIDER_IDS)[number];
 
 export function isAccountingProviderId(id: string): id is AccountingProviderId {

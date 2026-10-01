@@ -47,7 +47,18 @@ export async function ProductsTab() {
     getXeroSalesAccountOptions(),
     getXeroItemOptions(),
   ]);
-  const accountOptions = accountResult.ok ? accountResult.data : null;
+  // With Olune Books as the ledger, products are coded against its own chart.
+  let accountOptions = accountResult.ok ? accountResult.data : null;
+  if (activeProvider?.provider === "olune") {
+    const { data: revenue } = await supabase
+      .from("ledger_accounts")
+      .select("code, name")
+      .eq("studio_id", studioId)
+      .eq("type", "revenue")
+      .eq("is_archived", false)
+      .order("code");
+    accountOptions = (revenue ?? []).map((a) => ({ code: a.code as string, name: a.name as string }));
+  }
   const itemOptions = itemResult.ok ? itemResult.data : null;
 
   return (
