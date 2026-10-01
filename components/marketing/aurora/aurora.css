@@ -1,0 +1,309 @@
+/* ============================================================================
+   components/marketing/aurora/aurora.css
+   Olune · Aurora Glass for the platform marketing pages (landing, FAQ, Team,
+   Mobile, Card + the shared nav/footer). Ported from the Claude Design
+   project's design system (tokens/colors.css + tokens/aurora.css).
+
+   Every token is scoped to `.ol-aurora` rather than :root — the app's own
+   globals.css owns --base/--surface/--muted/--brand for tenant theming, and
+   the portal must never pick up marketing values.
+   ========================================================================= */
+
+.ol-aurora {
+  /* brand palette (tokens/colors.css) */
+  --midnight: #1b1a38;
+  --iris: #6b66c9;
+  --lumen: #b9b5ee;
+  --apricot: #f2b788;
+  --halo: #f7f4ee;
+  --mist: #e7e5f1;
+  --brand: #6b66c9;
+  --brand-hot: #8884d8;
+  --brand-deep: #3d3a8a;
+  --success: #16a34a;
+  --error: #dc2626;
+
+  /* type — Geist display, Hanken Grotesk body (fonts via landing/fonts.ts) */
+  --font-display: var(--font-landing-display), "Geist", system-ui, sans-serif;
+  --font-body: var(--font-landing-body), "Hanken Grotesk", system-ui, sans-serif;
+  --font-mono: var(--font-landing-mono), ui-monospace, Menlo, monospace;
+
+  /* studio tint — one colour derives the ramp (see applyTint) */
+  --n: #b9b5ee;
+  --t1: rgba(185, 181, 238, 0.13);
+  --t2: rgba(185, 181, 238, 0.22);
+  --t3: rgba(185, 181, 238, 0.34);
+  --tb: rgba(185, 181, 238, 0.46);
+  --tg: rgba(185, 181, 238, 0.62);
+  --studio: #6b66c9;
+
+  /* glass */
+  --glass: rgba(255, 255, 255, 0.56);
+  --glass2: rgba(255, 255, 255, 0.32);
+  --edge: rgba(255, 255, 255, 0.78);
+  --sheen: rgba(255, 255, 255, 0.85);
+  --sheen2: rgba(255, 255, 255, 0.35);
+  --refract: rgba(255, 255, 255, 0.5);
+  --blur: 32px;
+  --blur-lg: 46px;
+
+  /* ambience */
+  --amb: 1;
+  --a1: rgba(166, 162, 232, 0.34);
+  --a2: rgba(159, 216, 200, 0.3);
+  --a3: rgba(242, 183, 136, 0.22);
+  --shadow: 0 26px 64px -30px rgba(24, 22, 40, 0.34);
+  --shadow-s: 0 12px 34px -20px rgba(24, 22, 40, 0.26);
+
+  /* surfaces */
+  --ink: #15141a;
+  --muted: #6c6a7e;
+  --base: #f2f1ed;
+  --surface: #ffffff;
+  --hair: rgba(20, 19, 26, 0.085);
+  --ring: rgba(20, 19, 26, 0.13);
+  --text: var(--ink);
+  --slate: var(--muted);
+
+  font-family: var(--font-body);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.ol-aurora[data-base="dark"],
+.ol-aurora [data-base="dark"] {
+  --ink: #f4f2ee;
+  --muted: #918fa2;
+  --base: #0a0a10;
+  --surface: #15151d;
+  --hair: rgba(255, 255, 255, 0.09);
+  --ring: rgba(255, 255, 255, 0.17);
+  --slate: var(--muted);
+
+  --t1: rgba(185, 181, 238, 0.1);
+  --t2: rgba(185, 181, 238, 0.17);
+  --t3: rgba(185, 181, 238, 0.26);
+  --tb: rgba(185, 181, 238, 0.36);
+  --tg: rgba(185, 181, 238, 0.5);
+
+  --glass: rgba(255, 255, 255, 0.055);
+  --glass2: rgba(255, 255, 255, 0.03);
+  --edge: rgba(255, 255, 255, 0.12);
+  --sheen: rgba(255, 255, 255, 0.3);
+  --sheen2: rgba(255, 255, 255, 0.06);
+  --refract: rgba(255, 255, 255, 0.07);
+
+  --a1: rgba(140, 132, 255, 0.34);
+  --a2: rgba(110, 200, 190, 0.24);
+  --a3: rgba(242, 183, 136, 0.14);
+
+  --shadow: 0 32px 74px -32px rgba(0, 0, 0, 0.85);
+  --shadow-s: 0 16px 38px -22px rgba(0, 0, 0, 0.75);
+}
+
+/* Page root — the quiet base the glass sits on. */
+.ol-page {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--base);
+}
+/* :where() keeps these at zero specificity so button classes on links win. */
+:where(.ol-page a) { color: inherit; text-decoration: none; }
+:where(.ol-page a:hover) { color: var(--iris); }
+.ol-page ::selection { background: var(--t3); }
+
+/* ── keyframes (tokens/aurora.css) ─────────────────────────────────────── */
+@keyframes olune-drift1 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(9vw, 5vh, 0) scale(1.14); }
+  66% { transform: translate3d(-5vw, 9vh, 0) scale(0.92); }
+}
+@keyframes olune-drift2 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+  50% { transform: translate3d(-11vw, -7vh, 0) scale(0.9); }
+}
+@keyframes olune-drift3 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(0.95); }
+  40% { transform: translate3d(7vw, -9vh, 0) scale(1.2); }
+  75% { transform: translate3d(-8vw, 3vh, 0) scale(1); }
+}
+@keyframes olune-halo { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.9; } }
+@keyframes olune-breathe { 0%, 100% { opacity: 0.55; transform: scale(1); } 50% { opacity: 1; transform: scale(1.35); } }
+@keyframes olune-sweep { from { transform: translateX(-120%) skewX(-18deg); } to { transform: translateX(320%) skewX(-18deg); } }
+@keyframes olune-ripple { from { transform: scale(0); opacity: 0.55; } to { transform: scale(2.8); opacity: 0; } }
+@keyframes olune-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+/* olune-lift/olune-sheet are always run with `backwards` fill: a retained
+   filter (even blur(0)) would make the element a backdrop root and the glass
+   inside it would stop frosting. */
+@keyframes olune-lift { from { opacity: 0; transform: translateY(16px) scale(0.988); filter: blur(6px); } to { opacity: 1; transform: none; } }
+@keyframes olune-draw { from { stroke-dashoffset: 1400; } to { stroke-dashoffset: 0; } }
+@keyframes olune-fill { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes olune-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes olune-sheet { from { opacity: 0; transform: translateY(-10px) scale(0.985); filter: blur(6px); } to { opacity: 1; transform: none; } }
+@keyframes ol-marquee { to { transform: translateX(-50%); } }
+@keyframes ol-spin { to { transform: rotate(360deg); } }
+@keyframes ol-mark-spin { to { transform: rotate(360deg); } }
+@keyframes ol-ping { 0% { transform: scale(0.6); opacity: 0.7; } 100% { transform: scale(1.8); opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ol-aurora *, .ol-aurora *::before, .ol-aurora *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── GlowButton (.btn-glow port) ───────────────────────────────────────── */
+@property --olune-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes olune-btn-spin { to { --olune-angle: 360deg; } }
+.ol-btn-glow {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.7rem;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+  font-family: var(--font-body);
+  text-decoration: none;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), color 0.35s;
+}
+.ol-btn-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--olune-angle), var(--brand-deep), var(--brand-hot), var(--brand), var(--brand-deep));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+  transition: opacity 0.35s;
+}
+.ol-btn-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 transparent;
+  transition: box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ol-btn-glow:hover { transform: translateY(-2px); }
+.ol-btn-glow:hover::before { opacity: 1; animation: olune-btn-spin 2.4s linear infinite; }
+.ol-btn-glow:hover::after { box-shadow: 0 10px 44px -6px color-mix(in srgb, var(--brand-hot) 60%, transparent); }
+.ol-btn-glow:active { transform: translateY(0) scale(0.98); }
+.ol-btn-glow--solid { background: var(--brand); color: #fff; }
+.ol-btn-glow--solid::before { opacity: 0; }
+
+/* ── RippleButton ──────────────────────────────────────────────────────── */
+.ol-rb {
+  all: unset;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  box-sizing: border-box;
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1;
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.28s cubic-bezier(0.32, 0.72, 0, 1), background 0.28s, border-color 0.28s, color 0.28s;
+}
+.ol-rb:focus-visible { outline: 2px solid var(--iris); outline-offset: 2px; }
+.ol-rb--glass {
+  background: linear-gradient(148deg, var(--refract), transparent 42%), var(--glass2);
+  border: 1px solid var(--edge);
+  color: var(--ink);
+  backdrop-filter: blur(var(--blur)) saturate(1.9);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.9);
+  box-shadow: var(--shadow-s), inset 0 1px 0 var(--sheen), inset 0 -1px 0 var(--sheen2), inset 1px 0 0 var(--sheen2);
+}
+.ol-rb--glass:hover {
+  transform: translateY(-2px);
+  border-color: var(--tb);
+  box-shadow: 0 14px 30px -14px var(--tg), inset 0 1px 0 var(--sheen), inset 0 -1px 0 var(--sheen2), inset 1px 0 0 var(--sheen2);
+}
+.ol-rb--solid { background: var(--ink); color: var(--base); border: 1px solid transparent; box-shadow: 0 8px 20px -12px var(--tg); }
+.ol-rb--solid:hover { transform: translateY(-2px); box-shadow: 0 16px 34px -12px var(--tg); }
+.ol-rb:active { transform: translateY(0) scale(0.97); }
+.ol-rb__sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 34%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: olune-sweep 4.6s ease-in-out infinite;
+}
+
+/* ── shared hover helpers (the design's style-hover attributes) ────────── */
+.ol-lift { transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1); }
+.ol-lift:hover { transform: translateY(-4px); }
+.ol-lift-lg { transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1); }
+.ol-lift-lg:hover { transform: translateY(-6px); }
+.ol-hover-t1:hover { background: var(--t1) !important; color: var(--ink) !important; }
+.ol-hover-t2:hover { background: var(--t2) !important; }
+.ol-hover-scale:hover { transform: scale(1.08); }
+
+/* Scroll reveal — set by useReveal before first paint of below-fold items. */
+.ol-reveal-pending {
+  opacity: 0;
+  transform: translateY(28px);
+  filter: blur(8px);
+}
+
+/* ── nav ───────────────────────────────────────────────────────────────── */
+.ol-nav-links { display: flex; }
+.ol-nav-signin { display: inline-flex; }
+.ol-nav-burger { display: none; }
+@media (max-width: 1099px) {
+  .ol-nav-links { display: none; }
+  .ol-nav-signin { display: none; }
+  .ol-nav-burger { display: grid; }
+}
+@media (min-width: 1100px) {
+  .ol-nav-menu { display: none; }
+}
+/* Phones: the trial CTA moves into the menu sheet so the burger fits. */
+.ol-nav-trial { display: inline-flex; }
+.ol-nav-menu-trial { display: none; }
+@media (max-width: 479px) {
+  .ol-nav-trial { display: none; }
+  .ol-nav-menu-trial { display: flex; }
+  .ol-nav-lang-code { display: none; }
+}
+
+/* ── landing: hero satellite cards only on very wide screens ───────────── */
+.ol-wide-only { display: none; }
+@media (min-width: 1240px) {
+  .ol-wide-only { display: block; }
+}
+
+/* FAQ: sidebar only from 900px */
+.ol-faq-grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+.ol-faq-aside { display: none; }
+@media (min-width: 900px) {
+  .ol-faq-grid { grid-template-columns: 240px minmax(0, 1fr); }
+  .ol-faq-aside { display: flex; }
+}
+
+/* Mock tables collapse their third column on phones. */
+@media (max-width: 560px) {
+  .ol-hide-sm { display: none !important; }
+}

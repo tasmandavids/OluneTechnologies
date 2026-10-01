@@ -5,7 +5,7 @@
 // ============================================================================
 
 import type { Metadata } from "next";
-import { FaqPageClient } from "@/components/marketing/landing/FaqPageClient";
+import FaqPage from "@/components/marketing/aurora/FaqPage";
 import { CATEGORIES } from "@/components/marketing/landing/faq-data";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { faqPageJsonLd, rootUrl } from "@/lib/seo";
@@ -17,13 +17,13 @@ export const metadata: Metadata = {
   alternates: { canonical: rootUrl("/faq") },
 };
 
-export default function FaqPage() {
+export default function FaqRoute() {
   const faqItems = CATEGORIES.flatMap((cat) => cat.items);
 
   return (
     <>
       <JsonLd data={faqPageJsonLd(faqItems)} />
-      <FaqPageClient />
+      <FaqPage />
     </>
   );
 }

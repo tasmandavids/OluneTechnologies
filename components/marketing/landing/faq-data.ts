@@ -1,7 +1,7 @@
 // ============================================================================
 //  components/marketing/landing/faq-data.ts — FAQ copy, shared by the Server
 //  Component (app/faq/page.tsx, for JSON-LD) and the client accordion UI
-//  (FaqPageClient.tsx). Kept out of the "use client" module: a Server
+//  (aurora/FaqPage.tsx). Kept out of the "use client" module: a Server
 //  Component importing a plain data export from a client-boundary file gets
 //  an opaque client reference back, not the real array, at build/render time.
 //
@@ -11,10 +11,11 @@
 // ============================================================================
 
 export type FaqItem = { q: string; a: string };
-export type FaqCategory = { label: string; items: FaqItem[] };
+export type FaqCategory = { id: string; label: string; items: FaqItem[] };
 
 export const CATEGORIES: FaqCategory[] = [
   {
+    id: "what",
     label: "What Olune does",
     items: [
       { q: "What is Olune?", a: "Olune is studio management software for dance and fitness studios: classes and timetables, online enrolments, attendance, term fees and payments, family records, and a live studio website — all behind one login. Instead of stitching four tools together, everything lives in one calm place and stays in sync automatically." },
@@ -25,7 +26,8 @@ export const CATEGORIES: FaqCategory[] = [
     ],
   },
   {
-    label: "Classes, enrolments & attendance",
+    id: "classes",
+    label: "Classes & attendance",
     items: [
       { q: "Can students enrol online?", a: "Yes. Turn on registration and your studio gets a public enrolment page where new families sign up, pick classes and are placed straight onto the roll — no forms to retype. Enquiries that don't finish enrolling land in your leads list so nobody gets lost." },
       { q: "How does attendance work?", a: "Mark the roll from any device, or let students tap in at the door with an Olune check-in card. Attendance lands against the class and the student's record the moment it happens, so who's in and who's away is always current." },
@@ -36,6 +38,7 @@ export const CATEGORIES: FaqCategory[] = [
     ],
   },
   {
+    id: "money",
     label: "Fees & payments",
     items: [
       { q: "How do term fees work?", a: "Generate invoices for a whole term in one go from who's enrolled, then send them to families. Payments are tracked against each invoice, so at any point you can see what's come in and what's still owed." },
@@ -47,7 +50,8 @@ export const CATEGORIES: FaqCategory[] = [
     ],
   },
   {
-    label: "Your studio website",
+    id: "site",
+    label: "Your website",
     items: [
       { q: "Do I get a website with Olune?", a: "Yes — every studio gets a live website built in, showing your classes, timetable and prices. You edit it yourself inside Olune and changes publish the moment you make them. No developer, no waiting on a copy change." },
       { q: "Can I use my own domain?", a: "Yes. Point your domain at Olune and your site goes live on it, SSL certificate included. Every studio also gets an olune.co.nz address so you can share the site before the domain is ready." },
@@ -55,6 +59,7 @@ export const CATEGORIES: FaqCategory[] = [
     ],
   },
   {
+    id: "pricing",
     label: "Pricing & plans",
     items: [
       { q: "How much does Olune cost?", a: "Plans are NZ$29/month for Solo, NZ$59/month for Studio and NZ$120/month for Scale, GST-inclusive. Annual billing works out to two months free. Every plan has unlimited students — the tiers differ by which parts of Olune they unlock, not by how many dancers you enrol." },

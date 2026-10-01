@@ -127,7 +127,7 @@ export function CompareTable({ them, rows }: { them: string; rows: { label: stri
   return (
     <section style={{ background: PAGE_BG, padding: "48px 24px 0" }}>
       <div style={{ maxWidth: 760, margin: "0 auto", overflowX: "auto" }}>
-        <table style={{ width: "100%", minWidth: 520, borderCollapse: "collapse", background: "#ffffff", borderRadius: 16, overflow: "hidden", boxShadow: "0 18px 40px -30px rgba(26,21,53,0.4)" }}>
+        <table style={{ width: "100%", minWidth: 520, borderCollapse: "collapse", background: "#ffffff", borderRadius: 16, overflow: "hidden", boxShadow: "0 18px 40px -30px rgba(20,19,26,0.4)" }}>
           <caption style={{ captionSide: "top", textAlign: "left", fontSize: 13.5, color: FAINT, paddingBottom: 12 }}>
             Olune compared with {them}
           </caption>
@@ -199,7 +199,7 @@ export function RelatedLinks({ links }: { links: { title: string; description: s
 export function ContentCta({ note }: { note?: string }) {
   return (
     <section style={{ background: PAGE_BG, padding: "72px 24px 96px" }}>
-      <div style={{ maxWidth: 760, margin: "0 auto", background: "linear-gradient(135deg, #efeafb, #f7f6fb)", border: HAIRLINE, borderRadius: 22, padding: "44px 38px", textAlign: "center" }}>
+      <div style={{ maxWidth: 760, margin: "0 auto", background: "linear-gradient(135deg, #e7e5f1, #f2f1ed)", border: HAIRLINE, borderRadius: 22, padding: "44px 38px", textAlign: "center" }}>
         <h2 style={{ fontFamily: DISPLAY, fontWeight: 500, fontSize: "clamp(24px, 3vw, 34px)", color: NAVY, margin: "0 0 14px" }}>
           Run your whole studio from one calm place
         </h2>

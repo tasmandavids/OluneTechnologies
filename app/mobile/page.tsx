@@ -7,7 +7,7 @@
 
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { MobilePageClient } from "@/components/marketing/landing/MobilePageClient";
+import MobilePage from "@/components/marketing/aurora/MobilePage";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { originForHost, rootUrl } from "@/lib/seo";
 
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   alternates: { canonical: rootUrl("/mobile") },
 };
 
-export default async function MobilePage() {
+export default async function MobileRoute() {
   const origin = originForHost((await headers()).get("host"));
 
   return (
@@ -36,7 +36,7 @@ export default async function MobilePage() {
           publisher: { "@type": "Organization", name: "Olune", url: origin },
         }}
       />
-      <MobilePageClient />
+      <MobilePage />
     </>
   );
 }

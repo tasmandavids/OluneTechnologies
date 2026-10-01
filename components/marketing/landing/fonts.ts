@@ -1,40 +1,37 @@
 // ============================================================================
 //  components/marketing/landing/fonts.ts
-//  Self-hosted display/body fonts for the platform marketing page only.
-//  Scoped via CSS variables so tenant-branded studio sites (which pick their
-//  own fonts through lib/fonts.ts) are unaffected.
+//  Display/body fonts for the platform marketing pages only (Aurora Glass:
+//  Geist display, Hanken Grotesk body). Scoped via CSS variables so
+//  tenant-branded studio sites (which pick their own fonts through
+//  lib/fonts.ts) are unaffected.
+//
+//  The variable names predate the Aurora redesign and are kept so the
+//  editorial pages (pricing, guides, compare, legal) restyle with the rest.
 // ============================================================================
 
-import localFont from "next/font/local";
+import { Geist, Geist_Mono, Hanken_Grotesk } from "next/font/google";
 
-export const bodoniModa = localFont({
-  src: [
-    {
-      path: "../../../public/fonts/bodoni-moda-latin.woff2",
-      weight: "500 600",
-      style: "normal",
-    },
-    {
-      path: "../../../public/fonts/bodoni-moda-latin-italic.woff2",
-      weight: "500 600",
-      style: "italic",
-    },
-  ],
+export const geist = Geist({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-landing-display",
   display: "swap",
-  fallback: ["Times New Roman", "serif"],
-  adjustFontFallback: "Times New Roman",
 });
 
-export const archivo = localFont({
-  src: "../../../public/fonts/archivo-latin.woff2",
-  weight: "400 700",
-  style: "normal",
+export const hankenGrotesk = Hanken_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-landing-body",
   display: "swap",
-  fallback: ["Arial", "sans-serif"],
-  adjustFontFallback: "Arial",
 });
 
-/** Apply to the outer wrapper of the marketing landing tree. */
-export const landingFontVars = `${bodoniModa.variable} ${archivo.variable}`;
+export const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  weight: "500",
+  variable: "--font-landing-mono",
+  display: "swap",
+  preload: false,
+});
+
+/** Apply to the outer wrapper of a marketing page tree. */
+export const landingFontVars = `${geist.variable} ${hankenGrotesk.variable} ${geistMono.variable}`;
