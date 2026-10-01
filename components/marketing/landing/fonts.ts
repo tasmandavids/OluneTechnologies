@@ -9,24 +9,27 @@
 //  editorial pages (pricing, guides, compare, legal) restyle with the rest.
 // ============================================================================
 
-import { Geist, Geist_Mono, Hanken_Grotesk } from "next/font/google";
+import localFont from "next/font/local";
 
-export const geist = Geist({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+// Self-hosted (OFL, via Fontsource) so production builds never depend on
+// fetching from Google Fonts. Geist and Hanken Grotesk are variable fonts,
+// covering every weight the pages use from a single file each.
+export const geist = localFont({
+  src: "../../../public/fonts/geist-latin-wght.woff2",
+  weight: "100 900",
   variable: "--font-landing-display",
   display: "swap",
 });
 
-export const hankenGrotesk = Hanken_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+export const hankenGrotesk = localFont({
+  src: "../../../public/fonts/hanken-grotesk-latin-wght.woff2",
+  weight: "100 900",
   variable: "--font-landing-body",
   display: "swap",
 });
 
-export const geistMono = Geist_Mono({
-  subsets: ["latin"],
+export const geistMono = localFont({
+  src: "../../../public/fonts/geist-mono-latin-500.woff2",
   weight: "500",
   variable: "--font-landing-mono",
   display: "swap",
