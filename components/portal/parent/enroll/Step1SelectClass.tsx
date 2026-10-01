@@ -18,7 +18,7 @@ import {
 } from "@/app/portal/parent/enroll/actions";
 import { formatHours } from "@/lib/billing/hours-ladder";
 import { quoteTuition, type QuoteClass } from "@/lib/billing/tuition-quote";
-import { NZD } from "./types";
+import { useFormatMoney } from "@/lib/i18n/format";
 
 function toQuoteClass(cls: AvailableClass): QuoteClass {
   return {
@@ -48,6 +48,7 @@ function ClassCard({
   const t = useTranslations("parent.enroll");
   const dayShort = useShortDayNames();
   const fmtTime = useFormatTimeShort();
+  const formatMoney = useFormatMoney();
   const spotsLeft = cls.capacity - cls.enrolled;
   const isFull = spotsLeft <= 0;
 
@@ -101,7 +102,7 @@ function ClassCard({
               </p>
             ) : (
               <p className="text-sm font-bold text-ink">
-                {cls.priceCents > 0 ? NZD.format(cls.priceCents / 100) : t("free")}
+                {cls.priceCents > 0 ? formatMoney(cls.priceCents) : t("free")}
               </p>
             )}
             <p
@@ -189,6 +190,7 @@ export function Step1SelectClass({
   onNext: (data: { childId: string; childName: string | null; classes: AvailableClass[] }) => void;
 }) {
   const t = useTranslations("parent.enroll");
+  const formatMoney = useFormatMoney();
   const dayShort = useShortDayNames();
   const [childId, setChildId] = useState(familyChildren[0]?.studentId ?? "");
   const [classes, setClasses] = useState<AvailableClass[]>([]);
@@ -368,7 +370,7 @@ export function Step1SelectClass({
                 : t("classesSelected", { count: selectedIds.size })}
             </span>
             {totalCents > 0 && (
-              <span className="font-bold text-ink">{NZD.format(totalCents / 100)}</span>
+              <span className="font-bold text-ink">{formatMoney(totalCents)}</span>
             )}
           </div>
 
@@ -383,7 +385,7 @@ export function Step1SelectClass({
                 <>
                   {" · "}
                   {t("alreadyInvoiced", {
-                    amount: NZD.format(quote.priorCreditCents / 100),
+                    amount: formatMoney(quote.priorCreditCents),
                   })}
                 </>
               )}
@@ -393,7 +395,7 @@ export function Step1SelectClass({
           {quote.siblingDiscountCents > 0 && (
             <p className="mt-1 text-muted">
               {t("siblingDiscountApplied", {
-                amount: NZD.format(quote.siblingDiscountCents / 100),
+                amount: formatMoney(quote.siblingDiscountCents),
               })}
             </p>
           )}

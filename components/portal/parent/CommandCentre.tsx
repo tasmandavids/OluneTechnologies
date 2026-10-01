@@ -2,12 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-
-const NZD = new Intl.NumberFormat("en-NZ", {
-  style: "currency",
-  currency: "NZD",
-  maximumFractionDigits: 0,
-});
+import { useFormatMoney } from "@/lib/i18n/format";
 
 type UpcomingClass = {
   childName: string;
@@ -77,6 +72,7 @@ export function CommandCentre({
   unreadNotificationCount,
   unreadMessageCount = 0,
 }: CommandCentreProps) {
+  const formatMoney = useFormatMoney();
   const schedule = getNextOccurrences(upcomingClasses);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -87,7 +83,7 @@ export function CommandCentre({
   if (outstandingCents > 0)
     actions.push({
       type: "invoice",
-      label: `${NZD.format(outstandingCents / 100)} outstanding`,
+      label: `${formatMoney(outstandingCents, { maximumFractionDigits: 0 })} outstanding`,
       href: "/portal/parent/billing",
       urgent: true,
     });

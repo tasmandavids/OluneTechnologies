@@ -143,7 +143,9 @@ if (process.argv.includes("--json")) {
   // redirect query param that the Connections page renders, so some route
   // literals genuinely are user-facing and must keep being counted.
   const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 881);
-  const MAX_LOCALE_SITES = Number(process.env.I18N_MAX_LOCALE_SITES ?? 30);
+  // 30 → 25 (2026-10-01): parent shopping, events, autopay, balances and
+  // enrolment now format currency using the signed-in reader's locale.
+  const MAX_LOCALE_SITES = Number(process.env.I18N_MAX_LOCALE_SITES ?? 25);
 
   let failed = false;
   if (findings.length > MAX_STRINGS) {

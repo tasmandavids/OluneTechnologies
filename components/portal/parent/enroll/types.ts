@@ -3,8 +3,6 @@
 
 import type { TuitionQuote } from "@/lib/billing/tuition-quote";
 
-export const NZD = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD" });
-
 export type SelectedClass = {
   classId: string;
   className: string;

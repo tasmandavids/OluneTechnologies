@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { trackConversion, toTrackedValue } from "@/lib/analytics/track";
 import { CURRENCY } from "@/lib/currency";
+import { useFormatMoney } from "@/lib/i18n/format";
 import CheckoutForm from "@/components/payments/CheckoutForm";
 import { OptimizableImage } from "@/components/ui/OptimizableImage";
 
@@ -29,12 +30,9 @@ interface Props {
   products: Product[];
 }
 
-function formatPrice(cents: number) {
-  return new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD" }).format(cents / 100);
-}
-
 export function ParentShop({ products }: Props) {
   const t = useTranslations("parent.shop");
+  const formatPrice = useFormatMoney();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   useEscToClose(() => setCartOpen(false), cartOpen);

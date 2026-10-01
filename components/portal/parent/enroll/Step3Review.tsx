@@ -22,8 +22,9 @@ import {
 } from "@/app/portal/parent/billing/actions";
 import { splitTermInstallments } from "@/lib/term-payments";
 import type { TuitionQuoteLine } from "@/lib/billing/tuition-quote";
+import { useFormatMoney } from "@/lib/i18n/format";
 import CheckoutForm from "@/components/payments/CheckoutForm";
-import { NZD, type EnrollData } from "./types";
+import type { EnrollData } from "./types";
 
 export function Step3Review({
   childId,
@@ -40,6 +41,7 @@ export function Step3Review({
   onBack: () => void;
 }) {
   const t = useTranslations("parent.enroll");
+  const formatMoney = useFormatMoney();
   const [phase, setPhase] = useState<"summary" | "pay">("summary");
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [pendingInvoiceId, setPendingInvoiceId] = useState<string | null>(null);
@@ -216,17 +218,17 @@ export function Step3Review({
             {t("termInstallmentProgress", {
               current: payMeta.installmentNumber,
               total: payMeta.installmentCount,
-              accountTotal: NZD.format(payMeta.totalCents / 100),
+              accountTotal: formatMoney(payMeta.totalCents),
             })}
           </p>
         )}
         <div className="box flex items-center justify-between rounded-xl px-4 py-3">
           <span className="text-sm text-muted">{label}</span>
-          <span className="font-black text-ink">{NZD.format(chargeCents / 100)}</span>
+          <span className="font-black text-ink">{formatMoney(chargeCents)}</span>
         </div>
         <CheckoutForm
           clientSecret={clientSecret}
-          submitLabel={t("payAmount", { amount: NZD.format(chargeCents / 100) })}
+          submitLabel={t("payAmount", { amount: formatMoney(chargeCents) })}
           confirmPaid={async () => {
             if (!pendingInvoiceId) return true;
             const res = await waitForInvoicePaid(pendingInvoiceId);
@@ -290,7 +292,7 @@ export function Step3Review({
               {line.includedReason
                 ? t("programIncluded")
                 : line.chargeCents > 0
-                ? NZD.format(line.chargeCents / 100)
+                ? formatMoney(line.chargeCents)
                 : t("free")}
             </span>
           </div>
@@ -303,7 +305,7 @@ export function Step3Review({
           <div className="flex justify-between text-sm">
             <span className="text-muted">{t("siblingDiscount")}</span>
             <span className="font-semibold text-ink shrink-0">
-              −{NZD.format(quote.siblingDiscountCents / 100)}
+              −{formatMoney(quote.siblingDiscountCents)}
             </span>
           </div>
         )}
@@ -313,7 +315,7 @@ export function Step3Review({
           <div className="flex justify-between text-sm">
             <span className="text-muted">{t("alreadyInvoicedThisTerm")}</span>
             <span className="font-semibold text-ink shrink-0">
-              −{NZD.format(quote.priorCreditCents / 100)}
+              −{formatMoney(quote.priorCreditCents)}
             </span>
           </div>
         )}
@@ -329,7 +331,7 @@ export function Step3Review({
             {allIncluded
               ? t("programIncluded")
               : isPaid
-              ? NZD.format(totalBillableCents / 100)
+              ? formatMoney(totalBillableCents)
               : t("free")}
           </span>
         </div>
@@ -337,7 +339,7 @@ export function Step3Review({
 
       {isPaid && projectedTermTotal > totalBillableCents && (
         <p className="text-xs text-muted">
-          {t("termAccountTotalHint", { total: NZD.format(projectedTermTotal / 100) })}
+          {t("termAccountTotalHint", { total: formatMoney(projectedTermTotal) })}
         </p>
       )}
 
@@ -373,7 +375,7 @@ export function Step3Review({
                 {busy
                   ? t("processing")
                   : t("payMonthlyWithAmount", {
-                      amount: NZD.format(monthlyInstallmentCents / 100),
+                      amount: formatMoney(monthlyInstallmentCents),
                     })}
               </button>
             )}
@@ -388,7 +390,7 @@ export function Step3Review({
                 {busy
                   ? t("processing")
                   : t("payMonthlyWithAmount", {
-                      amount: NZD.format(monthlyInstallmentCents / 100),
+                      amount: formatMoney(monthlyInstallmentCents),
                     })}
               </button>
             )}
