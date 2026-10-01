@@ -43,7 +43,9 @@
       "instructor": {
         "title": "I'm an independent coach or teacher",
         "desc": "Work across clubs, track your schedule, and manage your teaching profile."
-      }
+      },
+      "otherVertical": "Signups are open for: {vertical}. Run something else?",
+      "otherVerticalLink": "Join a waitlist"
     },
     "account": {
       "title": "Start your studio",
@@ -90,7 +92,8 @@
       "submitting": "Creating your studio…",
       "submit": "Create studio",
       "submittingInstructor": "Creating your workspace…",
-      "submitInstructor": "Create workspace"
+      "submitInstructor": "Create workspace",
+      "changeLater": "You can upload a logo and fine-tune colours later."
     },
     "done": {
       "title": "Welcome, {studioName}",

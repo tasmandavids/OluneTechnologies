@@ -13,14 +13,16 @@
       "students": "ダンサー",
       "classes": "クラス",
       "pricing": "料金",
-      "tour": "ツアー"
+      "tour": "ツアー",
+      "money": "お金"
     },
     "actions": {
       "back": "戻る",
       "skip": "今はスキップ",
       "working": "処理中…",
       "continue": "続ける",
-      "saveLater": "進捗を保存して後で続ける →"
+      "saveLater": "進捗を保存して後で続ける →",
+      "finish": "設定を完了"
     },
     "path": {
       "title": "どのように始めますか？",
@@ -33,7 +35,8 @@
         "title": "既存のスタジオがあります",
         "body": "StudioPro、Class Manager、または任意の表計算ファイルから一括インポートします。"
       },
-      "sourcePrompt": "現在データはどこにありますか？"
+      "sourcePrompt": "現在データはどこにありますか？",
+      "newStudio": "いいえ、新規です"
     },
     "profile": {
       "title": "スタジオについて教えてください",
@@ -47,7 +50,10 @@
       "aboutPlaceholder": "地域密着型の未就学児向けバレエ、コンペティションチーム、大人向けオープンクラスなど…",
       "stylesLabel": "提供しているダンススタイル",
       "stylesRequired": "続けるにはスタイルを1つ以上選択してください。",
-      "stylesHint": "クラスの提案、ウェブサイトのプログラムページ、ご家族が目にする問い合わせフォームに反映されます。"
+      "stylesHint": "クラスの提案、ウェブサイトのプログラムページ、ご家族が目にする問い合わせフォームに反映されます。",
+      "countryPlaceholder": "国を選択…",
+      "countryOther": "その他の国",
+      "countryName": "国名"
     },
     "students": {
       "title": "ダンサーを追加",
@@ -66,7 +72,8 @@
       "addAnother": "+ 生徒をもう1人追加",
       "linkParents": "保護者情報が入力されている場合、保護者アカウントを作成しご家族を紐付ける",
       "import": "{count, plural, one {#名のダンサー} other {#名のダンサー}}をインポート",
-      "portalNote": "追加された方全員にポータルへのログイン情報が発行され、チェックインカードの発行やフォームの送付が可能です。"
+      "portalNote": "追加された方全員にポータルへのログイン情報が発行され、チェックインカードの発行やフォームの送付が可能です。",
+      "sourcePrompt": "他のシステムから生徒を移しますか？"
     },
     "classes": {
       "title": "タイムテーブルを作成",
@@ -125,7 +132,27 @@
     "tour": {
       "title": "{studioName} の準備が整いました",
       "subtitle": "Oluneでできることをご紹介します — ダッシュボードからいつでも確認できます。",
-      "enterDashboard": "ダッシュボードへ進む →"
+      "enterDashboard": "ダッシュボードへ進む →",
+      "nextUp": "次にやること",
+      "explore": "Olune を見てみる",
+      "next": {
+        "payments": {
+          "title": "オンライン決済を受け付ける",
+          "body": "Stripe を連携すると、保護者が請求書や入会金をカードで支払えます。約5分です。"
+        },
+        "books": {
+          "title": "帳簿の準備ができました",
+          "body": "請求・入金・税は自動で記帳されます。期首残高を入力し、最初の仕入請求書を追加しましょう。"
+        },
+        "xero": {
+          "title": "Xero を連携",
+          "body": "Xero にサインインすると、請求と入金が組織に連携されます。"
+        },
+        "accounting": {
+          "title": "帳簿の管理方法を選ぶ",
+          "body": "Olune Books を使うか、Xero を連携できます。どちらでも請求と入金は自動で記録されます。"
+        }
+      }
     },
     "importSummary": {
       "added": "{count, plural, one {#名のダンサーを追加} other {#名のダンサーを追加}}",
@@ -261,6 +288,40 @@
       "thu": "木",
       "fri": "金",
       "sat": "土"
+    },
+    "money": {
+      "title": "帳簿をどう管理しますか？",
+      "subtitle": "Olune の請求・入金・返金はすべて自動で記録されます。記録先を選んでください。",
+      "recommended": "おすすめ",
+      "olune": {
+        "title": "Olune Books",
+        "body": "追加料金なしで内蔵。記帳・税申告・レポートがお住まいの国向けに設定されます。",
+        "alreadyOn": "このスタジオでは Olune Books の設定が済んでいます。",
+        "country": "税務上の国",
+        "region": "地域",
+        "pickRegion": "選択…",
+        "registeredQuestion": "スタジオは{tax}の登録事業者ですか？",
+        "taxNumber": "{label}（任意）",
+        "defaults": "帳簿は{currency}建てで、通常の{tax}期間と会計年度を使います。帳簿 → 設定でいつでも変更できます。"
+      },
+      "xero": {
+        "title": "Xero",
+        "body": "すでに Xero をお使いなら、Olune が請求と入金を送ります。",
+        "next": "完了後、Xero の組織を連携する画面に移動します。"
+      },
+      "later": {
+        "title": "後で決める",
+        "body": "お金 → 会計で選ぶまで何も記録されません。"
+      },
+      "yes": "はい",
+      "no": "いいえ",
+      "setUpBooks": "Olune Books を設定して完了",
+      "errors": {
+        "invalid": "入力内容に誤りがあります。確認してもう一度お試しください。",
+        "xeroConnected": "このスタジオはすでに Xero に連携しています。お金 → 会計で切り替えてください。",
+        "pickRegion": "正しい税率を設定するため地域を選んでください。",
+        "taxNumber": "番号が正しくないようです。確認するか、今は空欄のままにしてください。"
+      }
     }
   }
 }

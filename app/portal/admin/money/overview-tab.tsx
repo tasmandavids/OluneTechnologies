@@ -8,6 +8,7 @@
 import { requirePortalSession } from "@/lib/portal/session";
 import { loadStudioStripeAccount, isChargeable, loadStripeBalance, listStripePayouts } from "@/lib/stripe/connect";
 import { OverviewDashboard } from "@/components/admin/money/OverviewDashboard";
+import { loadAccountingSetup } from "@/lib/accounting/provider";
 
 const DAYS_30_AGO = () => new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 const YEAR_AGO = () => new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
@@ -28,6 +29,7 @@ export async function OverviewTab() {
     dailyPaymentsRes,
     monthOrdersRes,
     stripeAccount,
+    accountingSetup,
   ] = await Promise.all([
     supabase
       .from("invoices")
@@ -90,6 +92,7 @@ export async function OverviewTab() {
       .gte("created_at", MONTH_START()),
 
     loadStudioStripeAccount(supabase, studioId),
+    loadAccountingSetup(supabase, studioId),
   ]);
 
   const unpaid = unpaidRes.data ?? [];
@@ -191,6 +194,7 @@ export async function OverviewTab() {
       balancePendingCents={balance?.pendingCents ?? null}
       payouts={payouts.map((p) => ({ amountCents: p.amountCents, createdAt: p.createdAt }))}
       sources={{ classesCents, shopCents }}
+      accounting={accountingSetup.choice}
     />
   );
 }

@@ -52,6 +52,7 @@ export function OverviewDashboard({
   balancePendingCents,
   payouts,
   sources,
+  accounting,
 }: {
   outstandingCents: number;
   unpaidCount: number;
@@ -70,6 +71,8 @@ export function OverviewDashboard({
   balancePendingCents: number | null;
   payouts: { amountCents: number; createdAt: string }[];
   sources: { classesCents: number; shopCents: number };
+  /** The studio's accounting choice; null until one is made. */
+  accounting: "xero" | "olune" | null;
 }) {
   const t = useTranslations("admin.money.overview");
   const tShared = useTranslations("admin.shared");
@@ -114,12 +117,23 @@ export function OverviewDashboard({
       warn: false,
     });
   }
-  if (gstThisMonthCents > 0) {
+  if (accounting === null) {
+    attention.push({
+      key: "accounting",
+      title: t("attention.accountingTitle"),
+      detail: t("attention.accountingDetail"),
+      href: "/portal/admin/money?tab=accounting",
+      warn: true,
+    });
+  }
+  // The figure here is GST on invoices paid this month. The return itself is
+  // worked out by the studio's accounting system, so send them there.
+  if (gstThisMonthCents > 0 && accounting !== null) {
     attention.push({
       key: "gst",
       title: t("attention.gstTitle", { amount: formatMoney(gstThisMonthCents) }),
-      detail: t("attention.gstDetail"),
-      href: "/portal/admin/money?tab=reports",
+      detail: accounting === "olune" ? t("attention.gstDetailBooks") : t("attention.gstDetailXero"),
+      href: accounting === "olune" ? "/portal/admin/books/tax" : "/portal/admin/money?tab=accounting",
       warn: false,
     });
   }

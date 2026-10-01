@@ -2,7 +2,9 @@
 
 // ============================================================================
 //  SetupWizard — post-onboarding studio setup for new admins.
-//  Path → profile → bulk students → bulk classes → pricing → feature tour.
+//  Profile → dancers (with "coming from another system?") → classes →
+//  pricing → money (Olune Books or Xero) → tour. Every step but the profile
+//  can be skipped, and "finish later" saves the step to come back to.
 //
 //  Aurora Glass: the wizard is the first screen an admin sees after signing up,
 //  so it wears the same chrome as the shell it hands them over to — the
@@ -56,6 +58,7 @@ import {
   bulkAddClasses,
   bulkAddStudents,
   completeSetup,
+  saveAccountingChoice,
   saveSetupPath,
   saveSetupStep,
   saveStudioProfile,
@@ -63,6 +66,8 @@ import {
   snoozeSetup,
   type SetupStudio,
 } from "@/app/setup/actions";
+import { countryCodeFromName, quickSetupCountries } from "@/lib/ledger/quick-setup";
+import { getJurisdiction } from "@/lib/ledger/jurisdictions";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
@@ -115,6 +120,7 @@ function bandsToDrafts(bands: { minHours: number; totalCents: number }[]): BandD
 
 export function SetupWizard({ studio, schemaError }: Props) {
   const t = useTranslations("setup");
+  const tMoney = useTranslations("setup.money");
   const router = useRouter();
   const reduceMotion = useReducedMotion();
   const reduce = reduceMotion ?? false;
@@ -126,13 +132,13 @@ export function SetupWizard({ studio, schemaError }: Props) {
     () => SETUP_STEPS.filter((s) => s.id !== "pricing" || studio.tuition.ready),
     [studio.tuition.ready],
   );
-  const lastFormStep = steps[steps.length - 2]?.id ?? "classes";
+  const lastFormStep = steps[steps.length - 2]?.id ?? "money";
 
   // A studio snoozed on a step that no longer exists (pricing, on a database
   // without the billing migrations) resumes at the last step that does — never
   // back at the beginning, which would re-ask everything it already answered.
   const [step, setStep] = useState<SetupStepId>(() => {
-    const initial = studio.initialStep ?? "path";
+    const initial = studio.initialStep ?? "profile";
     return steps.some((s) => s.id === initial) ? initial : lastFormStep;
   });
   const [dir, setDir] = useState(1);
@@ -152,6 +158,18 @@ export function SetupWizard({ studio, schemaError }: Props) {
   const [locationCity, setLocationCity] = useState(studio.locationCity ?? "");
   const [locationRegion, setLocationRegion] = useState(studio.locationRegion ?? "");
   const [locationCountry, setLocationCountry] = useState(studio.locationCountry ?? "New Zealand");
+  // Where the books will be kept. Olune Books is the default: it's built in.
+  const [accounting, setAccounting] = useState<"olune" | "xero" | "later">(
+    studio.accountingChoice === "xero" ? "xero" : "olune",
+  );
+  const [booksCountry, setBooksCountry] = useState<string>(() => countryCodeFromName(studio.locationCountry) ?? "NZ");
+  const [booksRegion, setBooksRegion] = useState<string | null>(null);
+  const [taxRegistered, setTaxRegistered] = useState<boolean>(
+    () => getJurisdiction(countryCodeFromName(studio.locationCountry) ?? "NZ")?.defaultRegistered ?? true,
+  );
+  const [taxNumber, setTaxNumber] = useState("");
+  const [afterSetup, setAfterSetup] = useState<string | null>(null);
+  const [chosen, setChosen] = useState<"olune" | "xero" | null>(studio.accountingChoice);
   const [about, setAbout] = useState(studio.about ?? "");
   const [danceStyles, setDanceStyles] = useState<string[]>(studio.danceStyles ?? []);
 
@@ -257,16 +275,6 @@ export function SetupWizard({ studio, schemaError }: Props) {
     });
   }
 
-  function savePathAndContinue() {
-    if (!path) return;
-    setError(null);
-    startTransition(async () => {
-      const res = await saveSetupPath({ path, importSource: importSource ?? undefined });
-      if (!res.ok) { setError(res.error); return; }
-      go("profile");
-    });
-  }
-
   function saveProfileAndContinue() {
     setError(null);
     startTransition(async () => {
@@ -276,9 +284,17 @@ export function SetupWizard({ studio, schemaError }: Props) {
         locationCountry,
         about,
         danceStyles,
-        timezone: locationCountry === "New Zealand" ? "Pacific/Auckland" : undefined,
+        timezone: countryCodeFromName(locationCountry) === "NZ" ? "Pacific/Auckland" : browserTimeZone(),
       });
       if (!res.ok) { setError(res.error); return; }
+      // Books follows the profile's country unless the admin already changed it.
+      const code = countryCodeFromName(locationCountry);
+      if (code && code !== booksCountry) {
+        setBooksCountry(code);
+        setBooksRegion(null);
+        setTaxRegistered(getJurisdiction(code)?.defaultRegistered ?? true);
+      }
+      await saveSetupStep({ step: "students" });
       go("students");
     });
   }
@@ -287,6 +303,8 @@ export function SetupWizard({ studio, schemaError }: Props) {
     setError(null);
     setImportSummary(null);
     startTransition(async () => {
+      // "Coming from another system?" is answered on this step now.
+      await saveSetupPath({ path: path ?? "scratch", importSource: path === "import" ? importSource ?? undefined : undefined });
       if (!skip && parsedStudents.length > 0) {
         const res = await bulkAddStudents({ students: parsedStudents, linkParents });
         if (!res.ok) { setError(res.error); return; }
@@ -299,6 +317,7 @@ export function SetupWizard({ studio, schemaError }: Props) {
         }
         setImportSummary(parts.join(" · "));
       }
+      await saveSetupStep({ step: "classes" });
       go("classes");
     });
   }
@@ -310,16 +329,10 @@ export function SetupWizard({ studio, schemaError }: Props) {
         const res = await bulkAddClasses({ classes: parsedClasses });
         if (!res.ok) { setError(res.error); return; }
       }
-      // Setup is finished by whichever step is last — pricing when the billing
-      // migrations are there, classes when they aren't.
-      if (lastFormStep === "classes") {
-        const done = await completeSetup();
-        if (!done.ok) { setError(done.error); return; }
-        go("tour");
-        return;
-      }
-      await saveSetupStep({ step: "pricing" });
-      go("pricing");
+      // Pricing needs the billing migrations; without them, straight to money.
+      const next = steps.some((st) => st.id === "pricing") ? "pricing" : "money";
+      await saveSetupStep({ step: next });
+      go(next);
     });
   }
 
@@ -335,6 +348,27 @@ export function SetupWizard({ studio, schemaError }: Props) {
         });
         if (!res.ok) { setError(res.error); return; }
       }
+      await saveSetupStep({ step: "money" });
+      go("money");
+    });
+  }
+
+  function saveMoneyAndFinish(skip = false) {
+    setError(null);
+    startTransition(async () => {
+      if (!skip && !(accounting === "olune" && studio.accountingChoice === "olune")) {
+        const res = await saveAccountingChoice(
+          accounting === "olune"
+            ? { choice: "olune", country: booksCountry, region: booksRegion, taxRegistered, taxNumber: taxNumber.trim() || null }
+            : { choice: accounting },
+        );
+        if (!res.ok) {
+          setError(tMoney.has(`errors.${res.error}`) ? tMoney(`errors.${res.error}`) : res.error);
+          return;
+        }
+        setAfterSetup(res.data?.next ?? null);
+        setChosen(accounting === "later" ? null : accounting);
+      }
       const done = await completeSetup();
       if (!done.ok) { setError(done.error); return; }
       go("tour");
@@ -342,7 +376,7 @@ export function SetupWizard({ studio, schemaError }: Props) {
   }
 
   function finishSetup() {
-    router.push("/portal/admin");
+    router.push(afterSetup ?? "/portal/admin");
     router.refresh();
   }
 
@@ -412,18 +446,6 @@ export function SetupWizard({ studio, schemaError }: Props) {
               exit="exit"
               transition={{ duration: 0.35, ease: EASE }}
             >
-              {step === "path" && (
-                <PathStep
-                  path={path}
-                  importSource={importSource}
-                  onPath={setPath}
-                  onSource={setImportSource}
-                  onContinue={savePathAndContinue}
-                  onFinishLater={finishLater}
-                  pending={pending}
-                />
-              )}
-
               {step === "profile" && (
                 <ProfileStep
                   locationCity={locationCity}
@@ -436,7 +458,6 @@ export function SetupWizard({ studio, schemaError }: Props) {
                   onCountry={setLocationCountry}
                   onAbout={setAbout}
                   onToggleStyle={toggleStyle}
-                  onBack={() => go("path", -1)}
                   onContinue={saveProfileAndContinue}
                   onFinishLater={finishLater}
                   pending={pending}
@@ -447,6 +468,8 @@ export function SetupWizard({ studio, schemaError }: Props) {
                 <StudentsStep
                   path={path}
                   importSource={importSourceId}
+                  onPath={setPath}
+                  onSource={setImportSource}
                   studentPaste={studentPaste}
                   manualStudents={manualStudents}
                   parsedCount={parsedStudents.length}
@@ -505,10 +528,37 @@ export function SetupWizard({ studio, schemaError }: Props) {
                 />
               )}
 
+              {step === "money" && (
+                <MoneyStep
+                  accounting={accounting}
+                  alreadyChosen={studio.accountingChoice}
+                  country={booksCountry}
+                  region={booksRegion}
+                  taxRegistered={taxRegistered}
+                  taxNumber={taxNumber}
+                  onAccounting={setAccounting}
+                  onCountry={(code) => {
+                    setBooksCountry(code);
+                    setBooksRegion(null);
+                    setTaxRegistered(getJurisdiction(code)?.defaultRegistered ?? true);
+                  }}
+                  onRegion={setBooksRegion}
+                  onTaxRegistered={setTaxRegistered}
+                  onTaxNumber={setTaxNumber}
+                  onBack={() => go(steps.some((st) => st.id === "pricing") ? "pricing" : "classes", -1)}
+                  onContinue={() => saveMoneyAndFinish(false)}
+                  onSkip={() => saveMoneyAndFinish(true)}
+                  onFinishLater={finishLater}
+                  pending={pending}
+                />
+              )}
+
               {step === "tour" && (
                 <TourStep
                   studioName={studio.name}
                   features={studio.tourFeatures}
+                  accounting={chosen}
+                  stripeConfigured={studio.stripeConfigured}
                   onFinish={finishSetup}
                 />
               )}
@@ -682,82 +732,6 @@ function InsetPanel({
   );
 }
 
-// ─── Step 1: Path ────────────────────────────────────────────────────────────
-
-function PathStep({
-  path,
-  importSource,
-  onPath,
-  onSource,
-  onContinue,
-  onFinishLater,
-  pending,
-}: {
-  path: SetupPath | null;
-  importSource: ImportSource | null;
-  onPath: (p: SetupPath) => void;
-  onSource: (s: ImportSource) => void;
-  onContinue: () => void;
-  onFinishLater: () => void;
-  pending: boolean;
-}) {
-  const t = useTranslations("setup");
-
-  return (
-    <div>
-      <StepHeading title={t("path.title")} subtitle={t("path.subtitle")} />
-
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        <SelectCard selected={path === "scratch"} onClick={() => onPath("scratch")}>
-          <span className="text-2xl">✨</span>
-          <p className="mt-2 font-bold text-ink">{t("path.scratch.title")}</p>
-          <p className="mt-1 text-xs text-muted">{t("path.scratch.body")}</p>
-        </SelectCard>
-        <SelectCard selected={path === "import"} onClick={() => onPath("import")}>
-          <span className="text-2xl">📋</span>
-          <p className="mt-2 font-bold text-ink">{t("path.import.title")}</p>
-          <p className="mt-1 text-xs text-muted">{t("path.import.body")}</p>
-        </SelectCard>
-      </div>
-
-      {path === "import" && (
-        <div className="mt-5 overflow-hidden">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted">
-            {t("path.sourcePrompt")}
-          </p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {IMPORT_SOURCE_IDS.map((id) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => onSource(id)}
-                aria-pressed={importSource === id}
-                className="rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition"
-                style={{
-                  background: importSource === id ? "var(--t3)" : "var(--surface)",
-                  borderColor: importSource === id ? "var(--brand)" : "var(--hair)",
-                  color: importSource === id ? "var(--ink)" : "var(--muted)",
-                }}
-              >
-                {t(`importSources.${id}.name`)}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <StepActions
-        onContinue={onContinue}
-        onFinishLater={onFinishLater}
-        continueLabel={t("actions.continue")}
-        pending={pending}
-        continueDisabled={!path}
-        showSkip={false}
-      />
-    </div>
-  );
-}
-
 // ─── Step 2: Profile ─────────────────────────────────────────────────────────
 
 function ProfileStep({
@@ -771,7 +745,6 @@ function ProfileStep({
   onCountry,
   onAbout,
   onToggleStyle,
-  onBack,
   onContinue,
   onFinishLater,
   pending,
@@ -786,18 +759,48 @@ function ProfileStep({
   onCountry: (v: string) => void;
   onAbout: (v: string) => void;
   onToggleStyle: (s: string) => void;
-  onBack: () => void;
   onContinue: () => void;
   onFinishLater: () => void;
   pending: boolean;
 }) {
   const t = useTranslations("setup");
+  const countries = quickSetupCountries();
+  const code = countryCodeFromName(locationCountry);
+  // A country Olune knows is picked from the list; anything else is typed.
+  const [other, setOther] = useState(() => !!locationCountry && !code);
 
   return (
     <div>
       <StepHeading title={t("profile.title")} subtitle={t("profile.subtitle")} />
 
       <div className="mt-6 space-y-4">
+        <Field label={t("profile.country")}>
+          <select
+            className="field-premium"
+            value={other ? "__other" : (code ?? "")}
+            onChange={(e) => {
+              if (e.target.value === "__other") {
+                setOther(true);
+                onCountry("");
+              } else {
+                setOther(false);
+                onCountry(countries.find((c) => c.code === e.target.value)?.name ?? "");
+                onRegion("");
+              }
+            }}
+          >
+            <option value="" disabled>{t("profile.countryPlaceholder")}</option>
+            {countries.map((c) => (
+              <option key={c.code} value={c.code}>{`${c.flag} ${c.name}`}</option>
+            ))}
+            <option value="__other">{t("profile.countryOther")}</option>
+          </select>
+        </Field>
+        {other && (
+          <Field label={t("profile.countryName")}>
+            <input className="field-premium" value={locationCountry} onChange={(e) => onCountry(e.target.value)} autoFocus />
+          </Field>
+        )}
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label={t("profile.city")}>
             <input
@@ -808,25 +811,22 @@ function ProfileStep({
             />
           </Field>
           <Field label={t("profile.region")}>
-            <select
-              className="field-premium"
-              value={locationRegion}
-              onChange={(e) => onRegion(e.target.value)}
-            >
-              <option value="">{t("profile.regionPlaceholder")}</option>
-              {NZ_REGION_KEYS.map((key) => (
-                <option key={key} value={key}>{t(`regions.${key}`)}</option>
-              ))}
-            </select>
+            {code === "NZ" ? (
+              <select
+                className="field-premium"
+                value={locationRegion}
+                onChange={(e) => onRegion(e.target.value)}
+              >
+                <option value="">{t("profile.regionPlaceholder")}</option>
+                {NZ_REGION_KEYS.map((key) => (
+                  <option key={key} value={key}>{t(`regions.${key}`)}</option>
+                ))}
+              </select>
+            ) : (
+              <input className="field-premium" value={locationRegion} onChange={(e) => onRegion(e.target.value)} />
+            )}
           </Field>
         </div>
-        <Field label={t("profile.country")}>
-          <input
-            className="field-premium"
-            value={locationCountry}
-            onChange={(e) => onCountry(e.target.value)}
-          />
-        </Field>
         <Field label={t("profile.about")}>
           <textarea
             className="field-premium min-h-[88px] resize-y"
@@ -865,12 +865,11 @@ function ProfileStep({
       </div>
 
       <StepActions
-        onBack={onBack}
         onContinue={onContinue}
         onFinishLater={onFinishLater}
         continueLabel={t("actions.continue")}
         pending={pending}
-        continueDisabled={danceStyles.length === 0}
+        continueDisabled={danceStyles.length === 0 || !locationCountry.trim()}
         showSkip={false}
       />
       {danceStyles.length === 0 && (
@@ -885,6 +884,8 @@ function ProfileStep({
 function StudentsStep({
   path,
   importSource,
+  onPath,
+  onSource,
   studentPaste,
   manualStudents,
   parsedCount,
@@ -900,6 +901,8 @@ function StudentsStep({
 }: {
   path: SetupPath | null;
   importSource: ImportSource | null;
+  onPath: (p: SetupPath) => void;
+  onSource: (s: ImportSource) => void;
   studentPaste: string;
   manualStudents: ParsedStudent[];
   parsedCount: number;
@@ -919,6 +922,25 @@ function StudentsStep({
   return (
     <div>
       <StepHeading title={t("students.title")} subtitle={t("students.subtitle")} />
+
+      <div className="mt-5">
+        <p className="mb-2 text-[0.68rem] font-semibold uppercase tracking-wider text-muted">{t("students.sourcePrompt")}</p>
+        <div className="flex flex-wrap gap-2">
+          <ChoiceChip on={path !== "import"} onClick={() => onPath("scratch")}>{t("path.newStudio")}</ChoiceChip>
+          {IMPORT_SOURCE_IDS.map((id) => (
+            <ChoiceChip
+              key={id}
+              on={path === "import" && importSource === id}
+              onClick={() => {
+                onPath("import");
+                onSource(id);
+              }}
+            >
+              {t(`importSources.${id}.name`)}
+            </ChoiceChip>
+          ))}
+        </div>
+      </div>
 
       {showPasteFirst && importSource && (
         <InsetPanel tinted className="mt-4 px-4 py-3 text-sm">
@@ -1363,7 +1385,7 @@ function PricingStep({
         onContinue={onContinue}
         onSkip={onSkip}
         onFinishLater={onFinishLater}
-        continueLabel={t("pricing.save")}
+        continueLabel={t("actions.continue")}
         pending={pending}
         continueDisabled={model === "hours" && (rowCount === 0 || duplicateHours)}
       />
@@ -1379,14 +1401,29 @@ function PricingStep({
 function TourStep({
   studioName,
   features,
+  accounting,
+  stripeConfigured,
   onFinish,
 }: {
   studioName: string;
   features: TourFeatureKey[];
+  accounting: "olune" | "xero" | null;
+  stripeConfigured: boolean;
   onFinish: () => void;
 }) {
   const t = useTranslations("setup");
   const cards = TOUR_FEATURES.filter((f) => features.includes(f.id));
+  // The two things that turn a set-up studio into one that takes money.
+  const nextUp = [
+    stripeConfigured && features.includes("billing")
+      ? { id: "payments", href: "/api/stripe/connect", emoji: "💳" }
+      : null,
+    accounting === "olune"
+      ? { id: "books", href: "/portal/admin/books", emoji: "📒" }
+      : accounting === "xero"
+        ? { id: "xero", href: "/portal/admin/money?tab=accounting", emoji: "🔗" }
+        : { id: "accounting", href: "/portal/admin/money?tab=accounting", emoji: "📒" },
+  ].filter((x): x is { id: string; href: string; emoji: string } => x !== null);
 
   return (
     <div>
@@ -1404,7 +1441,29 @@ function TourStep({
         <p className="mt-1 text-sm text-muted">{t("tour.subtitle")}</p>
       </div>
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8">
+        <p className="mb-2 text-[0.68rem] font-semibold uppercase tracking-wider text-muted">{t("tour.nextUp")}</p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {nextUp.map((n) => (
+            // A plain anchor: /api/stripe/connect is a redirecting route, not a page.
+            <a
+              key={n.id}
+              href={n.href}
+              className="group flex items-start gap-3 rounded-2xl border p-4 transition duration-300 hover:-translate-y-px"
+              style={{ background: "var(--t2)", borderColor: "var(--brand)" }}
+            >
+              <span className="text-xl">{n.emoji}</span>
+              <span>
+                <span className="block font-bold text-ink group-hover:text-brand">{t(`tour.next.${n.id}.title`)}</span>
+                <span className="mt-0.5 block text-xs text-muted">{t(`tour.next.${n.id}.body`)}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <p className="mb-2 mt-8 text-[0.68rem] font-semibold uppercase tracking-wider text-muted">{t("tour.explore")}</p>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((f) => (
           <Link
             key={f.id}
@@ -1431,6 +1490,180 @@ function TourStep({
       >
         {t("tour.enterDashboard")}
       </RippleButton>
+    </div>
+  );
+}
+
+function ChoiceChip({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={on}
+      className="rounded-full border px-3 py-1.5 text-xs font-medium transition"
+      style={{
+        background: on ? "var(--brand)" : "var(--surface)",
+        borderColor: on ? "var(--brand)" : "var(--hair)",
+        color: on ? "#fff" : "var(--muted)",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** The browser's own time zone, for studios outside New Zealand. */
+function browserTimeZone(): string | undefined {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+// ─── Step 5: Money ───────────────────────────────────────────────────────────
+
+function MoneyStep({
+  accounting,
+  alreadyChosen,
+  country,
+  region,
+  taxRegistered,
+  taxNumber,
+  onAccounting,
+  onCountry,
+  onRegion,
+  onTaxRegistered,
+  onTaxNumber,
+  onBack,
+  onContinue,
+  onSkip,
+  onFinishLater,
+  pending,
+}: {
+  accounting: "olune" | "xero" | "later";
+  alreadyChosen: "olune" | "xero" | null;
+  country: string;
+  region: string | null;
+  taxRegistered: boolean;
+  taxNumber: string;
+  onAccounting: (v: "olune" | "xero" | "later") => void;
+  onCountry: (code: string) => void;
+  onRegion: (code: string | null) => void;
+  onTaxRegistered: (v: boolean) => void;
+  onTaxNumber: (v: string) => void;
+  onBack: () => void;
+  onContinue: () => void;
+  onSkip: () => void;
+  onFinishLater: () => void;
+  pending: boolean;
+}) {
+  const t = useTranslations("setup.money");
+  const ta = useTranslations("setup.actions");
+  const countries = quickSetupCountries();
+  const pack = getJurisdiction(country);
+  const taxNumberOk = !taxNumber.trim() || !pack || pack.taxNumber.validate(taxNumber);
+  const needsRegion = accounting === "olune" && !!pack?.regions?.length && !region;
+  const booksOn = alreadyChosen === "olune";
+
+  return (
+    <div>
+      <StepHeading title={t("title")} subtitle={t("subtitle")} />
+
+      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+        <SelectCard selected={accounting === "olune"} onClick={() => onAccounting("olune")}>
+          <span className="flex items-center justify-between gap-2">
+            <span className="text-2xl">📒</span>
+            <span className="rounded-full px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wider" style={{ background: "var(--t3)", color: "var(--brand-hot)" }}>
+              {t("recommended")}
+            </span>
+          </span>
+          <p className="mt-2 font-bold text-ink">{t("olune.title")}</p>
+          <p className="mt-1 text-xs text-muted">{t("olune.body")}</p>
+        </SelectCard>
+        <SelectCard selected={accounting === "xero"} onClick={() => onAccounting("xero")}>
+          <span className="text-2xl">🔗</span>
+          <p className="mt-2 font-bold text-ink">{t("xero.title")}</p>
+          <p className="mt-1 text-xs text-muted">{t("xero.body")}</p>
+        </SelectCard>
+        <SelectCard selected={accounting === "later"} onClick={() => onAccounting("later")}>
+          <span className="text-2xl">⏳</span>
+          <p className="mt-2 font-bold text-ink">{t("later.title")}</p>
+          <p className="mt-1 text-xs text-muted">{t("later.body")}</p>
+        </SelectCard>
+      </div>
+
+      {accounting === "olune" && booksOn && (
+        <InsetPanel tinted className="mt-5 px-4 py-3 text-sm text-ink">{t("olune.alreadyOn")}</InsetPanel>
+      )}
+
+      {accounting === "olune" && !booksOn && (
+        <InsetPanel className="mt-5 space-y-4 p-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label={t("olune.country")}>
+              <select className="field-premium" value={country} onChange={(e) => onCountry(e.target.value)}>
+                {countries.map((c) => (
+                  <option key={c.code} value={c.code}>{`${c.flag} ${c.name} · ${c.currency}`}</option>
+                ))}
+              </select>
+            </Field>
+            {pack?.regions?.length ? (
+              <Field label={pack.regionLabel ?? t("olune.region")}>
+                <select className="field-premium" value={region ?? ""} onChange={(e) => onRegion(e.target.value || null)}>
+                  <option value="">{t("olune.pickRegion")}</option>
+                  {pack.regions.map((r) => (
+                    <option key={r.code} value={r.code}>{r.name}</option>
+                  ))}
+                </select>
+              </Field>
+            ) : null}
+          </div>
+          {pack && (
+            <>
+              <div>
+                <p className="mb-2 text-[0.68rem] font-semibold uppercase tracking-wider text-muted">
+                  {t("olune.registeredQuestion", { tax: pack.taxName })}
+                </p>
+                <div className="flex gap-2">
+                  <ChoiceChip on={taxRegistered} onClick={() => onTaxRegistered(true)}>{t("yes")}</ChoiceChip>
+                  <ChoiceChip on={!taxRegistered} onClick={() => onTaxRegistered(false)}>{t("no")}</ChoiceChip>
+                </div>
+              </div>
+              {taxRegistered && (
+                <Field label={t("olune.taxNumber", { label: pack.taxNumber.label })}>
+                  <input
+                    className="field-premium"
+                    placeholder={pack.taxNumber.placeholder}
+                    value={taxNumber}
+                    onChange={(e) => onTaxNumber(e.target.value)}
+                    aria-invalid={!taxNumberOk}
+                  />
+                  {!taxNumberOk && (
+                    <span className="mt-1 block text-xs" style={{ color: "var(--error)" }}>
+                      {t("errors.taxNumber")}
+                    </span>
+                  )}
+                </Field>
+              )}
+              <p className="text-xs text-muted">{t("olune.defaults", { currency: pack.currency, tax: pack.taxName })}</p>
+            </>
+          )}
+        </InsetPanel>
+      )}
+
+      {accounting === "xero" && (
+        <InsetPanel tinted className="mt-5 px-4 py-3 text-sm text-ink">{t("xero.next")}</InsetPanel>
+      )}
+
+      <StepActions
+        onBack={onBack}
+        onContinue={onContinue}
+        onSkip={onSkip}
+        onFinishLater={onFinishLater}
+        continueLabel={accounting === "olune" && !booksOn ? t("setUpBooks") : ta("finish")}
+        pending={pending}
+        continueDisabled={(accounting === "olune" && !booksOn && (!taxNumberOk || needsRegion))}
+      />
     </div>
   );
 }

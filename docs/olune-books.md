@@ -1,13 +1,42 @@
 # Olune Books — the built-in ledger
 
-Olune Books is the fourth accounting option beside Xero, QuickBooks and MYOB,
-for studios that don't want external accounting software. A studio picks its
-country and gets a working double-entry ledger set up for that country's tax
-system: currency, tax rates, chart of accounts, filing frequency, accounting
-basis and the official tax return form.
+Olune Books is one of the two ways a studio keeps its books — the other is
+Xero. A studio picks its country and gets a working double-entry ledger set up
+for that country's tax system: currency, tax rates, chart of accounts, filing
+frequency, accounting basis and the official tax return form.
 
 Routes: `/portal/admin/books/*` (admin only). Setup: `/portal/admin/books/setup`,
-also reachable from Settings → Connections ("Set up Olune Books").
+reached from Money → Accounting.
+
+## One accounting choice: Xero or Olune Books
+
+`studios.accounting_provider` is the studio's decision — `'xero'`, `'olune'` or
+null (not chosen) — made and managed on **Money → Accounting**
+(`/portal/admin/money?tab=accounting`). It is the source of truth for every
+money path: `lib/accounting/provider.ts` (`loadAccountingSetup`,
+`resolveAccountingProvider`) reads it, and a choice only counts while the
+system behind it exists (Xero still connected / Books set up).
+
+- **Exclusive, enforced on the server.** The Xero connect route and OAuth
+  callback refuse while Books is chosen; Books setup refuses while Xero is
+  connected. Connecting Xero records `'xero'`; finishing Books setup records
+  `'olune'`; disconnecting Xero clears the choice.
+- **Books on = `accounting_provider = 'olune'`.** A `ledger_settings` row alone
+  can mean *paused*. `loadBooksContext` (and so every Books page, action,
+  auto-post and the daily cron) returns null unless Books is chosen; pass
+  `{ includePaused: true }` only to read records back out (the CSV export).
+- **Switching** (Money → Accounting, `app/portal/admin/money/accounting-actions.ts`):
+  Xero → Books disconnects Xero, then runs Books setup (or resumes paused
+  Books). Books → Xero pauses Books, then starts the Xero OAuth. Nothing is
+  deleted either way; history isn't copied between systems. Resuming Books
+  catches it up from its start date, so invoices raised while on Xero are
+  posted too — the resume card says so.
+- **Xero pushes skip quietly** for studios not on Xero (`isXeroSkip` in
+  `lib/xero/sync-sale.ts`): no "Xero sync failed" warning for Books studios.
+- QuickBooks and MYOB are not offered (no sync was ever built); the DB
+  constraint allows only `xero`/`olune` (migration `20261001200000`).
+- Settings → Connections shows a single Accounting card linking to Money →
+  Accounting rather than its own connect buttons.
 
 ## What it does
 
@@ -17,9 +46,12 @@ also reachable from Settings → Connections ("Set up Olune Books").
 | Auto-posting | Invoices, card payments, invoices marked paid, refunds, shop orders, event tickets. Edited invoices are re-posted; voided ones voided (or reversed when the period is locked). |
 | Journals | Posted journals are immutable: void if the period is open, reversal if locked. Manual and opening-balance journals with tax-inclusive taxed lines. |
 | Bills | Suppliers, draft → approve (posts Dr expense + input tax / Cr AP), payments (settlement journals), void. |
+| Bill inbox | Drop up to 10 PDFs/photos on Books → Bills; each becomes a draft bill with the document attached (private `books-attachments` bucket, ten-minute signed links). With a studio Anthropic/OpenAI key the document is read into the draft (`lib/ledger/invoice-extract.ts`, warnings when lines don't add up / other currency / not an invoice). Review shows the document beside the editor. Nothing is ever approved automatically. |
+| Staff invoices | A contractor invoice sent to a studio from Teacher → Invoices files itself as a draft bill (`source = 'staff'`, linked by `contractor_invoice_id`); paying the bill in full marks the contractor's invoice paid. Contractors can attach their own PDF. Migration `20261002100000_books_bill_inbox.sql`. |
 | Bank | CSV import (delimiter, column and date-order detection, multi-language headers), dedupe on re-import, match to existing ledger lines or code to accounts (spend / receive / transfer), exclude, unreconcile. |
 | Tax returns | Periods from the start date, the jurisdiction's official boxes computed from the ledger on the studio's basis (incl. NZ hybrid), manual boxes, "mark filed" snapshots the figures, posts the EU-style settlement journal and moves the lock date. |
-| Reports | P&L (with comparison period), balance sheet (virtual year-end), trial balance, account transactions, bank summary, aged receivables/payables, CSV export, journal export, FEC export for France, print. |
+| Reports | P&L (with comparison period), profit by month (up to 12 columns), balance sheet (virtual year-end), cash flow statement (indirect method, reconciles to bank movement), trial balance, account transactions, bank summary, aged receivables/payables, supplier spend, CSV export of each, journal export, FEC export for France, a one-file year-end pack for the accountant, print. |
+| Onboarding | The setup wizard's Money step switches Books on from the country and one tax question (`lib/ledger/quick-setup.ts`); everything else takes the pack's defaults and can be changed in Books → Settings. |
 
 ## Jurisdiction packs
 
@@ -105,5 +137,24 @@ Notes:
 - Returns are prepared, not filed. No HMRC MTD, ELSTER, SdI, VERI*FACTU or
   e-invoicing integration yet; UI notes say so per country.
 - No multi-currency transactions, no fixed-asset register (depreciation is a
-  manual journal), no payroll, no bank feeds (CSV import only).
+  manual journal), no payroll, no bank feeds (CSV import only — see below).
 - Opening receivables are a single balance, not per-customer.
+
+## Future update: bank feeds per country
+
+Parked on 2026-10-02 — not scheduled. Bank lines arrive by CSV import today.
+A feed would be a connector per region that writes into the same
+`ledger_bank_transactions` pipeline (dedupe on `external_hash`, then the
+existing reconcile screen), so the ledger side needs no new design. Each
+region needs a commercial agreement with an aggregator; candidates noted at
+the time, to re-check for availability and pricing before committing:
+
+| Region | Candidate |
+| --- | --- |
+| NZ | Akahu (first, given NZ-first positioning) |
+| AU | Basiq (CDR) |
+| US / CA | Plaid |
+| UK / IE / EU | TrueLayer, Yapily or Tink |
+| ZA | Stitch |
+| JP | Moneytree |
+| SG, KR | Patchy coverage; stay on CSV |

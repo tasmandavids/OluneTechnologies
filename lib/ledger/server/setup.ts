@@ -115,7 +115,7 @@ export async function provisionBooks(supabase: SupabaseClient, studioId: string,
 
   // Keep the invoicing side consistent with the books. These columns predate
   // Books and still drive how Olune prices and taxes new invoices.
-  await supabase
+  const { error: studioError } = await supabase
     .from("studios")
     .update({
       accounting_provider: "olune",
@@ -124,6 +124,7 @@ export async function provisionBooks(supabase: SupabaseClient, studioId: string,
       gst_number: normalisedTaxNumber,
     })
     .eq("id", studioId);
+  if (studioError) return { ok: false, error: studioError.message };
 
   if (input.updateProductRates && input.taxRegistered) {
     const std = rates.find((r) => r.code === (region?.defaultSalesCode ?? j.defaultSalesCode));

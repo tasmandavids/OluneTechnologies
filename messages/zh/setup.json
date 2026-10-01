@@ -13,14 +13,16 @@
       "students": "舞者",
       "classes": "课程",
       "pricing": "收费方式",
-      "tour": "导览"
+      "tour": "导览",
+      "money": "资金"
     },
     "actions": {
       "back": "返回",
       "skip": "暂时跳过",
       "working": "处理中…",
       "continue": "继续",
-      "saveLater": "保存进度，稍后完成 →"
+      "saveLater": "保存进度，稍后完成 →",
+      "finish": "完成设置"
     },
     "path": {
       "title": "您打算如何开始？",
@@ -33,7 +35,8 @@
         "title": "我已有现成的工作室",
         "body": "从 StudioPro、Class Manager 或任意电子表格批量导入。"
       },
-      "sourcePrompt": "您的数据目前在哪里？"
+      "sourcePrompt": "您的数据目前在哪里？",
+      "newStudio": "不，全新开始"
     },
     "profile": {
       "title": "介绍一下您的工作室",
@@ -47,7 +50,10 @@
       "aboutPlaceholder": "以社区为中心的学前芭蕾、比赛队、成人公开课…",
       "stylesLabel": "您提供的舞蹈风格",
       "stylesRequired": "请至少选择一种风格以继续。",
-      "stylesHint": "它们会用于课程建议、网站的课程页面，以及家长看到的咨询表单。"
+      "stylesHint": "它们会用于课程建议、网站的课程页面，以及家长看到的咨询表单。",
+      "countryPlaceholder": "选择国家…",
+      "countryOther": "其他国家",
+      "countryName": "国家名称"
     },
     "students": {
       "title": "添加您的舞者",
@@ -66,7 +72,8 @@
       "addAnother": "+ 添加另一位学员",
       "linkParents": "提供家长信息时，创建家长账户并关联家庭",
       "import": "导入 {count, plural, other {# 名舞者}}",
-      "portalNote": "每位加入的成员都会获得门户账号，并可发放签到卡和接收你的表单。"
+      "portalNote": "每位加入的成员都会获得门户账号，并可发放签到卡和接收你的表单。",
+      "sourcePrompt": "要从其他系统迁移学员吗？"
     },
     "classes": {
       "title": "搭建您的课程表",
@@ -125,7 +132,27 @@
     "tour": {
       "title": "{studioName} 已就绪",
       "subtitle": "以下是您在 Olune 中可以做的事——随时从您的仪表盘探索。",
-      "enterDashboard": "进入您的仪表盘 →"
+      "enterDashboard": "进入您的仪表盘 →",
+      "nextUp": "下一步",
+      "explore": "探索 Olune",
+      "next": {
+        "payments": {
+          "title": "在线收款",
+          "body": "连接 Stripe，家长即可用银行卡支付账单和报名费。约需五分钟。"
+        },
+        "books": {
+          "title": "账簿已就绪",
+          "body": "账单、收款和税项会自动记账。填入期初余额，再上传第一批供应商账单。"
+        },
+        "xero": {
+          "title": "连接 Xero",
+          "body": "登录 Xero，账单和收款将同步到你的组织。"
+        },
+        "accounting": {
+          "title": "选择记账方式",
+          "body": "可用内置的 Olune Books，或连接 Xero。两种方式下账单和收款都会自动记录。"
+        }
+      }
     },
     "importSummary": {
       "added": "已添加 {count, plural, other {# 名舞者}}",
@@ -261,6 +288,40 @@
       "thu": "周四",
       "fri": "周五",
       "sat": "周六"
+    },
+    "money": {
+      "title": "你想如何记账？",
+      "subtitle": "Olune 中的每笔账单、收款和退款都会自动记录——请选择记录到哪里。",
+      "recommended": "推荐",
+      "olune": {
+        "title": "Olune Books",
+        "body": "内置，无需额外订阅。记账、报税和报表均按你所在国家设置。",
+        "alreadyOn": "此工作室已设置 Olune Books。",
+        "country": "税务所在国家",
+        "region": "地区",
+        "pickRegion": "请选择…",
+        "registeredQuestion": "工作室是否已登记为{tax}纳税人？",
+        "taxNumber": "{label}（可选）",
+        "defaults": "账簿将以{currency}记账，采用常规的{tax}申报期和财年。可在“账簿 → 设置”中更改。"
+      },
+      "xero": {
+        "title": "Xero",
+        "body": "已在用 Xero？Olune 会把账单和收款同步过去。",
+        "next": "完成后，我们会带你去连接 Xero 组织。"
+      },
+      "later": {
+        "title": "稍后决定",
+        "body": "在“资金 → 会计”中选择之前，不会记录任何内容。"
+      },
+      "yes": "是",
+      "no": "否",
+      "setUpBooks": "设置 Olune Books 并完成",
+      "errors": {
+        "invalid": "表单有误，请检查后重试。",
+        "xeroConnected": "此工作室已连接 Xero。请在“资金 → 会计”中切换。",
+        "pickRegion": "请选择地区，以便设置正确的税率。",
+        "taxNumber": "该号码似乎不正确。请检查，或暂时留空。"
+      }
     }
   }
 }

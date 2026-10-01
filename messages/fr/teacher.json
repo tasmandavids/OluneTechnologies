@@ -40,6 +40,21 @@
       "accepting": "Rattachement…",
       "acceptSuccess": "Studio rattaché avec succès."
     },
+    "invoiceAttachment": {
+      "label": "Votre propre facture (facultatif)",
+      "choose": "Joindre un PDF ou une photo",
+      "uploading": "Envoi…",
+      "remove": "Retirer",
+      "hint": "Vous facturez avec votre propre logiciel ? Joignez la facture. Les studios sur Olune Books la reçoivent pour l’approuver et la payer, et vous la verrez marquée payée ici.",
+      "errors": {
+        "chooseStudio": "Choisissez d’abord le studio.",
+        "notMember": "Vous ne pouvez joindre des factures que pour les studios avec lesquels vous travaillez.",
+        "fileType": "Joignez un PDF ou une photo (PNG, JPEG, WebP ou HEIC).",
+        "fileSize": "Ce fichier dépasse 20 Mo.",
+        "unavailable": "L’envoi n’est pas disponible pour le moment. Réessayez plus tard.",
+        "invalidFile": "Ce fichier ne peut pas être joint à cette facture. Joignez-le à nouveau."
+      }
+    },
     "invoices": {
       "title": "Factures",
       "subtitle": "Facturez les studios et les clients particuliers",

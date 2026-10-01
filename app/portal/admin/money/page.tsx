@@ -1,12 +1,15 @@
 // ============================================================================
 //  /portal/admin/money — Studio owner finance hub: overview, invoices,
-//  collections, plans, ledger, reconciliation, payouts, reports. One door for
-//  "how's the money doing" — tab state lives in ?tab= for deep links.
+//  products, plans, collections, transactions, payouts and accounting. One
+//  door for "how's the money doing" — tab state lives in ?tab= for deep links.
 //
 //  Replaces /portal/admin/billing, /accounting, /payments, /payment-plans and
-//  /subscriptions, which now redirect here. Reconcile (bank-feed matching)
-//  lives in Olune Books (/portal/admin/books/bank); for studios on an external
-//  ledger it keeps an honest "not built here" panel. See ReconcileTab.
+//  /subscriptions, which now redirect here.
+//
+//  Accounting is one tab for both systems: the studio chooses Xero or Olune
+//  Books there and manages that choice there. The old Reports and Reconcile
+//  tabs (and "Ledger", which was a payments list, not a ledger) are aliased so
+//  existing links still land somewhere sensible.
 // ============================================================================
 
 import Link from "next/link";
@@ -14,65 +17,42 @@ import { parsePage } from "@/lib/pagination";
 import { Suspense } from "react";
 import AdminLoading from "../loading";
 import { getTranslations } from "@/lib/i18n/server";
-import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import { OverviewTab } from "./overview-tab";
 import { InvoicesTab } from "./invoices-tab";
 import { ProductsTab } from "./products-tab";
 import { CollectionsTab } from "./collections-tab";
 import { PlansTab } from "./plans-tab";
 import { PayoutsTab } from "./payouts-tab";
-import { ReportsTab } from "./reports-tab";
-import { LedgerTab } from "./ledger-tab";
-import { BooksMoneyBridge } from "@/components/admin/books/BooksMoneyBridge";
-import { requirePortalSession } from "@/lib/portal/session";
-import { resolveAccountingProvider } from "@/lib/accounting/provider";
+import { TransactionsTab } from "./transactions-tab";
+import { AccountingTab } from "./accounting-tab";
 
 const TABS = [
   "overview",
   "invoices",
   "products",
-  "collections",
   "plans",
-  "ledger",
-  "reconcile",
+  "collections",
+  "transactions",
   "payouts",
-  "reports",
+  "accounting",
 ] as const;
 export type MoneyTabId = (typeof TABS)[number];
 
+const ALIASES: Record<string, MoneyTabId> = {
+  ledger: "transactions",
+  reports: "accounting",
+  reconcile: "accounting",
+};
+
 function resolveTab(tab: string | undefined): MoneyTabId {
+  if (tab && ALIASES[tab]) return ALIASES[tab];
   return TABS.includes(tab as MoneyTabId) ? (tab as MoneyTabId) : "overview";
-}
-
-function ComingSoonTab({ title, body, note }: { title: string; body: string; note?: string }) {
-  return (
-    <div className="mx-auto max-w-6xl p-6">
-      <GlassPanel className="!p-14 text-center">
-        <p className="text-sm font-semibold text-ink">{title}</p>
-        <p className="mx-auto mt-1 max-w-sm text-sm text-muted">{body}</p>
-        {note && <p className="mx-auto mt-4 max-w-md text-xs text-muted">{note}</p>}
-      </GlassPanel>
-    </div>
-  );
-}
-
-/**
- * Bank reconciliation lives in Olune Books. With Books on, this tab sends the
- * studio there; with no ledger at all, it offers Books; with Xero et al. it
- * keeps the honest "not built here" note (their own reconciliation applies).
- */
-async function ReconcileTab({ title, body, note }: { title: string; body: string; note: string }) {
-  const { supabase, studioId } = await requirePortalSession();
-  const active = await resolveAccountingProvider(supabase, studioId);
-  if (active?.provider === "olune") return <BooksMoneyBridge variant="reconcile" />;
-  if (!active) return <BooksMoneyBridge variant="setup" />;
-  return <ComingSoonTab title={title} body={body} note={note} />;
 }
 
 export default async function MoneyPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string; invoice?: string; error?: string; page?: string; q?: string; statuses?: string }>;
+  searchParams: Promise<{ tab?: string; invoice?: string; error?: string; connected?: string; page?: string; q?: string; statuses?: string }>;
 }) {
   const params = await searchParams;
   const tab = resolveTab(params.tab);
@@ -83,12 +63,6 @@ export default async function MoneyPage({
     href: id === "overview" ? "/portal/admin/money" : `/portal/admin/money?tab=${id}`,
     label: t(`tabs.${id}`),
   }));
-
-  const comingSoonTitle = t("comingSoon.title");
-  const comingSoonBody = t("comingSoon.body");
-  const reconcileTitle = t("reconcile.title");
-  const reconcileBody = t("reconcile.body");
-  const reconcileNote = t("reconcile.note");
 
   return (
     <div>
@@ -126,10 +100,11 @@ export default async function MoneyPage({
       {tab === "products" && <ProductsTab />}
       {tab === "collections" && <CollectionsTab />}
       {tab === "plans" && <PlansTab />}
-      {tab === "ledger" && <LedgerTab page={parsePage(params.page)} />}
-      {tab === "reconcile" && <ReconcileTab title={reconcileTitle} body={reconcileBody} note={reconcileNote} />}
+      {tab === "transactions" && <TransactionsTab page={parsePage(params.page)} />}
       {tab === "payouts" && <PayoutsTab bannerError={params.error ?? null} />}
-      {tab === "reports" && <ReportsTab />}
+      {tab === "accounting" && (
+        <AccountingTab bannerConnected={params.connected ?? null} bannerError={params.error ?? null} />
+      )}
       </Suspense>
     </div>
   );

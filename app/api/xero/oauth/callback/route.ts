@@ -7,7 +7,7 @@ import { verifyXeroOAuthState } from "@/lib/xero/oauth-state";
 import { verifyAdminOAuthCallback } from "@/lib/oauth/verify-admin-callback";
 import { resolveAppOrigin } from "@/lib/email/app-origin";
 import { DEFAULT_XERO_SETTINGS } from "@/lib/xero/types";
-import { CONNECTIONS_PATH } from "@/lib/integrations/routes";
+import { ACCOUNTING_PATH, accountingPath } from "@/lib/integrations/routes";
 
 export const runtime = "nodejs";
 
@@ -16,18 +16,15 @@ export async function GET(req: NextRequest) {
   const state = req.nextUrl.searchParams.get("state");
   const oauthError = req.nextUrl.searchParams.get("error");
   const origin = resolveAppOrigin(req);
-  const base = `${origin}${CONNECTIONS_PATH}`;
+  const back = (banner: { connected?: string; error?: string }) =>
+    NextResponse.redirect(new URL(`${origin}${accountingPath(banner)}`, req.url));
 
   if (oauthError || !code || !state) {
-    return NextResponse.redirect(
-      new URL(`${base}?error=${encodeURIComponent(oauthError ?? "Authorization cancelled")}`, req.url),
-    );
+    return back({ error: oauthError ?? "Authorization cancelled" });
   }
 
   const payload = verifyXeroOAuthState(state);
-  if (!payload) {
-    return NextResponse.redirect(new URL(`${base}?error=Invalid+OAuth+state`, req.url));
-  }
+  if (!payload) return back({ error: "invalidState" });
 
   const supabase = await createClient();
   const {
@@ -35,15 +32,22 @@ export async function GET(req: NextRequest) {
   } = await supabase.auth.getUser();
   if (!user || user.id !== payload.userId) {
     return NextResponse.redirect(
-      new URL(`/login?next=${encodeURIComponent(CONNECTIONS_PATH)}`, req.url),
+      new URL(`/login?next=${encodeURIComponent(ACCOUNTING_PATH)}`, req.url),
     );
   }
 
   const authz = await verifyAdminOAuthCallback(supabase, user, payload);
-  if (!authz.ok) {
-    return NextResponse.redirect(
-      new URL(`${base}?error=${encodeURIComponent(authz.reason)}`, req.url),
-    );
+  if (!authz.ok) return back({ error: authz.reason });
+
+  // Re-checked here, not just at /connect: Books could have been set up in
+  // another tab while the studio was on Xero's consent screen.
+  const { data: studio } = await supabase
+    .from("studios")
+    .select("accounting_provider")
+    .eq("id", payload.studioId)
+    .maybeSingle();
+  if (studio?.accounting_provider === "olune") {
+    return back({ error: "booksChosen" });
   }
 
   try {
@@ -64,11 +68,17 @@ export async function GET(req: NextRequest) {
       },
       { onConflict: "studio_id" },
     );
-
     if (error) throw new Error(error.message);
-    return NextResponse.redirect(new URL(`${base}?connected=xero`, req.url));
+
+    // Connecting Xero *is* choosing it.
+    const { error: choiceError } = await supabase
+      .from("studios")
+      .update({ accounting_provider: "xero" })
+      .eq("id", payload.studioId);
+    if (choiceError) throw new Error(choiceError.message);
+
+    return back({ connected: "xero" });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Failed to connect Xero";
-    return NextResponse.redirect(new URL(`${base}?error=${encodeURIComponent(msg)}`, req.url));
+    return back({ error: err instanceof Error ? err.message : "Failed to connect Xero" });
   }
 }

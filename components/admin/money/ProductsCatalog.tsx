@@ -22,7 +22,6 @@ import {
   RECURRING_INTERVALS,
   TAX_TREATMENTS,
   type BillingProduct,
-  type LedgerProvider,
   type PriceTier,
   type PricingModel,
   type ProductCategory,
@@ -35,7 +34,6 @@ import type { TuitionPricingModel } from "@/lib/billing/tuition-quote";
 import {
   createProduct,
   saveProductComponents,
-  saveProductLedgerCodes,
   saveProductTiers,
   setProductActive,
   setProductAutoApply,
@@ -53,7 +51,6 @@ type TaxSettings = { pricesIncludeTax: boolean; gstRegistered: boolean; gstNumbe
 
 type TierDraft = { minQuantity: string; unitDollars: string };
 type ComponentDraft = { componentProductId: string; quantity: string };
-type LedgerDraft = { provider: LedgerProvider; accountCode: string; itemCode: string; taxCode: string };
 
 type Draft = {
   id: string | null;
@@ -86,10 +83,7 @@ type Draft = {
   components: ComponentDraft[];
   /** package only: fire this combo when a family's basket satisfies it. */
   autoApply: boolean;
-  ledger: LedgerDraft[];
 };
-
-const OTHER_LEDGERS: LedgerProvider[] = ["quickbooks", "myob"];
 
 function emptyDraft(): Draft {
   return {
@@ -116,7 +110,6 @@ function emptyDraft(): Draft {
     legacyPercentTiers: [],
     components: [],
     autoApply: false,
-    ledger: [],
   };
 }
 
@@ -155,15 +148,6 @@ function draftFromProduct(product: BillingProduct): Draft {
       quantity: String(c.quantity),
     })),
     autoApply: product.autoApply,
-    ledger: OTHER_LEDGERS.map((provider) => {
-      const existing = product.ledgerCodes.find((l) => l.provider === provider);
-      return {
-        provider,
-        accountCode: existing?.accountCode ?? "",
-        itemCode: existing?.itemCode ?? "",
-        taxCode: existing?.taxCode ?? "",
-      };
-    }),
   };
 }
 
@@ -212,7 +196,7 @@ export function ProductsCatalog({
   accountOptions,
   itemOptions,
   ledgerName,
-  otherLedgersConnected,
+  showItemCode,
   tuitionModel,
 }: {
   products: BillingProduct[];
@@ -221,7 +205,8 @@ export function ProductsCatalog({
   accountOptions: CodeOption[] | null;
   itemOptions: CodeOption[] | null;
   ledgerName: string | null;
-  otherLedgersConnected: boolean;
+  /** Item codes are a Xero concept; Olune Books codes by account only. */
+  showItemCode: boolean;
   tuitionModel: TuitionPricingModel;
 }) {
   const t = useTranslations("admin.money.products");
@@ -291,7 +276,7 @@ export function ProductsCatalog({
         productId = result.productId;
       }
 
-      // Tiers, package contents and per-ledger overrides live in their own
+      // Tiers and package contents live in their own
       // tables, so they save alongside rather than inside the product write.
       const priceTiers = draft.tiers
         .map((tier) => {
@@ -337,22 +322,6 @@ export function ProductsCatalog({
         const autoApplyResult = await setProductAutoApply(productId, draft.autoApply);
         if (!autoApplyResult.ok) {
           toast.error(autoApplyResult.error);
-          return;
-        }
-      }
-
-      if (otherLedgersConnected) {
-        const ledgerResult = await saveProductLedgerCodes(
-          productId,
-          draft.ledger.map((l) => ({
-            provider: l.provider,
-            accountCode: l.accountCode.trim() || undefined,
-            itemCode: l.itemCode.trim() || undefined,
-            taxCode: l.taxCode.trim() || undefined,
-          })),
-        );
-        if (!ledgerResult.ok) {
-          toast.error(ledgerResult.error);
           return;
         }
       }
@@ -946,60 +915,18 @@ export function ProductsCatalog({
                     freeTextLabel={t("fields.customCode")}
                   />
                 </Field>
-                <Field label={t("fields.itemCode")} hint={t("hints.itemCode")}>
-                  <CodeInput
-                    value={draft.itemCode}
-                    options={itemOptions}
-                    placeholder={draft.code}
-                    onChange={(value) => update({ itemCode: value })}
-                    freeTextLabel={t("fields.customCode")}
-                  />
-                </Field>
-
-                {otherLedgersConnected && (
-                  <details className="rounded-xl border p-3" style={{ borderColor: "var(--hair)" }}>
-                    <summary className="cursor-pointer text-xs font-semibold text-ink">
-                      {t("fields.otherLedgers")}
-                    </summary>
-                    <div className="mt-3 space-y-3">
-                      {draft.ledger.map((entry, idx) => (
-                        <div key={entry.provider} className="space-y-1">
-                          <p className="text-xs font-semibold text-muted">
-                            {t(`ledgers.${entry.provider}`)}
-                          </p>
-                          <div className="grid grid-cols-2 gap-2">
-                            <input
-                              value={entry.accountCode}
-                              placeholder={t("fields.accountCode")}
-                              onChange={(e) =>
-                                update({
-                                  ledger: draft.ledger.map((l, i) =>
-                                    i === idx ? { ...l, accountCode: e.target.value } : l,
-                                  ),
-                                })
-                              }
-                              className={fieldClass}
-                              style={fieldStyle}
-                            />
-                            <input
-                              value={entry.itemCode}
-                              placeholder={t("fields.itemCode")}
-                              onChange={(e) =>
-                                update({
-                                  ledger: draft.ledger.map((l, i) =>
-                                    i === idx ? { ...l, itemCode: e.target.value } : l,
-                                  ),
-                                })
-                              }
-                              className={fieldClass}
-                              style={fieldStyle}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </details>
+                {showItemCode && (
+                  <Field label={t("fields.itemCode")} hint={t("hints.itemCode")}>
+                    <CodeInput
+                      value={draft.itemCode}
+                      options={itemOptions}
+                      placeholder={draft.code}
+                      onChange={(value) => update({ itemCode: value })}
+                      freeTextLabel={t("fields.customCode")}
+                    />
+                  </Field>
                 )}
+
               </Section>
             </div>
 

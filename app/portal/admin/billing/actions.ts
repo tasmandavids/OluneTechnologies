@@ -20,6 +20,7 @@ import {
   xeroVoidInvoice,
 } from "@/lib/xero/webhook-sync";
 import { refreshStudioXeroSync } from "@/lib/xero/inbound-sync";
+import { isXeroSkip } from "@/lib/xero/sync-sale";
 import { removeInvoiceFromActivePlan } from "@/lib/term-payment-plan-service";
 import { getTranslations } from "@/lib/i18n/server";
 import { getAdminStudio as getAdminStudioAccess } from "@/lib/portal/access";
@@ -303,7 +304,7 @@ export async function createInvoice(
     lineDescription: label,
   });
   if (xero.ok) xeroInvoiceId = xero.xeroInvoiceId;
-  else xeroError = xero.error;
+  else if (!isXeroSkip(xero.error)) xeroError = xero.error;
 
   revalidatePath("/portal/admin/money");
   return { ok: true, invoiceId: invoice.id as string, xeroInvoiceId, xeroError };
@@ -369,10 +370,10 @@ export async function sendInvoiceNow(
   let xeroError: string | undefined;
   if (invoice.xero_invoice_id) {
     const xero = await xeroAuthoriseOutstandingInvoice(supabase, invoiceId);
-    if (!xero.ok) xeroError = xero.error;
+    if (!xero.ok && !isXeroSkip(xero.error)) xeroError = xero.error;
   } else {
     const xero = await xeroSyncOutstandingInvoice(supabase, invoiceId, { lineDescription: label });
-    if (!xero.ok) xeroError = xero.error;
+    if (!xero.ok && !isXeroSkip(xero.error)) xeroError = xero.error;
   }
 
   revalidatePath("/portal/admin/money");
@@ -555,7 +556,7 @@ export async function voidInvoice(
   if (updErr) return { ok: false, error: updErr.message };
 
   const xero = await xeroVoidInvoice(supabase, invoiceId);
-  const xeroError = xero.ok ? undefined : xero.error;
+  const xeroError = xero.ok || isXeroSkip(xero.error) ? undefined : xero.error;
 
   revalidatePath("/portal/admin/money");
   return { ok: true, xeroError };
@@ -665,7 +666,7 @@ export async function updateInvoice(
   let xeroError: string | undefined;
   if (Object.keys(updates).length > 0 || changingAmount) {
     const xero = await xeroUpdateOutstandingInvoice(supabase, invoiceId);
-    if (!xero.ok) xeroError = xero.error;
+    if (!xero.ok && !isXeroSkip(xero.error)) xeroError = xero.error;
   }
 
   return { ok: true, xeroError };

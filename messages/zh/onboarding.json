@@ -17,7 +17,9 @@
       "instructor": {
         "title": "我是一名独立教师",
         "desc": "跨工作室工作，跟踪您的日程，并管理您的教学资料。"
-      }
+      },
+      "otherVertical": "目前开放注册：{vertical}。经营其他类型？",
+      "otherVerticalLink": "加入候补名单"
     },
     "account": {
       "title": "创建您的工作室",
@@ -64,7 +66,8 @@
       "submitting": "正在创建您的工作室…",
       "submit": "创建工作室",
       "submittingInstructor": "正在创建您的工作区…",
-      "submitInstructor": "创建工作区"
+      "submitInstructor": "创建工作区",
+      "changeLater": "之后可以上传标志并微调颜色。"
     },
     "done": {
       "title": "欢迎，{studioName}",

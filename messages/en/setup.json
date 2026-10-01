@@ -13,14 +13,16 @@
       "students": "Dancers",
       "classes": "Classes",
       "pricing": "Pricing",
-      "tour": "Tour"
+      "tour": "Tour",
+      "money": "Money"
     },
     "actions": {
       "back": "Back",
       "skip": "Skip for now",
       "working": "Working…",
       "continue": "Continue",
-      "saveLater": "Save progress & finish later →"
+      "saveLater": "Save progress & finish later →",
+      "finish": "Finish setup"
     },
     "path": {
       "title": "How are you getting started?",
@@ -33,7 +35,8 @@
         "title": "I have an existing studio",
         "body": "Bulk import from StudioPro, Class Manager, or any spreadsheet."
       },
-      "sourcePrompt": "Where is your data today?"
+      "sourcePrompt": "Where is your data today?",
+      "newStudio": "No — starting fresh"
     },
     "profile": {
       "title": "Tell us about your studio",
@@ -47,7 +50,10 @@
       "aboutPlaceholder": "Community-focused preschool ballet, competition teams, adult open classes…",
       "stylesLabel": "Dance styles you offer",
       "stylesRequired": "Pick at least one style to continue.",
-      "stylesHint": "These seed your class suggestions, your website's programme pages, and the enquiry form families see."
+      "stylesHint": "These seed your class suggestions, your website's programme pages, and the enquiry form families see.",
+      "countryPlaceholder": "Choose a country…",
+      "countryOther": "Somewhere else",
+      "countryName": "Country name"
     },
     "students": {
       "title": "Add your dancers",
@@ -66,7 +72,8 @@
       "addAnother": "+ Add another student",
       "linkParents": "Create parent accounts & link families when parent details are provided",
       "import": "Import {count, plural, one {# dancer} other {# dancers}}",
-      "portalNote": "Everyone you add gets a portal login, and can be issued a check-in card and sent your forms."
+      "portalNote": "Everyone you add gets a portal login, and can be issued a check-in card and sent your forms.",
+      "sourcePrompt": "Bringing dancers over from another system?"
     },
     "classes": {
       "title": "Build your timetable",
@@ -125,7 +132,27 @@
     "tour": {
       "title": "{studioName} is ready",
       "subtitle": "Here's what you can do in Olune — explore anytime from your dashboard.",
-      "enterDashboard": "Enter your dashboard →"
+      "enterDashboard": "Enter your dashboard →",
+      "nextUp": "Next up",
+      "explore": "Explore Olune",
+      "next": {
+        "payments": {
+          "title": "Get paid online",
+          "body": "Connect Stripe so families can pay invoices and enrolments by card. Takes about five minutes."
+        },
+        "books": {
+          "title": "Your books are ready",
+          "body": "Invoices, payments and tax post themselves. Add opening balances and drop in your first supplier bills."
+        },
+        "xero": {
+          "title": "Connect Xero",
+          "body": "Sign in to Xero so invoices and payments flow into your organisation."
+        },
+        "accounting": {
+          "title": "Choose where your books live",
+          "body": "Olune Books is built in, or connect Xero. Either way, invoices and payments are recorded for you."
+        }
+      }
     },
     "importSummary": {
       "added": "Added {count, plural, one {# dancer} other {# dancers}}",
@@ -261,6 +288,40 @@
       "thu": "Thu",
       "fri": "Fri",
       "sat": "Sat"
+    },
+    "money": {
+      "title": "How do you want to keep your books?",
+      "subtitle": "Every invoice, payment and refund in Olune is recorded for you — choose where.",
+      "recommended": "Recommended",
+      "olune": {
+        "title": "Olune Books",
+        "body": "Built in, no extra subscription. Bookkeeping, tax returns and reports set up for your country.",
+        "alreadyOn": "Olune Books is already set up for this studio.",
+        "country": "Country for tax",
+        "region": "Region",
+        "pickRegion": "Choose…",
+        "registeredQuestion": "Is the studio registered for {tax}?",
+        "taxNumber": "{label} (optional)",
+        "defaults": "Books will report in {currency} with the usual {tax} periods and financial year. You can change any of it in Books → Settings."
+      },
+      "xero": {
+        "title": "Xero",
+        "body": "Already use Xero? Olune sends your invoices and payments there.",
+        "next": "When you finish, we’ll take you to connect your Xero organisation."
+      },
+      "later": {
+        "title": "Decide later",
+        "body": "Nothing is recorded until you choose in Money → Accounting."
+      },
+      "yes": "Yes",
+      "no": "No",
+      "setUpBooks": "Set up Olune Books & finish",
+      "errors": {
+        "invalid": "Something in the form isn’t right. Check it and try again.",
+        "xeroConnected": "This studio is already connected to Xero. Switch in Money → Accounting.",
+        "pickRegion": "Choose a region so the right tax rates are set up.",
+        "taxNumber": "That number doesn’t look right. Check it, or leave it blank for now."
+      }
     }
   }
 }

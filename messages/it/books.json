@@ -46,8 +46,7 @@
         "periods": "Date",
         "review": "Riepilogo"
       },
-      "xeroBlocks": "La contabilità di questo studio è in Xero ({org}). Uno studio usa un solo libro contabile: scollega Xero in Impostazioni → Connessioni prima di passare a Olune Books.",
-      "openConnections": "Apri Connessioni",
+      "xeroBlocks": "La contabilità di questo studio è tenuta in Xero ({org}). Per usare Olune Books, cambia in Denaro → Contabilità: Xero verrà scollegato per te.",
       "back": "Indietro",
       "next": "Continua",
       "create": "Crea la mia contabilità",
@@ -133,7 +132,8 @@
         "rate": "Inserisci un'aliquota tra 0 e 100%.",
         "invalid": "Qualcosa nel modulo non va. Controlla e riprova.",
         "xeroConnected": "Xero è collegato. Scollegalo prima: uno studio usa un solo libro contabile."
-      }
+      },
+      "openAccounting": "Vai a Denaro → Contabilità"
     },
     "dashboard": {
       "title": "Contabilità",
@@ -169,7 +169,9 @@
       "narration": "Descrizione",
       "amount": "Importo",
       "voided": "Annullata",
-      "noJournals": "Nessuna registrazione ancora. Compariranno qui man mano che arrivano fatture, incassi e vendite."
+      "noJournals": "Nessuna registrazione ancora. Compariranno qui man mano che arrivano fatture, incassi e vendite.",
+      "todoBankImport": "Importa un estratto conto",
+      "todoReviewBills": "{count, plural, one {Controlla # fattura in arrivo} other {Controlla # fatture in arrivo}}"
     },
     "sync": {
       "last": "Sincronizzato {time}",
@@ -403,7 +405,12 @@
       "deleteDraftBody": "La bozza non è stata registrata, quindi eliminarla non tocca la contabilità.",
       "voidBill": "Annulla fattura",
       "voidBody": "L'annullamento toglie la fattura dalla contabilità (o la storna se il periodo è bloccato). Le fatture con pagamenti non possono essere annullate.",
-      "voidReason": "Motivo"
+      "voidReason": "Motivo",
+      "toReview": "Da controllare",
+      "fromStaff": "Dallo staff",
+      "hasDocument": "Documento del fornitore allegato",
+      "unknownSupplier": "Fornitore non indicato",
+      "staffSubmitted": "{name} ha inviato questa fattura da Olune il {date}. Controlla conto e imposta, poi approvala per pagarla."
     },
     "bank": {
       "title": "Banca",
@@ -519,7 +526,10 @@
         "gl": "Mastrino",
         "bank": "Riepilogo bancario",
         "ar": "Scadenzario clienti",
-        "ap": "Scadenzario fornitori"
+        "ap": "Scadenzario fornitori",
+        "trend": "Utile per mese",
+        "cf": "Flusso di cassa",
+        "suppliers": "Spesa per fornitore"
       },
       "from": "Dal",
       "to": "Al",
@@ -573,6 +583,31 @@
         "d61to90": "61–90 giorni",
         "d90plus": "Oltre 90 giorni",
         "total": "Totale"
+      },
+      "exportPack": "Pacchetto di fine anno",
+      "exportPackHint": "Bilanci, bilancio di verifica, scadenzari e libro mastro dell’esercizio in un unico file per il commercialista",
+      "cashFlow": {
+        "netProfit": "Utile netto",
+        "depreciation": "Più ammortamenti",
+        "depreciationOffset": "Meno ammortamenti già nelle immobilizzazioni",
+        "operating": "Attività operative",
+        "operatingTotal": "Liquidità netta da attività operative",
+        "investing": "Attività di investimento",
+        "investingTotal": "Liquidità netta da attività di investimento",
+        "financing": "Attività di finanziamento",
+        "financingTotal": "Liquidità netta da attività di finanziamento",
+        "netChange": "Variazione netta di cassa",
+        "opening": "Cassa all’inizio",
+        "closing": "Cassa alla fine",
+        "none": "Niente in questo periodo",
+        "unexplained": "I movimenti di cassa differiscono di {amount}. Controlla le registrazioni manuali recenti."
+      },
+      "suppliers": {
+        "bills": "Fatture",
+        "tax": "Imposta",
+        "total": "Totale",
+        "outstanding": "Ancora dovuto",
+        "empty": "Nessuna fattura approvata in questo periodo."
       }
     },
     "settings": {
@@ -593,26 +628,6 @@
       "saved": "Impostazioni salvate.",
       "saving": "Salvataggio…",
       "save": "Salva impostazioni"
-    },
-    "bridge": {
-      "eyebrow": "Olune Books",
-      "reconcile": {
-        "title": "Riconcilia in Olune Books",
-        "body": "Importa gli estratti conto e abbina ogni movimento a una fattura, un incasso, una fattura passiva o un accredito Stripe."
-      },
-      "reports": {
-        "title": "La tua contabilità è in Olune Books",
-        "body": "Conto economico, stato patrimoniale, dichiarazioni e il resto arrivano direttamente dalla tua contabilità."
-      },
-      "setup": {
-        "title": "La riconciliazione bancaria è inclusa in Olune Books",
-        "body": "Nessun software contabile collegato? Olune Books ti offre una contabilità completa, la riconciliazione bancaria e dichiarazioni configurate per il tuo Paese."
-      },
-      "openBank": "Apri riconciliazione",
-      "openPl": "Conto economico",
-      "openBs": "Stato patrimoniale",
-      "openTax": "Dichiarazioni",
-      "setUp": "Configura Olune Books"
     },
     "errors": {
       "invalid": "Qualcosa nel modulo non va. Controlla e riprova.",
@@ -640,7 +655,48 @@
       "alreadyLocked": "Questo periodo è già bloccato.",
       "alreadyFiled": "Questa dichiarazione è già stata presentata.",
       "periodNotEnded": "Il periodo non è ancora terminato.",
-      "taxNumber": "Questo numero fiscale non sembra valido."
+      "taxNumber": "Questo numero fiscale non sembra valido.",
+      "xeroConnected": "La contabilità di questo studio è tenuta in Xero. Cambia prima in Denaro → Contabilità.",
+      "tooManyFiles": "Carica al massimo 10 file alla volta.",
+      "attachmentType": "Carica un PDF o una foto (PNG, JPEG, WebP o HEIC).",
+      "attachmentSize": "Il file supera i 20 MB.",
+      "uploadFailed": "Il caricamento non è terminato. Controlla la connessione e riprova.",
+      "uploadsNotConfigured": "Il caricamento dei documenti non è ancora disponibile in questa installazione.",
+      "uploadMissing": "Non troviamo il file caricato. Prova a caricarlo di nuovo.",
+      "noAttachment": "Questa fattura non ha un documento da leggere.",
+      "couldNotRead": "Non è stato possibile leggere il documento. Compila la fattura a mano."
+    },
+    "inbox": {
+      "dropLabel": "Carica fatture dei fornitori",
+      "dropTitle": "Trascina qui le fatture dei fornitori o fai clic per sceglierle",
+      "dropHint": "PDF o foto, fino a 10 alla volta. Ognuno diventa una bozza di fattura con il documento allegato, pronta da completare e approvare.",
+      "dropHintAi": "PDF o foto, fino a 10 alla volta. Leggiamo fornitore, date, importi e imposta in una bozza da controllare e approvare.",
+      "uploading": "Caricamento…",
+      "reading": "Lettura dei documenti…",
+      "filing": "Creazione delle bozze…",
+      "noAiKey": "Per far leggere le fatture al posto tuo, aggiungi una chiave Anthropic o OpenAI.",
+      "addAiKey": "Aggiungi chiave",
+      "unknownSupplier": "Fornitore non letto",
+      "readNoTotal": "letta, nessun totale",
+      "notRead": "da completare",
+      "checkIt": "da controllare",
+      "documents": "Documenti",
+      "readAgain": "Rileggi",
+      "attach": "Allega un file",
+      "noDocuments": "Nessun documento allegato.",
+      "openInTab": "Apri in una nuova scheda",
+      "remove": "Rimuovi",
+      "removeConfirm": "Rimuovere questo documento dalla fattura?",
+      "previewUnavailable": "Questo file non può essere visualizzato qui.",
+      "readNotice": "Compilata dal documento allegato. Controlla ogni riga prima di approvare.",
+      "notReadNotice": "Non è stato possibile leggere il documento. Usa «Rileggi» o compila la fattura a mano.",
+      "noAiNotice": "Compila la fattura dal documento accanto. Aggiungi una chiave IA in Impostazioni → Connessioni per farle leggere in automatico.",
+      "warnings": {
+        "notInvoice": "Non sembra una fattura né una ricevuta.",
+        "foreignCurrency": "Il documento è in un’altra valuta. Inserisci gli importi nella valuta dei tuoi conti.",
+        "linesDontAddUp": "Le righe non tornano con il totale del documento.",
+        "noAmounts": "Nessun importo trovato. Aggiungi le righe a mano."
+      }
     }
   }
 }

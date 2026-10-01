@@ -15,6 +15,8 @@ export type ContractorInvoice = {
   paidAt: string | null;
   notes: string | null;
   createdAt: string;
+  /** The contractor's own invoice document, when they attached one. */
+  attachment: { path: string; name: string; mime: string; size: number } | null;
 };
 
 export type ClientOption = {
@@ -61,6 +63,9 @@ export default async function ContractorInvoicesPage() {
     paidAt: r.paid_at ?? null,
     notes: r.notes ?? null,
     createdAt: r.created_at,
+    attachment: r.attachment_path
+      ? { path: r.attachment_path, name: r.attachment_name ?? "invoice", mime: r.attachment_mime ?? "application/pdf", size: Number(r.attachment_size ?? 1) }
+      : null,
   }));
 
   const clientOptions: ClientOption[] = [

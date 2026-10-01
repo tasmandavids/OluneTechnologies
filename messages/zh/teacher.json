@@ -40,6 +40,21 @@
       "back": "← 返回课程表",
       "progressLog": "进度记录"
     },
+    "invoiceAttachment": {
+      "label": "你自己的发票（可选）",
+      "choose": "附加 PDF 或照片",
+      "uploading": "正在上传…",
+      "remove": "移除",
+      "hint": "用自己的软件开发票？附上即可。使用 Olune Books 的工作室会收到并批准付款，付款后这里会显示已付。",
+      "errors": {
+        "chooseStudio": "请先选择工作室。",
+        "notMember": "只能为合作的工作室附加发票。",
+        "fileType": "请附加 PDF 或照片（PNG、JPEG、WebP 或 HEIC）。",
+        "fileSize": "该文件超过 20 MB。",
+        "unavailable": "暂时无法上传，请稍后再试。",
+        "invalidFile": "该文件无法附加到此发票，请重新附加。"
+      }
+    },
     "invoices": {
       "title": "账单",
       "subtitle": "向舞蹈室和私人客户开具账单",

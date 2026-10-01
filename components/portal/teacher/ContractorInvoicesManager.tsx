@@ -1,9 +1,10 @@
 "use client";
 
+import { useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+// Locale-aware money and dates. lib/currency's formatMoney pins en-NZ, so the
+// hook replaces it here rather than being imported alongside it.
 import { useFormatMoney, useFormatDate } from "@/lib/i18n/format";
-
-import { useState, useTransition } from "react";
 import type { ContractorInvoice, ClientOption } from "@/app/portal/teacher/invoices/page";
 import {
   createContractorInvoice,
@@ -13,7 +14,10 @@ import {
   markInvoicePaid,
   voidContractorInvoice,
   deleteContractorInvoice,
+  startInvoiceAttachmentUpload,
 } from "@/app/portal/teacher/invoices/actions";
+import { createClient } from "@/lib/supabase/client";
+import { ATTACHMENT_ACCEPT, BOOKS_ATTACHMENT_BUCKET, checkAttachment } from "@/lib/ledger/attachments";
 
 type LineItem = { description: string; quantity: number; unit_cents: number };
 
@@ -25,6 +29,7 @@ const EMPTY_FORM = {
   line_items: [{ description: "", quantity: 1, unit_cents: 0 }] as LineItem[],
   due_date: "",
   notes: "",
+  attachment: null as ContractorInvoice["attachment"],
 };
 
 const STATUS_STYLE: Record<string, string> = {
@@ -54,6 +59,30 @@ export function ContractorInvoicesManager({
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const ta = useTranslations("teacher.invoiceAttachment");
+  const [uploading, setUploading] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const attachError = (code: string) => (ta.has(`errors.${code}`) ? ta(`errors.${code}`) : code);
+
+  async function attachFile(file: File) {
+    if (!form.studio_id) return;
+    setError(null);
+    const check = checkAttachment(file.type, file.size);
+    if (!check.ok) return setError(attachError(check.error === "attachmentType" ? "fileType" : "fileSize"));
+    setUploading(true);
+    try {
+      const ticket = await startInvoiceAttachmentUpload(form.studio_id, file.type, file.size);
+      if (!ticket.ok) return setError(attachError(ticket.error));
+      const { error: upErr } = await createClient()
+        .storage.from(BOOKS_ATTACHMENT_BUCKET)
+        .uploadToSignedUrl(ticket.path, ticket.token, file, { contentType: file.type });
+      if (upErr) return setError(attachError("unavailable"));
+      setForm((f) => ({ ...f, attachment: { path: ticket.path, name: file.name, mime: file.type, size: file.size } }));
+    } finally {
+      setUploading(false);
+      if (fileInput.current) fileInput.current.value = "";
+    }
+  }
 
   const visible = filter === "all" ? invoices : invoices.filter((i) => i.status === filter);
 
@@ -72,6 +101,7 @@ export function ContractorInvoicesManager({
       line_items: inv.lineItems.length ? inv.lineItems : [{ description: "", quantity: 1, unit_cents: 0 }],
       due_date: inv.dueDate ?? "",
       notes: inv.notes ?? "",
+      attachment: inv.attachment,
     });
     setError(null);
     setSlide(inv);
@@ -90,6 +120,8 @@ export function ContractorInvoicesManager({
       recipient_label: opt?.label ?? "",
       studio_id: opt?.kind === "studio" ? opt.id : null,
       private_client_id: opt?.kind === "private" ? opt.id : null,
+      // The file lives in that studio's folder; a different recipient can't use it.
+      attachment: opt?.kind === "studio" && opt.id === f.studio_id ? f.attachment : null,
     }));
   }
 
@@ -105,15 +137,15 @@ export function ContractorInvoicesManager({
     startTransition(async () => {
       if (slide === "create") {
         const res = await createContractorInvoice(payload);
-        if (res?.error) { setError(res.error); return; }
+        if (res?.error) { setError(attachError(res.error)); return; }
         location.reload();
       } else if (slide) {
         const res = await updateContractorInvoice(slide.id, payload);
-        if (res?.error) { setError(res.error); return; }
+        if (res?.error) { setError(attachError(res.error)); return; }
         setInvoices((prev) =>
           prev.map((inv) =>
             inv.id === slide.id
-              ? { ...inv, ...payload, lineItems: form.line_items, amountCents: amount_cents }
+              ? { ...inv, ...payload, lineItems: form.line_items, amountCents: amount_cents, attachment: form.attachment }
               : inv
           )
         );
@@ -295,7 +327,7 @@ export function ContractorInvoicesManager({
                   type="text"
                   placeholder={t("form.typeName")}
                   value={form.recipient_label}
-                  onChange={(e) => setForm((f) => ({ ...f, recipient_label: e.target.value, studio_id: null, private_client_id: null }))}
+                  onChange={(e) => setForm((f) => ({ ...f, recipient_label: e.target.value, studio_id: null, private_client_id: null, attachment: null }))}
                   className="w-full border border-base-300 rounded-lg px-3 py-2 text-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-brand/30"
                 />
               </label>
@@ -362,6 +394,41 @@ export function ContractorInvoicesManager({
                 </p>
               </div>
 
+              {/* Their own invoice document — studios only (it's stored with the studio's books) */}
+              {form.studio_id && (
+                <div className="space-y-1">
+                  <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">{ta("label")}</span>
+                  {form.attachment ? (
+                    <div className="flex items-center justify-between gap-2 rounded-lg border border-base-300 px-3 py-2 text-sm">
+                      <span className="truncate">📎 {form.attachment.name}</span>
+                      <button type="button" onClick={() => setForm((f) => ({ ...f, attachment: null }))} className="shrink-0 text-xs text-red-500 hover:underline">
+                        {ta("remove")}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInput.current?.click()}
+                      disabled={uploading}
+                      className="w-full rounded-lg border border-dashed border-base-300 px-3 py-3 text-sm text-base-content/70 hover:border-brand disabled:opacity-50"
+                    >
+                      {uploading ? ta("uploading") : ta("choose")}
+                    </button>
+                  )}
+                  <input
+                    ref={fileInput}
+                    type="file"
+                    accept={ATTACHMENT_ACCEPT}
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) void attachFile(file);
+                    }}
+                  />
+                  <p className="text-xs text-base-content/50">{ta("hint")}</p>
+                </div>
+              )}
+
               {/* Due date */}
               <label className="block space-y-1">
                 <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">{t("form.dueDate")}</span>
@@ -388,7 +455,7 @@ export function ContractorInvoicesManager({
               <button onClick={() => setSlide(null)} className="flex-1 border border-base-300 rounded-lg py-2 text-sm">{t("form.cancel")}</button>
               <button
                 onClick={handleSave}
-                disabled={pending || !form.description.trim() || !form.recipient_label.trim()}
+                disabled={pending || uploading || !form.description.trim() || !form.recipient_label.trim()}
                 className="flex-1 btn-brand rounded-lg py-2 text-sm font-medium disabled:opacity-50"
               >
                 {pending ? t("form.saving") : t("form.save")}

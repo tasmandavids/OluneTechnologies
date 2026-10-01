@@ -40,6 +40,21 @@
       "accepting": "Collegamento…",
       "acceptSuccess": "Scuola collegata correttamente."
     },
+    "invoiceAttachment": {
+      "label": "La tua fattura (facoltativo)",
+      "choose": "Allega un PDF o una foto",
+      "uploading": "Caricamento…",
+      "remove": "Rimuovi",
+      "hint": "Fatturi con il tuo software? Allegala. Gli studi con Olune Books la ricevono tra le fatture da approvare e pagare, e qui la vedrai segnata come pagata.",
+      "errors": {
+        "chooseStudio": "Scegli prima lo studio.",
+        "notMember": "Puoi allegare fatture solo per gli studi con cui lavori.",
+        "fileType": "Allega un PDF o una foto (PNG, JPEG, WebP o HEIC).",
+        "fileSize": "Il file supera i 20 MB.",
+        "unavailable": "Il caricamento non è disponibile ora. Riprova più tardi.",
+        "invalidFile": "Il file non può essere allegato a questa fattura. Allegalo di nuovo."
+      }
+    },
     "invoices": {
       "title": "Fatture",
       "subtitle": "Fattura a studi e clienti privati",

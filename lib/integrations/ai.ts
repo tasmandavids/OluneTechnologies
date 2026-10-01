@@ -182,3 +182,118 @@ export async function completeText(input: AiCompletionInput): Promise<string | n
 export async function hasModelAccess(studioId?: string | null): Promise<boolean> {
   return (await resolveProvider(studioId)) !== null;
 }
+
+// ─── Documents (invoices, receipts) ──────────────────────────────────────────
+
+export type AiDocumentInput = {
+  studioId?: string | null;
+  system: string;
+  user: string;
+  /** A PDF or a PNG/JPEG/WebP image. */
+  document: { mimeType: string; base64: string; fileName: string };
+  /** JSON Schema the answer must match. */
+  schema: Record<string, unknown>;
+};
+
+/**
+ * Read one document and answer with JSON matching `schema`, on whichever
+ * provider this studio is entitled to. Null on every failure, exactly like
+ * completeText — callers fall back to a person typing the values in.
+ *
+ * Claude gets the document as a document/image block and a structured-output
+ * format; OpenAI gets it as a file/image part with a strict json_schema
+ * response format. The caller still validates the result: a schema only
+ * shapes the output, it doesn't make the values right.
+ */
+export async function readDocumentJson(input: AiDocumentInput): Promise<unknown | null> {
+  const provider = await resolveProvider(input.studioId);
+  if (!provider) return null;
+  try {
+    const text =
+      provider.kind === "anthropic"
+        ? await readDocumentWithAnthropic(provider, input)
+        : await readDocumentWithOpenAI(provider, input);
+    if (!text) return null;
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
+async function readDocumentWithAnthropic(
+  provider: Extract<ResolvedProvider, { kind: "anthropic" }>,
+  input: AiDocumentInput,
+): Promise<string | null> {
+  const { mimeType, base64 } = input.document;
+  const block =
+    mimeType === "application/pdf"
+      ? { type: "document", source: { type: "base64", media_type: mimeType, data: base64 } }
+      : { type: "image", source: { type: "base64", media_type: mimeType, data: base64 } };
+
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "x-api-key": provider.apiKey,
+      "anthropic-version": "2023-06-01",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: process.env.ANTHROPIC_MODEL ?? "claude-opus-5-5",
+      max_tokens: 16000,
+      // Transcribing a printed invoice is reading, not reasoning.
+      output_config: { effort: "low", format: { type: "json_schema", schema: input.schema } },
+      system: input.system,
+      messages: [{ role: "user", content: [block, { type: "text", text: input.user }] }],
+    }),
+  });
+  if (!res.ok) return null;
+
+  const json = (await res.json().catch(() => null)) as {
+    stop_reason?: string;
+    content?: { type: string; text?: string }[];
+  } | null;
+  if (!json || json.stop_reason === "refusal" || json.stop_reason === "max_tokens") return null;
+  const text = (json.content ?? [])
+    .filter((b) => b.type === "text")
+    .map((b) => b.text ?? "")
+    .join("")
+    .trim();
+  return text || null;
+}
+
+async function readDocumentWithOpenAI(
+  provider: Extract<ResolvedProvider, { kind: "openai" }>,
+  input: AiDocumentInput,
+): Promise<string | null> {
+  const { mimeType, base64, fileName } = input.document;
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${provider.apiKey}`,
+    "Content-Type": "application/json",
+  };
+  if (provider.organisation) headers["OpenAI-Organization"] = provider.organisation;
+
+  const part =
+    mimeType === "application/pdf"
+      ? { type: "file", file: { filename: fileName, file_data: `data:${mimeType};base64,${base64}` } }
+      : { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64}` } };
+
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      model: process.env.OPENAI_DOCUMENT_MODEL ?? "gpt-4o-mini",
+      response_format: { type: "json_schema", json_schema: { name: "document", strict: true, schema: input.schema } },
+      messages: [
+        { role: "system", content: input.system },
+        { role: "user", content: [part, { type: "text", text: input.user }] },
+      ],
+    }),
+  });
+  if (!res.ok) return null;
+  const json = (await res.json().catch(() => null)) as {
+    choices?: { message?: { content?: string; refusal?: string | null } }[];
+  } | null;
+  const msg = json?.choices?.[0]?.message;
+  if (!msg || msg.refusal) return null;
+  return msg.content?.trim() || null;
+}

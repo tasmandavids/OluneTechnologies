@@ -40,6 +40,21 @@
       "back": "← Back to schedule",
       "progressLog": "Progress log"
     },
+    "invoiceAttachment": {
+      "label": "Your own invoice (optional)",
+      "choose": "Attach a PDF or photo",
+      "uploading": "Uploading…",
+      "remove": "Remove",
+      "hint": "Invoice from your own software? Attach it. Studios on Olune Books get it in their bills to approve and pay, and you’ll see it marked paid here.",
+      "errors": {
+        "chooseStudio": "Choose the studio first.",
+        "notMember": "You can only attach invoices for studios you work with.",
+        "fileType": "Attach a PDF or a photo (PNG, JPEG, WebP or HEIC).",
+        "fileSize": "That file is over 20 MB.",
+        "unavailable": "Uploads aren’t available right now. Try again later.",
+        "invalidFile": "That file can’t be attached to this invoice. Attach it again."
+      }
+    },
     "invoices": {
       "title": "Invoices",
       "subtitle": "Bill studios and private clients",
