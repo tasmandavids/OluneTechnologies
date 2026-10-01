@@ -62,7 +62,8 @@
         "draft": "Borrador",
         "void": "Anulada"
       },
-      "viewSchedule": "Ver horario semanal"
+      "viewSchedule": "Ver horario semanal",
+      "noClassesThisWeek": "No hay clases esta semana."
     },
     "shop": {
       "title": "Tienda del estudio",
@@ -392,6 +393,84 @@
       "family": "Mi familia",
       "studio": "Todo el estudio",
       "bookPrivateLesson": "Reservar una clase particular"
+    },
+    "absences": {
+      "title": "Ausencias",
+      "subtitle": "Informa de las clases perdidas.",
+      "reportAbsence": "Informar de ausencia",
+      "reportedHeading": "Ausencias informadas",
+      "empty": "Aún no has informado de ninguna ausencia.",
+      "statusReported": "Informada",
+      "unnamedDancer": "Sin nombre",
+      "reasons": {
+        "sick": "Enfermedad",
+        "holiday": "Vacaciones / viaje",
+        "other": "Otro"
+      },
+      "form": {
+        "title": "Informar de una ausencia",
+        "dancer": "Bailarín/a",
+        "class": "Clase",
+        "selectClass": "Selecciona una clase…",
+        "date": "Fecha de la ausencia",
+        "reason": "Motivo",
+        "notes": "Notas (opcional)",
+        "notesPlaceholder": "Cualquier información adicional para el estudio…",
+        "cancel": "Cancelar",
+        "submit": "Informar de ausencia",
+        "submitting": "Enviando…"
+      }
+    },
+    "privateLessons": {
+      "title": "Clases particulares",
+      "subtitle": "Solicita una clase individual con un profesor. Él confirmará y el estudio enviará la factura una vez reservada.",
+      "noDancers": "Aún no hay bailarines vinculados a tu cuenta. Contacta con tu estudio para darte de alta.",
+      "noTeachers": "Ahora mismo no hay profesores disponibles para clases particulares.",
+      "requestHeading": "Solicitar una clase",
+      "sent": "Solicitud enviada: te avisaremos cuando el profesor responda.",
+      "teacher": "Profesor/a",
+      "teacherFallback": "Profesor/a",
+      "dancer": "Bailarín/a",
+      "dancerFallback": "Bailarín/a",
+      "availability": "Disponibilidad de {name}",
+      "thisTeacher": "este profesor",
+      "noWindows": "No hay franjas publicadas: aun así puedes solicitar una hora.",
+      "date": "Fecha",
+      "from": "Desde",
+      "to": "Hasta",
+      "location": "Lugar (opcional)",
+      "locationPlaceholder": "p. ej. Sala 2, o Zoom",
+      "note": "Nota para el profesor (opcional)",
+      "notePlaceholder": "p. ej. Preparando un solo para el festival",
+      "send": "Enviar solicitud",
+      "sending": "Enviando…",
+      "myRequests": "Mis solicitudes",
+      "noRequests": "Aún no hay solicitudes.",
+      "bookingLine": "{student} con {teacher}",
+      "teacherLower": "el profesor",
+      "declinedReason": "Motivo: {note}",
+      "statuses": {
+        "requested": "Pendiente",
+        "accepted": "Confirmada",
+        "declined": "Rechazada",
+        "cancelled": "Cancelada"
+      },
+      "cancelRequest": "Cancelar solicitud"
+    },
+    "costumes": {
+      "title": "Vestuario y festival",
+      "subtitle": "El vestuario de tus bailarines, las fechas de prueba y la información del festival en un solo lugar.",
+      "returnRequired": "Devolución obligatoria",
+      "size": "Talla",
+      "customSize": "O escribe una talla personalizada…",
+      "notes": "Notas (opcional)",
+      "notesPlaceholder": "p. ej. entre S y M, complexión delgada"
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "unread": "{count, plural, one {# sin leer} other {# sin leer}}",
+      "allCaughtUp": "Todo al día",
+      "markAsRead": "Marcar como leída"
     }
   }
 }

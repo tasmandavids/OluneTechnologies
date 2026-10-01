@@ -1,6 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useFormatDateOnly } from "@/lib/i18n/format";
+import { useShortDayNames } from "@/lib/i18n/client";
 
 import { useMemo, useState, useTransition } from "react";
 import {
@@ -8,7 +10,6 @@ import {
   cancelBookingRequest,
 } from "@/app/portal/parent/private-lessons/actions";
 import {
-  DAY_NAMES,
   type BookableChild,
   type BookableTeacher,
   type ParentBooking,
@@ -20,13 +21,6 @@ const STATUS_STYLES: Record<PrivateLessonStatus, string> = {
   accepted: "bg-green-100 text-green-700",
   declined: "bg-red-100 text-red-600",
   cancelled: "bg-base-200 text-base-content/50",
-};
-
-const STATUS_LABELS: Record<PrivateLessonStatus, string> = {
-  requested: "Pending",
-  accepted: "Confirmed",
-  declined: "Declined",
-  cancelled: "Cancelled",
 };
 
 const EMPTY = {
@@ -49,6 +43,8 @@ export default function BookPrivateLesson({
   bookings: ParentBooking[];
 }) {
   const formatDate = useFormatDateOnly({ weekday: "short", month: "short", day: "numeric" });
+  const t = useTranslations("parent.privateLessons");
+  const shortDays = useShortDayNames();
   const [form, setForm] = useState({
     ...EMPTY,
     teacherId: teachers[0]?.id ?? "",
@@ -111,54 +107,45 @@ export default function BookPrivateLesson({
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-base-content">Private lessons</h1>
-        <p className="text-sm text-base-content/60 mt-0.5">
-          Request a one-on-one lesson with a teacher. They&apos;ll confirm, and the studio will
-          send an invoice once it&apos;s booked.
-        </p>
+        <h1 className="text-2xl font-bold text-base-content">{t("title")}</h1>
+        <p className="text-sm text-base-content/60 mt-0.5">{t("subtitle")}</p>
       </div>
 
       {students.length === 0 ? (
         <div className="border-2 border-dashed border-base-300 rounded-xl p-8 text-center">
-          <p className="text-base-content/50 text-sm">
-            No dancers are linked to your account yet. Contact your studio to get set up.
-          </p>
+          <p className="text-base-content/50 text-sm">{t("noDancers")}</p>
         </div>
       ) : teachers.length === 0 ? (
         <div className="border-2 border-dashed border-base-300 rounded-xl p-8 text-center">
-          <p className="text-base-content/50 text-sm">
-            No teachers are available for private lessons right now.
-          </p>
+          <p className="text-base-content/50 text-sm">{t("noTeachers")}</p>
         </div>
       ) : (
         <section className="bg-surface rounded-xl p-5 shadow-sm space-y-4">
-          <h2 className="font-semibold text-base-content">Request a lesson</h2>
+          <h2 className="font-semibold text-base-content">{t("requestHeading")}</h2>
 
           {error && <p className="text-sm text-red-500 bg-red-50 rounded p-2">{error}</p>}
           {ok && (
-            <p className="text-sm text-green-700 bg-green-50 rounded p-2">
-              Request sent — you&apos;ll be notified when the teacher responds.
-            </p>
+            <p className="text-sm text-green-700 bg-green-50 rounded p-2">{t("sent")}</p>
           )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block space-y-1">
-              <span className={labelClass}>Teacher</span>
+              <span className={labelClass}>{t("teacher")}</span>
               <select
                 value={form.teacherId}
                 onChange={(e) => setForm((f) => ({ ...f, teacherId: e.target.value }))}
                 className={fieldClass}
               >
-                {teachers.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name ?? "Teacher"}
+                {teachers.map((teacher) => (
+                  <option key={teacher.id} value={teacher.id}>
+                    {teacher.name ?? t("teacherFallback")}
                   </option>
                 ))}
               </select>
             </label>
 
             <label className="block space-y-1">
-              <span className={labelClass}>Dancer</span>
+              <span className={labelClass}>{t("dancer")}</span>
               <select
                 value={form.studentId}
                 onChange={(e) => setForm((f) => ({ ...f, studentId: e.target.value }))}
@@ -166,7 +153,7 @@ export default function BookPrivateLesson({
               >
                 {students.map((s) => (
                   <option key={s.studentId} value={s.studentId}>
-                    {s.name ?? "Dancer"}
+                    {s.name ?? t("dancerFallback")}
                   </option>
                 ))}
               </select>
@@ -176,17 +163,15 @@ export default function BookPrivateLesson({
           {selectedTeacher && (
             <div className="rounded-lg bg-base px-3 py-2">
               <p className="text-xs font-medium text-base-content/70">
-                {selectedTeacher.name ?? "This teacher"}&apos;s availability
+                {t("availability", { name: selectedTeacher.name ?? t("thisTeacher") })}
               </p>
               {selectedTeacher.slots.length === 0 ? (
-                <p className="text-xs text-base-content/40 mt-0.5">
-                  No published windows — you can still request a time.
-                </p>
+                <p className="text-xs text-base-content/40 mt-0.5">{t("noWindows")}</p>
               ) : (
                 <ul className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
                   {selectedTeacher.slots.map((s, i) => (
                     <li key={i} className="text-xs text-base-content/60">
-                      {DAY_NAMES[s.dayOfWeek].slice(0, 3)} {s.startTime}–{s.endTime}
+                      {shortDays[s.dayOfWeek]} {s.startTime}–{s.endTime}
                     </li>
                   ))}
                 </ul>
@@ -196,7 +181,7 @@ export default function BookPrivateLesson({
 
           <div className="grid gap-4 sm:grid-cols-3">
             <label className="block space-y-1">
-              <span className={labelClass}>Date</span>
+              <span className={labelClass}>{t("date")}</span>
               <input
                 type="date"
                 value={form.lessonDate}
@@ -206,7 +191,7 @@ export default function BookPrivateLesson({
               />
             </label>
             <label className="block space-y-1">
-              <span className={labelClass}>From</span>
+              <span className={labelClass}>{t("from")}</span>
               <input
                 type="time"
                 value={form.startTime}
@@ -215,7 +200,7 @@ export default function BookPrivateLesson({
               />
             </label>
             <label className="block space-y-1">
-              <span className={labelClass}>To</span>
+              <span className={labelClass}>{t("to")}</span>
               <input
                 type="time"
                 value={form.endTime}
@@ -226,10 +211,10 @@ export default function BookPrivateLesson({
           </div>
 
           <label className="block space-y-1">
-            <span className={labelClass}>Location (optional)</span>
+            <span className={labelClass}>{t("location")}</span>
             <input
               type="text"
-              placeholder="e.g. Studio 2, or Zoom"
+              placeholder={t("locationPlaceholder")}
               value={form.locationName}
               onChange={(e) => setForm((f) => ({ ...f, locationName: e.target.value }))}
               className={fieldClass}
@@ -237,10 +222,10 @@ export default function BookPrivateLesson({
           </label>
 
           <label className="block space-y-1">
-            <span className={labelClass}>Note for the teacher (optional)</span>
+            <span className={labelClass}>{t("note")}</span>
             <input
               type="text"
-              placeholder="e.g. Working towards a solo for the recital"
+              placeholder={t("notePlaceholder")}
               value={form.parentNote}
               onChange={(e) => setForm((f) => ({ ...f, parentNote: e.target.value }))}
               className={fieldClass}
@@ -252,17 +237,17 @@ export default function BookPrivateLesson({
             disabled={!canSubmit || pending}
             className="btn-brand rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
           >
-            {pending ? "Sending…" : "Send request"}
+            {pending ? t("sending") : t("send")}
           </button>
         </section>
       )}
 
       <section className="space-y-3">
         <h2 className="text-sm font-semibold text-base-content/70 uppercase tracking-wide">
-          My requests
+          {t("myRequests")}
         </h2>
         {bookings.length === 0 ? (
-          <p className="text-sm text-base-content/40 italic">No requests yet.</p>
+          <p className="text-sm text-base-content/40 italic">{t("noRequests")}</p>
         ) : (
           <div className="space-y-2">
             {bookings.map((b) => (
@@ -270,7 +255,7 @@ export default function BookPrivateLesson({
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-medium text-base-content">
-                      {b.studentName ?? "Dancer"} with {b.teacherName ?? "teacher"}
+                      {t("bookingLine", { student: b.studentName ?? t("dancerFallback"), teacher: b.teacherName ?? t("teacherLower") })}
                     </p>
                     <p className="text-xs text-base-content/60">
                       {formatDate(b.lessonDate)} · {b.startTime}–{b.endTime}
@@ -278,14 +263,14 @@ export default function BookPrivateLesson({
                     </p>
                     {b.status === "declined" && b.teacherResponseNote && (
                       <p className="text-xs text-red-500 mt-0.5">
-                        Reason: {b.teacherResponseNote}
+                        {t("declinedReason", { note: b.teacherResponseNote })}
                       </p>
                     )}
                   </div>
                   <span
                     className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[b.status]}`}
                   >
-                    {STATUS_LABELS[b.status]}
+                    {t(`statuses.${b.status}`)}
                   </span>
                 </div>
                 {b.status === "requested" && (
@@ -294,7 +279,7 @@ export default function BookPrivateLesson({
                     disabled={pending}
                     className="text-xs text-red-500 hover:underline"
                   >
-                    Cancel request
+                    {t("cancelRequest")}
                   </button>
                 )}
               </div>

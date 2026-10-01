@@ -62,7 +62,8 @@
       "invoicePayment": "Fattura",
       "tableActions": "Azioni",
       "viewBilling": "Fatturazione e pagamenti",
-      "viewSchedule": "Vedi l'orario settimanale"
+      "viewSchedule": "Vedi l'orario settimanale",
+      "noClassesThisWeek": "Nessuna lezione questa settimana."
     },
     "shop": {
       "title": "Negozio dello studio",
@@ -392,6 +393,84 @@
         "note": "Nota",
         "other": "Altro"
       }
+    },
+    "absences": {
+      "title": "Assenze",
+      "subtitle": "Segnala le lezioni perse.",
+      "reportAbsence": "Segnala assenza",
+      "reportedHeading": "Assenze segnalate",
+      "empty": "Nessuna assenza segnalata finora.",
+      "statusReported": "Segnalata",
+      "unnamedDancer": "Senza nome",
+      "reasons": {
+        "sick": "Malattia",
+        "holiday": "Vacanza / viaggio",
+        "other": "Altro"
+      },
+      "form": {
+        "title": "Segnala un'assenza",
+        "dancer": "Allievo/a",
+        "class": "Corso",
+        "selectClass": "Scegli un corso…",
+        "date": "Data dell'assenza",
+        "reason": "Motivo",
+        "notes": "Note (facoltativo)",
+        "notesPlaceholder": "Altre informazioni utili per lo studio…",
+        "cancel": "Annulla",
+        "submit": "Segnala assenza",
+        "submitting": "Invio…"
+      }
+    },
+    "privateLessons": {
+      "title": "Lezioni private",
+      "subtitle": "Richiedi una lezione individuale a un insegnante. Confermerà lui e lo studio invierà la fattura una volta prenotata.",
+      "noDancers": "Non ci sono ancora allievi collegati al tuo account. Contatta lo studio per l'attivazione.",
+      "noTeachers": "Al momento nessun insegnante è disponibile per lezioni private.",
+      "requestHeading": "Richiedi una lezione",
+      "sent": "Richiesta inviata: ti avviseremo appena l'insegnante risponde.",
+      "teacher": "Insegnante",
+      "teacherFallback": "Insegnante",
+      "dancer": "Allievo/a",
+      "dancerFallback": "Allievo/a",
+      "availability": "Disponibilità di {name}",
+      "thisTeacher": "questo insegnante",
+      "noWindows": "Nessuna fascia pubblicata: puoi comunque proporre un orario.",
+      "date": "Data",
+      "from": "Dalle",
+      "to": "Alle",
+      "location": "Luogo (facoltativo)",
+      "locationPlaceholder": "es. Sala 2, oppure Zoom",
+      "note": "Nota per l'insegnante (facoltativo)",
+      "notePlaceholder": "es. Preparazione di un assolo per il saggio",
+      "send": "Invia richiesta",
+      "sending": "Invio…",
+      "myRequests": "Le mie richieste",
+      "noRequests": "Nessuna richiesta finora.",
+      "bookingLine": "{student} con {teacher}",
+      "teacherLower": "l'insegnante",
+      "declinedReason": "Motivo: {note}",
+      "statuses": {
+        "requested": "In attesa",
+        "accepted": "Confermata",
+        "declined": "Rifiutata",
+        "cancelled": "Annullata"
+      },
+      "cancelRequest": "Annulla richiesta"
+    },
+    "costumes": {
+      "title": "Costumi e saggio",
+      "subtitle": "I costumi dei tuoi allievi, le date delle prove e le informazioni sul saggio in un unico posto.",
+      "returnRequired": "Da restituire",
+      "size": "Taglia",
+      "customSize": "Oppure scrivi una taglia personalizzata…",
+      "notes": "Note (facoltativo)",
+      "notesPlaceholder": "es. tra la S e la M, corporatura snella"
+    },
+    "notifications": {
+      "title": "Notifiche",
+      "unread": "{count, plural, one {# non letta} other {# non lette}}",
+      "allCaughtUp": "Tutto aggiornato",
+      "markAsRead": "Segna come letta"
     }
   }
 }

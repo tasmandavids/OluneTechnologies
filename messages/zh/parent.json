@@ -62,7 +62,8 @@
         "draft": "草稿",
         "void": "已作废"
       },
-      "viewSchedule": "查看每周日程"
+      "viewSchedule": "查看每周日程",
+      "noClassesThisWeek": "本周没有课程。"
     },
     "shop": {
       "title": "工作室商店",
@@ -392,6 +393,84 @@
       "family": "我的家庭",
       "studio": "整个工作室",
       "bookPrivateLesson": "预约私教课"
+    },
+    "absences": {
+      "title": "缺课",
+      "subtitle": "告知错过的课程。",
+      "reportAbsence": "报告缺课",
+      "reportedHeading": "已报告的缺课",
+      "empty": "还没有报告过缺课。",
+      "statusReported": "已报告",
+      "unnamedDancer": "未命名",
+      "reasons": {
+        "sick": "身体不适",
+        "holiday": "假期 / 出行",
+        "other": "其他"
+      },
+      "form": {
+        "title": "报告一次缺课",
+        "dancer": "学员",
+        "class": "课程",
+        "selectClass": "请选择课程…",
+        "date": "缺课日期",
+        "reason": "原因",
+        "notes": "备注（选填）",
+        "notesPlaceholder": "如有需要告知舞蹈室的信息，请填写…",
+        "cancel": "取消",
+        "submit": "报告缺课",
+        "submitting": "提交中…"
+      }
+    },
+    "privateLessons": {
+      "title": "私教课",
+      "subtitle": "向老师申请一对一课程。老师确认后，舞蹈室会发出账单。",
+      "noDancers": "你的账号还没有关联学员，请联系舞蹈室开通。",
+      "noTeachers": "目前没有老师可接私教课。",
+      "requestHeading": "申请课程",
+      "sent": "申请已发送——老师回复后会通知你。",
+      "teacher": "老师",
+      "teacherFallback": "老师",
+      "dancer": "学员",
+      "dancerFallback": "学员",
+      "availability": "{name} 的可约时间",
+      "thisTeacher": "这位老师",
+      "noWindows": "暂无公开的时间段——你仍可以申请时间。",
+      "date": "日期",
+      "from": "从",
+      "to": "至",
+      "location": "地点（选填）",
+      "locationPlaceholder": "例如：2号教室，或 Zoom",
+      "note": "给老师的留言（选填）",
+      "notePlaceholder": "例如：为汇演独舞做准备",
+      "send": "发送申请",
+      "sending": "发送中…",
+      "myRequests": "我的申请",
+      "noRequests": "还没有申请。",
+      "bookingLine": "{student}，老师：{teacher}",
+      "teacherLower": "老师",
+      "declinedReason": "原因：{note}",
+      "statuses": {
+        "requested": "待确认",
+        "accepted": "已确认",
+        "declined": "已拒绝",
+        "cancelled": "已取消"
+      },
+      "cancelRequest": "取消申请"
+    },
+    "costumes": {
+      "title": "服装与汇演",
+      "subtitle": "孩子的服装、试衣日期和汇演信息都在这里。",
+      "returnRequired": "需归还",
+      "size": "尺码",
+      "customSize": "或自行输入尺码…",
+      "notes": "备注（选填）",
+      "notesPlaceholder": "例如：介于 S 和 M 之间，身形偏瘦"
+    },
+    "notifications": {
+      "title": "通知",
+      "unread": "{count} 条未读",
+      "allCaughtUp": "全部已读",
+      "markAsRead": "标为已读"
     }
   }
 }

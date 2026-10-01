@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { useNumberFormat } from "@/lib/i18n/format";
 
@@ -70,6 +70,7 @@ export function CostumeHub({
   onUpdateSize: (costumeId: string, sizeLabel: string, sizeNotes: string) => Promise<void>;
 }) {
   const locale = useLocale();
+  const t = useTranslations("parent.costumes");
   const NZD = useNumberFormat({ style: "currency", currency: "NZD", maximumFractionDigits: 2 });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [sizeLabel, setSizeLabel] = useState("");
@@ -94,8 +95,8 @@ export function CostumeHub({
   return (
     <div className="mx-auto max-w-3xl space-y-8 p-6">
       <div>
-        <h1 className="text-2xl font-black tracking-tight text-ink">Costumes & Recital</h1>
-        <p className="text-sm text-muted">Your dancers&apos; costumes, fitting dates, and recital info in one place.</p>
+        <h1 className="text-2xl font-black tracking-tight text-ink">{t("title")}</h1>
+        <p className="text-sm text-muted">{t("subtitle")}</p>
       </div>
 
       {/* Urgent: sizes needed */}
@@ -217,7 +218,7 @@ export function CostumeHub({
                       </p>
                     )}
                     {c.returnRequired && (
-                      <p className="text-xs text-[--brand-hot] font-semibold">Return required</p>
+                      <p className="text-xs text-[--brand-hot] font-semibold">{t("returnRequired")}</p>
                     )}
                   </div>
                 </div>
@@ -226,7 +227,7 @@ export function CostumeHub({
                 {editingId === c.id ? (
                   <div className="mt-4 space-y-3 pt-4">
                     <div>
-                      <label className="block text-xs font-semibold text-muted mb-1">Size</label>
+                      <label className="block text-xs font-semibold text-muted mb-1">{t("size")}</label>
                       <div className="flex flex-wrap gap-1.5">
                         {COMMON_SIZES.map((s) => (
                           <button
@@ -247,17 +248,17 @@ export function CostumeHub({
                         type="text"
                         value={sizeLabel}
                         onChange={(e) => setSizeLabel(e.target.value)}
-                        placeholder="Or type a custom size…"
+                        placeholder={t("customSize")}
                         className="mt-2 w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-muted mb-1">Notes (optional)</label>
+                      <label className="block text-xs font-semibold text-muted mb-1">{t("notes")}</label>
                       <input
                         type="text"
                         value={sizeNotes}
                         onChange={(e) => setSizeNotes(e.target.value)}
-                        placeholder="e.g. between S and M, slim build"
+                        placeholder={t("notesPlaceholder")}
                         className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
                       />
                     </div>

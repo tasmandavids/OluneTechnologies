@@ -66,8 +66,13 @@ for (const dir of SCAN_DIRS) {
       if (/^\s*(\/\/|\*|\/\*)/.test(line)) return; // comments
 
       if (isTsx) {
-        // JSX text nodes: >text< on one line
+        // JSX text nodes: >text< on one line.
+        //
+        // The `>` of an arrow function makes `=> Promise<void>` look like a text
+        // node holding "Promise", so skip a match whose `>` is the tail of `=>`.
+        // Without this the sweep counted 15 generic type parameters as copy.
         for (const m of line.matchAll(/>([^<>{}\n]+)</g)) {
+          if (m.index > 0 && line[m.index - 1] === "=") continue;
           if (isProse(m[1])) findings.push({ file: rel, line: n, kind: "jsx-text", text: m[1].trim() });
         }
         // User-facing attributes with literal values
@@ -150,7 +155,7 @@ if (process.argv.includes("--json")) {
   // total: app/api/stripe/connect/route.ts passes its messages through a
   // redirect query param that the Connections page renders, so some route
   // literals genuinely are user-facing and must keep being counted.
-  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 819);
+  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 770);
   // 30 → 25 (2026-10-01): parent shopping, events, autopay, balances and
   // enrolment now format currency using the signed-in reader's locale.
   const MAX_LOCALE_SITES = Number(process.env.I18N_MAX_LOCALE_SITES ?? 25);

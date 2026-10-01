@@ -1,6 +1,7 @@
 "use client";
 
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useFullDayNames, useFormatTimeShort } from "@/lib/i18n/client";
 
 import { useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,21 +27,8 @@ export type MakeupCredit = {
   expiresAt: string | null;
 };
 
-const REASONS = [
-  { value: "sick", label: "Sick / unwell" },
-  { value: "holiday", label: "Holiday / travel" },
-  { value: "other", label: "Other" },
-];
-
-const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-function fmt12(time: string | null) {
-  if (!time) return "";
-  const [h, m] = time.split(":").map(Number);
-  const period = h < 12 ? "am" : "pm";
-  const hour = h % 12 || 12;
-  return m === 0 ? `${hour}${period}` : `${hour}:${String(m).padStart(2, "0")}${period}`;
-}
+// `value` is what absences.reason stores; only the label is translated.
+const REASON_VALUES = ["sick", "holiday", "other"] as const;
 
 export function AbsenceManager({
   dancers,
@@ -57,6 +45,9 @@ export function AbsenceManager({
     notes: string;
   }) => Promise<void>;
 }) {
+  const t = useTranslations("parent.absences");
+  const dayNames = useFullDayNames();
+  const formatTime = useFormatTimeShort();
   const locale = useLocale();
   const [showForm, setShowForm] = useState(false);
   const [selectedChild, setSelectedChild] = useState(dancers[0]?.studentId ?? "");
@@ -82,26 +73,26 @@ export function AbsenceManager({
     <div className="mx-auto max-w-3xl space-y-8 p-6">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-ink">Absences</h1>
-          <p className="text-sm text-muted">Report missed classes.</p>
+          <h1 className="text-2xl font-black tracking-tight text-ink">{t("title")}</h1>
+          <p className="text-sm text-muted">{t("subtitle")}</p>
         </div>
         <button
           type="button"
           onClick={() => setShowForm(true)}
           className="rounded-xl bg-brand px-5 py-2.5 text-sm font-bold text-white transition hover:opacity-90"
         >
-          Report absence
+          {t("reportAbsence")}
         </button>
       </div>
 
       {/* Absence list */}
       <div>
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">
-          Reported absences
+          {t("reportedHeading")}
         </h2>
         {absences.length === 0 ? (
           <div className="box rounded-2xl px-6 py-10 text-center text-sm text-muted">
-            No absences reported yet.
+            {t("empty")}
           </div>
         ) : (
           <div className="space-y-2">
@@ -113,12 +104,12 @@ export function AbsenceManager({
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-ink">{a.className}</p>
                   <p className="text-xs text-muted">
-                    {a.studentName} · {new Date(a.absenceDate).toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "short" })} · {a.reason}
+                    {a.studentName} · {new Date(a.absenceDate).toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "short" })} · {t(`reasons.${a.reason}`)}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wide text-muted border border-[--hair]">
-                    Reported
+                    {t("statusReported")}
                   </span>
                 </div>
               </div>
@@ -143,42 +134,42 @@ export function AbsenceManager({
               exit={{ scale: 0.95, opacity: 0 }}
               className="w-full max-w-md rounded-2xl bg-canvas p-6 shadow-2xl"
             >
-              <h2 className="mb-4 text-lg font-black text-ink">Report an absence</h2>
+              <h2 className="mb-4 text-lg font-black text-ink">{t("form.title")}</h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 {dancers.length > 1 && (
                   <div>
-                    <label className="block text-xs font-semibold text-muted mb-1">Dancer</label>
+                    <label className="block text-xs font-semibold text-muted mb-1">{t("form.dancer")}</label>
                     <select
                       value={selectedChild}
                       onChange={(e) => { setSelectedChild(e.target.value); setSelectedClass(""); }}
                       className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
                     >
                       {dancers.map((c) => (
-                        <option key={c.studentId} value={c.studentId}>{c.name ?? "Unnamed"}</option>
+                        <option key={c.studentId} value={c.studentId}>{c.name ?? t("unnamedDancer")}</option>
                       ))}
                     </select>
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-xs font-semibold text-muted mb-1">Class</label>
+                  <label className="block text-xs font-semibold text-muted mb-1">{t("form.class")}</label>
                   <select
                     value={selectedClass}
                     onChange={(e) => setSelectedClass(e.target.value)}
                     required
                     className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
                   >
-                    <option value="">Select a class…</option>
+                    <option value="">{t("form.selectClass")}</option>
                     {(child?.classes ?? []).map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.name} — {DAY_NAMES[c.dayOfWeek]} {fmt12(c.startTime)}
+                        {c.name} — {dayNames[c.dayOfWeek]} {formatTime(c.startTime)}
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-muted mb-1">Date of absence</label>
+                  <label className="block text-xs font-semibold text-muted mb-1">{t("form.date")}</label>
                   <input
                     type="date"
                     value={absenceDate}
@@ -189,32 +180,32 @@ export function AbsenceManager({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-muted mb-1">Reason</label>
+                  <label className="block text-xs font-semibold text-muted mb-1">{t("form.reason")}</label>
                   <div className="flex gap-2">
-                    {REASONS.map((r) => (
+                    {REASON_VALUES.map((r) => (
                       <button
-                        key={r.value}
+                        key={r}
                         type="button"
-                        onClick={() => setReason(r.value)}
+                        onClick={() => setReason(r)}
                         className={`flex-1 rounded-xl border px-3 py-2 text-xs font-semibold transition ${
-                          reason === r.value
+                          reason === r
                             ? "border-[--brand] bg-[color-mix(in_srgb,var(--brand)_10%,transparent)] text-ink"
                             : "border-[--hair] text-muted"
                         }`}
                       >
-                        {r.label}
+                        {t(`reasons.${r}`)}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-muted mb-1">Notes (optional)</label>
+                  <label className="block text-xs font-semibold text-muted mb-1">{t("form.notes")}</label>
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={2}
-                    placeholder="Any additional info for the studio…"
+                    placeholder={t("form.notesPlaceholder")}
                     className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink resize-none"
                   />
                 </div>
@@ -225,14 +216,14 @@ export function AbsenceManager({
                     onClick={() => setShowForm(false)}
                     className="flex-1 rounded-xl border border-[--hair] py-2.5 text-sm font-semibold text-ink"
                   >
-                    Cancel
+                    {t("form.cancel")}
                   </button>
                   <button
                     type="submit"
                     disabled={isPending}
                     className="flex-1 rounded-xl bg-brand py-2.5 text-sm font-bold text-white transition hover:opacity-90 disabled:opacity-50"
                   >
-                    {isPending ? "Reporting…" : "Report absence"}
+                    {isPending ? t("form.submitting") : t("form.submit")}
                   </button>
                 </div>
               </form>

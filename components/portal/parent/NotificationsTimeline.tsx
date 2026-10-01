@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -75,6 +77,7 @@ export function NotificationsTimeline({
   onMarkRead: (id: string) => Promise<void>;
   onMarkAllRead: () => Promise<void>;
 }) {
+  const t = useTranslations("parent.notifications");
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [isPending, startTransition] = useTransition();
 
@@ -85,9 +88,9 @@ export function NotificationsTimeline({
     <div className="mx-auto max-w-2xl space-y-6 p-6">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-ink">Notifications</h1>
+          <h1 className="text-2xl font-black tracking-tight text-ink">{t("title")}</h1>
           <p className="text-sm text-muted">
-            {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
+            {unreadCount > 0 ? t("unread", { count: unreadCount }) : t("allCaughtUp")}
           </p>
         </div>
         {unreadCount > 0 && (
@@ -146,7 +149,7 @@ export function NotificationsTimeline({
                   type="button"
                   onClick={() => startTransition(() => onMarkRead(n.id))}
                   className="absolute right-3 top-3 rounded-full p-1 text-muted opacity-0 transition-opacity hover:text-ink group-hover:opacity-100"
-                  title="Mark as read"
+                  title={t("markAsRead")}
                 >
                   ✕
                 </button>

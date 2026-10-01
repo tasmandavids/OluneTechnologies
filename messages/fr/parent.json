@@ -62,7 +62,8 @@
       "invoicePayment": "Facture",
       "tableActions": "Actions",
       "viewBilling": "Facturation et paiements",
-      "viewSchedule": "Voir le planning hebdomadaire"
+      "viewSchedule": "Voir le planning hebdomadaire",
+      "noClassesThisWeek": "Aucun cours cette semaine."
     },
     "shop": {
       "title": "Boutique du studio",
@@ -392,6 +393,84 @@
         "note": "Note",
         "other": "Autre"
       }
+    },
+    "absences": {
+      "title": "Absences",
+      "subtitle": "Signalez les cours manqués.",
+      "reportAbsence": "Signaler une absence",
+      "reportedHeading": "Absences signalées",
+      "empty": "Aucune absence signalée pour l'instant.",
+      "statusReported": "Signalée",
+      "unnamedDancer": "Sans nom",
+      "reasons": {
+        "sick": "Maladie",
+        "holiday": "Vacances / voyage",
+        "other": "Autre"
+      },
+      "form": {
+        "title": "Signaler une absence",
+        "dancer": "Danseur/se",
+        "class": "Cours",
+        "selectClass": "Choisissez un cours…",
+        "date": "Date de l'absence",
+        "reason": "Motif",
+        "notes": "Notes (facultatif)",
+        "notesPlaceholder": "Toute information utile pour le studio…",
+        "cancel": "Annuler",
+        "submit": "Signaler l'absence",
+        "submitting": "Envoi…"
+      }
+    },
+    "privateLessons": {
+      "title": "Cours particuliers",
+      "subtitle": "Demandez un cours individuel auprès d'un professeur. Il confirmera, puis le studio enverra la facture une fois le cours réservé.",
+      "noDancers": "Aucun danseur n'est encore rattaché à votre compte. Contactez votre studio pour l'inscription.",
+      "noTeachers": "Aucun professeur n'est disponible pour des cours particuliers actuellement.",
+      "requestHeading": "Demander un cours",
+      "sent": "Demande envoyée — vous serez prévenu dès la réponse du professeur.",
+      "teacher": "Professeur",
+      "teacherFallback": "Professeur",
+      "dancer": "Danseur/se",
+      "dancerFallback": "Danseur/se",
+      "availability": "Disponibilités de {name}",
+      "thisTeacher": "ce professeur",
+      "noWindows": "Aucun créneau publié — vous pouvez tout de même proposer un horaire.",
+      "date": "Date",
+      "from": "De",
+      "to": "À",
+      "location": "Lieu (facultatif)",
+      "locationPlaceholder": "p. ex. Salle 2, ou Zoom",
+      "note": "Message pour le professeur (facultatif)",
+      "notePlaceholder": "p. ex. Préparation d'un solo pour le gala",
+      "send": "Envoyer la demande",
+      "sending": "Envoi…",
+      "myRequests": "Mes demandes",
+      "noRequests": "Aucune demande pour l'instant.",
+      "bookingLine": "{student} avec {teacher}",
+      "teacherLower": "le professeur",
+      "declinedReason": "Motif : {note}",
+      "statuses": {
+        "requested": "En attente",
+        "accepted": "Confirmé",
+        "declined": "Refusé",
+        "cancelled": "Annulé"
+      },
+      "cancelRequest": "Annuler la demande"
+    },
+    "costumes": {
+      "title": "Costumes et gala",
+      "subtitle": "Les costumes de vos danseurs, les dates d'essayage et les infos du gala au même endroit.",
+      "returnRequired": "Retour obligatoire",
+      "size": "Taille",
+      "customSize": "Ou saisissez une taille personnalisée…",
+      "notes": "Notes (facultatif)",
+      "notesPlaceholder": "p. ex. entre S et M, silhouette fine"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "unread": "{count, plural, one {# non lue} other {# non lues}}",
+      "allCaughtUp": "Tout est à jour",
+      "markAsRead": "Marquer comme lue"
     }
   }
 }

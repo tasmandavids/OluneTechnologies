@@ -62,7 +62,8 @@
         "draft": "Draft",
         "void": "Void"
       },
-      "viewSchedule": "View weekly schedule"
+      "viewSchedule": "View weekly schedule",
+      "noClassesThisWeek": "No classes this week."
     },
     "shop": {
       "title": "Studio Shop",
@@ -392,6 +393,84 @@
       "family": "My family",
       "studio": "Whole studio",
       "bookPrivateLesson": "Book a private lesson"
+    },
+    "absences": {
+      "title": "Absences",
+      "subtitle": "Report missed classes.",
+      "reportAbsence": "Report absence",
+      "reportedHeading": "Reported absences",
+      "empty": "No absences reported yet.",
+      "statusReported": "Reported",
+      "unnamedDancer": "Unnamed",
+      "reasons": {
+        "sick": "Sick / unwell",
+        "holiday": "Holiday / travel",
+        "other": "Other"
+      },
+      "form": {
+        "title": "Report an absence",
+        "dancer": "Dancer",
+        "class": "Class",
+        "selectClass": "Select a class…",
+        "date": "Date of absence",
+        "reason": "Reason",
+        "notes": "Notes (optional)",
+        "notesPlaceholder": "Any additional info for the studio…",
+        "cancel": "Cancel",
+        "submit": "Report absence",
+        "submitting": "Reporting…"
+      }
+    },
+    "privateLessons": {
+      "title": "Private lessons",
+      "subtitle": "Request a one-on-one lesson with a teacher. They’ll confirm, and the studio will send an invoice once it’s booked.",
+      "noDancers": "No dancers are linked to your account yet. Contact your studio to get set up.",
+      "noTeachers": "No teachers are available for private lessons right now.",
+      "requestHeading": "Request a lesson",
+      "sent": "Request sent — you’ll be notified when the teacher responds.",
+      "teacher": "Teacher",
+      "teacherFallback": "Teacher",
+      "dancer": "Dancer",
+      "dancerFallback": "Dancer",
+      "availability": "{name}’s availability",
+      "thisTeacher": "This teacher",
+      "noWindows": "No published windows — you can still request a time.",
+      "date": "Date",
+      "from": "From",
+      "to": "To",
+      "location": "Location (optional)",
+      "locationPlaceholder": "e.g. Studio 2, or Zoom",
+      "note": "Note for the teacher (optional)",
+      "notePlaceholder": "e.g. Working towards a solo for the recital",
+      "send": "Send request",
+      "sending": "Sending…",
+      "myRequests": "My requests",
+      "noRequests": "No requests yet.",
+      "bookingLine": "{student} with {teacher}",
+      "teacherLower": "teacher",
+      "declinedReason": "Reason: {note}",
+      "statuses": {
+        "requested": "Pending",
+        "accepted": "Confirmed",
+        "declined": "Declined",
+        "cancelled": "Cancelled"
+      },
+      "cancelRequest": "Cancel request"
+    },
+    "costumes": {
+      "title": "Costumes & Recital",
+      "subtitle": "Your dancers’ costumes, fitting dates, and recital info in one place.",
+      "returnRequired": "Return required",
+      "size": "Size",
+      "customSize": "Or type a custom size…",
+      "notes": "Notes (optional)",
+      "notesPlaceholder": "e.g. between S and M, slim build"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "unread": "{count, plural, one {# unread} other {# unread}}",
+      "allCaughtUp": "All caught up",
+      "markAsRead": "Mark as read"
     }
   }
 }
