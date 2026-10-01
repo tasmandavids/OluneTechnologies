@@ -8,26 +8,26 @@
 //
 //  Requires env: STRIPE_CONNECT_WEBHOOK_SECRET
 //
-//  ── KNOWN GAP: this endpoint no longer hears about studio accounts
+//  ── This endpoint does NOT hear about studio accounts — by design
 //  Studio accounts are Accounts v2 (see lib/stripe/connect.ts). v2 status
 //  changes are emitted as `v2.core.account[configuration.merchant]
 //  .capability_status_updated` and friends, and a CLASSIC webhook endpoint
 //  cannot subscribe to those — the API rejects the event names outright.
 //  v2 events are delivered to an Event Destination
 //  (`stripe.v2.core.eventDestinations`) instead, which is a different payload
-//  shape and a different route.
+//  shape and a different route: /api/webhooks/stripe-v2.
 //
-//  Until that exists, a studio's status is refreshed:
-//    • on return from onboarding — /api/stripe/connect/return calls
-//      syncStripeAccountStatus(), which is the common case; and
-//    • on demand — the refresh action on /portal/admin/payments.
+//  So a studio's status is refreshed from four places, and this is not one of
+//  them:
+//    • /api/webhooks/stripe-v2 — the Event Destination, within seconds;
+//    • /api/cron/sync-connect-accounts — nightly sweep, in case the
+//      destination is unregistered, disabled or pointed at the wrong host;
+//    • /api/stripe/connect/return — on return from onboarding; and
+//    • the refresh action on /portal/admin/payments — on demand.
 //
-//  What is NOT covered is Stripe restricting an already-onboarded studio
-//  later (expired documents, a review). Olune will keep believing that studio
-//  is chargeable until something calls the sync, so charges will start failing
-//  before the dashboard admits anything is wrong. Building the Event
-//  Destination is the fix; a periodic sync of connected accounts would also
-//  close it.
+//  This route is kept for platform-level Connect events that ARE classic
+//  (transfers, payouts on the platform account). If it ever starts logging
+//  `account.updated` for a studio, something is creating v1 accounts again.
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
