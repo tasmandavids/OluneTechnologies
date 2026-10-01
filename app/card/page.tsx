@@ -6,7 +6,7 @@
 
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { CardPageClient } from "@/components/marketing/landing/CardPageClient";
+import CardPage from "@/components/marketing/aurora/CardPage";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { originForHost, rootUrl } from "@/lib/seo";
 
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   alternates: { canonical: rootUrl("/card") },
 };
 
-export default async function CardPage() {
+export default async function CardRoute() {
   const origin = originForHost((await headers()).get("host"));
 
   return (
@@ -34,7 +34,7 @@ export default async function CardPage() {
           brand: { "@type": "Organization", name: "Olune", url: origin },
         }}
       />
-      <CardPageClient />
+      <CardPage />
     </>
   );
 }

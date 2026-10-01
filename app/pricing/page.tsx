@@ -152,7 +152,7 @@ export default function PricingPage() {
                 padding: "32px 28px",
                 display: "flex",
                 flexDirection: "column",
-                boxShadow: plan.featured ? "0 26px 56px -34px rgba(139,124,240,0.9)" : "0 18px 40px -34px rgba(26,21,53,0.5)",
+                boxShadow: plan.featured ? "0 26px 56px -34px rgba(139,124,240,0.9)" : "0 18px 40px -34px rgba(20,19,26,0.5)",
               }}
             >
               <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: 6 }}>

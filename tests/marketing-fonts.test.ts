@@ -5,9 +5,9 @@ import { describe, expect, it } from "vitest";
 const ROOT = resolve(__dirname, "..");
 const FONT_MODULE = join(ROOT, "components/marketing/landing/fonts.ts");
 const LOCAL_FONTS = [
-  "archivo-latin.woff2",
-  "bodoni-moda-latin.woff2",
-  "bodoni-moda-latin-italic.woff2",
+  "geist-latin-wght.woff2",
+  "hanken-grotesk-latin-wght.woff2",
+  "geist-mono-latin-500.woff2",
 ] as const;
 
 describe("marketing fonts", () => {
@@ -22,13 +22,16 @@ describe("marketing fonts", () => {
     const path = join(ROOT, "public/fonts", fontFile);
 
     expect(existsSync(path)).toBe(true);
-    expect(statSync(path).size).toBeGreaterThan(20_000);
+    expect(statSync(path).size).toBeGreaterThan(8_000);
   });
 
-  it("ships the Archivo redistribution licence", () => {
-    const licence = readFileSync(join(ROOT, "public/fonts/ARCHIVO-OFL.txt"), "utf8");
+  it.each([
+    ["GEIST-OFL.txt", "The Geist Project Authors"],
+    ["HANKEN-GROTESK-OFL.txt", "The Hanken Grotesk Project Authors"],
+  ])("ships the %s redistribution licence", (file, authors) => {
+    const licence = readFileSync(join(ROOT, "public/fonts", file), "utf8");
 
-    expect(licence).toContain("The Archivo Project Authors");
+    expect(licence).toContain(authors);
     expect(licence).toContain("SIL OPEN FONT LICENSE Version 1.1");
   });
 });

@@ -9,7 +9,7 @@
 
 import { DISPLAY, BODY } from "@/components/marketing/landing/chrome";
 
-const NAVY = "#1a1535";
+const NAVY = "#15141a";
 
 export type LegalSection = {
   heading: string;
@@ -22,8 +22,8 @@ export function LegalBullets({ items }: { items: string[] }) {
   return (
     <ul style={{ margin: "0 0 20px", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 12 }}>
       {items.map((item, i) => (
-        <li key={i} style={{ display: "flex", gap: 12, fontSize: 16, lineHeight: 1.72, color: "rgba(26,21,53,0.66)" }}>
-          <span aria-hidden style={{ flexShrink: 0, marginTop: 10, width: 5, height: 5, borderRadius: "50%", background: "#8b7cf0" }} />
+        <li key={i} style={{ display: "flex", gap: 12, fontSize: 16, lineHeight: 1.72, color: "rgba(20,19,26,0.66)" }}>
+          <span aria-hidden style={{ flexShrink: 0, marginTop: 10, width: 5, height: 5, borderRadius: "50%", background: "#6b66c9" }} />
           <span>{item}</span>
         </li>
       ))}
@@ -42,7 +42,7 @@ export function LegalSectionBlock({ section, level = 2 }: { section: LegalSectio
             fontWeight: level === 2 ? 500 : 700,
             fontSize: level === 2 ? "clamp(22px, 2.4vw, 30px)" : 17,
             letterSpacing: level === 2 ? "-0.01em" : "0.01em",
-            color: level === 2 ? NAVY : "rgba(26,21,53,0.8)",
+            color: level === 2 ? NAVY : "rgba(20,19,26,0.8)",
             margin: level === 2 ? "0 0 16px" : "0 0 12px",
           }}
         >
@@ -50,7 +50,7 @@ export function LegalSectionBlock({ section, level = 2 }: { section: LegalSectio
         </HeadingTag>
       )}
       {section.paragraphs?.map((p, i) => (
-        <p key={i} style={{ fontSize: 16, lineHeight: 1.75, color: "rgba(26,21,53,0.66)", margin: "0 0 18px" }}>
+        <p key={i} style={{ fontSize: 16, lineHeight: 1.75, color: "rgba(20,19,26,0.66)", margin: "0 0 18px" }}>
           {p}
         </p>
       ))}

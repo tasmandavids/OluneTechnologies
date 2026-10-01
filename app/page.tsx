@@ -26,14 +26,14 @@ import {
 } from "@/lib/seo";
 
 // The pages Olune wants Google to treat as its top-level sections. Kept in
-// sync with the footer nav in OluneLanding and with MARKETING_ROUTES in
+// sync with the footer nav in components/marketing/aurora/chrome.tsx and with MARKETING_ROUTES in
 // app/sitemap.ts — a page Google can't reach from the homepage is a page it
 // won't consider a sitelink candidate.
 const PRIMARY_NAV = [
   {
     name: "Pricing",
     path: "/pricing",
-    description: "Flat plans in NZD from $19/month, with your studio website included.",
+    description: "Flat plans in NZD from $29/month, with unlimited students on every plan.",
   },
   {
     name: "Guides",
@@ -72,7 +72,7 @@ const PRIMARY_NAV = [
   },
 ];
 
-const OluneLanding = dynamic(() => import("@/components/marketing/OluneLanding"));
+const LandingPage = dynamic(() => import("@/components/marketing/aurora/LandingPage"));
 
 export async function generateMetadata(): Promise<Metadata> {
   const host = (await headers()).get("host");
@@ -135,7 +135,7 @@ export default async function HomePage({
         <JsonLd data={organizationEntityJsonLd(origin)} />
         <JsonLd data={organizationJsonLd(origin)} />
         <JsonLd data={siteNavigationJsonLd(origin, PRIMARY_NAV)} />
-        <OluneLanding />
+        <LandingPage />
       </>
     );
   }

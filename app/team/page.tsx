@@ -5,7 +5,7 @@
 // ============================================================================
 
 import type { Metadata } from "next";
-import { TeamPageClient } from "@/components/marketing/landing/TeamPageClient";
+import TeamPage from "@/components/marketing/aurora/TeamPage";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { organizationJsonLd, originForHost, rootUrl } from "@/lib/seo";
 import { headers } from "next/headers";
@@ -17,13 +17,13 @@ export const metadata: Metadata = {
   alternates: { canonical: rootUrl("/team") },
 };
 
-export default async function TeamPage() {
+export default async function TeamRoute() {
   const origin = originForHost((await headers()).get("host"));
 
   return (
     <>
       <JsonLd data={organizationJsonLd(origin)} />
-      <TeamPageClient />
+      <TeamPage />
     </>
   );
 }

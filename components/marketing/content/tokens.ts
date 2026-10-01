@@ -12,15 +12,14 @@
 //  Keep these in sync with chrome.tsx if the palette moves.
 // ============================================================================
 
-export const ACCENT = "#8b7cf0";
-export const NAVY = "#1a1535";
-// "Olune Dollar" supplies U+0024 only (see app/globals.css) — a single-bar
-// dollar so NZ prices don't render with the two-bar glyph Bodoni draws.
-export const DISPLAY = "'Olune Dollar', var(--font-landing-display), 'Bodoni Moda', serif";
-export const BODY = "var(--font-landing-body), 'Archivo', sans-serif";
+// Aurora Glass palette (components/marketing/aurora/aurora.css).
+export const ACCENT = "#6b66c9";
+export const NAVY = "#15141a";
+export const DISPLAY = "var(--font-landing-display), 'Geist', system-ui, sans-serif";
+export const BODY = "var(--font-landing-body), 'Hanken Grotesk', system-ui, sans-serif";
 
-export const MUTED = "rgba(26,21,53,0.62)";
-export const FAINT = "rgba(26,21,53,0.45)";
-export const HAIRLINE = "1px solid rgba(26,21,53,0.09)";
-export const PAGE_BG = "#f7f6fb";
-export const HERO_BG = "linear-gradient(180deg, #efeafb 0%, #f7f6fb 60%)";
+export const MUTED = "#6c6a7e";
+export const FAINT = "rgba(20,19,26,0.45)";
+export const HAIRLINE = "1px solid rgba(20,19,26,0.085)";
+export const PAGE_BG = "#f2f1ed";
+export const HERO_BG = "radial-gradient(70% 60% at 20% 0%, rgba(166,162,232,.34), transparent 70%), radial-gradient(60% 50% at 90% 10%, rgba(159,216,200,.26), transparent 70%), #f2f1ed";
