@@ -1,5 +1,7 @@
 # Olune — Road to Market Perfection
 
+> **Superseded for current status (1 Oct 2026):** see `NEXT_STEPS_HANDOFF.md`. Since this audit: §0.1 is settled (`wnoxcwihrzbxvogvmhqv` is production), §0.2–0.4 are done, Sentry and a Redis-backed rate limiter landed (§1.1–1.2), translation parity is enforced in CI (§5.1), and operator MFA is deployed (§3.3). Still open: §1.3 cron cadence, §2.1 Terms of Service, §3.2 RLS suite, and all of §4.
+
 **Audit date:** 6 August 2026
 **Branch audited:** `ttest` (40 uncommitted files) · migration frontier **0102** · 187 commits since 22 June
 **Baseline health:** `typecheck` clean · `lint` clean · CSP + security headers present · RLS in place · 38 unit test files

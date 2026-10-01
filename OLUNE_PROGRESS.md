@@ -1,5 +1,7 @@
 # Olune — Build Progress
 
+> Historical session log. For where things stand now, read `NEXT_STEPS_HANDOFF.md`.
+
 ## Stack Decision Log
 The starter codebase uses **Supabase** (not Prisma) as the ORM/database layer, with PostgreSQL RLS for multi-tenancy. Next-Auth was replaced by Supabase Auth. All architecture decisions follow this pattern.
 
