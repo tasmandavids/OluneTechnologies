@@ -1,5 +1,7 @@
 "use client";
 
+import { useFormatDateOnly } from "@/lib/i18n/format";
+
 import { confirmDialog } from "@/lib/feedback";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
@@ -28,14 +30,6 @@ type DraftTerm = {
 
 const EMPTY_DRAFT: DraftTerm = { name: "", startDate: "", endDate: "", invoiceLeadDays: "14" };
 
-function formatDate(ymd: string) {
-  return new Date(`${ymd}T12:00:00`).toLocaleDateString(undefined, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
 export default function BillingPeriodSettings({
   billingPeriod,
   terms: initialTerms,
@@ -43,6 +37,7 @@ export default function BillingPeriodSettings({
   billingPeriod: "monthly" | "termly";
   terms: StudioTermInfo[];
 }) {
+  const formatDate = useFormatDateOnly({ day: "numeric", month: "short", year: "numeric" });
   const t = useTranslations("admin.settings");
   const tShared = useTranslations("admin.shared");
   const tCommon = useTranslations("common");

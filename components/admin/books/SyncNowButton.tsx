@@ -3,11 +3,13 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useDateTimeFormat } from "@/lib/i18n/format";
 import { syncNowAction } from "@/app/portal/admin/books/actions";
 import { secondaryButton, secondaryButtonStyle } from "./ui";
 
 export function SyncNowButton({ lastSyncedAt }: { lastSyncedAt: string | null }) {
   const t = useTranslations("books.sync");
+  const dateTime = useDateTimeFormat();
   const router = useRouter();
   const [pending, start] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
@@ -15,7 +17,7 @@ export function SyncNowButton({ lastSyncedAt }: { lastSyncedAt: string | null })
   return (
     <div className="flex items-center gap-3">
       <span className="text-xs text-muted" aria-live="polite">
-        {message ?? (lastSyncedAt ? t("last", { time: new Date(lastSyncedAt).toLocaleString() }) : t("never"))}
+        {message ?? (lastSyncedAt ? t("last", { time: dateTime.format(new Date(lastSyncedAt)) }) : t("never"))}
       </span>
       <button
         type="button"

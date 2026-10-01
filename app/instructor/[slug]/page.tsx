@@ -101,7 +101,7 @@ export default async function PublicInstructorPage({
   const { studio, profile } = data;
 
   const disciplines         = (profile.disciplines as string[] | null) ?? [];
-  const syllabusСerts       = (profile.syllabus_certs as string[] | null) ?? [];
+  const syllabusCerts       = (profile.syllabus_certs as string[] | null) ?? [];
   const trainingInstitutions = (profile.training_institutions as string[] | null) ?? [];
   const ageGroups           = (profile.age_groups as string[] | null) ?? [];
   const engagementTypes     = (profile.engagement_types as string[] | null) ?? [];
@@ -129,7 +129,7 @@ export default async function PublicInstructorPage({
           description: profile.bio,
           image: profile.avatar_url,
           areaServed: profile.location_city,
-          knowsAbout: [...disciplines, ...syllabusСerts],
+          knowsAbout: [...disciplines, ...syllabusCerts],
           worksFor: { name: "Olune Network", url: `${origin}/instructors` },
         })}
       />
@@ -221,7 +221,7 @@ export default async function PublicInstructorPage({
         )}
 
         {/* Details grid */}
-        {(syllabusСerts.length > 0 ||
+        {(syllabusCerts.length > 0 ||
           trainingInstitutions.length > 0 ||
           ageGroups.length > 0 ||
           engagementTypes.length > 0 ||
@@ -230,8 +230,8 @@ export default async function PublicInstructorPage({
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
             <h2 className="text-sm font-semibold text-gray-700">Details</h2>
 
-            {syllabusСerts.length > 0 && (
-              <DetailRow label="Syllabus certifications" values={syllabusСerts} />
+            {syllabusCerts.length > 0 && (
+              <DetailRow label="Syllabus certifications" values={syllabusCerts} />
             )}
             {trainingInstitutions.length > 0 && (
               <DetailRow label="Training" values={trainingInstitutions} />

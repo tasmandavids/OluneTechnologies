@@ -39,6 +39,161 @@
     "studentProgress": {
       "back": "← Volver al horario",
       "progressLog": "Registro de progreso"
+    },
+    "invoices": {
+      "title": "Facturas",
+      "subtitle": "Factura a estudios y clientes particulares",
+      "newInvoice": "+ Nueva factura",
+      "paidAllTime": "Cobrado (histórico)",
+      "outstanding": "Pendiente",
+      "filters": {
+        "all": "Todas",
+        "draft": "Borrador",
+        "sent": "Enviada",
+        "paid": "Cobrada",
+        "void": "Anulada"
+      },
+      "statuses": {
+        "draft": "Borrador",
+        "sent": "Enviada",
+        "paid": "Cobrada",
+        "void": "Anulada"
+      },
+      "empty": "Aún no hay facturas aquí.",
+      "due": "Vence el {date}",
+      "paidOn": "Cobrada el {date}",
+      "paidShort": "Cobrada",
+      "actions": {
+        "edit": "Editar",
+        "send": "Enviar",
+        "markSent": "Marcar como enviada",
+        "markSentHint": "Regístrala como enviada sin mandar el correo — para una factura que entregaste tú",
+        "delete": "Eliminar",
+        "markPaid": "Marcar como cobrada",
+        "void": "Anular"
+      },
+      "form": {
+        "createTitle": "Nueva factura",
+        "editTitle": "Editar factura",
+        "close": "Cerrar",
+        "billTo": "Facturar a",
+        "selectPrompt": "— selecciona o escribe abajo —",
+        "studiosGroup": "Estudios",
+        "privateClientsGroup": "Clientes particulares",
+        "typeName": "O escribe un nombre directamente",
+        "description": "Descripción *",
+        "descriptionPlaceholder": "p. ej. Servicios docentes — junio de 2025",
+        "lineItems": "Conceptos",
+        "itemPlaceholder": "Concepto",
+        "qtyPlaceholder": "Cant.",
+        "unitPlaceholder": "Precio unitario",
+        "addLine": "+ Añadir concepto",
+        "removeLine": "Quitar concepto",
+        "total": "Total: {amount}",
+        "dueDate": "Fecha de vencimiento",
+        "notes": "Notas",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "saving": "Guardando…"
+      }
+    },
+    "expenses": {
+      "title": "Gastos",
+      "subtitle": "Controla los gastos del negocio y las solicitudes de reembolso",
+      "logExpense": "+ Registrar gasto",
+      "totalLogged": "Total registrado",
+      "pendingReimbursement": "Reembolso pendiente",
+      "filterAll": "Todos",
+      "categories": {
+        "travel": "Desplazamientos",
+        "equipment": "Equipamiento",
+        "uniform": "Vestuario",
+        "training": "Formación",
+        "software": "Software",
+        "marketing": "Marketing",
+        "insurance": "Seguros",
+        "other": "Otros"
+      },
+      "empty": "No hay gastos aquí.",
+      "awaitingReimbursement": "Reembolso pendiente",
+      "reimbursed": "Reembolsado",
+      "actions": {
+        "edit": "Editar",
+        "markReimbursed": "Marcar como reembolsado",
+        "delete": "Eliminar"
+      },
+      "form": {
+        "createTitle": "Registrar gasto",
+        "editTitle": "Editar gasto",
+        "close": "Cerrar",
+        "description": "Descripción *",
+        "category": "Categoría",
+        "amount": "Importe *",
+        "date": "Fecha *",
+        "studio": "Estudio",
+        "personal": "Personal",
+        "receiptUrl": "URL del recibo",
+        "reimbursable": "Reembolsable",
+        "reimbursed": "Reembolsado",
+        "notes": "Notas",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "saving": "Guardando…"
+      }
+    },
+    "profileEditor": {
+      "title": "Perfil público",
+      "subtitle": "Cómo te ven los estudios y clientes en la Red Olune",
+      "viewPublic": "Ver perfil público →",
+      "makePublic": "Hacer público el perfil",
+      "makePublicHint": "Aparecer en el directorio de profesores de la Red Olune",
+      "optional": "(opcional)",
+      "fullName": "Nombre completo",
+      "headline": "Titular",
+      "headlinePlaceholder": "p. ej. Profesora de ballet y contemporáneo · certificada RAD",
+      "bio": "Biografía",
+      "bioPlaceholder": "Tu trayectoria, formación y estilo de enseñanza…",
+      "disciplines": "Disciplinas",
+      "addOther": "Añadir otra…",
+      "add": "Añadir",
+      "syllabusCerts": "Certificaciones de sílabo",
+      "trainingInstitutions": "Centros de formación",
+      "trainingPlaceholder": "p. ej. Academia Vaganova, NZSD, VCA",
+      "ageGroupsLabel": "Grupos de edad que enseñas",
+      "ageGroups": {
+        "earlyChildhood": "Primera infancia (0–5)",
+        "primary": "Primaria (5–12)",
+        "secondary": "Secundaria (13–18)",
+        "adult": "Adultos",
+        "vocational": "Vocacional / preprofesional"
+      },
+      "availableForLabel": "Disponible para",
+      "engagementTypes": {
+        "oneOffCover": "Sustitución puntual",
+        "workshop": "Taller",
+        "weekIntensive": "Intensivo de una semana",
+        "summerSchool": "Curso de verano",
+        "residency": "Residencia"
+      },
+      "travelLabel": "Disponibilidad para viajar",
+      "availabilityTypes": {
+        "localCover": "Sustituciones locales",
+        "regional": "Regional",
+        "international": "Viajes internacionales"
+      },
+      "dayRate": "Tarifa diaria ({currency})",
+      "rateMin": "mín.",
+      "rateMax": "máx.",
+      "teachingVideo": "URL del vídeo de clase",
+      "teachingVideoHint": "(YouTube o Vimeo)",
+      "cityRegion": "Ciudad / región",
+      "cityPlaceholder": "p. ej. Auckland",
+      "website": "Sitio web",
+      "photoUrl": "URL de la foto de perfil",
+      "photoPreview": "Vista previa de la foto de perfil",
+      "saved": "Perfil guardado.",
+      "save": "Guardar perfil",
+      "saving": "Guardando…"
     }
   }
 }

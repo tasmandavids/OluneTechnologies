@@ -1,5 +1,7 @@
 "use client";
 
+import { useFormatDateOnly } from "@/lib/i18n/format";
+
 import { useMemo, useState, useTransition } from "react";
 import { billPrivateLesson } from "@/app/portal/admin/private-lessons/actions";
 import {
@@ -34,14 +36,6 @@ const FILTERS = [
 
 type FilterId = (typeof FILTERS)[number]["id"];
 
-function formatDate(iso: string) {
-  return new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-}
-
 function defaultDueDate() {
   const d = new Date();
   d.setDate(d.getDate() + 14);
@@ -62,6 +56,7 @@ export default function PrivateLessonsReview({
   bookings: AdminBooking[];
   rate: LessonRate | null;
 }) {
+  const formatDate = useFormatDateOnly({ weekday: "short", month: "short", day: "numeric" });
   const [filter, setFilter] = useState<FilterId>("toBill");
   const [billing, setBilling] = useState<AdminBooking | null>(null);
   const [amount, setAmount] = useState("");

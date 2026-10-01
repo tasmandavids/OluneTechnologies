@@ -1,5 +1,7 @@
 "use client";
 
+import { useFormatDateOnly } from "@/lib/i18n/format";
+
 import { useMemo, useState, useTransition } from "react";
 import {
   createBookingRequest,
@@ -27,14 +29,6 @@ const STATUS_LABELS: Record<PrivateLessonStatus, string> = {
   cancelled: "Cancelled",
 };
 
-function formatDate(iso: string) {
-  return new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-}
-
 const EMPTY = {
   teacherId: "",
   studentId: "",
@@ -54,6 +48,7 @@ export default function BookPrivateLesson({
   students: BookableChild[];
   bookings: ParentBooking[];
 }) {
+  const formatDate = useFormatDateOnly({ weekday: "short", month: "short", day: "numeric" });
   const [form, setForm] = useState({
     ...EMPTY,
     teacherId: teachers[0]?.id ?? "",

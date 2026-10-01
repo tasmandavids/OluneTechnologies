@@ -1,16 +1,10 @@
 "use client";
 
+import { useFormatDateOnly } from "@/lib/i18n/format";
+
 import { useState, useTransition } from "react";
 import { respondToBooking } from "@/app/portal/teacher/private-lessons/actions";
 import type { TeacherBooking } from "@/lib/private-lessons/types";
-
-function formatDate(iso: string) {
-  return new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-}
 
 export default function PrivateLessonRequests({
   pending,
@@ -19,6 +13,7 @@ export default function PrivateLessonRequests({
   pending: TeacherBooking[];
   upcoming: TeacherBooking[];
 }) {
+  const formatDate = useFormatDateOnly({ weekday: "short", month: "short", day: "numeric" });
   const [error, setError] = useState<string | null>(null);
   const [declining, setDeclining] = useState<string | null>(null);
   const [note, setNote] = useState("");

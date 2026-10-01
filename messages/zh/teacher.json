@@ -39,6 +39,161 @@
     "studentProgress": {
       "back": "← 返回课程表",
       "progressLog": "进度记录"
+    },
+    "invoices": {
+      "title": "账单",
+      "subtitle": "向舞蹈室和私人客户开具账单",
+      "newInvoice": "+ 新建账单",
+      "paidAllTime": "已收款（累计）",
+      "outstanding": "未收款",
+      "filters": {
+        "all": "全部",
+        "draft": "草稿",
+        "sent": "已发送",
+        "paid": "已收款",
+        "void": "已作废"
+      },
+      "statuses": {
+        "draft": "草稿",
+        "sent": "已发送",
+        "paid": "已收款",
+        "void": "已作废"
+      },
+      "empty": "这里还没有账单。",
+      "due": "到期日 {date}",
+      "paidOn": "{date} 收款",
+      "paidShort": "已收款",
+      "actions": {
+        "edit": "编辑",
+        "send": "发送",
+        "markSent": "标记为已发送",
+        "markSentHint": "不发邮件、直接记为已发送——适用于你自己送达的账单",
+        "delete": "删除",
+        "markPaid": "标记为已收款",
+        "void": "作废"
+      },
+      "form": {
+        "createTitle": "新建账单",
+        "editTitle": "编辑账单",
+        "close": "关闭",
+        "billTo": "账单对象",
+        "selectPrompt": "— 请选择，或在下方输入 —",
+        "studiosGroup": "舞蹈室",
+        "privateClientsGroup": "私人客户",
+        "typeName": "也可直接输入名称",
+        "description": "说明 *",
+        "descriptionPlaceholder": "例如：授课服务 — 2025年6月",
+        "lineItems": "明细",
+        "itemPlaceholder": "项目",
+        "qtyPlaceholder": "数量",
+        "unitPlaceholder": "单价",
+        "addLine": "+ 添加明细",
+        "removeLine": "删除明细",
+        "total": "合计：{amount}",
+        "dueDate": "到期日",
+        "notes": "备注",
+        "cancel": "取消",
+        "save": "保存",
+        "saving": "保存中…"
+      }
+    },
+    "expenses": {
+      "title": "支出",
+      "subtitle": "记录业务支出与报销申请",
+      "logExpense": "+ 记一笔支出",
+      "totalLogged": "记录合计",
+      "pendingReimbursement": "待报销",
+      "filterAll": "全部",
+      "categories": {
+        "travel": "交通",
+        "equipment": "器材",
+        "uniform": "服装",
+        "training": "培训",
+        "software": "软件",
+        "marketing": "营销",
+        "insurance": "保险",
+        "other": "其他"
+      },
+      "empty": "这里没有支出记录。",
+      "awaitingReimbursement": "待报销",
+      "reimbursed": "已报销",
+      "actions": {
+        "edit": "编辑",
+        "markReimbursed": "标记为已报销",
+        "delete": "删除"
+      },
+      "form": {
+        "createTitle": "记一笔支出",
+        "editTitle": "编辑支出",
+        "close": "关闭",
+        "description": "说明 *",
+        "category": "类别",
+        "amount": "金额 *",
+        "date": "日期 *",
+        "studio": "舞蹈室",
+        "personal": "个人",
+        "receiptUrl": "收据链接",
+        "reimbursable": "可报销",
+        "reimbursed": "已报销",
+        "notes": "备注",
+        "cancel": "取消",
+        "save": "保存",
+        "saving": "保存中…"
+      }
+    },
+    "profileEditor": {
+      "title": "公开主页",
+      "subtitle": "舞蹈室和客户在 Olune 网络中看到的你",
+      "viewPublic": "查看公开主页 →",
+      "makePublic": "公开我的主页",
+      "makePublicHint": "出现在 Olune 网络的教师名录中",
+      "optional": "（选填）",
+      "fullName": "姓名",
+      "headline": "一句话介绍",
+      "headlinePlaceholder": "例如：芭蕾与现代舞教师 · RAD 认证",
+      "bio": "个人简介",
+      "bioPlaceholder": "你的经历、训练背景与教学风格…",
+      "disciplines": "舞种",
+      "addOther": "添加其他…",
+      "add": "添加",
+      "syllabusCerts": "教学体系认证",
+      "trainingInstitutions": "进修院校",
+      "trainingPlaceholder": "例如：瓦加诺娃学院、NZSD、VCA",
+      "ageGroupsLabel": "授课年龄段",
+      "ageGroups": {
+        "earlyChildhood": "幼儿（0–5 岁）",
+        "primary": "小学（5–12 岁）",
+        "secondary": "中学（13–18 岁）",
+        "adult": "成人",
+        "vocational": "专业 / 职前"
+      },
+      "availableForLabel": "可承接",
+      "engagementTypes": {
+        "oneOffCover": "单次代课",
+        "workshop": "工作坊",
+        "weekIntensive": "一周强化班",
+        "summerSchool": "暑期班",
+        "residency": "驻场"
+      },
+      "travelLabel": "出行意愿",
+      "availabilityTypes": {
+        "localCover": "本地代课",
+        "regional": "本区域",
+        "international": "国际出行"
+      },
+      "dayRate": "日薪区间（{currency}）",
+      "rateMin": "最低",
+      "rateMax": "最高",
+      "teachingVideo": "教学视频链接",
+      "teachingVideoHint": "（YouTube 或 Vimeo）",
+      "cityRegion": "城市 / 地区",
+      "cityPlaceholder": "例如：奥克兰",
+      "website": "网站",
+      "photoUrl": "头像链接",
+      "photoPreview": "头像预览",
+      "saved": "主页已保存。",
+      "save": "保存主页",
+      "saving": "保存中…"
     }
   }
 }

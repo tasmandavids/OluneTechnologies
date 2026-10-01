@@ -39,6 +39,161 @@
     "studentProgress": {
       "back": "← Back to schedule",
       "progressLog": "Progress log"
+    },
+    "invoices": {
+      "title": "Invoices",
+      "subtitle": "Bill studios and private clients",
+      "newInvoice": "+ New invoice",
+      "paidAllTime": "Paid (all time)",
+      "outstanding": "Outstanding",
+      "filters": {
+        "all": "All",
+        "draft": "Draft",
+        "sent": "Sent",
+        "paid": "Paid",
+        "void": "Void"
+      },
+      "statuses": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "paid": "Paid",
+        "void": "Void"
+      },
+      "empty": "No invoices here yet.",
+      "due": "Due {date}",
+      "paidOn": "Paid {date}",
+      "paidShort": "Paid",
+      "actions": {
+        "edit": "Edit",
+        "send": "Send",
+        "markSent": "Mark sent",
+        "markSentHint": "Record it as sent without emailing — for an invoice you delivered yourself",
+        "delete": "Delete",
+        "markPaid": "Mark paid",
+        "void": "Void"
+      },
+      "form": {
+        "createTitle": "New invoice",
+        "editTitle": "Edit invoice",
+        "close": "Close",
+        "billTo": "Bill to",
+        "selectPrompt": "— select or type below —",
+        "studiosGroup": "Studios",
+        "privateClientsGroup": "Private clients",
+        "typeName": "Or type a name directly",
+        "description": "Description *",
+        "descriptionPlaceholder": "e.g. Teaching services — June 2025",
+        "lineItems": "Line items",
+        "itemPlaceholder": "Item",
+        "qtyPlaceholder": "Qty",
+        "unitPlaceholder": "Unit price",
+        "addLine": "+ Add line",
+        "removeLine": "Remove line",
+        "total": "Total: {amount}",
+        "dueDate": "Due date",
+        "notes": "Notes",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving…"
+      }
+    },
+    "expenses": {
+      "title": "Expenses",
+      "subtitle": "Track business expenses and reimbursement claims",
+      "logExpense": "+ Log expense",
+      "totalLogged": "Total logged",
+      "pendingReimbursement": "Pending reimbursement",
+      "filterAll": "All",
+      "categories": {
+        "travel": "Travel",
+        "equipment": "Equipment",
+        "uniform": "Uniform",
+        "training": "Training",
+        "software": "Software",
+        "marketing": "Marketing",
+        "insurance": "Insurance",
+        "other": "Other"
+      },
+      "empty": "No expenses here.",
+      "awaitingReimbursement": "Awaiting reimbursement",
+      "reimbursed": "Reimbursed",
+      "actions": {
+        "edit": "Edit",
+        "markReimbursed": "Mark reimbursed",
+        "delete": "Delete"
+      },
+      "form": {
+        "createTitle": "Log expense",
+        "editTitle": "Edit expense",
+        "close": "Close",
+        "description": "Description *",
+        "category": "Category",
+        "amount": "Amount *",
+        "date": "Date *",
+        "studio": "Studio",
+        "personal": "Personal",
+        "receiptUrl": "Receipt URL",
+        "reimbursable": "Reimbursable",
+        "reimbursed": "Reimbursed",
+        "notes": "Notes",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving…"
+      }
+    },
+    "profileEditor": {
+      "title": "Public profile",
+      "subtitle": "How you appear to studios and clients on the Olune Network",
+      "viewPublic": "View public profile →",
+      "makePublic": "Make profile public",
+      "makePublicHint": "Appear in the Olune Network instructor directory",
+      "optional": "(optional)",
+      "fullName": "Full name",
+      "headline": "Headline",
+      "headlinePlaceholder": "e.g. Ballet & contemporary instructor · RAD certified",
+      "bio": "Bio",
+      "bioPlaceholder": "Your background, training, and teaching style…",
+      "disciplines": "Disciplines",
+      "addOther": "Add other…",
+      "add": "Add",
+      "syllabusCerts": "Syllabus certifications",
+      "trainingInstitutions": "Training institutions",
+      "trainingPlaceholder": "e.g. Vaganova Academy, NZSD, VCA",
+      "ageGroupsLabel": "Age groups taught",
+      "ageGroups": {
+        "earlyChildhood": "Early childhood (0–5)",
+        "primary": "Primary (5–12)",
+        "secondary": "Secondary (13–18)",
+        "adult": "Adult",
+        "vocational": "Vocational / pre-professional"
+      },
+      "availableForLabel": "Available for",
+      "engagementTypes": {
+        "oneOffCover": "One-off cover",
+        "workshop": "Workshop",
+        "weekIntensive": "Week intensive",
+        "summerSchool": "Summer school",
+        "residency": "Residency"
+      },
+      "travelLabel": "Travel availability",
+      "availabilityTypes": {
+        "localCover": "Local cover",
+        "regional": "Regional",
+        "international": "International travel"
+      },
+      "dayRate": "Day rate range ({currency})",
+      "rateMin": "min",
+      "rateMax": "max",
+      "teachingVideo": "Teaching video URL",
+      "teachingVideoHint": "(YouTube or Vimeo)",
+      "cityRegion": "City / region",
+      "cityPlaceholder": "e.g. Auckland",
+      "website": "Website",
+      "photoUrl": "Profile photo URL",
+      "photoPreview": "Profile photo preview",
+      "saved": "Profile saved.",
+      "save": "Save profile",
+      "saving": "Saving…"
     }
   }
 }

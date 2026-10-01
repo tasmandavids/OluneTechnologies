@@ -39,6 +39,161 @@
     "studentProgress": {
       "back": "← スケジュールに戻る",
       "progressLog": "進捗記録"
+    },
+    "invoices": {
+      "title": "請求書",
+      "subtitle": "スタジオや個人のお客さまに請求します",
+      "newInvoice": "+ 請求書を作成",
+      "paidAllTime": "入金済み（累計）",
+      "outstanding": "未入金",
+      "filters": {
+        "all": "すべて",
+        "draft": "下書き",
+        "sent": "送付済み",
+        "paid": "入金済み",
+        "void": "無効"
+      },
+      "statuses": {
+        "draft": "下書き",
+        "sent": "送付済み",
+        "paid": "入金済み",
+        "void": "無効"
+      },
+      "empty": "ここにはまだ請求書がありません。",
+      "due": "支払期限 {date}",
+      "paidOn": "{date} 入金",
+      "paidShort": "入金済み",
+      "actions": {
+        "edit": "編集",
+        "send": "送信",
+        "markSent": "送付済みにする",
+        "markSentHint": "メールを送らずに送付済みとして記録します — ご自身で手渡した請求書向けです",
+        "delete": "削除",
+        "markPaid": "入金済みにする",
+        "void": "無効にする"
+      },
+      "form": {
+        "createTitle": "請求書を作成",
+        "editTitle": "請求書を編集",
+        "close": "閉じる",
+        "billTo": "請求先",
+        "selectPrompt": "— 選択、または下に入力 —",
+        "studiosGroup": "スタジオ",
+        "privateClientsGroup": "個人のお客さま",
+        "typeName": "名前を直接入力することもできます",
+        "description": "内容 *",
+        "descriptionPlaceholder": "例: レッスン料 — 2025年6月",
+        "lineItems": "明細",
+        "itemPlaceholder": "項目",
+        "qtyPlaceholder": "数量",
+        "unitPlaceholder": "単価",
+        "addLine": "+ 明細を追加",
+        "removeLine": "明細を削除",
+        "total": "合計: {amount}",
+        "dueDate": "支払期限",
+        "notes": "備考",
+        "cancel": "キャンセル",
+        "save": "保存",
+        "saving": "保存中…"
+      }
+    },
+    "expenses": {
+      "title": "経費",
+      "subtitle": "事業経費と立替精算の申請を管理します",
+      "logExpense": "+ 経費を登録",
+      "totalLogged": "登録合計",
+      "pendingReimbursement": "精算待ち",
+      "filterAll": "すべて",
+      "categories": {
+        "travel": "交通費",
+        "equipment": "備品",
+        "uniform": "衣装",
+        "training": "研修",
+        "software": "ソフトウェア",
+        "marketing": "宣伝",
+        "insurance": "保険",
+        "other": "その他"
+      },
+      "empty": "ここには経費がありません。",
+      "awaitingReimbursement": "精算待ち",
+      "reimbursed": "精算済み",
+      "actions": {
+        "edit": "編集",
+        "markReimbursed": "精算済みにする",
+        "delete": "削除"
+      },
+      "form": {
+        "createTitle": "経費を登録",
+        "editTitle": "経費を編集",
+        "close": "閉じる",
+        "description": "内容 *",
+        "category": "分類",
+        "amount": "金額 *",
+        "date": "日付 *",
+        "studio": "スタジオ",
+        "personal": "個人",
+        "receiptUrl": "領収書のURL",
+        "reimbursable": "精算対象",
+        "reimbursed": "精算済み",
+        "notes": "備考",
+        "cancel": "キャンセル",
+        "save": "保存",
+        "saving": "保存中…"
+      }
+    },
+    "profileEditor": {
+      "title": "公開プロフィール",
+      "subtitle": "Olune ネットワークでスタジオやお客さまに表示される内容です",
+      "viewPublic": "公開プロフィールを見る →",
+      "makePublic": "プロフィールを公開する",
+      "makePublicHint": "Olune ネットワークの講師ディレクトリに掲載されます",
+      "optional": "（任意）",
+      "fullName": "氏名",
+      "headline": "キャッチコピー",
+      "headlinePlaceholder": "例: バレエ・コンテンポラリー講師 · RAD 認定",
+      "bio": "自己紹介",
+      "bioPlaceholder": "これまでの経歴、トレーニング、指導スタイルなど…",
+      "disciplines": "ジャンル",
+      "addOther": "その他を追加…",
+      "add": "追加",
+      "syllabusCerts": "シラバス認定",
+      "trainingInstitutions": "出身・研修機関",
+      "trainingPlaceholder": "例: ワガノワ・アカデミー、NZSD、VCA",
+      "ageGroupsLabel": "指導する年齢層",
+      "ageGroups": {
+        "earlyChildhood": "幼児（0〜5歳）",
+        "primary": "小学生（5〜12歳）",
+        "secondary": "中高生（13〜18歳）",
+        "adult": "大人",
+        "vocational": "専門課程 / プロ志望"
+      },
+      "availableForLabel": "対応できる依頼",
+      "engagementTypes": {
+        "oneOffCover": "単発の代講",
+        "workshop": "ワークショップ",
+        "weekIntensive": "1週間の集中講座",
+        "summerSchool": "サマースクール",
+        "residency": "レジデンシー"
+      },
+      "travelLabel": "出張の可否",
+      "availabilityTypes": {
+        "localCover": "近隣の代講",
+        "regional": "地域内",
+        "international": "海外出張"
+      },
+      "dayRate": "1日あたりの料金（{currency}）",
+      "rateMin": "下限",
+      "rateMax": "上限",
+      "teachingVideo": "レッスン動画のURL",
+      "teachingVideoHint": "（YouTube または Vimeo）",
+      "cityRegion": "市 / 地域",
+      "cityPlaceholder": "例: オークランド",
+      "website": "ウェブサイト",
+      "photoUrl": "プロフィール写真のURL",
+      "photoPreview": "プロフィール写真のプレビュー",
+      "saved": "プロフィールを保存しました。",
+      "save": "プロフィールを保存",
+      "saving": "保存中…"
     }
   }
 }

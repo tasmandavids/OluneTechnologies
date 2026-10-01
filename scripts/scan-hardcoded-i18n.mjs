@@ -103,13 +103,21 @@ const areas = Object.entries(byArea).sort((a, b) => b[1].length - a[1].length);
 //  untranslated *number or date*, so a Russian reader gets Latin grouping on
 //  every price. `en-CA` is exempt — that is the ISO YYYY-MM-DD idiom used for
 //  date keys in lib/date/, not display formatting.
+//
+//  Counts three shapes, because the first one on its own missed real cases:
+//    1. an explicit wrong locale   toLocaleDateString("en-NZ", …)
+//    2. no locale at all           toLocaleDateString()
+//    3. an explicit opt-out        toLocaleDateString(undefined, …)
+//  (2) and (3) fall back to the runtime's locale — the server's on an RSC, the
+//  reader's OS on a client component — neither of which is the app locale the
+//  rest of the page is rendered in.
 
 import { execSync } from "node:child_process";
 
 function hardcodedLocaleCallSites() {
   try {
     const out = execSync(
-      `grep -rn 'toLocaleDateString("en-\\|toLocaleTimeString("en-\\|toLocaleString("en-\\|NumberFormat("en-\\|DateTimeFormat("en-' app components lib --include=*.ts --include=*.tsx || true`,
+      `grep -rnE 'toLocale(Date|Time)?String\\("en-|(Number|DateTime)Format\\("en-|toLocale(Date|Time)?String\\(\\)|toLocale(Date|Time)?String\\(undefined|(Number|DateTime)Format\\(undefined' app components lib --include=*.ts --include=*.tsx || true`,
       { encoding: "utf8" },
     );
     return out.split("\n").filter((l) => l.trim() && !l.includes("en-CA"));
@@ -142,7 +150,7 @@ if (process.argv.includes("--json")) {
   // total: app/api/stripe/connect/route.ts passes its messages through a
   // redirect query param that the Connections page renders, so some route
   // literals genuinely are user-facing and must keep being counted.
-  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 881);
+  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 819);
   // 30 → 25 (2026-10-01): parent shopping, events, autopay, balances and
   // enrolment now format currency using the signed-in reader's locale.
   const MAX_LOCALE_SITES = Number(process.env.I18N_MAX_LOCALE_SITES ?? 25);

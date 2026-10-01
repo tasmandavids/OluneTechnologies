@@ -122,3 +122,25 @@ export function useDateTimeFormat(opts?: Intl.DateTimeFormatOptions) {
     [locale, key],
   );
 }
+
+/**
+ * Locale-aware formatting for a date-only ISO string ("YYYY-MM-DD").
+ *
+ * Anchors to local noon before formatting. `new Date("2026-01-05")` parses as
+ * UTC midnight, which renders as the 4th anywhere west of Greenwich — the bug
+ * the hand-rolled `${iso}T12:00:00` helpers in this codebase were working
+ * around. Keeping that here means call sites get both the anchor and the
+ * reader's locale, instead of picking one.
+ */
+export function useFormatDateOnly(opts: Intl.DateTimeFormatOptions) {
+  const locale = useLocale();
+  const key = JSON.stringify(opts);
+  return useCallback(
+    (iso: string) =>
+      new Date(`${iso}T12:00:00`).toLocaleDateString(
+        locale,
+        JSON.parse(key) as Intl.DateTimeFormatOptions,
+      ),
+    [locale, key],
+  );
+}
