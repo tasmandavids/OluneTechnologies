@@ -14,6 +14,12 @@ export async function disconnectXero(): Promise<{ ok: true } | { ok: false; erro
   try {
     const origin = await resolveAppOriginFromHeaders();
     await revokeXeroConnection(ctx.supabase, ctx.studioId, xeroRedirectUri(origin));
+    // Without Xero the studio has no accounting until it picks again.
+    await ctx.supabase
+      .from("studios")
+      .update({ accounting_provider: null })
+      .eq("id", ctx.studioId)
+      .eq("accounting_provider", "xero");
     revalidatePath("/portal/admin/money");
     return { ok: true };
   } catch (err) {

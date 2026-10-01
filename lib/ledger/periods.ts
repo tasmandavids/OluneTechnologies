@@ -87,3 +87,14 @@ export function firstOpenDate(lockDate: string | null, wanted: string): string {
   if (!lockDate || wanted > lockDate) return wanted;
   return addDays(lockDate, 1);
 }
+
+/** Calendar months overlapping [from, to], each clipped to the range. At most `max`, newest kept. */
+export function monthsBetween(from: string, to: string, max = 24): Period[] {
+  const out: Period[] = [];
+  let m = monthOf(from);
+  while (m.start <= to) {
+    out.push({ start: m.start < from ? from : m.start, end: m.end > to ? to : m.end });
+    m = monthOf(addDays(m.end, 1));
+  }
+  return out.slice(-max);
+}

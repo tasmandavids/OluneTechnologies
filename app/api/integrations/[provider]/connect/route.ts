@@ -19,6 +19,7 @@ import {
 } from "@/lib/integrations/oauth-drivers";
 import { signIntegrationOAuthState } from "@/lib/integrations/oauth-state";
 import { CONNECTIONS_PATH } from "@/lib/integrations/routes";
+import { getIntegration } from "@/lib/integrations/catalog";
 
 export const runtime = "nodejs";
 
@@ -32,6 +33,15 @@ export async function GET(
   if (!driver) {
     return NextResponse.redirect(
       new URL(`${CONNECTIONS_PATH}?error=Unknown+integration`, req.url),
+    );
+  }
+
+  // The catalogue's stage is the promise to the studio. QuickBooks and MYOB
+  // keep their drivers for the day sync lands, but are "planned" — reachable by
+  // URL was a back door into an accounting system Olune doesn't feed.
+  if (getIntegration(provider)?.stage === "planned") {
+    return NextResponse.redirect(
+      new URL(`${CONNECTIONS_PATH}?error=${encodeURIComponent("That integration isn't available yet")}`, req.url),
     );
   }
 

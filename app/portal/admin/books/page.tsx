@@ -30,7 +30,7 @@ export default async function BooksDashboard() {
   const fy = fiscalYear(today, settings.fiscalYearStartMonth, settings.fiscalYearStartDay);
   const currentPeriod = taxPeriodContaining(today, settings.filingFrequency, settings.taxPeriodAnchorMonth);
 
-  const [movements, pl, taxNow, unreconciled, journals, filed] = await Promise.all([
+  const [movements, pl, taxNow, unreconciled, journals, filed, drafts, opening, bankLines] = await Promise.all([
     fetchMovements(supabase, studioId, null, today),
     getProfitAndLoss(supabase, ctx, { start: fy.start < settings.conversionDate ? settings.conversionDate : fy.start, end: today }, false),
     settings.taxRegistered ? getTaxReturn(supabase, ctx, currentPeriod) : Promise.resolve(null),
@@ -42,6 +42,9 @@ export default async function BooksDashboard() {
       .order("journal_number", { ascending: false })
       .limit(8),
     supabase.from("ledger_tax_returns").select("period_start, period_end").eq("studio_id", studioId),
+    supabase.from("ledger_bills").select("id", { count: "exact", head: true }).eq("studio_id", studioId).eq("status", "draft"),
+    supabase.from("ledger_journals").select("id", { count: "exact", head: true }).eq("studio_id", studioId).eq("source_type", "opening_balance").eq("status", "posted"),
+    supabase.from("ledger_bank_transactions").select("id", { count: "exact", head: true }).eq("studio_id", studioId),
   ]);
 
   const mv = toMovementMap(movements);
@@ -126,10 +129,10 @@ export default async function BooksDashboard() {
             <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("todo")}</p>
           </div>
           <ul className="mt-3 space-y-2 text-sm">
-            <TodoItem href={`${BOOKS_PATH}/bank`} done={(unreconciled.count ?? 0) === 0} label={t("todoReconcile", { count: unreconciled.count ?? 0 })} />
-            <TodoItem href={`${BOOKS_PATH}/bills/new`} done={false} label={t("todoBills")} />
-            <TodoItem href={`${BOOKS_PATH}/journals/new?type=opening`} done={false} label={t("todoOpening", { date: settings.conversionDate })} />
-            <TodoItem href={`${BOOKS_PATH}/reports?report=pl`} done={false} label={t("todoReports")} />
+            <TodoItem href={`${BOOKS_PATH}/journals/new?type=opening`} done={(opening.count ?? 0) > 0} label={t("todoOpening", { date: settings.conversionDate })} />
+            <TodoItem href={`${BOOKS_PATH}/bank`} done={(bankLines.count ?? 0) > 0} label={t("todoBankImport")} />
+            <TodoItem href={`${BOOKS_PATH}/bank`} done={(bankLines.count ?? 0) > 0 && (unreconciled.count ?? 0) === 0} label={t("todoReconcile", { count: unreconciled.count ?? 0 })} />
+            <TodoItem href={`${BOOKS_PATH}/bills`} done={(drafts.count ?? 0) === 0} label={(drafts.count ?? 0) > 0 ? t("todoReviewBills", { count: drafts.count ?? 0 }) : t("todoBills")} />
           </ul>
         </GlassPanel>
       </div>

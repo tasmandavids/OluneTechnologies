@@ -20,15 +20,9 @@ import type { XeroConnectionSettings, XeroSyncSourceType } from "./types";
 import { DEFAULT_XERO_SETTINGS } from "./types";
 
 /**
- * Xero client for PUSH paths only, gated on Xero actually being the studio's
- * authoritative ledger.
- *
- * lib/accounting/provider.ts has always been able to answer this, but nothing
- * called it — every push went straight to Xero. That's invisible until a studio
- * connects both Xero and QuickBooks and pins QuickBooks in Settings, at which
- * point Olune would keep writing invoices into the ledger the studio told it
- * not to use. Read paths (P&L, reports) deliberately stay ungated: showing a
- * still-connected Xero org's numbers is harmless.
+ * Xero client for PUSH paths only, gated on Xero being the studio's accounting
+ * choice (lib/accounting/provider.ts). Read paths (P&L, reports) stay ungated:
+ * showing a still-connected Xero org's numbers is harmless.
  */
 async function loadXeroPushClient(
   supabase: SupabaseClient,
@@ -36,8 +30,21 @@ async function loadXeroPushClient(
   redirectUri: string,
 ): Promise<Awaited<ReturnType<typeof loadStudioXeroClient>>> {
   const active = await resolveAccountingProvider(supabase, studioId);
-  if (active && active.provider !== "xero") return null;
+  if (active?.provider !== "xero") return null;
   return loadStudioXeroClient(supabase, studioId, redirectUri);
+}
+
+/**
+ * The errors a push returns when there was nothing to push to: the studio
+ * isn't on Xero (Olune Books, or no accounting chosen) or has paused sync.
+ * Those aren't failures, and callers must not show "Xero sync failed" for
+ * them — that warning used to greet every Books studio on every invoice.
+ */
+export const XERO_NOT_CONNECTED = "Xero not connected";
+export const XERO_SYNC_DISABLED = "Xero sync disabled";
+
+export function isXeroSkip(error: string | undefined | null): boolean {
+  return error === XERO_NOT_CONNECTED || error === XERO_SYNC_DISABLED;
 }
 
 /**
@@ -149,7 +156,7 @@ async function resolveContact(
   loaded: Awaited<ReturnType<typeof loadStudioXeroClient>>,
   profileId: string,
 ): Promise<Contact> {
-  if (!loaded) throw new Error("Xero not connected");
+  if (!loaded) throw new Error(XERO_NOT_CONNECTED);
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -582,10 +589,10 @@ async function syncInvoicePaymentToXero(
   }
 
   const loaded = await loadXeroPushClient(supabase, record.studioId, redirectUri);
-  if (!loaded) return { ok: false, error: "Xero not connected" };
+  if (!loaded) return { ok: false, error: XERO_NOT_CONNECTED };
 
   const cfg = settings(loaded.connection.settings);
-  if (cfg.sync_enabled === false) return { ok: false, error: "Xero sync disabled" };
+  if (cfg.sync_enabled === false) return { ok: false, error: XERO_SYNC_DISABLED };
 
   await recordXeroPayment(
     loaded,
@@ -636,10 +643,10 @@ export async function syncOutstandingInvoiceToXero(
     }
 
     const loaded = await loadXeroPushClient(supabase, record.studioId, redirectUri);
-    if (!loaded) return { ok: false, error: "Xero not connected" };
+    if (!loaded) return { ok: false, error: XERO_NOT_CONNECTED };
 
     const cfg = settings(loaded.connection.settings);
-    if (cfg.sync_enabled === false) return { ok: false, error: "Xero sync disabled" };
+    if (cfg.sync_enabled === false) return { ok: false, error: XERO_SYNC_DISABLED };
 
     // Only the single synthesized fallback line (no real invoice_line_items)
     // takes a caller-supplied description override — real itemized lines keep
@@ -709,10 +716,10 @@ export async function authoriseOutstandingInvoiceInXero(
     if (!record.xeroInvoiceId) return { ok: true };
 
     const loaded = await loadXeroPushClient(supabase, record.studioId, redirectUri);
-    if (!loaded) return { ok: false, error: "Xero not connected" };
+    if (!loaded) return { ok: false, error: XERO_NOT_CONNECTED };
 
     const cfg = settings(loaded.connection.settings);
-    if (cfg.sync_enabled === false) return { ok: false, error: "Xero sync disabled" };
+    if (cfg.sync_enabled === false) return { ok: false, error: XERO_SYNC_DISABLED };
 
     await ensureXeroInvoiceAuthorised(loaded, record.xeroInvoiceId);
 
@@ -746,10 +753,10 @@ export async function updateOutstandingInvoiceInXero(
     if (!record.xeroInvoiceId) return { ok: true };
 
     const loaded = await loadXeroPushClient(supabase, record.studioId, redirectUri);
-    if (!loaded) return { ok: false, error: "Xero not connected" };
+    if (!loaded) return { ok: false, error: XERO_NOT_CONNECTED };
 
     const cfg = settings(loaded.connection.settings);
-    if (cfg.sync_enabled === false) return { ok: false, error: "Xero sync disabled" };
+    if (cfg.sync_enabled === false) return { ok: false, error: XERO_SYNC_DISABLED };
 
     const current = await loaded.client.accountingApi.getInvoice(loaded.tenantId, record.xeroInvoiceId);
     const currentStatus = current.body.invoices?.[0]?.status;
@@ -830,10 +837,10 @@ export async function syncSaleToXero(
     if (idempotency.skip) return { ok: true, xeroInvoiceId: idempotency.xeroInvoiceId };
 
     const loaded = await loadXeroPushClient(supabase, sale.studioId, redirectUri);
-    if (!loaded) return { ok: false, error: "Xero not connected" };
+    if (!loaded) return { ok: false, error: XERO_NOT_CONNECTED };
 
     const cfg = settings(loaded.connection.settings);
-    if (cfg.sync_enabled === false) return { ok: false, error: "Xero sync disabled" };
+    if (cfg.sync_enabled === false) return { ok: false, error: XERO_SYNC_DISABLED };
 
     const contact = await resolveContact(supabase, loaded, sale.payerId);
     const xeroInvoiceId = await createPaidInvoice(
@@ -973,10 +980,10 @@ export async function voidInvoiceInXero(
   if (!xeroInvoiceId) return { ok: true };
 
   const loaded = await loadXeroPushClient(supabase, record.studioId, redirectUri);
-  if (!loaded) return { ok: false, error: "Xero not connected" };
+  if (!loaded) return { ok: false, error: XERO_NOT_CONNECTED };
 
   const cfg = settings(loaded.connection.settings);
-  if (cfg.sync_enabled === false) return { ok: false, error: "Xero sync disabled" };
+  if (cfg.sync_enabled === false) return { ok: false, error: XERO_SYNC_DISABLED };
 
   try {
     // Xero rejects VOIDED on a Draft/Submitted invoice — those cancel via

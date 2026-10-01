@@ -5,8 +5,8 @@ import "server-only";
 // ============================================================================
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { dayBefore, fiscalYear, previousPeriod, type Period } from "../periods";
-import { ageItems, balanceSheet, bankSummary, profitAndLoss, trialBalance } from "../reports";
+import { dayBefore, fiscalYear, monthsBetween, previousPeriod, type Period } from "../periods";
+import { ageItems, balanceSheet, bankSummary, cashFlow, profitAndLoss, profitTrend, trialBalance } from "../reports";
 import { buildReturnEntries, computeReturn, rateBreakdown } from "../tax-return";
 import type { BooksContext } from "./data";
 import { fetchAll, fetchMovements, fetchTaxSummary } from "./data";
@@ -39,6 +39,53 @@ export async function getBankSummary(supabase: SupabaseClient, ctx: BooksContext
   const id = ctx.settings.studioId;
   const [before, cur] = await Promise.all([fetchMovements(supabase, id, null, dayBefore(period.start)), fetchMovements(supabase, id, period.start, period.end)]);
   return { period, rows: bankSummary(ctx.accounts, before, cur) };
+}
+
+/** P&L with one column per month (up to 12, newest kept). */
+export async function getProfitTrend(supabase: SupabaseClient, ctx: BooksContext, period: Period) {
+  const id = ctx.settings.studioId;
+  const months = monthsBetween(period.start, period.end, 12);
+  const periods = await Promise.all(months.map((m) => fetchMovements(supabase, id, m.start, m.end)));
+  return { months, report: profitTrend(ctx.accounts, periods) };
+}
+
+export async function getCashFlow(supabase: SupabaseClient, ctx: BooksContext, period: Period) {
+  const id = ctx.settings.studioId;
+  const [cur, before] = await Promise.all([fetchMovements(supabase, id, period.start, period.end), fetchMovements(supabase, id, null, dayBefore(period.start))]);
+  return { period, report: cashFlow(ctx.accounts, cur, before) };
+}
+
+/** What was spent with each supplier in a period, from approved bills. */
+export async function getSupplierSpend(supabase: SupabaseClient, studioId: string, period: Period) {
+  const rows = await fetchAll<Record<string, unknown>>((from, to) =>
+    supabase
+      .from("ledger_bills")
+      .select("total_cents, tax_cents, paid_cents, contact:ledger_contacts ( name )")
+      .eq("studio_id", studioId)
+      .in("status", ["awaiting_payment", "paid"])
+      .gte("issue_date", period.start)
+      .lte("issue_date", period.end)
+      .range(from, to),
+  );
+  const by = new Map<string, { name: string; bills: number; totalCents: number; taxCents: number; outstandingCents: number }>();
+  for (const r of rows) {
+    const name = (r.contact as { name?: string } | null)?.name ?? "—";
+    const cur = by.get(name) ?? { name, bills: 0, totalCents: 0, taxCents: 0, outstandingCents: 0 };
+    cur.bills += 1;
+    cur.totalCents += Number(r.total_cents);
+    cur.taxCents += Number(r.tax_cents);
+    cur.outstandingCents += Number(r.total_cents) - Number(r.paid_cents);
+    by.set(name, cur);
+  }
+  const suppliers = [...by.values()].sort((a, b) => b.totalCents - a.totalCents);
+  return {
+    period,
+    suppliers,
+    totals: suppliers.reduce(
+      (t, s) => ({ bills: t.bills + s.bills, totalCents: t.totalCents + s.totalCents, taxCents: t.taxCents + s.taxCents, outstandingCents: t.outstandingCents + s.outstandingCents }),
+      { bills: 0, totalCents: 0, taxCents: 0, outstandingCents: 0 },
+    ),
+  };
 }
 
 export type LedgerDetailRow = {

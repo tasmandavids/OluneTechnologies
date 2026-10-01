@@ -12,9 +12,7 @@
 //  Stage is a promise to the studio owner, so be honest with it:
 //    live    — connect it and it does the job end to end
 //    beta    — the connection is real and credentials are stored, but what we
-//              do with them is partial. QuickBooks and MYOB are the only two
-//              left here: they authenticate and store tokens, and no ledger
-//              sync reads them yet.
+//              do with them is partial.
 //    planned — on the roadmap, no connect path; the card says so
 // ============================================================================
 
@@ -26,7 +24,7 @@ export const CATEGORY_META: Record<
 > = {
   accounting: {
     label: "Accounting",
-    blurb: "Push invoices and payments into the studio's ledger. One ledger at a time.",
+    blurb: "Where the studio keeps its books: Xero or Olune Books. Chosen on Money → Accounting.",
   },
   payments: {
     label: "Payments & payouts",
@@ -93,9 +91,9 @@ export const INTEGRATIONS: IntegrationProvider[] = [
     capabilities: [
       "Invoices raised in Olune appear in Xero",
       "Payments and credit notes flow back",
-      "Profit & loss, aged receivables and GST on the Money → Reports tab",
+      "Profit & loss, aged receivables and GST on Money → Accounting",
     ],
-    usedBy: { href: "/portal/admin/money?tab=reports", label: "Money → Reports" },
+    usedBy: { href: "/portal/admin/money?tab=accounting", label: "Money → Accounting" },
     requiredEnv: ["XERO_CLIENT_ID", "XERO_CLIENT_SECRET"],
     docsUrl: "https://developer.xero.com/documentation/api/accounting/overview",
   },
@@ -546,9 +544,4 @@ export function connectableIntegrations(): IntegrationProvider[] {
   return INTEGRATIONS.filter((p) => p.auth.kind !== "none");
 }
 
-export const ACCOUNTING_PROVIDER_IDS = ["xero", "quickbooks", "myob", "olune"] as const;
-export type AccountingProviderId = (typeof ACCOUNTING_PROVIDER_IDS)[number];
-
-export function isAccountingProviderId(id: string): id is AccountingProviderId {
-  return (ACCOUNTING_PROVIDER_IDS as readonly string[]).includes(id);
-}
+// The accounting choice (Xero or Olune Books) lives in lib/accounting/provider.ts.

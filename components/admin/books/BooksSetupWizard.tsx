@@ -177,8 +177,8 @@ export function BooksSetupWizard(props: Props) {
       <GlassPanel className="!p-8">
         <h1 className="text-lg font-semibold text-ink">{t("title")}</h1>
         <p className="mt-2 text-sm text-muted">{t("xeroBlocks", { org: props.xeroOrg })}</p>
-        <a href="/portal/admin/settings/connections" className={`${secondaryButton} mt-4 inline-block`} style={secondaryButtonStyle}>
-          {t("openConnections")}
+        <a href="/portal/admin/money?tab=accounting" className={`${secondaryButton} mt-4 inline-block`} style={secondaryButtonStyle}>
+          {t("openAccounting")}
         </a>
       </GlassPanel>
     );

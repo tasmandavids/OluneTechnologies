@@ -854,15 +854,10 @@
         "invoices": "Invoices",
         "collections": "Collections",
         "plans": "Plans",
-        "ledger": "Ledger",
-        "reconcile": "Reconcile",
         "payouts": "Payouts",
-        "reports": "Reports",
-        "products": "Products"
-      },
-      "comingSoon": {
-        "title": "Coming soon",
-        "body": "This part of Money is still being built."
+        "products": "Products",
+        "transactions": "Transactions",
+        "accounting": "Accounting"
       },
       "overview": {
         "title": "Overview",
@@ -908,7 +903,10 @@
           "draftsTitle": "{count} draft invoices ready to send",
           "draftsDetail": "Not yet sent to families",
           "gstTitle": "{amount} GST collected this month",
-          "gstDetail": "See the full breakdown in Reports"
+          "accountingTitle": "Choose where your books are kept",
+          "accountingDetail": "Pick Xero or Olune Books so invoices and payments reach your accounts",
+          "gstDetailXero": "On invoices paid in Olune. Your return is prepared in Xero",
+          "gstDetailBooks": "On invoices paid in Olune. Your return is in Olune Books"
         },
         "chart": {
           "title": "Monthly tuition revenue",
@@ -937,11 +935,11 @@
       },
       "reports": {
         "title": "Reports",
-        "subtitle": "Profit & loss from Xero, GST collected, and who still owes you — grouped by how overdue they are.",
+        "subtitle": "Profit & loss from your Xero organisation, plus GST and unpaid invoices from Olune.",
         "gst": {
           "month": "GST collected (this month)",
           "quarter": "GST collected (this quarter)",
-          "sub": "From invoices marked paid"
+          "sub": "On invoices marked paid in Olune. Your GST return is prepared in Xero"
         },
         "aged": {
           "title": "Aged receivables",
@@ -951,19 +949,10 @@
           "d31to60": "31–60 days overdue",
           "d61plus": "61+ days overdue",
           "count": "{count, plural, one {# invoice} other {# invoices}}"
-        },
-        "comingSoon": {
-          "programme": "Revenue by programme",
-          "programmeBody": "Coming soon — revenue, headcount and churn side by side for each class type.",
-          "export": "Custom export",
-          "exportBody": "Coming soon — any date range, any accounts, CSV or PDF."
-        },
-        "manageConnection": "Manage in Settings",
-        "connectInSettings": "Connect Xero in Settings",
-        "otherLedger": "{provider} is connected as this studio's ledger. Reporting still reads from Xero — {provider} reporting is being built."
+        }
       },
       "ledger": {
-        "title": "Ledger",
+        "title": "Transactions",
         "subtitle": "Every real payment and refund recorded in Olune, in order — not an editable manual ledger.",
         "stats": {
           "net": "Net total",
@@ -983,11 +972,6 @@
           "payment": "Payment",
           "refund": "Refund"
         }
-      },
-      "reconcile": {
-        "title": "Bank reconciliation isn't built yet",
-        "body": "Matching your bank feed against invoices and payouts line-by-line is coming to Olune.",
-        "note": "Invoice status already syncs automatically with Xero — see Reports for that."
       },
       "products": {
         "title": "Products & pricing",
@@ -1037,11 +1021,6 @@
           "term": "Term",
           "year": "Year"
         },
-        "ledgers": {
-          "xero": "Xero",
-          "quickbooks": "QuickBooks Online",
-          "myob": "MYOB Business"
-        },
         "sections": {
           "basics": "Basics",
           "pricing": "How it's priced",
@@ -1074,7 +1053,6 @@
           "accountCode": "Revenue account",
           "itemCode": "Item code",
           "customCode": "Something else…",
-          "otherLedgers": "Different codes in QuickBooks or MYOB?",
           "autoApply": "Apply this automatically"
         },
         "hints": {
@@ -1084,7 +1062,7 @@
           "volume": "From this many, each one costs this instead. The highest matching row wins.",
           "itemCode": "Only set this if the code already exists in your accounting system — an unknown item code makes the whole invoice fail to sync.",
           "accountingConnected": "Picked from your live {ledger} chart of accounts.",
-          "accountingOffline": "Connect an accounting system in Settings to pick these from a list.",
+          "accountingOffline": "Choose Xero or Olune Books on Money → Accounting to pick these from a list.",
           "autoApply": "When a family picks these classes, they're quoted this price instead of each class's own.",
           "comboSaves": "Saves a family {amount} versus paying for each class.",
           "comboNeverFires": "This costs the same or more than the classes it covers, so it will never be applied. Lower the price."
@@ -1176,6 +1154,82 @@
         "save": "Save rate card",
         "saving": "Saving…",
         "saved": "Rate card saved"
+      },
+      "accounting": {
+        "title": "Accounting",
+        "subtitle": "Where your studio keeps its books. Choose one system and Olune sends every invoice, payment and refund there automatically, so nothing is entered twice.",
+        "banner": {
+          "xeroConnected": "Xero is connected. New invoices, payments and refunds will appear in Xero from now on."
+        },
+        "current": "Your books are kept in",
+        "lastSent": "Last sent to Xero {time}",
+        "nothingSentYet": "Nothing has been sent to Xero yet.",
+        "lastPosted": "Last updated {time}",
+        "nothingPostedYet": "Nothing has been posted yet.",
+        "switchLater": "You can change this later. Switching never deletes records from either system.",
+        "books": {
+          "name": "Olune Books",
+          "tag": "Built in",
+          "chooseIf": "Choose this if you don't use accounting software yet, or want everything in one place.",
+          "p1": "Set up for your country: currency, GST/VAT rates and chart of accounts",
+          "p2": "Invoices, card payments, refunds, shop and ticket sales post themselves",
+          "p3": "Bank reconciliation, supplier bills and tax returns ready to file",
+          "p4": "Profit & loss, balance sheet and the reports your accountant asks for",
+          "limits": "No extra subscription. Bank statements are imported as CSV, and you file the tax return yourself from the figures Books prepares.",
+          "setUp": "Set up Olune Books",
+          "resume": "Resume Olune Books",
+          "pausedNote": "Olune Books was paused. Resuming catches it up: anything invoiced while it was paused gets posted, including invoices that were also sent to Xero.",
+          "exportPaused": "Need your paused Olune Books records for your accountant? Download the journal export:",
+          "open": "Open Olune Books",
+          "how": "Invoices, payments and refunds are posted automatically. Reconcile your bank, enter bills and prepare tax returns in Books.",
+          "links": {
+            "bank": "Bank reconciliation",
+            "tax": "Tax returns",
+            "pl": "Profit & loss",
+            "bs": "Balance sheet",
+            "bills": "Bills"
+          }
+        },
+        "xero": {
+          "name": "Xero",
+          "tag": "Connects to Xero",
+          "chooseIf": "Choose this if you or your accountant already use Xero.",
+          "p1": "Invoices appear in Xero as soon as they're created",
+          "p2": "Card payments and refunds are recorded against them",
+          "p3": "Reconcile, report and file GST in Xero, as you do now",
+          "limits": "Needs your own Xero subscription. Bills, bank reconciliation and GST returns stay in Xero.",
+          "connect": "Connect Xero",
+          "notConfigured": "Xero isn't available on this Olune deployment yet.",
+          "open": "Open Xero",
+          "syncError": "The last send to Xero failed: {error}",
+          "how": "Olune sends every invoice, payment and refund to Xero. Bank reconciliation, bills and GST returns are done in Xero."
+        },
+        "switch": {
+          "title": "Change accounting system",
+          "toBooks": "Switch to Olune Books",
+          "toBooksTitle": "Switch from Xero to Olune Books?",
+          "toBooksBody": "Olune will disconnect Xero, then take you to Olune Books setup. Everything already in Xero stays there. From now on, invoices go to Olune Books only.",
+          "toBooksConfirm": "Disconnect Xero and continue",
+          "disconnectXero": "Disconnect Xero without switching",
+          "disconnectXeroTitle": "Disconnect Xero?",
+          "disconnectXeroBody": "New invoices and payments won't be sent to any accounting system until you choose one again. Everything already in Xero stays there.",
+          "disconnectXeroConfirm": "Disconnect Xero",
+          "toXero": "Switch to Xero",
+          "toXeroTitle": "Switch from Olune Books to Xero?",
+          "toXeroBody": "Olune Books will be paused (nothing is deleted, and you can still export it) and you'll be taken to Xero to connect. Only invoices created from now on are sent to Xero; earlier ones aren't copied over.",
+          "toXeroConfirm": "Pause Books and connect Xero",
+          "pauseBooks": "Pause Olune Books without switching",
+          "pauseBooksTitle": "Pause Olune Books?",
+          "pauseBooksBody": "Nothing is deleted, but new invoices and payments won't be posted until you resume it or choose Xero.",
+          "pauseBooksConfirm": "Pause Olune Books"
+        },
+        "errors": {
+          "booksChosen": "This studio uses Olune Books. To move to Xero, use “Switch to Xero” below.",
+          "xeroNotConfigured": "Xero isn't available on this Olune deployment yet.",
+          "invalidState": "The Xero sign-in expired or was interrupted. Please try connecting again.",
+          "booksNotSetUp": "Olune Books hasn't been set up for this studio yet.",
+          "xeroStillConnected": "Xero is still connected. Disconnect it first: a studio keeps its books in one place."
+        }
       }
     },
     "accounting": {

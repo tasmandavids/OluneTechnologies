@@ -5,7 +5,11 @@ import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import { Amount, Badge, PageHeader, rowStyle, tableClass, tdClass, thClass } from "@/components/admin/books/ui";
 import { BillEditor } from "@/components/admin/books/BillEditor";
 import { BillActions } from "@/components/admin/books/BillActions";
+import { BillDocuments, type BillDocument } from "@/components/admin/books/BillDocuments";
 import { requireBooks, BOOKS_PATH } from "@/lib/ledger/server/guard";
+import { signedAttachmentUrl } from "@/lib/ledger/server/inbox";
+import { hasModelAccess } from "@/lib/integrations/ai";
+import { Notice } from "@/components/admin/books/ui";
 import { todayIso } from "@/lib/ledger/periods";
 
 export default async function BillDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -13,10 +17,11 @@ export default async function BillDetailPage({ params }: { params: Promise<{ id:
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const { session, ctx } = await requireBooks();
   const t = await getTranslations("books.bills");
+  const ti = await getTranslations("books.inbox");
 
   const { data: bill } = await session.supabase
     .from("ledger_bills")
-    .select("id, contact_id, reference, issue_date, due_date, status, amounts_include_tax, subtotal_cents, tax_cents, total_cents, paid_cents, notes, journal_id, contact:ledger_contacts ( name ), ledger_bill_lines ( description, account_id, tax_rate_id, quantity, unit_cents, line_total_cents, sort_order ), ledger_bill_payments ( id, date, amount_cents, bank_account_id, journal_id )")
+    .select("id, contact_id, reference, issue_date, due_date, status, amounts_include_tax, subtotal_cents, tax_cents, total_cents, paid_cents, notes, journal_id, source, submitted_at, extracted, contact:ledger_contacts ( name ), submitter:profiles!submitted_by ( full_name ), ledger_attachments ( id, storage_path, file_name, mime_type, created_at ), ledger_bill_lines ( description, account_id, tax_rate_id, quantity, unit_cents, line_total_cents, sort_order ), ledger_bill_payments ( id, date, amount_cents, bank_account_id, journal_id )")
     .eq("id", id)
     .eq("studio_id", session.studioId)
     .maybeSingle();
@@ -26,18 +31,42 @@ export default async function BillDetailPage({ params }: { params: Promise<{ id:
   type BP = { id: string; date: string; amount_cents: number; bank_account_id: string; journal_id: string | null };
   const lines = ((bill.ledger_bill_lines as BL[]) ?? []).sort((a, b) => a.sort_order - b.sort_order);
   const payments = (bill.ledger_bill_payments as BP[]) ?? [];
-  const contactName = (bill.contact as { name?: string } | null)?.name ?? "—";
+  const contactName = (bill.contact as { name?: string } | null)?.name ?? t("unknownSupplier");
   const amount = (c: number) => <Amount cents={c} currency={ctx.settings.baseCurrency} locale={ctx.jurisdiction.locale} />;
+
+  type Att = { id: string; storage_path: string; file_name: string; mime_type: string; created_at: string };
+  const atts = ((bill.ledger_attachments as Att[] | null) ?? []).sort((a, b) => a.created_at.localeCompare(b.created_at));
+  const [documents, aiAvailable] = await Promise.all([
+    Promise.all(atts.map(async (a): Promise<BillDocument> => ({ id: a.id, name: a.file_name, mimeType: a.mime_type, url: await signedAttachmentUrl(a.storage_path) }))),
+    bill.status === "draft" ? hasModelAccess(session.studioId) : Promise.resolve(false),
+  ]);
+  const submitter = (bill.submitter as { full_name?: string | null } | null)?.full_name ?? null;
+  const warnings = ((bill.extracted as { warnings?: string[] } | null)?.warnings ?? []).filter((w) => ti.has(`warnings.${w}`));
+  const origin =
+    bill.source === "staff" ? (
+      <Notice>{t("staffSubmitted", { name: submitter ?? "—", date: String(bill.submitted_at ?? "").slice(0, 10) })}</Notice>
+    ) : bill.source === "upload" && bill.extracted ? (
+      <Notice tone={warnings.length ? "warn" : "neutral"}>
+        {ti("readNotice")}
+        {warnings.length > 0 && (
+          <ul className="mt-1 list-disc pl-5">
+            {warnings.map((w) => (
+              <li key={w}>{ti(`warnings.${w}`)}</li>
+            ))}
+          </ul>
+        )}
+      </Notice>
+    ) : bill.source === "upload" && bill.status === "draft" ? (
+      <Notice>{aiAvailable ? ti("notReadNotice") : ti("noAiNotice")}</Notice>
+    ) : null;
 
   if (bill.status === "draft") {
     const { data: contacts } = await session.supabase.from("ledger_contacts").select("id, name, default_account_id").eq("studio_id", session.studioId).eq("is_archived", false).order("name");
-    return (
-      <div className="mx-auto max-w-6xl space-y-5 p-6">
-        <PageHeader title={t("editDraft", { supplier: contactName })} actions={<BillActions billId={id} status="draft" outstandingCents={0} bankAccounts={[]} today={todayIso()} currency={ctx.settings.baseCurrency} locale={ctx.jurisdiction.locale} />} />
+    const editor = (
         <BillEditor
           initial={{
             id,
-            contactId: bill.contact_id as string,
+            contactId: (bill.contact_id as string | null) ?? "",
             reference: (bill.reference as string) ?? "",
             issueDate: bill.issue_date as string,
             dueDate: (bill.due_date as string) ?? "",
@@ -56,6 +85,31 @@ export default async function BillDetailPage({ params }: { params: Promise<{ id:
           today={todayIso()}
           defaultDue={(bill.due_date as string) ?? todayIso()}
         />
+    );
+    const header = (
+      <PageHeader title={t("editDraft", { supplier: contactName })} actions={<BillActions billId={id} status="draft" outstandingCents={0} bankAccounts={[]} today={todayIso()} currency={ctx.settings.baseCurrency} locale={ctx.jurisdiction.locale} />} />
+    );
+    // With a document: review layout, the original beside the bill.
+    if (documents.length > 0) {
+      return (
+        <div className="mx-auto max-w-[1400px] space-y-5 p-6">
+          {header}
+          {origin}
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+            <div className="xl:sticky xl:top-4 xl:self-start">
+              <BillDocuments billId={id} documents={documents} draft aiAvailable={aiAvailable} preview />
+            </div>
+            <div>{editor}</div>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="mx-auto max-w-6xl space-y-5 p-6">
+        {header}
+        {origin}
+        {editor}
+        <BillDocuments billId={id} documents={[]} draft aiAvailable={aiAvailable} preview={false} />
       </div>
     );
   }
@@ -143,6 +197,8 @@ export default async function BillDetailPage({ params }: { params: Promise<{ id:
         </GlassPanel>
       )}
       {bill.notes ? <p className="text-sm text-muted">{bill.notes as string}</p> : null}
+      {bill.source === "staff" && origin}
+      <BillDocuments billId={id} documents={documents} draft={false} aiAvailable={false} preview={false} />
     </div>
   );
 }

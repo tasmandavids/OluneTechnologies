@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { requireBooksAdmin, BOOKS_PATH } from "@/lib/ledger/server/guard";
-import { loadLedgerSettings } from "@/lib/ledger/server/data";
+import { booksIsChosen, loadLedgerSettings } from "@/lib/ledger/server/data";
+import { ACCOUNTING_PATH } from "@/lib/integrations/routes";
 import { todayIso } from "@/lib/ledger/periods";
 import { BooksSetupWizard } from "@/components/admin/books/BooksSetupWizard";
 
@@ -8,7 +9,9 @@ export default async function BooksSetupPage() {
   const session = await requireBooksAdmin();
   const { supabase, studioId } = session;
   const existing = await loadLedgerSettings(supabase, studioId);
-  if (existing) redirect(BOOKS_PATH);
+  // Already set up: straight in, or — if the studio moved to Xero since —
+  // to Money → Accounting, which is where paused books are resumed.
+  if (existing) redirect((await booksIsChosen(supabase, studioId)) ? BOOKS_PATH : ACCOUNTING_PATH);
 
   const [{ data: xero }, { data: studio }, { count: productCount }] = await Promise.all([
     supabase.from("xero_connections").select("tenant_name").eq("studio_id", studioId).maybeSingle(),

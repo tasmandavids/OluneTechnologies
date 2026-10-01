@@ -46,8 +46,7 @@
         "periods": "日期",
         "review": "确认"
       },
-      "xeroBlocks": "本工作室的账簿在 Xero（{org}）中。一个工作室只能使用一套账簿，请先在「设置 → 连接」中断开 Xero，再切换到 Olune Books。",
-      "openConnections": "打开连接",
+      "xeroBlocks": "该工作室的账簿在 Xero（{org}）中。若要改用 Olune Books，请在 资金 → 会计 中切换，系统会为你断开 Xero。",
       "back": "返回",
       "next": "继续",
       "create": "创建账簿",
@@ -133,7 +132,8 @@
         "rate": "请输入 0 到 100% 之间的税率。",
         "invalid": "表单中有内容不正确，请检查后重试。",
         "xeroConnected": "已连接 Xero。一个工作室只能使用一套账簿，请先断开连接。"
-      }
+      },
+      "openAccounting": "前往 资金 → 会计"
     },
     "dashboard": {
       "title": "账簿",
@@ -169,7 +169,9 @@
       "narration": "摘要",
       "amount": "金额",
       "voided": "已作废",
-      "noJournals": "尚无记账。发票、收款和销售产生后，凭证会显示在这里。"
+      "noJournals": "尚无记账。发票、收款和销售产生后，凭证会显示在这里。",
+      "todoBankImport": "导入银行对账单",
+      "todoReviewBills": "{count, plural, other {审核收件箱中的 # 张账单}}"
     },
     "sync": {
       "last": "已同步 {time}",
@@ -403,7 +405,12 @@
       "deleteDraftBody": "草稿尚未记账，删除不会影响账簿。",
       "voidBill": "作废账单",
       "voidBody": "作废会将账单从账簿中移除（若期间已结账则冲销）。已有付款的账单不能作废。",
-      "voidReason": "原因"
+      "voidReason": "原因",
+      "toReview": "待审核",
+      "fromStaff": "员工提交",
+      "hasDocument": "附有供应商单据",
+      "unknownSupplier": "未指定供应商",
+      "staffSubmitted": "{name} 于 {date} 通过 Olune 发送了这张发票。请核对科目和税项，然后批准付款。"
     },
     "bank": {
       "title": "银行",
@@ -519,7 +526,10 @@
         "gl": "科目明细账",
         "bank": "银行汇总",
         "ar": "应收账龄",
-        "ap": "应付账龄"
+        "ap": "应付账龄",
+        "trend": "按月损益",
+        "cf": "现金流量",
+        "suppliers": "按供应商支出"
       },
       "from": "从",
       "to": "至",
@@ -573,6 +583,31 @@
         "d61to90": "61–90 天",
         "d90plus": "90 天以上",
         "total": "合计"
+      },
+      "exportPack": "年终资料包",
+      "exportPackHint": "本财年的报表、试算表、账龄和总账，一个文件发给会计",
+      "cashFlow": {
+        "netProfit": "净利润",
+        "depreciation": "加回折旧",
+        "depreciationOffset": "减去已计入固定资产的折旧",
+        "operating": "经营活动",
+        "operatingTotal": "经营活动现金净额",
+        "investing": "投资活动",
+        "investingTotal": "投资活动现金净额",
+        "financing": "筹资活动",
+        "financingTotal": "筹资活动现金净额",
+        "netChange": "现金净变动",
+        "opening": "期初现金",
+        "closing": "期末现金",
+        "none": "此期间无",
+        "unexplained": "现金变动相差 {amount}。请检查最近的手工分录。"
+      },
+      "suppliers": {
+        "bills": "账单数",
+        "tax": "税额",
+        "total": "合计",
+        "outstanding": "尚欠",
+        "empty": "此期间没有已批准的账单。"
       }
     },
     "settings": {
@@ -593,26 +628,6 @@
       "saved": "设置已保存。",
       "saving": "正在保存…",
       "save": "保存设置"
-    },
-    "bridge": {
-      "eyebrow": "Olune Books",
-      "reconcile": {
-        "title": "在 Olune Books 中对账",
-        "body": "导入银行对账单，将每一行与发票、收款、供应商账单或 Stripe 打款匹配。"
-      },
-      "reports": {
-        "title": "您的账簿在 Olune Books 中",
-        "body": "利润表、资产负债表、纳税申报等都直接来自您的账簿。"
-      },
-      "setup": {
-        "title": "Olune Books 提供银行对账",
-        "body": "还没有连接会计软件？Olune Books 为您提供按所在国家设置的完整账簿、银行对账和纳税申报。"
-      },
-      "openBank": "打开银行对账",
-      "openPl": "利润表",
-      "openBs": "资产负债表",
-      "openTax": "纳税申报",
-      "setUp": "设置 Olune Books"
     },
     "errors": {
       "invalid": "表单中有内容不正确，请检查后重试。",
@@ -640,7 +655,48 @@
       "alreadyLocked": "该期间已结账。",
       "alreadyFiled": "该申报表已提交。",
       "periodNotEnded": "该期间尚未结束。",
-      "taxNumber": "该税号似乎无效。"
+      "taxNumber": "该税号似乎无效。",
+      "xeroConnected": "该工作室的账簿在 Xero 中。请先在 资金 → 会计 中切换。",
+      "tooManyFiles": "每次最多上传 10 个文件。",
+      "attachmentType": "请上传 PDF 或照片（PNG、JPEG、WebP 或 HEIC）。",
+      "attachmentSize": "该文件超过 20 MB。",
+      "uploadFailed": "上传未完成。请检查网络后重试。",
+      "uploadsNotConfigured": "此部署暂不支持上传单据。",
+      "uploadMissing": "找不到已上传的文件，请重新上传。",
+      "noAttachment": "这张账单没有可读取的单据。",
+      "couldNotRead": "无法读取该单据，请对照手动填写账单。"
+    },
+    "inbox": {
+      "dropLabel": "上传供应商发票",
+      "dropTitle": "将供应商发票拖到此处，或点击选择",
+      "dropHint": "PDF 或照片，每次最多 10 个。每个文件都会生成附带单据的账单草稿，供你填写并批准。",
+      "dropHintAi": "PDF 或照片，每次最多 10 个。我们会读取供应商、日期、金额和税额，生成草稿供你核对并批准。",
+      "uploading": "正在上传…",
+      "reading": "正在读取单据…",
+      "filing": "正在创建账单草稿…",
+      "noAiKey": "如需自动读取发票，请添加 Anthropic 或 OpenAI 密钥。",
+      "addAiKey": "添加密钥",
+      "unknownSupplier": "尚未读取供应商",
+      "readNoTotal": "已读取，未找到总额",
+      "notRead": "待填写",
+      "checkIt": "请核对",
+      "documents": "单据",
+      "readAgain": "重新读取",
+      "attach": "附加文件",
+      "noDocuments": "未附加单据。",
+      "openInTab": "在新标签页中打开",
+      "remove": "移除",
+      "removeConfirm": "要从账单中移除此单据吗？",
+      "previewUnavailable": "此文件无法在此预览。",
+      "readNotice": "已根据附件填写。批准前请逐行与单据核对。",
+      "notReadNotice": "无法自动读取该单据。请点“重新读取”，或手动填写。",
+      "noAiNotice": "请对照旁边的单据填写。在“设置 → 连接”中添加 AI 密钥即可自动读取。",
+      "warnings": {
+        "notInvoice": "这看起来不像发票或收据。",
+        "foreignCurrency": "单据为其他币种。请按账簿币种填写金额。",
+        "linesDontAddUp": "明细之和与单据总额不一致。",
+        "noAmounts": "未找到金额，请手动添加明细。"
+      }
     }
   }
 }

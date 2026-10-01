@@ -253,3 +253,128 @@ export function ageItems(items: { dueDate: string | null; outstandingCents: numb
   }
   return out;
 }
+
+// ─── Profit & loss by month ──────────────────────────────────────────────────
+
+export type TrendRow = { accountId: string; code: string; name: string; amounts: number[]; totalCents: number };
+export type TrendSection = { id: string; rows: TrendRow[]; totals: number[]; totalCents: number };
+export type ProfitTrend = {
+  income: TrendSection;
+  costOfSales: TrendSection;
+  otherIncome: TrendSection;
+  expenses: TrendSection;
+  grossProfit: number[];
+  netProfit: number[];
+  netProfitTotalCents: number;
+};
+
+/** One P&L per period, side by side — `periods[i]` is the movements of column i. */
+export function profitTrend(accounts: LedgerAccount[], periods: AccountMovement[][]): ProfitTrend {
+  const maps = periods.map(toMovementMap);
+  const cols = maps.length;
+  const trend = (id: string, subtypes: AccountSubtype[]): TrendSection => {
+    const rows: TrendRow[] = [];
+    for (const a of accounts) {
+      if (!subtypes.includes(a.subtype)) continue;
+      const amounts = maps.map((m) => normalBalance(a, m.get(a.id)));
+      if (amounts.every((x) => x === 0)) continue;
+      rows.push({ accountId: a.id, code: a.code, name: a.name, amounts, totalCents: amounts.reduce((s, x) => s + x, 0) });
+    }
+    rows.sort((x, y) => x.code.localeCompare(y.code, undefined, { numeric: true }));
+    const totals = Array.from({ length: cols }, (_, i) => rows.reduce((s, r) => s + r.amounts[i], 0));
+    return { id, rows, totals, totalCents: totals.reduce((s, x) => s + x, 0) };
+  };
+  const income = trend("income", ["revenue"]);
+  const costOfSales = trend("costOfSales", ["direct_cost"]);
+  const otherIncome = trend("otherIncome", ["other_income"]);
+  const expenses = trend("expenses", ["expense", "depreciation", "other_expense"]);
+  const grossProfit = income.totals.map((x, i) => x - costOfSales.totals[i]);
+  const netProfit = grossProfit.map((x, i) => x + otherIncome.totals[i] - expenses.totals[i]);
+  return { income, costOfSales, otherIncome, expenses, grossProfit, netProfit, netProfitTotalCents: netProfit.reduce((s, x) => s + x, 0) };
+}
+
+// ─── Cash flow statement (indirect method) ───────────────────────────────────
+
+export type CashFlowLine = { key: string; accountId?: string; label: string; amountCents: number };
+export type CashFlow = {
+  netProfitCents: number;
+  operating: CashFlowLine[];
+  operatingTotalCents: number;
+  investing: CashFlowLine[];
+  investingTotalCents: number;
+  financing: CashFlowLine[];
+  financingTotalCents: number;
+  netChangeCents: number;
+  openingCashCents: number;
+  closingCashCents: number;
+  /** Net change − actual change in bank balances. Zero for a ledger that balances. */
+  unexplainedCents: number;
+};
+
+/**
+ * Where the cash came from and went, from the period's movements alone.
+ *
+ * A balance-sheet account's change over the period IS its movement in the
+ * period, so no opening/closing balances are needed for the body — only for
+ * the cash lines at the bottom. Signs are cash-positive: an increase in an
+ * asset (receivables, equipment) used cash; an increase in a liability or in
+ * equity (a loan, the owner putting money in) provided it.
+ *
+ * Depreciation is added back under operating; equipment bought shows under
+ * investing at cost (its net movement plus that period's depreciation), so the
+ * two halves meet without a separate fixed-asset register.
+ */
+export function cashFlow(accounts: LedgerAccount[], period: AccountMovement[], beforePeriod: AccountMovement[]): CashFlow {
+  const mv = toMovementMap(period);
+  const before = toMovementMap(beforePeriod);
+  const netProfit = netProfitOf(accounts, period);
+  // Debit movement = cash used for an asset; credit movement = cash provided.
+  const cashEffect = (a: LedgerAccount) => {
+    const m = mv.get(a.id);
+    return m ? m.credit - m.debit : 0;
+  };
+
+  let depreciation = 0;
+  for (const a of accounts) if (a.subtype === "depreciation") depreciation += normalBalance(a, mv.get(a.id));
+
+  const lines = (subtypes: AccountSubtype[]) =>
+    accounts
+      .filter((a) => subtypes.includes(a.subtype))
+      .map((a) => ({ key: a.subtype, accountId: a.id, label: `${a.code} ${a.name}`, amountCents: cashEffect(a) }))
+      .filter((l) => l.amountCents !== 0)
+      .sort((x, y) => x.label.localeCompare(y.label, undefined, { numeric: true }));
+
+  const operating: CashFlowLine[] = [
+    { key: "netProfit", label: "netProfit", amountCents: netProfit },
+    ...(depreciation ? [{ key: "depreciation", label: "depreciation", amountCents: depreciation }] : []),
+    ...lines(["receivable", "current_asset", "inventory", "payable", "tax", "current_liability"]),
+  ];
+  // Fixed assets at cost: their net movement already nets off depreciation.
+  const investing: CashFlowLine[] = lines(["fixed_asset", "non_current_asset"]);
+  if (depreciation) investing.push({ key: "depreciationOffset", label: "depreciationOffset", amountCents: -depreciation });
+  const financing: CashFlowLine[] = lines(["non_current_liability", "equity", "retained_earnings"]);
+
+  const sum = (ls: CashFlowLine[]) => ls.reduce((s, l) => s + l.amountCents, 0);
+  const operatingTotal = sum(operating);
+  const investingTotal = sum(investing);
+  const financingTotal = sum(financing);
+  const netChange = operatingTotal + investingTotal + financingTotal;
+
+  const banks = accounts.filter((a) => a.subtype === "bank");
+  const opening = banks.reduce((s, a) => s + normalBalance(a, before.get(a.id)), 0);
+  const change = banks.reduce((s, a) => s + normalBalance(a, mv.get(a.id)), 0);
+
+  return {
+    netProfitCents: netProfit,
+    operating,
+    operatingTotalCents: operatingTotal,
+    investing,
+    investingTotalCents: investingTotal,
+    financing,
+    financingTotalCents: financingTotal,
+    netChangeCents: netChange,
+    openingCashCents: opening,
+    closingCashCents: opening + change,
+    unexplainedCents: netChange - change,
+  };
+}

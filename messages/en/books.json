@@ -46,8 +46,7 @@
         "periods": "Dates",
         "review": "Review"
       },
-      "xeroBlocks": "This studio's books are in Xero ({org}). A studio keeps one ledger, so disconnect Xero in Settings → Connections before switching to Olune Books.",
-      "openConnections": "Open Connections",
+      "xeroBlocks": "This studio's books are kept in Xero ({org}). To use Olune Books instead, switch on Money → Accounting; it disconnects Xero for you.",
       "back": "Back",
       "next": "Continue",
       "create": "Create my books",
@@ -133,7 +132,8 @@
         "rate": "Enter a tax rate between 0 and 100%.",
         "invalid": "Something in the form isn't right. Check it and try again.",
         "xeroConnected": "Xero is connected. Disconnect it first: a studio keeps one ledger."
-      }
+      },
+      "openAccounting": "Go to Money → Accounting"
     },
     "dashboard": {
       "title": "Books",
@@ -169,7 +169,9 @@
       "narration": "Description",
       "amount": "Amount",
       "voided": "Voided",
-      "noJournals": "Nothing posted yet. Journals appear here as invoices, payments and sales come in."
+      "noJournals": "Nothing posted yet. Journals appear here as invoices, payments and sales come in.",
+      "todoBankImport": "Import a bank statement",
+      "todoReviewBills": "{count, plural, one {Review # bill in the inbox} other {Review # bills in the inbox}}"
     },
     "sync": {
       "last": "Synced {time}",
@@ -403,7 +405,12 @@
       "deleteDraftBody": "The draft hasn't been posted, so deleting it doesn't touch your books.",
       "voidBill": "Void bill",
       "voidBody": "Voiding removes the bill from your books (or reverses it if its period is locked). Bills with payments can't be voided.",
-      "voidReason": "Reason"
+      "voidReason": "Reason",
+      "toReview": "To review",
+      "fromStaff": "From staff",
+      "hasDocument": "Has the supplier’s document",
+      "unknownSupplier": "Supplier not set",
+      "staffSubmitted": "{name} sent this invoice from Olune on {date}. Check the account and tax, then approve it to pay."
     },
     "bank": {
       "title": "Bank",
@@ -519,7 +526,10 @@
         "gl": "Account transactions",
         "bank": "Bank summary",
         "ar": "Aged receivables",
-        "ap": "Aged payables"
+        "ap": "Aged payables",
+        "trend": "Profit by month",
+        "cf": "Cash flow",
+        "suppliers": "Supplier spend"
       },
       "from": "From",
       "to": "To",
@@ -573,6 +583,31 @@
         "d61to90": "61–90 days",
         "d90plus": "90+ days",
         "total": "Total"
+      },
+      "exportPack": "Year-end pack",
+      "exportPackHint": "This financial year’s statements, trial balance, aged balances and general ledger in one file for your accountant",
+      "cashFlow": {
+        "netProfit": "Net profit",
+        "depreciation": "Add back depreciation",
+        "depreciationOffset": "Less depreciation already in fixed assets",
+        "operating": "Operating activities",
+        "operatingTotal": "Net cash from operating activities",
+        "investing": "Investing activities",
+        "investingTotal": "Net cash from investing activities",
+        "financing": "Financing activities",
+        "financingTotal": "Net cash from financing activities",
+        "netChange": "Net change in cash",
+        "opening": "Cash at the start",
+        "closing": "Cash at the end",
+        "none": "Nothing in this period",
+        "unexplained": "Cash movements are out by {amount}. Check recent manual journals."
+      },
+      "suppliers": {
+        "bills": "Bills",
+        "tax": "Tax",
+        "total": "Total",
+        "outstanding": "Still owed",
+        "empty": "No approved bills in this period."
       }
     },
     "settings": {
@@ -593,26 +628,6 @@
       "saved": "Settings saved.",
       "saving": "Saving…",
       "save": "Save settings"
-    },
-    "bridge": {
-      "eyebrow": "Olune Books",
-      "reconcile": {
-        "title": "Reconcile in Olune Books",
-        "body": "Import your bank statements and match every line to an invoice, payment, bill or Stripe payout."
-      },
-      "reports": {
-        "title": "Your books are in Olune Books",
-        "body": "Profit and loss, balance sheet, tax returns and the rest come straight from your ledger."
-      },
-      "setup": {
-        "title": "Bank reconciliation comes with Olune Books",
-        "body": "No accounting software connected? Olune Books gives you a full ledger, bank reconciliation and tax returns set up for your country."
-      },
-      "openBank": "Open bank reconciliation",
-      "openPl": "Profit and loss",
-      "openBs": "Balance sheet",
-      "openTax": "Tax returns",
-      "setUp": "Set up Olune Books"
     },
     "errors": {
       "invalid": "Something in the form isn't right. Check it and try again.",
@@ -640,7 +655,48 @@
       "alreadyLocked": "That period is already locked.",
       "alreadyFiled": "That return has already been filed.",
       "periodNotEnded": "That period hasn't ended yet.",
-      "taxNumber": "That tax number doesn't look valid."
+      "taxNumber": "That tax number doesn't look valid.",
+      "xeroConnected": "This studio's books are kept in Xero. Switch on Money → Accounting first.",
+      "tooManyFiles": "Upload up to 10 files at a time.",
+      "attachmentType": "Upload a PDF or a photo (PNG, JPEG, WebP or HEIC).",
+      "attachmentSize": "That file is over 20 MB.",
+      "uploadFailed": "The upload didn’t finish. Check your connection and try again.",
+      "uploadsNotConfigured": "Document uploads aren’t available on this deployment yet.",
+      "uploadMissing": "We couldn’t find the uploaded file. Try uploading it again.",
+      "noAttachment": "This bill has no document to read.",
+      "couldNotRead": "The document couldn’t be read. Fill the bill in from it by hand."
+    },
+    "inbox": {
+      "dropLabel": "Upload supplier invoices",
+      "dropTitle": "Drop supplier invoices here, or click to choose",
+      "dropHint": "PDFs or photos, up to 10 at a time. Each becomes a draft bill with the document attached, ready for you to fill in and approve.",
+      "dropHintAi": "PDFs or photos, up to 10 at a time. We read the supplier, dates, amounts and tax into a draft bill for you to check and approve.",
+      "uploading": "Uploading…",
+      "reading": "Reading the documents…",
+      "filing": "Creating draft bills…",
+      "noAiKey": "To have invoices read for you, add an Anthropic or OpenAI key.",
+      "addAiKey": "Add a key",
+      "unknownSupplier": "Supplier not read yet",
+      "readNoTotal": "read, no total found",
+      "notRead": "to fill in",
+      "checkIt": "check it",
+      "documents": "Documents",
+      "readAgain": "Read again",
+      "attach": "Attach a file",
+      "noDocuments": "No documents attached.",
+      "openInTab": "Open in a new tab",
+      "remove": "Remove",
+      "removeConfirm": "Remove this document from the bill?",
+      "previewUnavailable": "This file can’t be previewed here.",
+      "readNotice": "Filled in from the attached document. Check each line against it before you approve.",
+      "notReadNotice": "The document couldn’t be read automatically. Use “Read again”, or fill the bill in from it.",
+      "noAiNotice": "Fill the bill in from the document beside it. Add an AI key in Settings → Connections to have invoices read for you.",
+      "warnings": {
+        "notInvoice": "This doesn’t look like an invoice or receipt.",
+        "foreignCurrency": "The document is in another currency. Enter the amounts in your books’ currency.",
+        "linesDontAddUp": "The lines don’t add up to the document’s total.",
+        "noAmounts": "No amounts were found. Add the lines by hand."
+      }
     }
   }
 }

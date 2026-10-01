@@ -7,6 +7,10 @@
 //  Advertising used to each carry their own connect UI; they now show the data
 //  and point here. Providers that don't exist yet are listed too, greyed, so
 //  the roadmap is visible instead of being a support question.
+//
+//  Accounting is the exception. Xero vs Olune Books is one money decision, so
+//  it's made on Money → Accounting; here it's a single card pointing there,
+//  not a second set of connect buttons that could disagree with it.
 // ============================================================================
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
@@ -47,6 +51,7 @@ export function ConnectionsHub({
   metadata,
   bannerConnected,
   bannerError,
+  accounting,
 }: {
   states: IntegrationStateMap;
   /** providerId → env vars the deployment is missing. */
@@ -55,6 +60,8 @@ export function ConnectionsHub({
   metadata: Record<string, Record<string, string>>;
   bannerConnected: string | null;
   bannerError: string | null;
+  /** The studio's accounting choice, e.g. { name: "Xero", detail: "Nova Dance Ltd" }. */
+  accounting: { name: string | null; detail: string | null };
 }) {
   const router = useRouter();
   const [filter, setFilter] = useState<Filter>("all");
@@ -89,16 +96,6 @@ export function ConnectionsHub({
     () => Object.values(states).filter((s) => s.status === "error" || s.status === "pending").length,
     [states],
   );
-
-  // Which provider currently holds each exclusive slot (one ledger per studio).
-  const exclusiveHolder = useMemo(() => {
-    const held: Record<string, string> = {};
-    for (const provider of INTEGRATIONS) {
-      if (!provider.exclusiveGroup) continue;
-      if (states[provider.id]?.connected) held[provider.exclusiveGroup] = provider.name;
-    }
-    return held;
-  }, [states]);
 
   const matchesFilter = (provider: IntegrationProvider): boolean => {
     const state = states[provider.id];
@@ -156,7 +153,7 @@ export function ConnectionsHub({
   const visibleCategories = INTEGRATION_CATEGORIES.map((category) => ({
     category,
     providers: INTEGRATIONS.filter((p) => p.category === category && matchesFilter(p)),
-  })).filter((group) => group.providers.length > 0);
+  })).filter((group) => group.category !== "accounting" && group.providers.length > 0);
 
   return (
     <motion.div
@@ -242,6 +239,7 @@ export function ConnectionsHub({
       )}
 
       <div className="flex flex-col gap-5">
+        <AccountingPointer accounting={accounting} />
         {visibleCategories.map(({ category, providers }) => (
           <CategorySection
             key={category}
@@ -249,7 +247,6 @@ export function ConnectionsHub({
             providers={providers}
             states={states}
             missingEnv={missingEnv}
-            exclusiveHolder={exclusiveHolder}
             busyProvider={busyProvider}
             onConnect={onConnect}
             onManage={setApiKeyProvider}
@@ -301,7 +298,6 @@ function CategorySection({
   providers,
   states,
   missingEnv,
-  exclusiveHolder,
   busyProvider,
   onConnect,
   onManage,
@@ -311,7 +307,6 @@ function CategorySection({
   providers: IntegrationProvider[];
   states: IntegrationStateMap;
   missingEnv: Record<string, string[]>;
-  exclusiveHolder: Record<string, string>;
   busyProvider: string | null;
   onConnect: (p: IntegrationProvider) => void;
   onManage: (p: IntegrationProvider) => void;
@@ -330,16 +325,12 @@ function CategorySection({
         {providers.map((provider) => {
           const state = states[provider.id];
           if (!state) return null;
-          const holder = provider.exclusiveGroup
-            ? exclusiveHolder[provider.exclusiveGroup]
-            : undefined;
           return (
             <ConnectionCard
               key={provider.id}
               provider={provider}
               state={state}
               missingEnv={missingEnv[provider.id] ?? []}
-              blockedBy={holder && holder !== provider.name ? holder : null}
               busy={busyProvider === provider.id}
               onConnect={() => onConnect(provider)}
               onManage={() => onManage(provider)}
@@ -347,6 +338,35 @@ function CategorySection({
             />
           );
         })}
+      </div>
+    </GlassPanel>
+  );
+}
+
+function AccountingPointer({ accounting }: { accounting: { name: string | null; detail: string | null } }) {
+  return (
+    <GlassPanel className="!p-6">
+      <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+        {CATEGORY_META.accounting.label}
+      </h2>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-ink">
+            {accounting.name ?? "Not chosen yet"}
+            {accounting.detail ? <span className="font-normal text-muted"> · {accounting.detail}</span> : null}
+          </p>
+          <p className="mt-1 max-w-[60ch] text-sm text-muted">
+            {accounting.name
+              ? "Your books are kept here. Change it, or check it's working, on Money → Accounting."
+              : "Choose Xero or Olune Books on Money → Accounting. Until you do, invoices aren't sent to any accounting system."}
+          </p>
+        </div>
+        <Link
+          href="/portal/admin/money?tab=accounting"
+          className="rounded-xl border border-[--hair] px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[--t3]"
+        >
+          {accounting.name ? "Manage accounting" : "Choose accounting"}
+        </Link>
       </div>
     </GlassPanel>
   );

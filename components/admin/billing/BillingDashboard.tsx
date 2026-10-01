@@ -651,6 +651,7 @@ export function BillingDashboard({
   products,
   initialInvoiceId = null,
   draftCount,
+  onXero = false,
 }: {
   invoices: InvoiceRow[];
   unpaidInvoices: InvoiceRow[];
@@ -668,6 +669,8 @@ export function BillingDashboard({
   products: LineProductOption[];
   initialInvoiceId?: string | null;
   draftCount: number;
+  /** Xero is the studio's accounting choice — only then is there anything to refresh from. */
+  onXero?: boolean;
 }) {
   const t = useTranslations("admin.billing");
   const tSearch = useTranslations("common");
@@ -841,7 +844,7 @@ export function BillingDashboard({
             <p className="mt-1 text-sm text-muted">{t("subtitle")}</p>
           </div>
           <div className="flex items-start gap-2">
-            <RefreshXeroButton onDone={refresh} />
+            {onXero && <RefreshXeroButton onDone={refresh} />}
             <button
               type="button"
               onClick={() => setShowCreate(true)}

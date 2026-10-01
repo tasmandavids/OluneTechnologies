@@ -1,9 +1,10 @@
 // ============================================================================
 //  /portal/admin/settings/connections — the studio's connection hub.
 //
-//  Every OAuth callback in the app now lands here (?connected= / ?error=),
-//  and Money / Inbox / Advertising link here instead of carrying their own
-//  connect UI.
+//  Every OAuth callback in the app lands here (?connected= / ?error=) except
+//  Xero's, and Inbox / Advertising link here instead of carrying their own
+//  connect UI. Accounting (Xero vs Olune Books) is chosen on Money →
+//  Accounting; this page only shows which one and links there.
 // ============================================================================
 
 import { redirect } from "next/navigation";
@@ -12,6 +13,7 @@ import { INTEGRATIONS } from "@/lib/integrations/catalog";
 import { missingProviderEnv } from "@/lib/integrations/env";
 import { loadIntegrationStates } from "@/lib/integrations/state";
 import { ConnectionsHub } from "@/components/admin/settings/connections/ConnectionsHub";
+import { ACCOUNTING_NAMES, loadAccountingSetup } from "@/lib/accounting/provider";
 
 export default async function ConnectionsPage({
   searchParams,
@@ -25,7 +27,19 @@ export default async function ConnectionsPage({
   const params = await searchParams;
   const { supabase, studioId } = session;
 
-  const states = await loadIntegrationStates(supabase, studioId);
+  const [states, accountingSetup] = await Promise.all([
+    loadIntegrationStates(supabase, studioId),
+    loadAccountingSetup(supabase, studioId),
+  ]);
+  const accounting = {
+    name: accountingSetup.choice ? ACCOUNTING_NAMES[accountingSetup.choice] : null,
+    detail:
+      accountingSetup.choice === "xero"
+        ? (accountingSetup.xero?.tenantName ?? null)
+        : accountingSetup.choice === "olune" && accountingSetup.books
+          ? `${accountingSetup.books.jurisdiction} · ${accountingSetup.books.baseCurrency}`
+          : null,
+  };
 
   const missingEnv: Record<string, string[]> = {};
   for (const provider of INTEGRATIONS) {
@@ -57,6 +71,7 @@ export default async function ConnectionsPage({
       metadata={metadata}
       bannerConnected={params.connected ?? null}
       bannerError={params.error ?? null}
+      accounting={accounting}
     />
   );
 }

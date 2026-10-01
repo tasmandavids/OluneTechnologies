@@ -13,14 +13,16 @@
       "students": "Bailarines",
       "classes": "Clases",
       "pricing": "Tarifas",
-      "tour": "Recorrido"
+      "tour": "Recorrido",
+      "money": "Dinero"
     },
     "actions": {
       "back": "Atrás",
       "skip": "Omitir por ahora",
       "working": "Trabajando…",
       "continue": "Continuar",
-      "saveLater": "Guardar progreso y terminar más tarde →"
+      "saveLater": "Guardar progreso y terminar más tarde →",
+      "finish": "Terminar configuración"
     },
     "path": {
       "title": "¿Cómo vas a empezar?",
@@ -33,7 +35,8 @@
         "title": "Ya tengo un estudio",
         "body": "Importación masiva desde StudioPro, Class Manager o cualquier hoja de cálculo."
       },
-      "sourcePrompt": "¿Dónde están tus datos actualmente?"
+      "sourcePrompt": "¿Dónde están tus datos actualmente?",
+      "newStudio": "No, empiezo de cero"
     },
     "profile": {
       "title": "Cuéntanos sobre tu estudio",
@@ -47,7 +50,10 @@
       "aboutPlaceholder": "Ballet preescolar centrado en la comunidad, equipos de competición, clases abiertas para adultos…",
       "stylesLabel": "Estilos de baile que ofreces",
       "stylesRequired": "Elige al menos un estilo para continuar.",
-      "stylesHint": "Estos alimentan las sugerencias de clases, las páginas de programas de tu sitio web y el formulario de consultas que ven las familias."
+      "stylesHint": "Estos alimentan las sugerencias de clases, las páginas de programas de tu sitio web y el formulario de consultas que ven las familias.",
+      "countryPlaceholder": "Elige un país…",
+      "countryOther": "Otro país",
+      "countryName": "Nombre del país"
     },
     "students": {
       "title": "Añade a tus bailarines",
@@ -66,7 +72,8 @@
       "addAnother": "+ Añadir otro alumno",
       "linkParents": "Crear cuentas de padres y vincular familias cuando se proporcionen sus datos",
       "import": "Importar {count, plural, one {# bailarín} other {# bailarines}}",
-      "portalNote": "Todos los que añadas obtienen acceso al portal y pueden recibir una tarjeta de acceso y tus formularios."
+      "portalNote": "Todos los que añadas obtienen acceso al portal y pueden recibir una tarjeta de acceso y tus formularios.",
+      "sourcePrompt": "¿Traes bailarines de otro sistema?"
     },
     "classes": {
       "title": "Crea tu horario",
@@ -125,7 +132,27 @@
     "tour": {
       "title": "{studioName} está listo",
       "subtitle": "Esto es lo que puedes hacer en Olune — explóralo cuando quieras desde tu panel.",
-      "enterDashboard": "Entrar a tu panel →"
+      "enterDashboard": "Entrar a tu panel →",
+      "nextUp": "Lo siguiente",
+      "explore": "Explora Olune",
+      "next": {
+        "payments": {
+          "title": "Cobra en línea",
+          "body": "Conecta Stripe para que las familias paguen facturas e inscripciones con tarjeta. Unos cinco minutos."
+        },
+        "books": {
+          "title": "Tu contabilidad está lista",
+          "body": "Facturas, pagos e impuestos se registran solos. Añade los saldos iniciales y sube tus primeras facturas de proveedores."
+        },
+        "xero": {
+          "title": "Conecta Xero",
+          "body": "Inicia sesión en Xero para que facturas y pagos lleguen a tu organización."
+        },
+        "accounting": {
+          "title": "Elige dónde llevar tu contabilidad",
+          "body": "Olune Books viene incluido, o conecta Xero. En ambos casos, facturas y pagos se registran solos."
+        }
+      }
     },
     "importSummary": {
       "added": "Añadidos {count, plural, one {# bailarín} other {# bailarines}}",
@@ -261,6 +288,40 @@
       "thu": "Jue",
       "fri": "Vie",
       "sat": "Sáb"
+    },
+    "money": {
+      "title": "¿Cómo quieres llevar tu contabilidad?",
+      "subtitle": "Cada factura, pago y reembolso en Olune se registra por ti: elige dónde.",
+      "recommended": "Recomendado",
+      "olune": {
+        "title": "Olune Books",
+        "body": "Incluido, sin suscripción extra. Contabilidad, impuestos e informes configurados para tu país.",
+        "alreadyOn": "Olune Books ya está configurado para este estudio.",
+        "country": "País para impuestos",
+        "region": "Región",
+        "pickRegion": "Elige…",
+        "registeredQuestion": "¿El estudio está registrado para el {tax}?",
+        "taxNumber": "{label} (opcional)",
+        "defaults": "La contabilidad usará {currency} con los periodos de {tax} y el ejercicio habituales. Puedes cambiarlo en Libros → Ajustes."
+      },
+      "xero": {
+        "title": "Xero",
+        "body": "¿Ya usas Xero? Olune envía allí tus facturas y pagos.",
+        "next": "Al terminar, te llevaremos a conectar tu organización de Xero."
+      },
+      "later": {
+        "title": "Decidir después",
+        "body": "No se registra nada hasta que elijas en Dinero → Contabilidad."
+      },
+      "yes": "Sí",
+      "no": "No",
+      "setUpBooks": "Configurar Olune Books y terminar",
+      "errors": {
+        "invalid": "Algo del formulario no es correcto. Revísalo e inténtalo de nuevo.",
+        "xeroConnected": "Este estudio ya está conectado a Xero. Cámbialo en Dinero → Contabilidad.",
+        "pickRegion": "Elige una región para configurar los impuestos correctos.",
+        "taxNumber": "Ese número no parece correcto. Revísalo o déjalo en blanco por ahora."
+      }
     }
   }
 }

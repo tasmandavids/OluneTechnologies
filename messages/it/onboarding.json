@@ -45,7 +45,8 @@
       "submitting": "Creazione dello studio…",
       "submit": "Crea studio",
       "submittingInstructor": "Creazione del tuo spazio…",
-      "submitInstructor": "Crea lo spazio"
+      "submitInstructor": "Crea lo spazio",
+      "changeLater": "Potrai caricare un logo e affinare i colori più avanti."
     },
     "done": {
       "title": "Benvenuto in {studioName}",
@@ -91,7 +92,9 @@
       "instructor": {
         "title": "Sono un istruttore o insegnante indipendente",
         "desc": "Collabora con più società, tieni traccia del tuo orario e gestisci il tuo profilo da insegnante."
-      }
+      },
+      "otherVertical": "Iscrizioni aperte per: {vertical}. Hai un’altra attività?",
+      "otherVerticalLink": "Iscriviti alla lista d’attesa"
     },
     "profile": {
       "title": "Il tuo nome pubblico",

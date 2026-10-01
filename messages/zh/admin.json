@@ -854,15 +854,10 @@
         "invoices": "发票",
         "collections": "催收",
         "plans": "分期计划",
-        "ledger": "总账",
-        "reconcile": "对账",
         "payouts": "打款",
-        "reports": "报表",
-        "products": "产品"
-      },
-      "comingSoon": {
-        "title": "即将上线",
-        "body": "财务的这部分功能仍在建设中。"
+        "products": "产品",
+        "transactions": "交易记录",
+        "accounting": "会计"
       },
       "overview": {
         "title": "概览",
@@ -908,7 +903,10 @@
           "draftsTitle": "{count} 张草稿发票待发送",
           "draftsDetail": "尚未发送给家长",
           "gstTitle": "本月已收 GST {amount}",
-          "gstDetail": "完整明细见报表页面"
+          "accountingTitle": "选择在哪里记账",
+          "accountingDetail": "选择 Xero 或 Olune Books，让发票和付款进入你的账簿",
+          "gstDetailXero": "按 Olune 中已付发票计算。申报表在 Xero 中准备",
+          "gstDetailBooks": "按 Olune 中已付发票计算。申报表在 Olune Books 中"
         },
         "chart": {
           "title": "月度学费收入",
@@ -937,11 +935,11 @@
       },
       "reports": {
         "title": "报表",
-        "subtitle": "来自 Xero 的损益表、已收 GST，以及仍欠款的家庭 — 按逾期程度分组。",
+        "subtitle": "来自 Xero 组织的损益，以及 Olune 的税额和未付发票。",
         "gst": {
           "month": "已收 GST（本月）",
           "quarter": "已收 GST（本季度）",
-          "sub": "根据已标记为已支付的发票"
+          "sub": "按 Olune 中标记为已付的发票计算。申报表在 Xero 中准备"
         },
         "aged": {
           "title": "账龄分析",
@@ -951,19 +949,10 @@
           "d31to60": "逾期 31–60 天",
           "d61plus": "逾期 61 天以上",
           "count": "{count, plural, other {# 张发票}}"
-        },
-        "comingSoon": {
-          "programme": "按课程分类的收入",
-          "programmeBody": "即将上线 — 按课程类型并列展示收入、人数和流失率。",
-          "export": "自定义导出",
-          "exportBody": "即将上线 — 任意日期范围、任意科目，CSV 或 PDF。"
-        },
-        "manageConnection": "在设置中管理",
-        "connectInSettings": "在设置中连接 Xero",
-        "otherLedger": "{provider} 已作为本工作室的账簿连接。报表仍从 Xero 读取——{provider} 报表功能正在开发中。"
+        }
       },
       "ledger": {
-        "title": "总账",
+        "title": "交易记录",
         "subtitle": "Olune 中记录的每一笔真实付款和退款，按时间顺序排列 — 不是可手动编辑的账本。",
         "stats": {
           "net": "净额",
@@ -983,11 +972,6 @@
           "payment": "付款",
           "refund": "退款"
         }
-      },
-      "reconcile": {
-        "title": "银行对账功能尚未上线",
-        "body": "将银行流水与发票、打款逐笔匹配的功能即将加入 Olune。",
-        "note": "发票状态已自动与 Xero 同步 — 详见报表。"
       },
       "products": {
         "title": "产品与定价",
@@ -1037,11 +1021,6 @@
           "term": "学期",
           "year": "年"
         },
-        "ledgers": {
-          "xero": "Xero",
-          "quickbooks": "QuickBooks Online",
-          "myob": "MYOB Business"
-        },
         "sections": {
           "basics": "基本信息",
           "pricing": "定价方式",
@@ -1074,7 +1053,6 @@
           "accountCode": "收入科目",
           "itemCode": "项目编码",
           "customCode": "其他…",
-          "otherLedgers": "在 QuickBooks 或 MYOB 中使用不同编码？",
           "autoApply": "自动套用"
         },
         "hints": {
@@ -1084,7 +1062,7 @@
           "volume": "达到此数量后，每份按此价格计算。以匹配的最高一行为准。",
           "itemCode": "仅在该编码已存在于您的会计系统时才填写——未知的项目编码会导致整张发票同步失败。",
           "accountingConnected": "取自您实时的 {ledger} 会计科目表。",
-          "accountingOffline": "在设置中连接会计系统后即可从列表中选择。",
+          "accountingOffline": "在 资金 → 会计 中选择 Xero 或 Olune Books，即可从列表中选择。",
           "autoApply": "当家庭选择这些课程时，将按此价格报价，而不是各课程自己的价格。",
           "comboSaves": "相比逐节课付费，为家庭节省 {amount}。",
           "comboNeverFires": "此价格等于或高于所含课程的合计价，因此永远不会生效。请调低价格。"
@@ -1176,6 +1154,82 @@
         "save": "保存价目表",
         "saving": "保存中…",
         "saved": "价目表已保存"
+      },
+      "accounting": {
+        "title": "会计",
+        "subtitle": "你的工作室在哪里记账。选择一个系统，Olune 会自动把每张发票、每笔付款和退款发送过去，无需重复录入。",
+        "banner": {
+          "xeroConnected": "Xero 已连接。今后新的发票、付款和退款都会出现在 Xero 中。"
+        },
+        "current": "你的账簿位于",
+        "lastSent": "最近一次发送到 Xero：{time}",
+        "nothingSentYet": "尚未向 Xero 发送任何内容。",
+        "lastPosted": "最近更新：{time}",
+        "nothingPostedYet": "尚未记账。",
+        "switchLater": "以后可以更改。切换不会删除任一系统中的记录。",
+        "books": {
+          "name": "Olune Books",
+          "tag": "内置",
+          "chooseIf": "如果你还没有使用会计软件，或希望一切集中在一处，请选择此项。",
+          "p1": "按你所在国家设置：币种、税率和会计科目表",
+          "p2": "发票、刷卡付款、退款、商店和票务销售自动记账",
+          "p3": "银行对账、供应商账单以及可直接申报的税表",
+          "p4": "损益表、资产负债表以及会计师需要的报表",
+          "limits": "无需额外订阅。银行对账单以 CSV 导入，税表由你根据 Books 准备的数据自行申报。",
+          "setUp": "设置 Olune Books",
+          "resume": "恢复 Olune Books",
+          "pausedNote": "Olune Books 曾被暂停。恢复后会补记暂停期间开具的所有发票，包括同时发送到 Xero 的发票。",
+          "exportPaused": "会计师需要已暂停的 Olune Books 记录？下载日记账导出：",
+          "open": "打开 Olune Books",
+          "how": "发票、付款和退款会自动记账。在 Books 中进行银行对账、录入账单和准备税表。",
+          "links": {
+            "bank": "银行对账",
+            "tax": "税务申报",
+            "pl": "损益表",
+            "bs": "资产负债表",
+            "bills": "供应商账单"
+          }
+        },
+        "xero": {
+          "name": "Xero",
+          "tag": "连接 Xero",
+          "chooseIf": "如果你或你的会计师已在使用 Xero，请选择此项。",
+          "p1": "发票创建后立即出现在 Xero 中",
+          "p2": "刷卡付款和退款会记录在对应发票上",
+          "p3": "对账、报表和税务申报照常在 Xero 中完成",
+          "limits": "需要你自己的 Xero 订阅。供应商账单、银行对账和税务申报仍在 Xero 中进行。",
+          "connect": "连接 Xero",
+          "notConfigured": "此 Olune 部署暂不支持 Xero。",
+          "open": "打开 Xero",
+          "syncError": "最近一次发送到 Xero 失败：{error}",
+          "how": "Olune 会把每张发票、每笔付款和退款发送到 Xero。银行对账、供应商账单和税务申报在 Xero 中完成。"
+        },
+        "switch": {
+          "title": "更换会计系统",
+          "toBooks": "切换到 Olune Books",
+          "toBooksTitle": "从 Xero 切换到 Olune Books？",
+          "toBooksBody": "Olune 会断开 Xero，然后带你进入 Olune Books 设置。Xero 中已有的内容保持不变。从现在起，发票只会进入 Olune Books。",
+          "toBooksConfirm": "断开 Xero 并继续",
+          "disconnectXero": "断开 Xero 但不切换",
+          "disconnectXeroTitle": "断开 Xero？",
+          "disconnectXeroBody": "在你重新选择会计系统之前，新发票和付款不会发送到任何系统。Xero 中已有的内容保持不变。",
+          "disconnectXeroConfirm": "断开 Xero",
+          "toXero": "切换到 Xero",
+          "toXeroTitle": "从 Olune Books 切换到 Xero？",
+          "toXeroBody": "Olune Books 将被暂停（不会删除任何内容，仍可导出），然后你将前往 Xero 进行连接。只有从现在起创建的发票会发送到 Xero，之前的发票不会被复制。",
+          "toXeroConfirm": "暂停 Books 并连接 Xero",
+          "pauseBooks": "暂停 Olune Books 但不切换",
+          "pauseBooksTitle": "暂停 Olune Books？",
+          "pauseBooksBody": "不会删除任何内容，但在你恢复或选择 Xero 之前，新发票和付款不会记账。",
+          "pauseBooksConfirm": "暂停 Olune Books"
+        },
+        "errors": {
+          "booksChosen": "该工作室正在使用 Olune Books。要改用 Xero，请使用下方的“切换到 Xero”。",
+          "xeroNotConfigured": "此 Olune 部署暂不支持 Xero。",
+          "invalidState": "Xero 登录已过期或被中断，请重新连接。",
+          "booksNotSetUp": "该工作室尚未设置 Olune Books。",
+          "xeroStillConnected": "Xero 仍处于连接状态。请先断开：一个工作室只在一处记账。"
+        }
       }
     },
     "accounting": {

@@ -142,9 +142,28 @@ export function buildChartIndex(settings: LedgerSettings, j: Jurisdiction, regio
 }
 
 /** Everything a Books page needs about the studio's setup, or null if Books isn't on. */
-export async function loadBooksContext(supabase: SupabaseClient, studioId: string): Promise<BooksContext | null> {
-  const settings = await loadLedgerSettings(supabase, studioId);
-  if (!settings) return null;
+/** Is Olune Books the studio's accounting choice (studios.accounting_provider)? */
+export async function booksIsChosen(supabase: SupabaseClient, studioId: string): Promise<boolean> {
+  const { data } = await supabase.from("studios").select("accounting_provider").eq("id", studioId).maybeSingle();
+  return data?.accounting_provider === "olune";
+}
+
+/**
+ * Books' working context — null unless Books is set up AND is the studio's
+ * accounting choice. A studio that switched to Xero keeps its ledger rows
+ * (journals are immutable, filed returns are history) but nothing may post to
+ * them; `includePaused` is only for reading them back out (the CSV export).
+ */
+export async function loadBooksContext(
+  supabase: SupabaseClient,
+  studioId: string,
+  opts: { includePaused?: boolean } = {},
+): Promise<BooksContext | null> {
+  const [settings, chosen] = await Promise.all([
+    loadLedgerSettings(supabase, studioId),
+    opts.includePaused ? Promise.resolve(true) : booksIsChosen(supabase, studioId),
+  ]);
+  if (!settings || !chosen) return null;
   const [accounts, rates] = await Promise.all([loadAccounts(supabase, studioId), loadTaxRates(supabase, studioId)]);
   const jurisdiction = jurisdictionFor(settings, rates);
   const region = getRegion(jurisdiction, settings.region);

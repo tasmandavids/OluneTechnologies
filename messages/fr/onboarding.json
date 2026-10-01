@@ -45,7 +45,8 @@
       "submitting": "Création de votre studio…",
       "submit": "Créer le studio",
       "submittingInstructor": "Création de votre espace…",
-      "submitInstructor": "Créer l'espace"
+      "submitInstructor": "Créer l'espace",
+      "changeLater": "Vous pourrez ajouter un logo et ajuster les couleurs plus tard."
     },
     "done": {
       "title": "Bienvenue chez {studioName}",
@@ -91,7 +92,9 @@
       "instructor": {
         "title": "Je suis coach ou professeur indépendant",
         "desc": "Travaillez avec plusieurs clubs, suivez votre planning et gérez votre profil d'enseignant."
-      }
+      },
+      "otherVertical": "Inscriptions ouvertes pour : {vertical}. Autre activité ?",
+      "otherVerticalLink": "Rejoindre la liste d’attente"
     },
     "profile": {
       "title": "Votre nom public",

@@ -13,6 +13,12 @@ import type {
 } from "@/lib/setup/constants";
 import { SETUP_STEPS } from "@/lib/setup/constants";
 import type { TuitionPricingModel } from "@/lib/billing/tuition-quote";
+import type { AccountingChoice } from "@/lib/accounting/provider";
+import { logAuditEvent } from "@/lib/audit/log";
+import { quickSetupInput } from "@/lib/ledger/quick-setup";
+import { todayIso } from "@/lib/ledger/periods";
+import { provisionBooks } from "@/lib/ledger/server/setup";
+import { syncStudioLedger } from "@/lib/ledger/server/sync";
 import { ensureClassFeeProducts } from "@/lib/billing/class-product";
 import { TUITION_PRICING_MODELS } from "@/lib/billing/tuition-quote";
 import {
@@ -72,8 +78,6 @@ export async function saveSetupPath(input: unknown): Promise<ActionResult> {
     .update({
       setup_path: parsed.data.path as SetupPath,
       import_source: parsed.data.importSource ?? null,
-      setup_step: "profile",
-      setup_snoozed_at: null,
     })
     .eq("id", studioId);
 
@@ -379,8 +383,8 @@ export async function saveSetupStep(input: unknown): Promise<ActionResult> {
 }
 
 export async function snoozeSetup(input?: unknown): Promise<ActionResult> {
-  const stepParsed = StepSchema.safeParse(input ?? { step: "path" });
-  const step = stepParsed.success ? stepParsed.data.step : "path";
+  const stepParsed = StepSchema.safeParse(input ?? { step: "profile" });
+  const step = stepParsed.success ? stepParsed.data.step : "profile";
 
   const { error, supabase, studioId } = await getAdminStudio();
   if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
@@ -454,4 +458,76 @@ export type SetupStudio = {
   };
   /** Tour cards this studio's pack actually entitles it to. */
   tourFeatures: TourFeatureKey[];
+  /** Where the books are kept already, if the studio has chosen. */
+  accountingChoice: AccountingChoice | null;
+  /** Whether online payments (Stripe Connect) can be offered on this deployment. */
+  stripeConfigured: boolean;
 };
+
+// ─── Money: where the books are kept ─────────────────────────────────────────
+
+const AccountingSchema = z.discriminatedUnion("choice", [
+  z.object({
+    choice: z.literal("olune"),
+    country: z.string().regex(/^[A-Z]{2}$/),
+    region: z.string().max(10).nullable(),
+    taxRegistered: z.boolean(),
+    taxNumber: z.string().trim().max(40).nullable(),
+  }),
+  z.object({ choice: z.literal("xero") }),
+  z.object({ choice: z.literal("later") }),
+]);
+
+/**
+ * The money step's answer. Olune Books is switched on right here, from the
+ * country and one tax question (lib/ledger/quick-setup.ts). Xero needs an
+ * OAuth round trip, so choosing it only sends the admin to Money → Accounting
+ * when setup finishes; the choice is recorded when Xero says yes.
+ *
+ * Errors are keys under setup.money.errors.
+ */
+export async function saveAccountingChoice(input: unknown): Promise<ActionResult<{ next: string | null }>> {
+  const parsed = AccountingSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "invalid" };
+  const { error, supabase, studioId, userId } = await getAdminStudio();
+  if (error || !studioId) return { ok: false, error: error ?? "Unknown error" };
+
+  const v = parsed.data;
+  await supabase.from("studios").update({ setup_step: "tour" }).eq("id", studioId);
+  if (v.choice === "later") return { ok: true, data: { next: null } };
+  if (v.choice === "xero") return { ok: true, data: { next: "/portal/admin/money?tab=accounting" } };
+
+  const [{ data: xero }, { data: existing }, { data: studio }] = await Promise.all([
+    supabase.from("xero_connections").select("studio_id").eq("studio_id", studioId).maybeSingle(),
+    supabase.from("ledger_settings").select("studio_id").eq("studio_id", studioId).maybeSingle(),
+    supabase.from("studios").select("prices_include_tax").eq("id", studioId).maybeSingle(),
+  ]);
+  if (xero) return { ok: false, error: "xeroConnected" };
+
+  if (existing) {
+    // Set up before (and maybe paused): pick it back up rather than re-provision.
+    const { error: dbErr } = await supabase.from("studios").update({ accounting_provider: "olune" }).eq("id", studioId);
+    if (dbErr) return { ok: false, error: dbErr.message };
+  } else {
+    const setup = quickSetupInput(
+      { country: v.country, region: v.region, taxRegistered: v.taxRegistered, taxNumber: v.taxNumber },
+      todayIso(),
+      { pricesIncludeTax: (studio?.prices_include_tax as boolean | null) ?? undefined },
+    );
+    if (!setup) return { ok: false, error: v.region ? "invalid" : "pickRegion" };
+    const res = await provisionBooks(supabase, studioId, setup);
+    if (!res.ok) return { ok: false, error: res.error === "taxNumberInvalid" ? "taxNumber" : res.error };
+    await logAuditEvent({
+      studioId,
+      actorId: userId,
+      action: "books.enabled",
+      targetType: "ledger_settings",
+      targetId: studioId,
+      metadata: { jurisdiction: setup.jurisdiction, region: setup.region, conversionDate: setup.conversionDate, via: "setup" },
+    });
+  }
+  await syncStudioLedger(supabase, studioId, { userId, force: true }).catch(() => undefined);
+  revalidatePath("/portal/admin/books", "layout");
+  revalidatePath("/portal/admin/money");
+  return { ok: true, data: { next: null } };
+}

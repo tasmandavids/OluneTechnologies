@@ -9,13 +9,19 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getAdminStudio } from "@/lib/portal/access";
 import { logAuditEvent } from "@/lib/audit/log";
 import { fetchAll, loadBooksContext } from "@/lib/ledger/server/data";
-import { getAgedPayables, getAgedReceivables, getBalanceSheet, getBankSummary, getGeneralLedger, getProfitAndLoss, getTrialBalance } from "@/lib/ledger/server/reports";
+import { getAgedPayables, getAgedReceivables, getBalanceSheet, getBankSummary, getCashFlow, getGeneralLedger, getProfitAndLoss, getProfitTrend, getSupplierSpend, getTrialBalance } from "@/lib/ledger/server/reports";
 import { FEC_JOURNALS, toCsv, toFec, type FecLine } from "@/lib/ledger/csv";
 import { centsToDecimal } from "@/lib/ledger/money";
 import { todayIso } from "@/lib/ledger/periods";
-import type { StatementSection } from "@/lib/ledger/reports";
+import type { CashFlow, StatementSection, TrendSection } from "@/lib/ledger/reports";
 
 export const dynamic = "force-dynamic";
+
+const CASH_FLOW_LABELS: Record<string, string> = {
+  netProfit: "Net profit",
+  depreciation: "Add back depreciation",
+  depreciationOffset: "Less depreciation already in fixed assets",
+};
 
 const isDate = (v: string | null): v is string => !!v && /^\d{4}-\d{2}-\d{2}$/.test(v);
 
@@ -23,7 +29,9 @@ export async function GET(req: NextRequest) {
   const access = await getAdminStudio();
   if (access.error || !access.studioId) return NextResponse.json({ error: "not_authorized" }, { status: 403 });
   const { supabase, studioId } = access;
-  const ctx = await loadBooksContext(supabase, studioId);
+  // Paused books (studio moved to Xero) still export: that's how the history
+  // gets to their accountant.
+  const ctx = await loadBooksContext(supabase, studioId, { includePaused: true });
   if (!ctx) return NextResponse.json({ error: "books_not_set_up" }, { status: 404 });
 
   const q = req.nextUrl.searchParams;
@@ -45,7 +53,109 @@ export async function GET(req: NextRequest) {
     ["", `Total ${title}`, d(s.totalCents)],
   ];
 
+  const cashFlowRows = (cf: CashFlow) => {
+    const label = (l: { accountId?: string; label: string }) => (l.accountId ? l.label : CASH_FLOW_LABELS[l.label] ?? l.label);
+    return [
+      ["Operating activities", ""],
+      ...cf.operating.map((l) => [label(l), d(l.amountCents)]),
+      ["Net cash from operating activities", d(cf.operatingTotalCents)],
+      ["Investing activities", ""],
+      ...cf.investing.map((l) => [label(l), d(l.amountCents)]),
+      ["Net cash from investing activities", d(cf.investingTotalCents)],
+      ["Financing activities", ""],
+      ...cf.financing.map((l) => [label(l), d(l.amountCents)]),
+      ["Net cash from financing activities", d(cf.financingTotalCents)],
+      ["Net change in cash", d(cf.netChangeCents)],
+      ["Cash at the start", d(cf.openingCashCents)],
+      ["Cash at the end", d(cf.closingCashCents)],
+    ];
+  };
+
   switch (report) {
+    case "trend": {
+      const { months, report: tr } = await getProfitTrend(supabase, ctx, { start: from, end: to });
+      const sec = (s: TrendSection, title: string) => [
+        [title],
+        ...s.rows.map((r) => [r.code, r.name, ...r.amounts.map(d), d(r.totalCents)]),
+        ["", `Total ${title}`, ...s.totals.map(d), d(s.totalCents)],
+      ];
+      const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
+      rows = [
+        ["Code", "Account", ...months.map((m) => m.start.slice(0, 7)), "Total"],
+        ...sec(tr.income, "Income"),
+        ...sec(tr.costOfSales, "Cost of sales"),
+        ["", "Gross profit", ...tr.grossProfit.map(d), d(sum(tr.grossProfit))],
+        ...sec(tr.otherIncome, "Other income"),
+        ...sec(tr.expenses, "Expenses"),
+        ["", "Net profit", ...tr.netProfit.map(d), d(tr.netProfitTotalCents)],
+      ];
+      break;
+    }
+    case "cf": {
+      const { report: cf } = await getCashFlow(supabase, ctx, { start: from, end: to });
+      rows = [["Cash flow statement", `${from} to ${to}`, ctx.settings.baseCurrency], ...cashFlowRows(cf)];
+      break;
+    }
+    case "suppliers": {
+      const spend = await getSupplierSpend(supabase, studioId, { start: from, end: to });
+      rows = [["Supplier", "Bills", "Tax", "Total", "Outstanding"], ...spend.suppliers.map((x) => [x.name, x.bills, d(x.taxCents), d(x.totalCents), d(x.outstandingCents)]), ["Total", spend.totals.bills, d(spend.totals.taxCents), d(spend.totals.totalCents), d(spend.totals.outstandingCents)]];
+      break;
+    }
+    case "pack": {
+      // Everything an accountant asks for at year end, in one file: the
+      // statements to `to`, the trial balance, who owes what, and the general
+      // ledger for every account that moved.
+      const [{ report: pl }, { report: bs }, { report: tb }, { report: cf }, ar, ap] = await Promise.all([
+        getProfitAndLoss(supabase, ctx, { start: from, end: to }, false),
+        getBalanceSheet(supabase, ctx, to),
+        getTrialBalance(supabase, ctx, to),
+        getCashFlow(supabase, ctx, { start: from, end: to }),
+        getAgedReceivables(supabase, studioId, to),
+        getAgedPayables(supabase, studioId, to),
+      ]);
+      const name = ctx.jurisdiction.code === "XX" ? (ctx.settings.customCountryName ?? "") : ctx.jurisdiction.name;
+      rows = [
+        ["Olune Books — year-end pack", `${from} to ${to}`, ctx.settings.baseCurrency, name],
+        ["Generated", today],
+        [],
+        ["PROFIT AND LOSS"],
+        ...section(pl.income, "Income"), ...section(pl.costOfSales, "Cost of sales"), ["", "Gross profit", d(pl.grossProfitCents)], ...section(pl.otherIncome, "Other income"), ...section(pl.expenses, "Expenses"), ["", "Net profit", d(pl.netProfitCents)],
+        [],
+        ["BALANCE SHEET", `as at ${to}`],
+        ...section(bs.bank, "Bank"), ...section(bs.currentAssets, "Current assets"), ...section(bs.fixedAssets, "Fixed assets"), ...section(bs.nonCurrentAssets, "Non-current assets"), ["", "Total assets", d(bs.totalAssetsCents)], ...section(bs.currentLiabilities, "Current liabilities"), ...section(bs.nonCurrentLiabilities, "Non-current liabilities"), ["", "Total liabilities", d(bs.totalLiabilitiesCents)], ...section(bs.equity, "Equity"), ["", "Prior years' earnings", d(bs.priorYearsEarningsCents)], ["", "Current year earnings", d(bs.currentYearEarningsCents)], ["", "Total equity", d(bs.totalEquityCents)],
+        [],
+        ["CASH FLOW"],
+        ...cashFlowRows(cf),
+        [],
+        ["TRIAL BALANCE", `as at ${to}`],
+        ["Code", "Account", "Debit", "Credit"], ...tb.rows.map((r) => [r.code, r.name, r.debitCents ? d(r.debitCents) : "", r.creditCents ? d(r.creditCents) : ""]), ["", "Total", d(tb.totalDebitCents), d(tb.totalCreditCents)],
+        [],
+        ["AGED RECEIVABLES", `as at ${to}`],
+        ["Customer", "Current", "1-30", "31-60", "61-90", "90+", "Total"], ...ar.contacts.map((c) => [c.name, d(c.buckets.current), d(c.buckets.d1to30), d(c.buckets.d31to60), d(c.buckets.d61to90), d(c.buckets.d90plus), d(c.buckets.total)]),
+        [],
+        ["AGED PAYABLES", `as at ${to}`],
+        ["Supplier", "Current", "1-30", "31-60", "61-90", "90+", "Total"], ...ap.contacts.map((c) => [c.name, d(c.buckets.current), d(c.buckets.d1to30), d(c.buckets.d31to60), d(c.buckets.d61to90), d(c.buckets.d90plus), d(c.buckets.total)]),
+        [],
+        ["GENERAL LEDGER", `${from} to ${to}`],
+      ];
+      // One account at a time keeps memory flat; stop before the response
+      // outgrows a serverless body and point at the journal export instead.
+      let glLines = 0;
+      for (const a of ctx.accounts) {
+        if (glLines > 30_000) {
+          rows.push(["…", "General ledger truncated — use “Export journals” for the full detail"]);
+          break;
+        }
+        const gl = await getGeneralLedger(supabase, ctx, a.id, { start: from, end: to });
+        if (!gl.lines.length && !gl.openingCents) continue;
+        glLines += gl.lines.length;
+        rows.push([], [`${a.code} ${a.name}`], ["Date", "Journal", "Narration", "Debit", "Credit", "Balance"], ["", "", "Opening balance", "", "", d(gl.openingCents)]);
+        for (const l of gl.lines) rows.push([l.date, l.journalNumber, l.description || l.narration, l.debitCents ? d(l.debitCents) : "", l.creditCents ? d(l.creditCents) : "", d(l.balanceCents)]);
+        rows.push(["", "", "Closing balance", "", "", d(gl.closingCents)]);
+      }
+      filename = `olune-books-year-end-${from}-to-${to}.csv`;
+      break;
+    }
     case "pl": {
       const { report: pl } = await getProfitAndLoss(supabase, ctx, { start: from, end: to }, false);
       rows = [["Profit and loss", `${from} to ${to}`, ctx.settings.baseCurrency], ...section(pl.income, "Income"), ...section(pl.costOfSales, "Cost of sales"), ["", "Gross profit", d(pl.grossProfitCents)], ...section(pl.otherIncome, "Other income"), ...section(pl.expenses, "Expenses"), ["", "Net profit", d(pl.netProfitCents)]];

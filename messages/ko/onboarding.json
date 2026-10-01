@@ -43,7 +43,9 @@
       "instructor": {
         "title": "독립 강사 또는 코치입니다",
         "desc": "여러 클럽에서 활동하며 일정을 관리하고 강사 프로필을 관리하세요."
-      }
+      },
+      "otherVertical": "현재 가입 가능: {vertical}. 다른 업종인가요?",
+      "otherVerticalLink": "대기자 명단 등록"
     },
     "account": {
       "title": "스튜디오 시작하기",
@@ -90,7 +92,8 @@
       "submitting": "스튜디오 생성 중…",
       "submit": "스튜디오 만들기",
       "submittingInstructor": "워크스페이스 생성 중…",
-      "submitInstructor": "워크스페이스 만들기"
+      "submitInstructor": "워크스페이스 만들기",
+      "changeLater": "로고 업로드와 색상 조정은 나중에 할 수 있습니다."
     },
     "done": {
       "title": "환영합니다, {studioName}",

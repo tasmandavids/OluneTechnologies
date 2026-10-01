@@ -10,7 +10,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getAdminStudio } from "@/lib/portal/access";
-import { getIntegration, isAccountingProviderId } from "@/lib/integrations/catalog";
+import { getIntegration } from "@/lib/integrations/catalog";
 import { encryptIntegrationSecrets, secretTail } from "@/lib/integrations/crypto";
 import { CONNECTIONS_PATH } from "@/lib/integrations/routes";
 import { disconnectXero } from "@/app/portal/admin/accounting/actions";
@@ -209,29 +209,5 @@ export async function disconnectIntegration(providerId: string): Promise<ActionR
   }
 
   revalidateConnections();
-  return { ok: true };
-}
-
-/**
- * Pin which connected ledger is authoritative. Only meaningful once a studio
- * has more than one accounting system connected.
- */
-export async function setAccountingProvider(providerId: string): Promise<ActionResult> {
-  if (!isAccountingProviderId(providerId)) {
-    return { ok: false, error: "Not an accounting provider" };
-  }
-
-  const { error, supabase, studioId } = await getAdminStudio();
-  if (error || !studioId) return { ok: false, error: error ?? "Admin access required" };
-
-  const { error: dbErr } = await supabase
-    .from("studios")
-    .update({ accounting_provider: providerId })
-    .eq("id", studioId);
-
-  if (dbErr) return { ok: false, error: dbErr.message };
-
-  revalidateConnections();
-  revalidatePath("/portal/admin/money");
   return { ok: true };
 }

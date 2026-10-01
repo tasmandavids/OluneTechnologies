@@ -9,6 +9,8 @@ import type { SetupStudio } from "@/app/setup/actions";
 import { fetchStudioSetupState, fetchStudioTuitionSetup } from "@/lib/setup/server";
 import { TOUR_FEATURES, type SetupStepId } from "@/lib/setup/constants";
 import { getEntitlementsCached, hasModule } from "@/lib/portal/entitlements";
+import { loadAccountingSetup } from "@/lib/accounting/provider";
+import { isStripeConfigured } from "@/lib/stripe";
 
 export default async function SetupPage() {
   const supabase = await createClient();
@@ -32,9 +34,10 @@ export default async function SetupPage() {
   if (!state) redirect("/onboarding");
   if (state.setupCompletedAt) redirect("/portal/admin");
 
-  const [tuition, entitlements] = await Promise.all([
+  const [tuition, entitlements, accounting] = await Promise.all([
     fetchStudioTuitionSetup(supabase, profile.studio_id),
     getEntitlementsCached(profile.studio_id),
+    loadAccountingSetup(supabase, profile.studio_id),
   ]);
 
   // Same gate the rail applies, so the tour never opens a door this studio's
@@ -47,7 +50,7 @@ export default async function SetupPage() {
     name: state.name,
     setupPath: state.setupPath,
     importSource: state.importSource,
-    initialStep: (state.setupStep ?? "path") as SetupStepId,
+    initialStep: (state.setupStep ?? "profile") as SetupStepId,
     locationCity: state.locationCity,
     locationRegion: state.locationRegion,
     locationCountry: state.locationCountry,
@@ -56,6 +59,8 @@ export default async function SetupPage() {
     schemaReady: state.schemaReady,
     tuition,
     tourFeatures,
+    accountingChoice: accounting.choice,
+    stripeConfigured: isStripeConfigured(),
   };
 
   return <SetupWizard studio={initial} schemaError={error} />;

@@ -41,15 +41,15 @@ export async function ProductsTab() {
       supabase.from("studios").select("sibling_discount_pct").eq("id", studioId).maybeSingle(),
     ]);
 
-  // Both yield null when Xero isn't connected (or the call failed), which is
-  // exactly the signal the editor uses to fall back to free-text code entry.
-  const [accountResult, itemResult] = await Promise.all([
-    getXeroSalesAccountOptions(),
-    getXeroItemOptions(),
-  ]);
-  // With Olune Books as the ledger, products are coded against its own chart.
-  let accountOptions = accountResult.ok ? accountResult.data : null;
-  if (activeProvider?.provider === "olune") {
+  // Code pickers come from the studio's own accounting: Xero's live chart, or
+  // Olune Books' revenue accounts. With neither chosen they stay free text.
+  let accountOptions: { code: string; name: string }[] | null = null;
+  let itemOptions: { code: string; name: string }[] | null = null;
+  if (activeProvider?.provider === "xero") {
+    const [accountResult, itemResult] = await Promise.all([getXeroSalesAccountOptions(), getXeroItemOptions()]);
+    accountOptions = accountResult.ok ? accountResult.data : null;
+    itemOptions = itemResult.ok ? itemResult.data : null;
+  } else if (activeProvider?.provider === "olune") {
     const { data: revenue } = await supabase
       .from("ledger_accounts")
       .select("code, name")
@@ -59,7 +59,6 @@ export async function ProductsTab() {
       .order("code");
     accountOptions = (revenue ?? []).map((a) => ({ code: a.code as string, name: a.name as string }));
   }
-  const itemOptions = itemResult.ok ? itemResult.data : null;
 
   return (
     <div className="space-y-4">
@@ -82,8 +81,8 @@ export async function ProductsTab() {
         terms={(terms.data ?? []).map((t) => ({ id: t.id as string, name: t.name as string }))}
         accountOptions={accountOptions}
         itemOptions={itemOptions}
-        ledgerName={activeProvider?.capabilities.name ?? null}
-        otherLedgersConnected={activeProvider?.ambiguous ?? false}
+        ledgerName={activeProvider?.name ?? null}
+        showItemCode={activeProvider?.provider !== "olune"}
         tuitionModel={tuition.model}
       />
     </div>

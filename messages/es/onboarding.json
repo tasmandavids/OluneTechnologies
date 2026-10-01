@@ -43,7 +43,9 @@
       "instructor": {
         "title": "Soy un profesor o entrenador independiente",
         "desc": "Trabaja en varios clubes, controla tu horario y gestiona tu perfil docente."
-      }
+      },
+      "otherVertical": "Altas abiertas para: {vertical}. ¿Tienes otro tipo de negocio?",
+      "otherVerticalLink": "Únete a la lista de espera"
     },
     "account": {
       "title": "Crea tu estudio",
@@ -90,7 +92,8 @@
       "submitting": "Creando tu estudio…",
       "submit": "Crear estudio",
       "submittingInstructor": "Creando tu espacio de trabajo…",
-      "submitInstructor": "Crear espacio de trabajo"
+      "submitInstructor": "Crear espacio de trabajo",
+      "changeLater": "Puedes subir un logo y ajustar los colores más tarde."
     },
     "done": {
       "title": "Bienvenido/a, {studioName}",
