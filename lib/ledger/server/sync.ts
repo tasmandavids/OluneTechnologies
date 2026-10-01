@@ -27,6 +27,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { fingerprint, invoiceJournal, cashSaleJournal, settlementJournal, refundJournal } from "../posting";
 import type { PostedLine, SaleLineInput, TaxTreatment } from "../posting";
 import { firstOpenDate } from "../periods";
+import { EVENT_TICKET_LEDGER_SELECT } from "../source-projections";
 import { formatInvoiceNumber } from "@/lib/invoices/format-invoice-number";
 import { OLUNE_CODE_ALIASES, type DraftJournal, type JournalSourceType } from "../types";
 import { fetchAll, loadBooksContext, type BooksContext } from "./data";
@@ -148,7 +149,7 @@ async function runSync(supabase: SupabaseClient, ctx: BooksContext, report: Sync
     fetchAll<Row>((from, to) =>
       supabase
         .from("event_tickets")
-        .select("id, status, total_cents, quantity, purchased_at, stripe_payment_intent_id, user:profiles!user_id ( full_name ), events!inner ( studio_id, title )")
+        .select(EVENT_TICKET_LEDGER_SELECT)
         .eq("events.studio_id", studioId)
         .in("status", ["paid", "refunded"])
         .gte("purchased_at", `${since}T00:00:00Z`)
@@ -288,7 +289,7 @@ async function runSync(supabase: SupabaseClient, ctx: BooksContext, report: Sync
   }
 
   for (const t of tickets) {
-    const event = t.events as { title?: string } | null;
+    const event = t.events as { name?: string } | null;
     const date = dateOf(t.purchased_at)!;
     const draft = cashSaleJournal(ctx.chart, {
       sourceType: "ticket",
@@ -300,7 +301,7 @@ async function runSync(supabase: SupabaseClient, ctx: BooksContext, report: Sync
       amountCents: Number(t.total_cents ?? 0),
       lines: [
         {
-          description: `${event?.title ?? "Event"} — ticket${Number(t.quantity) > 1 ? ` ×${t.quantity}` : ""}`,
+          description: `${event?.name ?? "Event"} — ticket${Number(t.quantity) > 1 ? ` ×${t.quantity}` : ""}`,
           lineTotalCents: Number(t.total_cents ?? 0),
           accountCode: null,
           taxTreatment: "standard",
