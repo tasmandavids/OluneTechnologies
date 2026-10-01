@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "@/lib/i18n/server";
 
 export async function reportAbsence(data: {
   studentId: string;
@@ -10,9 +11,10 @@ export async function reportAbsence(data: {
   reason: string;
   notes: string;
 }) {
+  const t = await getTranslations("errors.actions");
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  if (!user) throw new Error(t("notSignedIn"));
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -20,7 +22,7 @@ export async function reportAbsence(data: {
     .eq("id", user.id)
     .single();
 
-  if (!profile?.studio_id) throw new Error("No studio");
+  if (!profile?.studio_id) throw new Error(t("noStudioFound"));
 
   const { error } = await supabase.from("student_absences").insert({
     student_id: data.studentId,

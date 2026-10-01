@@ -2,11 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "@/lib/i18n/server";
 
 export async function markNotificationRead(id: string) {
+  const t = await getTranslations("errors.actions");
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  if (!user) throw new Error(t("notSignedIn"));
 
   await supabase
     .from("parent_notifications")
@@ -18,9 +20,10 @@ export async function markNotificationRead(id: string) {
 }
 
 export async function markAllNotificationsRead() {
+  const t = await getTranslations("errors.actions");
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  if (!user) throw new Error(t("notSignedIn"));
 
   await supabase
     .from("parent_notifications")

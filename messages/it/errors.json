@@ -82,7 +82,19 @@
       "invalidTemplateDetails": "Dettagli del modello non validi.",
       "templateNotFound": "Modello non trovato.",
       "onlyDraftsCanBeSent": "Solo le fatture in bozza possono essere inviate in questo modo.",
-      "noDraftInvoices": "Nessuna fattura in bozza da inviare."
+      "noDraftInvoices": "Nessuna fattura in bozza da inviare.",
+      "tooManyInviteAttempts": "Troppi tentativi di invito. Riprova più tardi.",
+      "childrenNeedStudioConfig": "Aggiungere figli richiede la configurazione dello studio. Contatta il supporto.",
+      "ownEmailAddress": "Questo è il tuo stesso indirizzo e-mail.",
+      "addDancerBeforeCoParent": "Aggiungi un allievo alla tua famiglia prima di invitare un altro genitore.",
+      "coParentNeedsStudioConfig": "Invitare un altro genitore richiede la configurazione dello studio. Contatta il supporto.",
+      "emailBelongsToOtherAccountType": "Quell'e-mail appartiene già a un altro tipo di account.",
+      "fillEveryField": "Compila tutti i campi.",
+      "endTimeAfterStart": "L'ora di fine deve essere successiva a quella di inizio.",
+      "pickFutureDate": "Scegli una data futura.",
+      "classNotFound": "Corso non trovato.",
+      "classNoRecurringFee": "Il corso non ha una quota ricorrente.",
+      "autoPayAlreadySetUp": "Questo allievo ha già l'addebito automatico attivo per questo programma."
     },
     "installment": {
       "invalid": "Inserisci un piano valido e un importo di pagamento positivo.",

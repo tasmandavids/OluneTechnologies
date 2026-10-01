@@ -82,7 +82,19 @@
       "invalidTemplateDetails": "Datos de plantilla no válidos.",
       "templateNotFound": "Plantilla no encontrada.",
       "onlyDraftsCanBeSent": "Solo las facturas en borrador se pueden enviar de esta forma.",
-      "noDraftInvoices": "No hay facturas en borrador para enviar."
+      "noDraftInvoices": "No hay facturas en borrador para enviar.",
+      "tooManyInviteAttempts": "Demasiados intentos de invitación. Inténtalo de nuevo más tarde.",
+      "childrenNeedStudioConfig": "Añadir hijos requiere la configuración del estudio. Contacta con soporte.",
+      "ownEmailAddress": "Esa es tu propia dirección de correo.",
+      "addDancerBeforeCoParent": "Añade un bailarín a tu familia antes de invitar a otro progenitor.",
+      "coParentNeedsStudioConfig": "Invitar a otro progenitor requiere la configuración del estudio. Contacta con soporte.",
+      "emailBelongsToOtherAccountType": "Ese correo ya pertenece a otro tipo de cuenta.",
+      "fillEveryField": "Rellena todos los campos.",
+      "endTimeAfterStart": "La hora de fin debe ser posterior a la de inicio.",
+      "pickFutureDate": "Elige una fecha futura.",
+      "classNotFound": "Clase no encontrada.",
+      "classNoRecurringFee": "La clase no tiene una cuota recurrente.",
+      "autoPayAlreadySetUp": "Este bailarín ya tiene el pago automático configurado para este programa."
     },
     "installment": {
       "invalid": "Introduce un plan válido y un importe de pago positivo.",

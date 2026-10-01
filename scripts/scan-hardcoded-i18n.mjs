@@ -87,6 +87,17 @@ for (const dir of SCAN_DIRS) {
         for (const m of line.matchAll(/(?:Error\(|error:\s*|message:\s*|toast\.\w+\()\s*"([^"]+)"/g)) {
           if (isProse(m[1])) findings.push({ file: rel, line: n, kind: "error-msg", text: m[1] });
         }
+        // `error: error ?? "Unknown error"` — the fallback arm of a nullish
+        // coalesce. The pattern above cannot see it, because `error:` is not
+        // adjacent to the literal, and it is how ~260 untranslated error
+        // strings stayed invisible to this sweep. Restricted to lines that
+        // mention error/message so that data defaults (`?? "month"`,
+        // `?? "student"`, `?? "dance"`) are not counted as copy.
+        if (/error|message/i.test(line)) {
+          for (const m of line.matchAll(/\?\?\s*"([^"]+)"/g)) {
+            if (isProse(m[1])) findings.push({ file: rel, line: n, kind: "error-fallback", text: m[1] });
+          }
+        }
       }
     });
   }
@@ -145,6 +156,11 @@ if (process.argv.includes("--json")) {
   // Ratchet: these two numbers may fall, never rise. Lower them as areas are
   // migrated — that is the point. Raising one needs a reason in the diff.
   //
+  // The string budget rose once, 770 -> 1000, when `error-fallback` detection
+  // landed: the sweep had never been able to see `error: error ?? "Unknown
+  // error"`, so ~260 untranslated strings were outside the count rather than
+  // inside it. Widening what is measured is not a regression in the code.
+  //
   // 874 → 881 (2026-09-03): /api/webhooks/stripe-v2 and
   // /api/cron/sync-connect-accounts added 7 JSON error bodies of the same kind
   // the existing Stripe webhook routes already contribute ("Missing signature",
@@ -155,7 +171,7 @@ if (process.argv.includes("--json")) {
   // total: app/api/stripe/connect/route.ts passes its messages through a
   // redirect query param that the Connections page renders, so some route
   // literals genuinely are user-facing and must keep being counted.
-  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 770);
+  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 1000);
   // 30 → 25 (2026-10-01): parent shopping, events, autopay, balances and
   // enrolment now format currency using the signed-in reader's locale.
   const MAX_LOCALE_SITES = Number(process.env.I18N_MAX_LOCALE_SITES ?? 25);

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { studioLocalYmd } from "@/lib/date/studio-date";
+import { getTranslations } from "@/lib/i18n/server";
 
 const CreateSchema = z.object({
   teacherId: z.string().uuid(),
@@ -25,24 +26,25 @@ async function getUser() {
 }
 
 export async function createBookingRequest(input: z.infer<typeof CreateSchema>) {
+  const t = await getTranslations("errors.actions");
   const parsed = CreateSchema.safeParse(input);
-  if (!parsed.success) return { error: "Please fill in every field." };
+  if (!parsed.success) return { error: t("fillEveryField") };
 
   const d = parsed.data;
-  if (d.endTime <= d.startTime) return { error: "End time must be after the start time." };
+  if (d.endTime <= d.startTime) return { error: t("endTimeAfterStart") };
   if (d.lessonDate < studioLocalYmd()) {
-    return { error: "Pick a date in the future." };
+    return { error: t("pickFutureDate") };
   }
 
   const { supabase, userId } = await getUser();
-  if (!userId) return { error: "Unauthorized" };
+  if (!userId) return { error: t("unauthorized") };
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("studio_id")
     .eq("id", userId)
     .single();
-  if (!profile?.studio_id) return { error: "No studio found for your account." };
+  if (!profile?.studio_id) return { error: t("noStudioFound") };
 
   const { error } = await supabase.from("private_lesson_bookings").insert({
     studio_id: profile.studio_id,
@@ -64,10 +66,11 @@ export async function createBookingRequest(input: z.infer<typeof CreateSchema>) 
 }
 
 export async function cancelBookingRequest(bookingId: string) {
-  if (!z.string().uuid().safeParse(bookingId).success) return { error: "Invalid request." };
+  const t = await getTranslations("errors.actions");
+  if (!z.string().uuid().safeParse(bookingId).success) return { error: t("invalidInput") };
 
   const { supabase, userId } = await getUser();
-  if (!userId) return { error: "Unauthorized" };
+  if (!userId) return { error: t("unauthorized") };
 
   const { error } = await supabase
     .from("private_lesson_bookings")

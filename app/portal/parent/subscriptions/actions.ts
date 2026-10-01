@@ -19,6 +19,7 @@ import { loadStudioClassPrice } from "@/lib/enrollment-class-price";
 import { getParentStudio } from "@/lib/portal/access";
 import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 import type Stripe from "stripe";
+import { getTranslations } from "@/lib/i18n/server";
 
 const uuidField = z.string().uuid();
 
@@ -100,14 +101,15 @@ export async function createEnrollmentSubscription(
   /** @deprecated Ignored — price is always loaded from the database. */
   _priceCents?: number,
 ): Promise<ActionResult<{ clientSecret: string; subscriptionId: string }>> {
+  const t = await getTranslations("errors.actions");
   const { error, supabase, userId, studioId } = await getParentContext();
   if (error || !userId || !studioId) return { ok: false, error: error ?? "Unknown" };
   if (!uuidField.safeParse(studentId).success || !uuidField.safeParse(classId).success) {
-    return { ok: false, error: "Invalid student or class." };
+    return { ok: false, error: t("invalidStudentOrClass") };
   }
 
   if (!(await checkRateLimit(rateLimitKey("sub-create", userId), { limit: 10, windowMs: 60_000 }))) {
-    return { ok: false, error: "Too many requests. Please wait a moment." };
+    return { ok: false, error: t("tooManyRequests") };
   }
 
   // Verify guardian relationship.
@@ -117,12 +119,12 @@ export async function createEnrollmentSubscription(
     .eq("guardian_id", userId)
     .eq("student_id", studentId)
     .single();
-  if (!guardianship) return { ok: false, error: "You are not a guardian of this student." };
+  if (!guardianship) return { ok: false, error: t("notGuardian") };
 
   // Server-authoritative price — never trust client-supplied cents.
   const cls = await loadStudioClassPrice(supabase, studioId, classId);
-  if (!cls) return { ok: false, error: "Class not found." };
-  if (cls.priceCents <= 0) return { ok: false, error: "Class has no recurring fee." };
+  if (!cls) return { ok: false, error: t("classNotFound") };
+  if (cls.priceCents <= 0) return { ok: false, error: t("classNoRecurringFee") };
   const className = cls.name;
   const priceCents = cls.priceCents;
 
@@ -143,7 +145,7 @@ export async function createEnrollmentSubscription(
     return name && name.trim().toLowerCase().replace(/\s+/g, " ") === target;
   });
   if (alreadySubscribed) {
-    return { ok: false, error: "This dancer already has auto-pay set up for this programme." };
+    return { ok: false, error: t("autoPayAlreadySetUp") };
   }
 
   // Resolve / create the Stripe customer.
@@ -197,7 +199,7 @@ export async function createEnrollmentSubscription(
 
   const clientSecret = clientSecretFromSubscription(sub);
   if (!clientSecret) {
-    return { ok: false, error: "Stripe did not return a client secret for the first invoice." };
+    return { ok: false, error: t("stripeNoClientSecret") };
   }
 
   // Mirror into our subscriptions table (status synced later by webhook).
@@ -225,8 +227,9 @@ export async function createEnrollmentSubscription(
 
 // Cancel auto-pay at period end (parent-initiated).
 export async function cancelSubscription(subscriptionId: string): Promise<ActionResult> {
+  const t = await getTranslations("errors.actions");
   const { error, supabase, userId } = await getParentContext();
-  if (error || !userId) return { ok: false, error: error ?? "Unknown" };
+  if (error || !userId) return { ok: false, error: error ?? t("unknown") };
 
   // Ensure the caller owns this subscription.
   const { data: row } = await supabase
@@ -235,7 +238,7 @@ export async function cancelSubscription(subscriptionId: string): Promise<Action
     .eq("stripe_subscription_id", subscriptionId)
     .single();
   if (!row || row.payer_id !== userId) {
-    return { ok: false, error: "Subscription not found." };
+    return { ok: false, error: t("subscriptionNotFound") };
   }
 
   const { stripe } = await import("@/lib/stripe");
