@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { dollarsFromCents, centsFromDollars } from "@/lib/xero/reports";
 import { toXeroLineItems, type OluneLineItemRow } from "@/lib/xero/line-items";
+import { EVENT_TICKET_SALE_SELECT } from "@/lib/xero/sync-sale";
 
 function row(overrides: Partial<OluneLineItemRow> = {}): OluneLineItemRow {
   return {
@@ -99,5 +100,12 @@ describe("xero sync idempotency key", () => {
   it("uses stable source_type + source_id composite", () => {
     const key = { source_type: "invoice" as const, source_id: "abc-123" };
     expect(`${key.source_type}:${key.source_id}`).toBe("invoice:abc-123");
+  });
+});
+
+describe("event ticket sync schema", () => {
+  it("selects the canonical event name used by the events table", () => {
+    expect(EVENT_TICKET_SALE_SELECT).toMatch(/events\s*\(\s*studio_id,\s*name\s*\)/);
+    expect(EVENT_TICKET_SALE_SELECT).not.toContain("title");
   });
 });

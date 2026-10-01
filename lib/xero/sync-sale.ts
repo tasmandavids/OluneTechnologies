@@ -380,6 +380,16 @@ type SaleRecord = {
 };
 
 /**
+ * Keep the ticket sale projection aligned with public.events (0009_events.sql).
+ * The display field is `name`; selecting a non-existent `title` field prevents
+ * every pending ticket sale from reaching Xero.
+ */
+export const EVENT_TICKET_SALE_SELECT = `
+  id, user_id, total_cents, quantity, xero_invoice_id,
+  events ( studio_id, name )
+`;
+
+/**
  * Orders and tickets aren't `invoices` rows, so they have no frozen
  * tax_inclusive/gst_registered to read back — take the studio's current
  * posture instead. Both sync at the moment of sale, so "current" is correct.
@@ -516,19 +526,17 @@ async function loadTicketSale(
   ticketId: string,
   salesAccountCode: string,
 ): Promise<SaleRecord> {
-  const { data: ticket } = await supabase
+  const { data: ticket, error } = await supabase
     .from("event_tickets")
-    .select(`
-      id, user_id, total_cents, quantity, xero_invoice_id,
-      events ( studio_id, title )
-    `)
+    .select(EVENT_TICKET_SALE_SELECT)
     .eq("id", ticketId)
     .single();
 
+  if (error) throw new Error(error.message);
   if (!ticket) throw new Error("Ticket not found");
   if (ticket.xero_invoice_id) throw new Error("Already synced");
 
-  const event = ticket.events as unknown as { studio_id: string; title: string } | null;
+  const event = ticket.events as unknown as { studio_id: string; name: string } | null;
   if (!event) throw new Error("Event not found");
 
   const posture = await loadStudioTaxPosture(supabase, event.studio_id);
@@ -541,7 +549,7 @@ async function loadTicketSale(
     taxInclusive: posture.taxInclusive,
     lineItems: [
       {
-        description: `${event.title} — event ticket${ticket.quantity > 1 ? ` ×${ticket.quantity}` : ""}`,
+        description: `${event.name} — event ticket${ticket.quantity > 1 ? ` ×${ticket.quantity}` : ""}`,
         quantity: 1,
         unitAmount: dollarsFromCents(ticket.total_cents),
         accountCode: salesAccountCode,
