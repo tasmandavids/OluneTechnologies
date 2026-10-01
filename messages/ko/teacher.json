@@ -39,6 +39,21 @@
     "studentProgress": {
       "back": "← 일정으로 돌아가기",
       "progressLog": "진도 기록"
+    },
+    "invoiceAttachment": {
+      "label": "직접 만든 청구서 (선택)",
+      "choose": "PDF 또는 사진 첨부",
+      "uploading": "올리는 중…",
+      "remove": "삭제",
+      "hint": "직접 쓰는 프로그램으로 청구하나요? 첨부하세요. Olune Books를 쓰는 스튜디오는 승인 후 지급하며, 지급되면 여기서 지급 완료로 표시됩니다.",
+      "errors": {
+        "chooseStudio": "먼저 스튜디오를 선택하세요.",
+        "notMember": "함께 일하는 스튜디오의 청구서만 첨부할 수 있습니다.",
+        "fileType": "PDF 또는 사진(PNG, JPEG, WebP, HEIC)을 첨부하세요.",
+        "fileSize": "파일이 20MB를 넘습니다.",
+        "unavailable": "지금은 업로드할 수 없습니다. 나중에 다시 시도하세요.",
+        "invalidFile": "이 파일은 이 청구서에 첨부할 수 없습니다. 다시 첨부하세요."
+      }
     }
   }
 }

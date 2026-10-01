@@ -169,7 +169,9 @@
       "narration": "Libellé",
       "amount": "Montant",
       "voided": "Annulée",
-      "noJournals": "Rien de comptabilisé pour l'instant. Les écritures apparaissent ici au fil des factures, encaissements et ventes."
+      "noJournals": "Rien de comptabilisé pour l'instant. Les écritures apparaissent ici au fil des factures, encaissements et ventes.",
+      "todoBankImport": "Importer un relevé bancaire",
+      "todoReviewBills": "{count, plural, one {Vérifier # facture dans la boîte de réception} other {Vérifier # factures dans la boîte de réception}}"
     },
     "sync": {
       "last": "Synchronisé {time}",
@@ -403,7 +405,12 @@
       "deleteDraftBody": "Le brouillon n'a pas été comptabilisé : le supprimer ne touche pas votre comptabilité.",
       "voidBill": "Annuler la facture",
       "voidBody": "L'annulation retire la facture de votre comptabilité (ou l'extourne si sa période est verrouillée). Les factures déjà réglées ne peuvent pas être annulées.",
-      "voidReason": "Motif"
+      "voidReason": "Motif",
+      "toReview": "À vérifier",
+      "fromStaff": "De l’équipe",
+      "hasDocument": "Document du fournisseur joint",
+      "unknownSupplier": "Fournisseur non renseigné",
+      "staffSubmitted": "{name} a envoyé cette facture depuis Olune le {date}. Vérifiez le compte et la taxe, puis approuvez-la pour la payer."
     },
     "bank": {
       "title": "Banque",
@@ -519,7 +526,10 @@
         "gl": "Grand livre du compte",
         "bank": "Synthèse bancaire",
         "ar": "Balance âgée clients",
-        "ap": "Balance âgée fournisseurs"
+        "ap": "Balance âgée fournisseurs",
+        "trend": "Résultat par mois",
+        "cf": "Flux de trésorerie",
+        "suppliers": "Dépenses par fournisseur"
       },
       "from": "Du",
       "to": "Au",
@@ -573,6 +583,31 @@
         "d61to90": "61–90 jours",
         "d90plus": "Plus de 90 jours",
         "total": "Total"
+      },
+      "exportPack": "Dossier de clôture",
+      "exportPackHint": "États financiers, balance, balances âgées et grand livre de l’exercice en un seul fichier pour votre comptable",
+      "cashFlow": {
+        "netProfit": "Résultat net",
+        "depreciation": "Plus dotations aux amortissements",
+        "depreciationOffset": "Moins amortissements déjà dans les immobilisations",
+        "operating": "Activités opérationnelles",
+        "operatingTotal": "Trésorerie nette des activités opérationnelles",
+        "investing": "Activités d’investissement",
+        "investingTotal": "Trésorerie nette des activités d’investissement",
+        "financing": "Activités de financement",
+        "financingTotal": "Trésorerie nette des activités de financement",
+        "netChange": "Variation nette de trésorerie",
+        "opening": "Trésorerie au début",
+        "closing": "Trésorerie à la fin",
+        "none": "Rien sur cette période",
+        "unexplained": "Les mouvements de trésorerie présentent un écart de {amount}. Vérifiez les écritures manuelles récentes."
+      },
+      "suppliers": {
+        "bills": "Factures",
+        "tax": "Taxe",
+        "total": "Total",
+        "outstanding": "Restant dû",
+        "empty": "Aucune facture approuvée sur cette période."
       }
     },
     "settings": {
@@ -621,7 +656,47 @@
       "alreadyFiled": "Cette déclaration a déjà été déposée.",
       "periodNotEnded": "Cette période n'est pas encore terminée.",
       "taxNumber": "Ce numéro fiscal ne semble pas valide.",
-      "xeroConnected": "La comptabilité de ce studio est tenue dans Xero. Changez d’abord dans Finances → Comptabilité."
+      "xeroConnected": "La comptabilité de ce studio est tenue dans Xero. Changez d’abord dans Finances → Comptabilité.",
+      "tooManyFiles": "Envoyez 10 fichiers maximum à la fois.",
+      "attachmentType": "Envoyez un PDF ou une photo (PNG, JPEG, WebP ou HEIC).",
+      "attachmentSize": "Ce fichier dépasse 20 Mo.",
+      "uploadFailed": "L’envoi n’a pas abouti. Vérifiez votre connexion et réessayez.",
+      "uploadsNotConfigured": "L’envoi de documents n’est pas encore disponible sur ce déploiement.",
+      "uploadMissing": "Fichier envoyé introuvable. Réessayez de l’envoyer.",
+      "noAttachment": "Cette facture n’a aucun document à lire.",
+      "couldNotRead": "Le document n’a pas pu être lu. Saisissez la facture à la main."
+    },
+    "inbox": {
+      "dropLabel": "Envoyer des factures fournisseurs",
+      "dropTitle": "Déposez les factures fournisseurs ici ou cliquez pour choisir",
+      "dropHint": "PDF ou photos, jusqu’à 10 à la fois. Chacun devient une facture brouillon avec le document joint, prête à compléter et approuver.",
+      "dropHintAi": "PDF ou photos, jusqu’à 10 à la fois. Nous lisons le fournisseur, les dates, les montants et la taxe dans un brouillon à vérifier et approuver.",
+      "uploading": "Envoi…",
+      "reading": "Lecture des documents…",
+      "filing": "Création des brouillons…",
+      "noAiKey": "Pour que les factures soient lues pour vous, ajoutez une clé Anthropic ou OpenAI.",
+      "addAiKey": "Ajouter une clé",
+      "unknownSupplier": "Fournisseur non lu",
+      "readNoTotal": "lue, aucun total",
+      "notRead": "à compléter",
+      "checkIt": "à vérifier",
+      "documents": "Documents",
+      "readAgain": "Relire",
+      "attach": "Joindre un fichier",
+      "noDocuments": "Aucun document joint.",
+      "openInTab": "Ouvrir dans un nouvel onglet",
+      "remove": "Retirer",
+      "removeConfirm": "Retirer ce document de la facture ?",
+      "previewUnavailable": "Ce fichier ne peut pas être prévisualisé ici.",
+      "readNotice": "Rempli à partir du document joint. Vérifiez chaque ligne avant d’approuver.",
+      "notReadNotice": "Le document n’a pas pu être lu automatiquement. Utilisez « Relire » ou complétez la facture à la main.",
+      "noAiNotice": "Complétez la facture à partir du document à côté. Ajoutez une clé d’IA dans Réglages → Connexions pour qu’elles soient lues pour vous.",
+      "warnings": {
+        "notInvoice": "Cela ne ressemble pas à une facture ni à un reçu.",
+        "foreignCurrency": "Le document est dans une autre devise. Saisissez les montants dans la devise de vos comptes.",
+        "linesDontAddUp": "Les lignes ne correspondent pas au total du document.",
+        "noAmounts": "Aucun montant trouvé. Ajoutez les lignes à la main."
+      }
     }
   }
 }

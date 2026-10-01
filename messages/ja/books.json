@@ -169,7 +169,9 @@
       "narration": "摘要",
       "amount": "金額",
       "voided": "取消済",
-      "noJournals": "まだ仕訳はありません。請求書・入金・売上が発生するとここに表示されます。"
+      "noJournals": "まだ仕訳はありません。請求書・入金・売上が発生するとここに表示されます。",
+      "todoBankImport": "銀行明細を取り込む",
+      "todoReviewBills": "{count, plural, other {受信箱の請求書 # 件を確認}}"
     },
     "sync": {
       "last": "最終同期 {time}",
@@ -403,7 +405,12 @@
       "deleteDraftBody": "下書きは帳簿に計上されていないため、削除しても帳簿に影響はありません。",
       "voidBill": "請求書を取消",
       "voidBody": "取消すると帳簿から除外されます（締め済み期間の場合は逆仕訳）。支払済みの請求書は取消できません。",
-      "voidReason": "理由"
+      "voidReason": "理由",
+      "toReview": "要確認",
+      "fromStaff": "スタッフから",
+      "hasDocument": "仕入先の書類あり",
+      "unknownSupplier": "仕入先未設定",
+      "staffSubmitted": "{name} さんが {date} に Olune からこの請求書を送りました。勘定科目と税を確認し、承認して支払ってください。"
     },
     "bank": {
       "title": "銀行",
@@ -519,7 +526,10 @@
         "gl": "総勘定元帳",
         "bank": "銀行残高サマリー",
         "ar": "売掛金年齢表",
-        "ap": "買掛金年齢表"
+        "ap": "買掛金年齢表",
+        "trend": "月次損益",
+        "cf": "キャッシュフロー",
+        "suppliers": "仕入先別支出"
       },
       "from": "開始",
       "to": "終了",
@@ -573,6 +583,31 @@
         "d61to90": "61〜90日",
         "d90plus": "90日超",
         "total": "合計"
+      },
+      "exportPack": "年度末パック",
+      "exportPackHint": "今年度の財務諸表・試算表・年齢表・総勘定元帳を会計士向けに1ファイルで",
+      "cashFlow": {
+        "netProfit": "当期純利益",
+        "depreciation": "減価償却費の加算",
+        "depreciationOffset": "固定資産に含まれる減価償却の控除",
+        "operating": "営業活動",
+        "operatingTotal": "営業活動によるキャッシュフロー",
+        "investing": "投資活動",
+        "investingTotal": "投資活動によるキャッシュフロー",
+        "financing": "財務活動",
+        "financingTotal": "財務活動によるキャッシュフロー",
+        "netChange": "現金の純増減",
+        "opening": "期首現金",
+        "closing": "期末現金",
+        "none": "この期間はありません",
+        "unexplained": "現金の動きが {amount} ずれています。最近の手動仕訳を確認してください。"
+      },
+      "suppliers": {
+        "bills": "請求書数",
+        "tax": "税",
+        "total": "合計",
+        "outstanding": "未払",
+        "empty": "この期間に承認済みの請求書はありません。"
       }
     },
     "settings": {
@@ -621,7 +656,47 @@
       "alreadyFiled": "この申告はすでに提出済みです。",
       "periodNotEnded": "この期間はまだ終わっていません。",
       "taxNumber": "税番号が正しくないようです。",
-      "xeroConnected": "このスタジオの帳簿は Xero で管理されています。先に お金 → 会計 で切り替えてください。"
+      "xeroConnected": "このスタジオの帳簿は Xero で管理されています。先に お金 → 会計 で切り替えてください。",
+      "tooManyFiles": "一度にアップロードできるのは10ファイルまでです。",
+      "attachmentType": "PDF または写真（PNG・JPEG・WebP・HEIC）をアップロードしてください。",
+      "attachmentSize": "ファイルが20MBを超えています。",
+      "uploadFailed": "アップロードが完了しませんでした。接続を確認してもう一度お試しください。",
+      "uploadsNotConfigured": "この環境ではまだ書類をアップロードできません。",
+      "uploadMissing": "アップロードしたファイルが見つかりません。もう一度アップロードしてください。",
+      "noAttachment": "この請求書には読み取る書類がありません。",
+      "couldNotRead": "書類を読み取れませんでした。書類を見ながら手入力してください。"
+    },
+    "inbox": {
+      "dropLabel": "仕入先の請求書をアップロード",
+      "dropTitle": "仕入先の請求書をここにドロップ、またはクリックして選択",
+      "dropHint": "PDF または写真を一度に10件まで。それぞれ書類付きの下書き請求書になり、入力して承認できます。",
+      "dropHintAi": "PDF または写真を一度に10件まで。仕入先・日付・金額・税を読み取り、確認・承認用の下書きにします。",
+      "uploading": "アップロード中…",
+      "reading": "書類を読み取り中…",
+      "filing": "下書きを作成中…",
+      "noAiKey": "請求書を自動で読み取るには、Anthropic または OpenAI のキーを追加してください。",
+      "addAiKey": "キーを追加",
+      "unknownSupplier": "仕入先未読み取り",
+      "readNoTotal": "読み取り済み・合計なし",
+      "notRead": "要入力",
+      "checkIt": "要確認",
+      "documents": "書類",
+      "readAgain": "再読み取り",
+      "attach": "ファイルを添付",
+      "noDocuments": "添付書類はありません。",
+      "openInTab": "新しいタブで開く",
+      "remove": "削除",
+      "removeConfirm": "この書類を請求書から削除しますか？",
+      "previewUnavailable": "このファイルはここではプレビューできません。",
+      "readNotice": "添付書類から入力しました。承認前に各行を書類と照合してください。",
+      "notReadNotice": "書類を自動で読み取れませんでした。「再読み取り」を使うか、手入力してください。",
+      "noAiNotice": "隣の書類を見ながら入力してください。設定 → 連携で AI キーを追加すると自動で読み取ります。",
+      "warnings": {
+        "notInvoice": "請求書や領収書ではないようです。",
+        "foreignCurrency": "書類が別の通貨です。帳簿の通貨で金額を入力してください。",
+        "linesDontAddUp": "明細の合計が書類の合計と一致しません。",
+        "noAmounts": "金額が見つかりませんでした。明細を手入力してください。"
+      }
     }
   }
 }

@@ -31,12 +31,18 @@ export const IMPORT_SOURCE_IDS = [
 
 export type ImportSource = (typeof IMPORT_SOURCE_IDS)[number];
 
+/**
+ * The setup wizard, in order. "path" (scratch vs import) used to be its own
+ * first screen; the import source is now asked on the dancers step, where it
+ * matters. A studio snoozed on "path" resumes at "profile" (parseStep drops
+ * ids that aren't here).
+ */
 export const SETUP_STEP_IDS = [
-  "path",
   "profile",
   "students",
   "classes",
   "pricing",
+  "money",
   "tour",
 ] as const;
 

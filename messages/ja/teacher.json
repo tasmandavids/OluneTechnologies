@@ -39,6 +39,21 @@
     "studentProgress": {
       "back": "← スケジュールに戻る",
       "progressLog": "進捗記録"
+    },
+    "invoiceAttachment": {
+      "label": "ご自身の請求書（任意）",
+      "choose": "PDF または写真を添付",
+      "uploading": "アップロード中…",
+      "remove": "削除",
+      "hint": "ご自身のソフトで請求していますか？添付してください。Olune Books を使うスタジオは承認・支払いに回し、支払済みになるとここに表示されます。",
+      "errors": {
+        "chooseStudio": "先にスタジオを選んでください。",
+        "notMember": "一緒に働いているスタジオ宛ての請求書のみ添付できます。",
+        "fileType": "PDF または写真（PNG・JPEG・WebP・HEIC）を添付してください。",
+        "fileSize": "ファイルが20MBを超えています。",
+        "unavailable": "現在アップロードできません。後でもう一度お試しください。",
+        "invalidFile": "このファイルはこの請求書に添付できません。もう一度添付してください。"
+      }
     }
   }
 }

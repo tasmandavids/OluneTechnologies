@@ -43,7 +43,9 @@
       "instructor": {
         "title": "独立したコーチ・講師です",
         "desc": "複数のクラブで活動し、スケジュールを管理し、講師プロフィールを整えます。"
-      }
+      },
+      "otherVertical": "現在の登録受付：{vertical}。他の業種ですか？",
+      "otherVerticalLink": "ウェイトリストに登録"
     },
     "account": {
       "title": "スタジオを開設する",
@@ -90,7 +92,8 @@
       "submitting": "スタジオを作成中…",
       "submit": "スタジオを作成",
       "submittingInstructor": "ワークスペースを作成中…",
-      "submitInstructor": "ワークスペースを作成"
+      "submitInstructor": "ワークスペースを作成",
+      "changeLater": "ロゴの追加や色の調整は後からできます。"
     },
     "done": {
       "title": "ようこそ、{studioName}",

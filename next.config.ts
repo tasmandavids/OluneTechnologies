@@ -75,7 +75,9 @@ const securityHeaders = [
       // loaded only when a studio has connected Google Analytics.
       `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://maps.googleapis.com https://www.googletagmanager.com${devOnlySources}`,
       `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://maps.googleapis.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com${sentrySource}${devOnlySources}`,
-      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://calendly.com https://form.typeform.com https://docs.google.com",
+      // *.supabase.co: Olune Books previews a bill's PDF from the private
+      // books-attachments bucket through a ten-minute signed URL.
+      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://calendly.com https://form.typeform.com https://docs.google.com https://*.supabase.co",
       "worker-src 'self' blob:",
     ].join("; "),
   },

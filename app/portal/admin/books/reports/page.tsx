@@ -6,12 +6,14 @@ import { Amount, Notice, PageHeader, rowStyle, secondaryButton, secondaryButtonS
 import { PrintButton } from "@/components/admin/books/PrintButton";
 import { requireBooks, BOOKS_PATH } from "@/lib/ledger/server/guard";
 import { syncStudioLedger } from "@/lib/ledger/server/sync";
-import { getAgedPayables, getAgedReceivables, getBalanceSheet, getBankSummary, getGeneralLedger, getProfitAndLoss, getTrialBalance } from "@/lib/ledger/server/reports";
+import { getAgedPayables, getAgedReceivables, getBalanceSheet, getBankSummary, getCashFlow, getGeneralLedger, getProfitAndLoss, getProfitTrend, getSupplierSpend, getTrialBalance } from "@/lib/ledger/server/reports";
 import { fiscalYear, monthOf, todayIso } from "@/lib/ledger/periods";
-import type { StatementSection } from "@/lib/ledger/reports";
+import type { CashFlowLine, StatementSection, TrendSection } from "@/lib/ledger/reports";
 import type { AgedBuckets } from "@/lib/ledger/reports";
 
-const REPORTS = ["pl", "bs", "tb", "gl", "bank", "ar", "ap"] as const;
+// Statements first, then the working reports an accountant asks for.
+const REPORTS = ["pl", "trend", "bs", "cf", "tb", "gl", "bank", "ar", "ap", "suppliers"] as const;
+const RANGE_REPORTS: readonly ReportId[] = ["pl", "trend", "cf", "gl", "bank", "suppliers"];
 type ReportId = (typeof REPORTS)[number];
 const isDate = (v: string | undefined): v is string => !!v && /^\d{4}-\d{2}-\d{2}$/.test(v);
 
@@ -32,7 +34,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   const accountId = params.account && ctx.chart.byId.has(params.account) ? params.account : (ctx.chart.maybeAccount("bank")?.id ?? ctx.accounts[0]?.id);
 
   const money = (c: number, strong = false) => <Amount cents={c} currency={settings.baseCurrency} locale={j.locale} strong={strong} />;
-  const usesRange = report === "pl" || report === "gl" || report === "bank";
+  const usesRange = RANGE_REPORTS.includes(report);
   const exportQs = new URLSearchParams({ report, from, to, asAt, ...(report === "gl" && accountId ? { account: accountId } : {}) }).toString();
 
   let body: ReactNode = null;
@@ -78,6 +80,158 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           {pl.otherIncome.rows.length > 0 && sectionRows(pl.otherIncome, t("otherIncome"))}
           {sectionRows(pl.expenses, t("expenses"))}
           <TotalRow label={t("netProfit")} a={money(pl.netProfitCents, true)} b={money(pl.compare?.netProfitCents ?? 0)} />
+        </tbody>
+      </table>
+    );
+  }
+
+  if (report === "trend") {
+    const { months, report: tr } = await getProfitTrend(supabase, ctx, { start: from, end: to });
+    const monthLabel = (start: string) => new Intl.DateTimeFormat(j.locale, { month: "short", year: "2-digit", timeZone: "UTC" }).format(new Date(`${start}T00:00:00Z`));
+    const cols = months.length + 2;
+    const trendRows = (s: TrendSection, title: string) =>
+      s.rows.length ? (
+        <>
+          <tr>
+            <td colSpan={cols} className="px-3 pb-1 pt-4 text-xs font-semibold uppercase tracking-wider text-muted">{title}</td>
+          </tr>
+          {s.rows.map((r) => (
+            <tr key={r.accountId} style={rowStyle}>
+              <td className={tdClass}>
+                <span className="tabular-nums text-muted">{r.code}</span> {r.name}
+              </td>
+              {r.amounts.map((a, i) => (
+                <td key={i} className={`${tdClass} text-right`}>{a ? money(a) : ""}</td>
+              ))}
+              <td className={`${tdClass} text-right`}>{money(r.totalCents, true)}</td>
+            </tr>
+          ))}
+          <tr style={rowStyle}>
+            <td className={`${tdClass} font-semibold`}>{t("totalOf", { section: title })}</td>
+            {s.totals.map((a, i) => (
+              <td key={i} className={`${tdClass} text-right`}>{money(a, true)}</td>
+            ))}
+            <td className={`${tdClass} text-right`}>{money(s.totalCents, true)}</td>
+          </tr>
+        </>
+      ) : null;
+    const resultRow = (label: string, values: number[]) => (
+      <tr style={{ borderTop: "2px solid var(--hair)" }}>
+        <td className={`${tdClass} font-semibold`}>{label}</td>
+        {values.map((a, i) => (
+          <td key={i} className={`${tdClass} text-right`}>{money(a, true)}</td>
+        ))}
+        <td className={`${tdClass} text-right`}>{money(values.reduce((x, y) => x + y, 0), true)}</td>
+      </tr>
+    );
+    body = (
+      <table className={tableClass}>
+        <thead>
+          <tr>
+            <th className={thClass} />
+            {months.map((m) => (
+              <th key={m.start} className={`${thClass} text-right`}>{monthLabel(m.start)}</th>
+            ))}
+            <th className={`${thClass} text-right`}>{t("total")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {trendRows(tr.income, t("income"))}
+          {trendRows(tr.costOfSales, t("costOfSales"))}
+          {resultRow(t("grossProfit"), tr.grossProfit)}
+          {trendRows(tr.otherIncome, t("otherIncome"))}
+          {trendRows(tr.expenses, t("expenses"))}
+          {resultRow(t("netProfit"), tr.netProfit)}
+        </tbody>
+      </table>
+    );
+  }
+
+  if (report === "cf") {
+    const { report: cf } = await getCashFlow(supabase, ctx, { start: from, end: to });
+    const label = (l: CashFlowLine) => (l.accountId ? l.label : t(`cashFlow.${l.label}`));
+    const block = (title: string, lines: CashFlowLine[], total: number, totalLabel: string) => (
+      <>
+        <tr>
+          <td colSpan={2} className="px-3 pb-1 pt-4 text-xs font-semibold uppercase tracking-wider text-muted">{title}</td>
+        </tr>
+        {lines.map((l) => (
+          <tr key={`${l.key}-${l.accountId ?? l.label}`} style={rowStyle}>
+            <td className={tdClass}>
+              {l.accountId ? (
+                <Link href={`${BOOKS_PATH}/reports?report=gl&account=${l.accountId}&from=${from}&to=${to}`} className="hover:underline">
+                  {label(l)}
+                </Link>
+              ) : (
+                label(l)
+              )}
+            </td>
+            <td className={`${tdClass} text-right`}>{money(l.amountCents)}</td>
+          </tr>
+        ))}
+        {lines.length === 0 && (
+          <tr style={rowStyle}>
+            <td className={`${tdClass} text-muted`} colSpan={2}>{t("cashFlow.none")}</td>
+          </tr>
+        )}
+        <TotalRow label={totalLabel} a={money(total, true)} />
+      </>
+    );
+    body = (
+      <>
+        {cf.unexplainedCents !== 0 && <div className="p-4"><Notice tone="bad">{t("cashFlow.unexplained", { amount: String(cf.unexplainedCents / 100) })}</Notice></div>}
+        <table className={tableClass}>
+          <tbody>
+            {block(t("cashFlow.operating"), cf.operating, cf.operatingTotalCents, t("cashFlow.operatingTotal"))}
+            {block(t("cashFlow.investing"), cf.investing, cf.investingTotalCents, t("cashFlow.investingTotal"))}
+            {block(t("cashFlow.financing"), cf.financing, cf.financingTotalCents, t("cashFlow.financingTotal"))}
+            <TotalRow label={t("cashFlow.netChange")} a={money(cf.netChangeCents, true)} />
+            <tr style={rowStyle}>
+              <td className={tdClass}>{t("cashFlow.opening")}</td>
+              <td className={`${tdClass} text-right`}>{money(cf.openingCashCents)}</td>
+            </tr>
+            <TotalRow label={t("cashFlow.closing")} a={money(cf.closingCashCents, true)} />
+          </tbody>
+        </table>
+      </>
+    );
+  }
+
+  if (report === "suppliers") {
+    const spend = await getSupplierSpend(supabase, studioId, { start: from, end: to });
+    body = (
+      <table className={tableClass}>
+        <thead>
+          <tr>
+            <th className={thClass}>{t("supplier")}</th>
+            <th className={`${thClass} text-right`}>{t("suppliers.bills")}</th>
+            <th className={`${thClass} text-right`}>{t("suppliers.tax")}</th>
+            <th className={`${thClass} text-right`}>{t("suppliers.total")}</th>
+            <th className={`${thClass} text-right`}>{t("suppliers.outstanding")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {spend.suppliers.map((s) => (
+            <tr key={s.name} style={rowStyle}>
+              <td className={tdClass}>{s.name}</td>
+              <td className={`${tdClass} text-right tabular-nums`}>{s.bills}</td>
+              <td className={`${tdClass} text-right`}>{money(s.taxCents)}</td>
+              <td className={`${tdClass} text-right`}>{money(s.totalCents)}</td>
+              <td className={`${tdClass} text-right`}>{s.outstandingCents ? money(s.outstandingCents) : ""}</td>
+            </tr>
+          ))}
+          {spend.suppliers.length === 0 && (
+            <tr style={rowStyle}>
+              <td colSpan={5} className="px-3 py-6 text-center text-sm text-muted">{t("suppliers.empty")}</td>
+            </tr>
+          )}
+          <tr style={{ borderTop: "2px solid var(--hair)" }}>
+            <td className={`${tdClass} font-semibold`}>{t("total")}</td>
+            <td className={`${tdClass} text-right tabular-nums`}>{spend.totals.bills}</td>
+            <td className={`${tdClass} text-right`}>{money(spend.totals.taxCents, true)}</td>
+            <td className={`${tdClass} text-right`}>{money(spend.totals.totalCents, true)}</td>
+            <td className={`${tdClass} text-right`}>{money(spend.totals.outstandingCents, true)}</td>
+          </tr>
         </tbody>
       </table>
     );
@@ -276,6 +430,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           <>
             <a href={`/api/books/export?${exportQs}`} className={secondaryButton} style={secondaryButtonStyle}>{t("exportCsv")}</a>
             <a href={`/api/books/export?report=journals&from=${from}&to=${to}`} className={secondaryButton} style={secondaryButtonStyle}>{t("exportJournals")}</a>
+            <a href={`/api/books/export?report=pack&from=${fy.start}&to=${fy.end < today ? fy.end : today}`} className={secondaryButton} style={secondaryButtonStyle} title={t("exportPackHint")}>{t("exportPack")}</a>
             {j.code === "FR" && <a href={`/api/books/export?report=fec&from=${fy.start}&to=${fy.end}`} className={secondaryButton} style={secondaryButtonStyle}>{t("exportFec")}</a>}
             <PrintButton />
           </>

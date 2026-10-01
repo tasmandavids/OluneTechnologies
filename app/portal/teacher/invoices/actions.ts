@@ -3,6 +3,8 @@
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/notify/providers";
+import { fileContractorInvoice, mintAttachmentUpload } from "@/lib/ledger/server/inbox";
+import { checkAttachment, isStudioAttachmentPath } from "@/lib/ledger/attachments";
 import {
   formatAmount,
   renderContractorInvoiceEmail,
@@ -24,7 +26,69 @@ const InvoiceSchema = z.object({
   amount_cents: z.number().int().nonnegative(),
   due_date: z.string().optional().nullable(),
   notes: z.string().max(2000).optional().nullable(),
+  /** The contractor's own invoice document, uploaded to the studio's folder. */
+  attachment: z
+    .object({
+      path: z.string().max(200),
+      name: z.string().trim().min(1).max(200),
+      mime: z.string().max(100),
+      size: z.number().int().positive(),
+    })
+    .optional()
+    .nullable(),
 });
+
+/**
+ * Turn the optional attachment into columns. Null when it points outside the
+ * studio's folder. Errors from here on are keys under
+ * teacher.invoiceAttachment.errors — the manager translates them.
+ */
+function attachmentColumns(parsed: z.infer<typeof InvoiceSchema>) {
+  const att = parsed.attachment;
+  if (!att) return { attachment_path: null, attachment_name: null, attachment_mime: null, attachment_size: null };
+  if (!parsed.studio_id || !isStudioAttachmentPath(parsed.studio_id, att.path) || !checkAttachment(att.mime, att.size).ok) return null;
+  return { attachment_path: att.path, attachment_name: att.name, attachment_mime: att.mime, attachment_size: att.size };
+}
+
+/**
+ * A signed upload URL for the contractor's own invoice PDF. It goes into the
+ * studio's private Books folder, so only a studio the instructor actively
+ * works with can be targeted.
+ */
+export async function startInvoiceAttachmentUpload(
+  studioId: string,
+  mime: string,
+  size: number,
+): Promise<{ ok: true; path: string; token: string } | { ok?: undefined; error: string }> {
+  const { supabase, userId } = await requireTeacher();
+  if (!z.string().uuid().safeParse(studioId).success) return { error: "chooseStudio" };
+  const { data: membership } = await supabase
+    .from("studio_memberships")
+    .select("studio_id")
+    .eq("user_id", userId)
+    .eq("studio_id", studioId)
+    .eq("status", "active")
+    .maybeSingle();
+  if (!membership) return { error: "notMember" };
+  const ticket = await mintAttachmentUpload(studioId, mime, size);
+  if (!ticket.ok) {
+    return { error: ticket.error === "attachmentType" ? "fileType" : ticket.error === "attachmentSize" ? "fileSize" : "unavailable" };
+  }
+  return { ok: true as const, path: ticket.path, token: ticket.token };
+}
+
+/**
+ * After an invoice to a studio is marked sent: if the studio keeps Olune
+ * Books, file it in their bill inbox. Best effort — the invoice is sent
+ * either way, and the studio still has the email and the notification.
+ */
+async function fileWithStudio(id: string): Promise<string | null> {
+  try {
+    return await fileContractorInvoice(id);
+  } catch {
+    return null;
+  }
+}
 
 async function requireTeacher() {
   const supabase = await createClient();
@@ -36,9 +100,13 @@ async function requireTeacher() {
 export async function createContractorInvoice(data: z.infer<typeof InvoiceSchema>) {
   const { supabase, userId } = await requireTeacher();
   const parsed = InvoiceSchema.parse(data);
+  const { attachment: _attachment, ...fields } = parsed;
+  const attachment = attachmentColumns(parsed);
+  if (!attachment) return { error: "invalidFile" };
   const { error } = await supabase.from("contractor_invoices").insert({
     instructor_id: userId,
-    ...parsed,
+    ...fields,
+    ...attachment,
     status: "draft",
   });
   if (error) return { error: error.message };
@@ -48,8 +116,12 @@ export async function createContractorInvoice(data: z.infer<typeof InvoiceSchema
 export async function updateContractorInvoice(id: string, data: z.infer<typeof InvoiceSchema>) {
   const { supabase } = await requireTeacher();
   const parsed = InvoiceSchema.parse(data);
+  const { attachment: _attachment, ...fields } = parsed;
+  const attachment = attachmentColumns(parsed);
+  if (!attachment) return { error: "invalidFile" };
   const { error } = await supabase.from("contractor_invoices").update({
-    ...parsed,
+    ...fields,
+    ...attachment,
     updated_at: new Date().toISOString(),
   }).eq("id", id);
   if (error) return { error: error.message };
@@ -68,6 +140,7 @@ export async function markInvoiceSent(id: string) {
     .update({ status: "sent", updated_at: new Date().toISOString() })
     .eq("id", id).eq("instructor_id", userId).eq("status", "draft");
   if (error) return { error: error.message };
+  await fileWithStudio(id);
   return { ok: true };
 }
 
@@ -181,6 +254,18 @@ export async function sendContractorInvoice(id: string) {
     };
   }
 
+  const { error: statusErr } = await supabase
+    .from("contractor_invoices")
+    .update({ status: "sent", updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("instructor_id", userId)
+    .eq("status", "draft");
+
+  if (statusErr) return { error: statusErr.message };
+
+  // Studios on Olune Books get it in their bill inbox, ready to approve and pay.
+  const billId = invoice.studio_id ? await fileWithStudio(id) : null;
+
   // In-app copy for studio admins. The type routes to no outbound channel, so
   // the delivery cron won't email this a second time.
   if (studioAdminIds.length > 0 && invoice.studio_id) {
@@ -191,20 +276,12 @@ export async function sendContractorInvoice(id: string) {
         type: "contractor_invoice_received",
         title: `Invoice from ${fromName}`,
         body: `${formatAmount(invoice.amount_cents as number, (invoice.currency as string) ?? "nzd")} — ${invoice.description as string}`,
-        link: "/portal/admin/money?tab=invoices",
-        payload: { contractor_invoice_id: invoice.id },
+        link: billId ? `/portal/admin/books/bills/${billId}` : "/portal/admin/money?tab=invoices",
+        payload: { contractor_invoice_id: invoice.id, ledger_bill_id: billId },
       })),
     );
   }
 
-  const { error: statusErr } = await supabase
-    .from("contractor_invoices")
-    .update({ status: "sent", updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .eq("instructor_id", userId)
-    .eq("status", "draft");
-
-  if (statusErr) return { error: statusErr.message };
   return { ok: true, delivered };
 }
 

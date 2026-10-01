@@ -39,6 +39,21 @@
     "studentProgress": {
       "back": "← Volver al horario",
       "progressLog": "Registro de progreso"
+    },
+    "invoiceAttachment": {
+      "label": "Tu propia factura (opcional)",
+      "choose": "Adjunta un PDF o una foto",
+      "uploading": "Subiendo…",
+      "remove": "Quitar",
+      "hint": "¿Facturas con tu propio programa? Adjúntala. Los estudios con Olune Books la reciben en sus facturas para aprobarla y pagarla, y aquí la verás como pagada.",
+      "errors": {
+        "chooseStudio": "Elige primero el estudio.",
+        "notMember": "Solo puedes adjuntar facturas para estudios con los que trabajas.",
+        "fileType": "Adjunta un PDF o una foto (PNG, JPEG, WebP o HEIC).",
+        "fileSize": "Ese archivo supera los 20 MB.",
+        "unavailable": "La subida no está disponible ahora. Inténtalo más tarde.",
+        "invalidFile": "Ese archivo no se puede adjuntar a esta factura. Vuelve a adjuntarlo."
+      }
     }
   }
 }

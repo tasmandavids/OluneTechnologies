@@ -73,6 +73,8 @@ export const AUDIT_ACTIONS = {
   "books.bill_voided": "high",
   "books.bank_imported": "notable",
   "books.tax_return_filed": "high",
+  "books.bills_uploaded": "notable",
+  "books.attachment_removed": "notable",
   //  Pausing stops auto-posting; resuming catches the ledger up, which can
   //  post a batch of journals at once. Both change where the books are kept.
   "books.paused": "high",

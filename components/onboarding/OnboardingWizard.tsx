@@ -21,7 +21,16 @@ const PRESETS = ["#C8102E", "#5B5BFF", "#C9A227", "#E84A8A", "#13B6A4"];
 const ACCOUNT_KIND_KEY = "olune_onboarding_account_kind";
 const VERTICAL_KEY = "olune_onboarding_vertical";
 
-type Step = "vertical" | "waitlist" | "system" | "account" | "studio" | "brand" | "done";
+type Step = "vertical" | "waitlist" | "system" | "account" | "studio" | "done";
+
+/**
+ * While only one vertical takes signups, asking "what kind of studio?" first
+ * is a screen that can only have one answer. Start at "who are you" with it
+ * pre-picked, and keep the picker one link away for everyone else (it's where
+ * the other verticals' waitlists live).
+ */
+const READY_VERTICALS = allVerticals().filter((k) => isSignupReady(k));
+const ONLY_VERTICAL: VerticalKey | null = READY_VERTICALS.length === 1 ? READY_VERTICALS[0] : null;
 type SlugStatus = "idle" | "invalid" | "checking" | "available" | "taken";
 
 const slugify = (s: string) =>
@@ -75,11 +84,11 @@ export function OnboardingWizard({
   // Holds whatever was picked, authored or not — the waitlist step needs to
   // know which vertical they wanted.
   const [vertical, setVertical] = useState<VerticalKey | null>(() =>
-    isVerticalKey(presetVertical) ? presetVertical : readStoredVertical(),
+    isVerticalKey(presetVertical) ? presetVertical : (readStoredVertical() ?? ONLY_VERTICAL),
   );
 
   const [step, setStep] = useState<Step>(() => {
-    const picked = isVerticalKey(presetVertical) ? presetVertical : readStoredVertical();
+    const picked = isVerticalKey(presetVertical) ? presetVertical : (readStoredVertical() ?? ONLY_VERTICAL);
     if (!picked) return "vertical";
     // A deep link to a vertical we cannot serve yet lands on the waitlist
     // rather than silently dropping the visitor into the dance pack.
@@ -198,15 +207,14 @@ export function OnboardingWizard({
   }
 
   const progressKeys = isInstructor
-    ? (["account", "profile", "brand"] as const)
-    : (["account", "studio", "brand"] as const);
+    ? (["account", "profile"] as const)
+    : (["account", "studio"] as const);
 
   const stepIndex =
     step === "vertical" || step === "waitlist" || step === "system" ? -1
     : step === "account" ? 0
     : step === "studio" ? 1
-    : step === "brand" ? 2
-    : 3;
+    : 2;
 
   const initial = (studioName.trim()[0] ?? "S").toUpperCase();
   const doneDest = isInstructor ? "/portal/teacher" : "/setup";
@@ -372,13 +380,22 @@ export function OnboardingWizard({
                         <p className="mt-1 text-sm text-muted">{t("system.instructor.desc")}</p>
                       </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => go("vertical", -1)}
-                      className="btn-glow mt-4 w-full justify-center"
-                    >
-                      {t("system.back")}
-                    </button>
+                    {ONLY_VERTICAL ? (
+                      <p className="mt-5 text-center text-sm text-muted">
+                        {t("system.otherVertical", { vertical: t(`vertical.options.${ONLY_VERTICAL}`) })}{" "}
+                        <button type="button" onClick={() => go("vertical", -1)} className="text-ink underline">
+                          {t("system.otherVerticalLink")}
+                        </button>
+                      </p>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => go("vertical", -1)}
+                        className="btn-glow mt-4 w-full justify-center"
+                      >
+                        {t("system.back")}
+                      </button>
+                    )}
                   </div>
                 )}
 
@@ -450,44 +467,28 @@ export function OnboardingWizard({
                         </p>
                       </div>
                     </div>
+                    <div className="mt-5">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("brand.title")}</p>
+                      <div className="mt-2 flex items-center gap-3">
+                        <span className="grid h-8 w-8 shrink-0 place-items-center border text-sm font-black text-ink" style={{ borderColor: brand }} aria-hidden>{initial}</span>
+                        {PRESETS.map((c) => (
+                          <button key={c} type="button" onClick={() => setBrand(c)} aria-label={c} aria-pressed={brand === c}
+                            className="h-7 w-7 rounded-full transition-transform hover:scale-110"
+                            style={{ background: c, boxShadow: brand === c ? "0 0 0 2px var(--surface), 0 0 0 4px #fff" : "none" }} />
+                        ))}
+                        <input type="color" value={brand} onChange={(e) => setBrand(e.target.value)}
+                          className="ml-auto h-8 w-10 cursor-pointer rounded-lg border border-[--hair] bg-transparent p-0.5" aria-label={t("brand.customColour")} />
+                      </div>
+                      <p className="mt-1.5 text-xs text-muted">{t("brand.changeLater")}</p>
+                    </div>
                     <div className="mt-6 flex gap-2">
                       {!signedIn ? (
                         <button onClick={() => go("account", -1)} className="btn-glow flex-none">{t("studio.back")}</button>
                       ) : (
                         <button onClick={() => go("system", -1)} className="btn-glow flex-none">{t("system.back")}</button>
                       )}
-                      <button onClick={() => go("brand")} disabled={slugStatus !== "available"}
-                        className="btn-glow btn-glow--solid w-full justify-center disabled:opacity-50">{t("studio.continue")}</button>
-                    </div>
-                  </div>
-                )}
-
-                {step === "brand" && (
-                  <div>
-                    <h1 className="text-2xl font-black tracking-tight">{t("brand.title")}</h1>
-                    <p className="mt-1 text-sm text-muted">{t("brand.subtitle")}</p>
-
-                    <div className="box mt-5 rounded-2xl p-5">
-                      <div className="flex items-center gap-2">
-                        <span className="grid h-8 w-8 place-items-center border text-sm font-black text-ink" style={{ borderColor: brand }}>{initial}</span>
-                        <span className="text-sm font-bold text-ink">{studioName || t("brand.fallbackName")}</span>
-                      </div>
-                      <button className="mt-4 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-paper" style={{ background: brand }}>{t("brand.previewCta")}</button>
-                    </div>
-
-                    <div className="mt-5 flex items-center gap-3">
-                      {PRESETS.map((c) => (
-                        <button key={c} onClick={() => setBrand(c)} aria-label={c}
-                          className="h-8 w-8 rounded-full transition-transform hover:scale-110"
-                          style={{ background: c, boxShadow: brand === c ? "0 0 0 2px var(--surface), 0 0 0 4px #fff" : "none" }} />
-                      ))}
-                      <input type="color" value={brand} onChange={(e) => setBrand(e.target.value)}
-                        className="ml-auto h-8 w-10 cursor-pointer rounded-lg border border-[--hair] bg-transparent p-0.5" aria-label={t("brand.customColour")} />
-                    </div>
-
-                    <div className="mt-6 flex gap-2">
-                      <button onClick={() => go("studio", -1)} className="btn-glow flex-none">{t("brand.back")}</button>
-                      <button onClick={createWorkspace} disabled={busy} className="btn-glow btn-glow--solid w-full justify-center disabled:opacity-60">
+                      <button onClick={createWorkspace} disabled={slugStatus !== "available" || busy || !studioName.trim()}
+                        className="btn-glow btn-glow--solid w-full justify-center disabled:opacity-50">
                         {busy
                           ? (isInstructor ? t("brand.submittingInstructor") : t("brand.submitting"))
                           : (isInstructor ? t("brand.submitInstructor") : t("brand.submit"))}

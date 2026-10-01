@@ -62,7 +62,7 @@ export function BillEditor(props: Props) {
     return { key: k++, description: "", accountId, taxRateId: props.taxRegistered ? (acct?.defaultTaxRateId ?? defaultRateId) : "", quantity: "1", unit: "" };
   };
   const [lines, setLines] = useState<Line[]>(() =>
-    props.initial
+    props.initial?.lines.length
       ? props.initial.lines.map((l) => ({ key: k++, description: l.description, accountId: l.accountId, taxRateId: l.taxRateId ?? "", quantity: String(l.quantity), unit: (l.unitCents / 100).toFixed(2) }))
       : [blankLine()],
   );

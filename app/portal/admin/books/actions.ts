@@ -25,6 +25,7 @@ import { postJournal, undoJournal } from "@/lib/ledger/server/post";
 import { getTaxReturn } from "@/lib/ledger/server/reports";
 import { provisionBooks, type SetupInput } from "@/lib/ledger/server/setup";
 import { syncStudioLedger } from "@/lib/ledger/server/sync";
+import { markContractorInvoicePaid, removeAttachmentObjects } from "@/lib/ledger/server/inbox";
 import { ACCOUNT_SUBTYPES, FILING_FREQUENCIES, TAX_REPORT_CATEGORIES, accountTypeOf, type AccountSubtype, type DraftLine } from "@/lib/ledger/types";
 
 export type BooksActionResult<T = undefined> = { ok: true; data?: T } | { ok: false; error: string };
@@ -476,6 +477,7 @@ export async function payBillAction(input: z.infer<typeof PaySchema>): Promise<B
       .eq("id", v.billId)
       .eq("studio_id", studioId);
     await logAuditEvent({ studioId, actorId: userId, action: "books.bill_paid", targetType: "ledger_bill", targetId: v.billId, metadata: { amountCents: v.amountCents } });
+    if (paid >= Number(bill.total_cents)) await markContractorInvoicePaid(v.billId);
     revalidateBooks();
     return { ok: true };
   });
@@ -483,11 +485,21 @@ export async function payBillAction(input: z.infer<typeof PaySchema>): Promise<B
 
 export async function voidBillAction(billId: string, reason: string): Promise<BooksActionResult> {
   return withBooks(async ({ supabase, studioId, userId, books }) => {
-    const { data: bill } = await supabase.from("ledger_bills").select("id, status, paid_cents, journal_id").eq("id", billId).eq("studio_id", studioId).maybeSingle();
+    const { data: bill } = await supabase
+      .from("ledger_bills")
+      .select("id, status, source, paid_cents, journal_id, ledger_attachments ( storage_path )")
+      .eq("id", billId)
+      .eq("studio_id", studioId)
+      .maybeSingle();
     if (!bill) return { ok: false, error: "notFound" };
     if (bill.status === "draft") {
       const { error } = await supabase.from("ledger_bills").delete().eq("id", billId).eq("studio_id", studioId);
       if (error) return { ok: false, error: error.message };
+      // An uploaded document goes with its draft; a contractor's PDF stays
+      // with their invoice, which still points at it.
+      if (bill.source !== "staff") {
+        await removeAttachmentObjects(((bill.ledger_attachments as { storage_path: string }[] | null) ?? []).map((a) => a.storage_path));
+      }
       revalidateBooks();
       return { ok: true };
     }
