@@ -143,7 +143,9 @@ export function normaliseExtraction(raw: unknown): InvoiceExtraction | null {
   if (!v || typeof v !== "object" || Array.isArray(v)) return null;
   const o = v as Record<string, unknown>;
   const lines = Array.isArray(o.lines) ? o.lines : [];
-  const currency = str(o.currency, 3)?.toUpperCase() ?? null;
+  // Read the whole value before checking it: truncating first would turn
+  // "dollars" into "DOL" and pass it off as an ISO code.
+  const currency = str(o.currency, 20)?.toUpperCase() ?? null;
   return {
     isInvoice: o.isInvoice !== false,
     supplierName: str(o.supplierName, 150),
