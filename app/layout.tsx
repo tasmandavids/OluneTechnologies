@@ -59,7 +59,7 @@ export default async function RootLayout({
     getLocale(),
     getMessages(),
   ]);
-  const sharedMessages = Object.fromEntries(Object.entries(messages).filter(([key]) => key !== "admin" && key !== "platform"));
+  const sharedMessages = Object.fromEntries(Object.entries(messages).filter(([key]) => key !== "admin" && key !== "platform" && key !== "books"));
   const studio = await resolveStudio(host);
 
   const [branding, measurementId] = studio

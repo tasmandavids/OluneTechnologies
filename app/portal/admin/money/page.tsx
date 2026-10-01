@@ -4,10 +4,9 @@
 //  "how's the money doing" — tab state lives in ?tab= for deep links.
 //
 //  Replaces /portal/admin/billing, /accounting, /payments, /payment-plans and
-//  /subscriptions, which now redirect here. Every tab is wired to real data
-//  except Reconcile (bank-feed matching), which doesn't exist anywhere in the
-//  app yet — it gets an honest "still being built" panel, not fabricated
-//  transactions. See ComingSoonTab.
+//  /subscriptions, which now redirect here. Reconcile (bank-feed matching)
+//  lives in Olune Books (/portal/admin/books/bank); for studios on an external
+//  ledger it keeps an honest "not built here" panel. See ReconcileTab.
 // ============================================================================
 
 import Link from "next/link";
@@ -24,6 +23,9 @@ import { PlansTab } from "./plans-tab";
 import { PayoutsTab } from "./payouts-tab";
 import { ReportsTab } from "./reports-tab";
 import { LedgerTab } from "./ledger-tab";
+import { BooksMoneyBridge } from "@/components/admin/books/BooksMoneyBridge";
+import { requirePortalSession } from "@/lib/portal/session";
+import { resolveAccountingProvider } from "@/lib/accounting/provider";
 
 const TABS = [
   "overview",
@@ -52,6 +54,19 @@ function ComingSoonTab({ title, body, note }: { title: string; body: string; not
       </GlassPanel>
     </div>
   );
+}
+
+/**
+ * Bank reconciliation lives in Olune Books. With Books on, this tab sends the
+ * studio there; with no ledger at all, it offers Books; with Xero et al. it
+ * keeps the honest "not built here" note (their own reconciliation applies).
+ */
+async function ReconcileTab({ title, body, note }: { title: string; body: string; note: string }) {
+  const { supabase, studioId } = await requirePortalSession();
+  const active = await resolveAccountingProvider(supabase, studioId);
+  if (active?.provider === "olune") return <BooksMoneyBridge variant="reconcile" />;
+  if (!active) return <BooksMoneyBridge variant="setup" />;
+  return <ComingSoonTab title={title} body={body} note={note} />;
 }
 
 export default async function MoneyPage({
@@ -112,9 +127,7 @@ export default async function MoneyPage({
       {tab === "collections" && <CollectionsTab />}
       {tab === "plans" && <PlansTab />}
       {tab === "ledger" && <LedgerTab page={parsePage(params.page)} />}
-      {tab === "reconcile" && (
-        <ComingSoonTab title={reconcileTitle} body={reconcileBody} note={reconcileNote} />
-      )}
+      {tab === "reconcile" && <ReconcileTab title={reconcileTitle} body={reconcileBody} note={reconcileNote} />}
       {tab === "payouts" && <PayoutsTab bannerError={params.error ?? null} />}
       {tab === "reports" && <ReportsTab />}
       </Suspense>

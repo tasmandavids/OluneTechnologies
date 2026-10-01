@@ -65,7 +65,8 @@ export async function loadIntegrationStates(
     }
   };
 
-  const [xero, stripe, email, social, generic] = await Promise.all([
+  const [books, xero, stripe, email, social, generic] = await Promise.all([
+    safe("ledger_settings", "jurisdiction, base_currency, custom_country_name, last_synced_at, last_sync_error, created_at"),
     safe("xero_connections", "tenant_name, last_sync_at, sync_error, updated_at"),
     safe(
       "stripe_connect_accounts",
@@ -78,6 +79,19 @@ export async function loadIntegrationStates(
       "id, provider, status, display_name, external_account_id, metadata, last_verified_at, last_error, updated_at",
     ),
   ]);
+
+  const booksRow = books[0];
+  if (booksRow && states.olune) {
+    const syncError = (booksRow.last_sync_error as string | null) ?? null;
+    states.olune = {
+      ...states.olune,
+      connected: true,
+      accountLabel: `${(booksRow.custom_country_name as string | null) ?? (booksRow.jurisdiction as string)} · ${booksRow.base_currency as string}`,
+      status: syncError ? "error" : "connected",
+      lastActivityAt: (booksRow.last_synced_at as string | null) ?? (booksRow.created_at as string | null),
+      error: syncError,
+    };
+  }
 
   const xeroRow = xero[0];
   if (xeroRow && states.xero) {

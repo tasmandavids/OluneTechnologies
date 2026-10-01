@@ -42,6 +42,7 @@ export const MODULE_ROUTES: Partial<Record<ModuleKey, string[]>> = {
   classes: ["/portal/admin/classes"],
   billing: [
     "/portal/admin/money",
+    "/portal/admin/books",
     "/portal/admin/billing",
     "/portal/admin/accounting",
     "/portal/admin/payments",

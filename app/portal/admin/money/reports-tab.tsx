@@ -12,6 +12,7 @@ import { fetchAccountingSnapshot } from "@/lib/xero/accounting-data";
 import { xeroRedirectUri } from "@/lib/xero/config";
 import { resolveAppOriginFromHeaders } from "@/lib/xero/app-origin";
 import { ReportsDashboard, type AgedReceivables } from "@/components/admin/money/ReportsDashboard";
+import { BooksMoneyBridge } from "@/components/admin/books/BooksMoneyBridge";
 
 const MONTH_START = () => `${new Date().toISOString().slice(0, 7)}-01`;
 
@@ -26,9 +27,12 @@ export async function ReportsTab() {
   const origin = await resolveAppOriginFromHeaders();
   const redirectUri = xeroRedirectUri(origin);
 
-  const [snapshot, activeLedger, gstMonthRes, gstQuarterRes, unpaidRes] = await Promise.all([
+  // Olune Books has its own full statements; don't show a Xero-shaped panel.
+  const activeLedger = await resolveAccountingProvider(supabase, studioId);
+  if (activeLedger?.provider === "olune") return <BooksMoneyBridge variant="reports" />;
+
+  const [snapshot, gstMonthRes, gstQuarterRes, unpaidRes] = await Promise.all([
     fetchAccountingSnapshot(supabase, studioId, redirectUri),
-    resolveAccountingProvider(supabase, studioId),
     supabase
       .from("invoices")
       .select("gst_cents")

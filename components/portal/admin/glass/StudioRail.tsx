@@ -97,7 +97,7 @@ const SPACES: Space[] = [
     labelKey: "shell.rail.money",
     icon: IconWallet,
     primaryHref: "/portal/admin/money",
-    subHrefs: ["/portal/admin/money?tab=products", "/portal/admin/shop"],
+    subHrefs: ["/portal/admin/money?tab=products", "/portal/admin/books", "/portal/admin/shop"],
   },
   { id: "inbox", labelKey: "shell.rail.inbox", icon: IconInbox, primaryHref: "/portal/admin/messages", subHrefs: ["/portal/admin/support"] },
   {

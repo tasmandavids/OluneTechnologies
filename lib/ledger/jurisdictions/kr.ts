@@ -1,0 +1,72 @@
+import { validKrBrn } from "../tax-numbers";
+import { box, dayOfMonthAfter, nilRate, rate } from "./helpers";
+import type { Jurisdiction } from "./types";
+
+export const KR: Jurisdiction = {
+  code: "KR",
+  name: "대한민국",
+  flag: "🇰🇷",
+  currency: "KRW",
+  locale: "ko-KR",
+  chartLanguage: "ko",
+  taxName: "부가가치세",
+  taxAuthority: "국세청",
+  taxAuthorityUrl: "https://www.nts.go.kr/",
+  taxNumber: {
+    label: "사업자등록번호",
+    placeholder: "123-45-67890",
+    validate: validKrBrn,
+    hint: "10자리. 검증번호를 확인합니다.",
+  },
+  defaultRegistered: true,
+  pricesIncludeTax: true,
+  fiscalYearStart: { month: 1, day: 1 },
+  filing: { frequencies: ["six_monthly", "quarterly"], default: "six_monthly", defaultAnchorMonth: 1 },
+  bases: [{ id: "accrual", label: "발생주의", sales: "accrual", purchases: "accrual" }],
+  taxRates: [
+    rate({ code: "과세", name: "과세 매출 10%", rateBp: 1000, appliesTo: "sales", category: "standard", componentName: "부가가치세" }),
+    nilRate("영세율", "영세율 매출", "zero", "sales"),
+    nilRate("면세", "면세 매출", "exempt", "sales"),
+    nilRate("과세제외", "과세 대상 아님", "out_of_scope"),
+    rate({ code: "매입과세", name: "과세 매입 10%", rateBp: 1000, appliesTo: "purchases", category: "standard", componentName: "부가가치세" }),
+    nilRate("매입불공제", "불공제·면세 매입", "exempt", "purchases"),
+  ],
+  defaultSalesCode: "과세",
+  // Lessons at a registered 학원 are a VAT-exempt education service.
+  serviceSalesCode: "면세",
+  defaultPurchaseCode: "매입과세",
+  zeroSalesCode: "영세율",
+  exemptSalesCode: "면세",
+  exemptPurchaseCode: "매입불공제",
+  separateTaxAccounts: true,
+  chartTerms: {
+    taxOutput: "부가세예수금",
+    taxInput: "부가세대급금",
+    taxSettlement: "미지급부가세",
+    payrollTax: "예수금(원천세)",
+    retirement: "4대보험 회사부담금",
+    retirementPayable: "예수금(4대보험)",
+    musicLicensing: "음악저작권 사용료",
+  },
+  returnForm: {
+    code: "부가가치세신고서",
+    name: "부가가치세 확정신고서",
+    authority: "국세청 (홈택스)",
+    authorityUrl: "https://www.hometax.go.kr/",
+    boxes: [
+      box("과세표준", "과세표준 (과세 매출)", (q) => q.net("sales", ["standard"]), { section: "매출" }),
+      box("영세율", "영세율 매출", (q) => q.net("sales", ["zero", "export"])),
+      box("매출세액", "매출세액", (q) => q.tax("sales"), { total: true }),
+      box("매입세액", "공제받을 매입세액", (q) => q.tax("purchases"), { section: "매입" }),
+      box("납부세액", "납부(환급)세액", (q) => q.box("매출세액") - q.box("매입세액"), { total: true }),
+      box("면세", "면세 수입금액 (참고)", (q) => q.net("sales", ["exempt"]), { section: "참고" }),
+    ],
+    net: (q) => q.box("납부세액"),
+    dueDate: (periodEnd) => dayOfMonthAfter(periodEnd, 1, 25),
+  },
+  notes: [
+    "학원으로 등록된 교습 용역은 부가가치세 면세입니다. 수강료는 기본적으로 면세로 설정되며, 의상·용품 판매는 과세입니다.",
+    "면세사업자의 사업장현황신고, 간이과세자 특례는 반영하지 않았습니다.",
+  ],
+  reviewedAt: "2026-10-01",
+};

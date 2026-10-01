@@ -124,6 +124,9 @@ export function ConnectionsHub({
     if (provider.auth.kind === "oauth") {
       window.location.href = provider.auth.connectPath;
     }
+    if (provider.auth.kind === "internal") {
+      window.location.href = provider.auth.setupPath;
+    }
   };
 
   const onDisconnect = async (provider: IntegrationProvider) => {

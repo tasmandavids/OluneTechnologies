@@ -1,0 +1,88 @@
+import { validEsVat } from "../tax-numbers";
+import { box, dayOfMonthAfter, parseIso, nilRate, rate } from "./helpers";
+import type { Jurisdiction } from "./types";
+
+export const ES: Jurisdiction = {
+  code: "ES",
+  name: "España",
+  flag: "🇪🇸",
+  currency: "EUR",
+  locale: "es-ES",
+  chartLanguage: "es",
+  taxName: "IVA",
+  taxAuthority: "Agencia Tributaria (AEAT)",
+  taxAuthorityUrl: "https://sede.agenciatributaria.gob.es/Sede/iva.html",
+  taxNumber: {
+    label: "NIF / CIF",
+    placeholder: "B12345678",
+    validate: validEsVat,
+    hint: "NIF, NIE o CIF. Se comprueba el formato.",
+  },
+  defaultRegistered: true,
+  pricesIncludeTax: true,
+  fiscalYearStart: { month: 1, day: 1 },
+  filing: { frequencies: ["quarterly", "monthly"], default: "quarterly", defaultAnchorMonth: 1 },
+  bases: [
+    { id: "devengo", label: "Criterio de devengo", sales: "accrual", purchases: "accrual" },
+    { id: "caja", label: "Régimen especial del criterio de caja (RECC)", sales: "cash", purchases: "cash", hint: "Volumen de operaciones hasta 2 millones de euros." },
+  ],
+  taxRates: [
+    rate({ code: "IVA21", name: "IVA repercutido 21%", rateBp: 2100, appliesTo: "sales", category: "standard", componentName: "IVA" }),
+    rate({ code: "IVA10", name: "IVA repercutido 10%", rateBp: 1000, appliesTo: "sales", category: "reduced", componentName: "IVA" }),
+    rate({ code: "IVA4", name: "IVA repercutido 4%", rateBp: 400, appliesTo: "sales", category: "super_reduced", componentName: "IVA" }),
+    nilRate("EXENTO", "Operaciones exentas (art. 20 LIVA)", "exempt", "sales"),
+    nilRate("EXPORT", "Exportaciones", "export", "sales"),
+    nilRate("NOSUJ", "No sujeto", "out_of_scope"),
+    rate({ code: "IVA21-S", name: "IVA soportado 21%", rateBp: 2100, appliesTo: "purchases", category: "standard", componentName: "IVA" }),
+    rate({ code: "IVA10-S", name: "IVA soportado 10%", rateBp: 1000, appliesTo: "purchases", category: "reduced", componentName: "IVA" }),
+    rate({ code: "IVA4-S", name: "IVA soportado 4%", rateBp: 400, appliesTo: "purchases", category: "super_reduced", componentName: "IVA" }),
+    nilRate("EXENTO-S", "Compras sin IVA deducible", "exempt", "purchases"),
+  ],
+  defaultSalesCode: "IVA21",
+  defaultPurchaseCode: "IVA21-S",
+  zeroSalesCode: "EXPORT",
+  exemptSalesCode: "EXENTO",
+  exemptPurchaseCode: "EXENTO-S",
+  separateTaxAccounts: true,
+  chartTerms: {
+    taxOutput: "HP IVA repercutido",
+    taxInput: "HP IVA soportado",
+    taxSettlement: "HP acreedora por IVA",
+    payrollTax: "HP acreedora por retenciones practicadas",
+    retirement: "Seguridad Social a cargo de la empresa",
+    retirementPayable: "Organismos de la Seguridad Social, acreedores",
+    musicLicensing: "Derechos SGAE / AGEDI",
+  },
+  returnForm: {
+    code: "303",
+    name: "Modelo 303 — Autoliquidación de IVA",
+    authority: "Agencia Tributaria",
+    authorityUrl: "https://sede.agenciatributaria.gob.es/Sede/procedimientoini/G414.shtml",
+    boxes: [
+      box("01", "Régimen general 4% — base imponible", (q) => q.netAtRate("sales", 400), { section: "IVA devengado" }),
+      box("03", "Régimen general 4% — cuota", (q) => q.taxAtRate("sales", 400)),
+      box("04", "Régimen general 10% — base imponible", (q) => q.netAtRate("sales", 1000)),
+      box("06", "Régimen general 10% — cuota", (q) => q.taxAtRate("sales", 1000)),
+      box("07", "Régimen general 21% — base imponible", (q) => q.netAtRate("sales", 2100)),
+      box("09", "Régimen general 21% — cuota", (q) => q.taxAtRate("sales", 2100)),
+      box("27", "Total cuota devengada", (q) => q.tax("sales"), { total: true }),
+      box("28", "Operaciones interiores corrientes — base", (q) => q.net("purchases", ["standard", "reduced", "super_reduced"]), { section: "IVA deducible" }),
+      box("29", "Operaciones interiores corrientes — cuota", (q) => q.tax("purchases")),
+      box("45", "Total a deducir", (q) => q.box("29"), { total: true }),
+      box("46", "Resultado régimen general (27 − 45)", (q) => q.box("27") - q.box("45"), { total: true }),
+      box("71", "Resultado de la liquidación", (q) => q.box("46"), { total: true }),
+    ],
+    net: (q) => q.box("71"),
+    dueDate: (periodEnd) => {
+      const { y, m } = parseIso(periodEnd);
+      return m === 12 ? `${y + 1}-01-30` : dayOfMonthAfter(periodEnd, 1, 20);
+    },
+    notes: ["El resumen anual (modelo 390) recoge los mismos importes del ejercicio."],
+  },
+  notes: [
+    "La enseñanza impartida a título particular o por centros autorizados puede estar exenta (art. 20.Uno.9º LIVA). Compruébelo antes de repercutir IVA en las clases.",
+    "Las retenciones de IRPF (modelos 111 y 115) no se preparan aquí.",
+    "Los requisitos de los sistemas informáticos de facturación (VERI*FACTU) aún no están soportados.",
+  ],
+  reviewedAt: "2026-10-01",
+};

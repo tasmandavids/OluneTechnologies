@@ -72,6 +72,7 @@ export const ADMIN_NAV: NavSection[] = [
     items: [
       { href: "/portal/admin/money", labelKey: "nav.admin.money", module: "billing" },
       { href: "/portal/admin/money?tab=products", labelKey: "nav.admin.products", module: "billing" },
+      { href: "/portal/admin/books", labelKey: "nav.admin.books", module: "billing" },
     ],
   },
   {

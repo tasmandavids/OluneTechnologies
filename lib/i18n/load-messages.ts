@@ -20,6 +20,7 @@ const MESSAGE_MODULES = [
   "payments",
   "office",
   "timeclock",
+  "books",
 ] as const;
 
 function deepMerge(

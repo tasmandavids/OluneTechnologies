@@ -24,7 +24,7 @@ function hasEnv(name: string): boolean {
 }
 
 export function isProviderConfigured(provider: IntegrationProvider): boolean {
-  if (provider.auth.kind === "api_key" || provider.auth.kind === "credentials") return true;
+  if (provider.auth.kind === "api_key" || provider.auth.kind === "credentials" || provider.auth.kind === "internal") return true;
   if (provider.auth.kind === "none") return false;
   const required = provider.requiredEnv ?? [];
   if (required.length === 0) return true;
