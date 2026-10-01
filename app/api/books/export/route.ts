@@ -23,7 +23,9 @@ export async function GET(req: NextRequest) {
   const access = await getAdminStudio();
   if (access.error || !access.studioId) return NextResponse.json({ error: "not_authorized" }, { status: 403 });
   const { supabase, studioId } = access;
-  const ctx = await loadBooksContext(supabase, studioId);
+  // Paused books (studio moved to Xero) still export: that's how the history
+  // gets to their accountant.
+  const ctx = await loadBooksContext(supabase, studioId, { includePaused: true });
   if (!ctx) return NextResponse.json({ error: "books_not_set_up" }, { status: 404 });
 
   const q = req.nextUrl.searchParams;

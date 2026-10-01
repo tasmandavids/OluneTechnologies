@@ -142,7 +142,8 @@ export async function revokeXeroConnection(
       /* token may already be invalid */
     }
   }
-  await supabase.from("xero_connections").delete().eq("studio_id", studioId);
+  const { error } = await supabase.from("xero_connections").delete().eq("studio_id", studioId);
+  if (error) throw new Error(error.message);
 }
 
 export { xeroRedirectUri };

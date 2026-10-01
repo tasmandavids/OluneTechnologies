@@ -10,6 +10,7 @@ import { PAGE_SIZE } from "@/lib/pagination";
 import { requirePortalSession } from "@/lib/portal/session";
 import { getTranslations } from "@/lib/i18n/server";
 import { BillingDashboard } from "@/components/admin/billing/BillingDashboard";
+import { resolveAccountingProvider } from "@/lib/accounting/provider";
 import type { LineProductOption } from "@/components/admin/billing/InvoiceLineItemsEditor";
 import { loadStudioProducts } from "@/lib/billing/catalog";
 import { defaultUnitLabel } from "@/lib/billing/pricing";
@@ -80,6 +81,7 @@ export async function InvoicesTab({ initialInvoiceId, page = 1, query = "", stat
     ticketsRes,
     subsRes,
     templatesRes,
+    accounting,
   ] = await Promise.all([
     supabase
       .from("invoices")
@@ -153,6 +155,8 @@ export async function InvoicesTab({ initialInvoiceId, page = 1, query = "", stat
       .select("id, name, description, default_due_days, invoice_template_line_items ( description, quantity, unit_cents, sort_order )")
       .eq("studio_id", studioId)
       .order("name"),
+
+    resolveAccountingProvider(supabase, studioId),
   ]);
 
   if (invoicesRes.error || unpaidRes.error) throw new Error("Unable to load invoices");
@@ -339,6 +343,7 @@ export async function InvoicesTab({ initialInvoiceId, page = 1, query = "", stat
       products={products}
       initialInvoiceId={initialInvoiceId}
       draftCount={historyPage.draftCount}
+      onXero={accounting?.provider === "xero"}
     />
     <PageLinks page={page} total={historyPage.count} baseHref={`/portal/admin/money?${new URLSearchParams({ tab: "invoices", q: query, statuses: selectedStatuses.join(",") })}`} />
     </>

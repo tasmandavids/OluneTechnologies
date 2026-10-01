@@ -46,8 +46,7 @@
         "periods": "日期",
         "review": "确认"
       },
-      "xeroBlocks": "本工作室的账簿在 Xero（{org}）中。一个工作室只能使用一套账簿，请先在「设置 → 连接」中断开 Xero，再切换到 Olune Books。",
-      "openConnections": "打开连接",
+      "xeroBlocks": "该工作室的账簿在 Xero（{org}）中。若要改用 Olune Books，请在 资金 → 会计 中切换，系统会为你断开 Xero。",
       "back": "返回",
       "next": "继续",
       "create": "创建账簿",
@@ -133,7 +132,8 @@
         "rate": "请输入 0 到 100% 之间的税率。",
         "invalid": "表单中有内容不正确，请检查后重试。",
         "xeroConnected": "已连接 Xero。一个工作室只能使用一套账簿，请先断开连接。"
-      }
+      },
+      "openAccounting": "前往 资金 → 会计"
     },
     "dashboard": {
       "title": "账簿",
@@ -594,26 +594,6 @@
       "saving": "正在保存…",
       "save": "保存设置"
     },
-    "bridge": {
-      "eyebrow": "Olune Books",
-      "reconcile": {
-        "title": "在 Olune Books 中对账",
-        "body": "导入银行对账单，将每一行与发票、收款、供应商账单或 Stripe 打款匹配。"
-      },
-      "reports": {
-        "title": "您的账簿在 Olune Books 中",
-        "body": "利润表、资产负债表、纳税申报等都直接来自您的账簿。"
-      },
-      "setup": {
-        "title": "Olune Books 提供银行对账",
-        "body": "还没有连接会计软件？Olune Books 为您提供按所在国家设置的完整账簿、银行对账和纳税申报。"
-      },
-      "openBank": "打开银行对账",
-      "openPl": "利润表",
-      "openBs": "资产负债表",
-      "openTax": "纳税申报",
-      "setUp": "设置 Olune Books"
-    },
     "errors": {
       "invalid": "表单中有内容不正确，请检查后重试。",
       "unexpected": "出了点问题，请重试。",
@@ -640,7 +620,8 @@
       "alreadyLocked": "该期间已结账。",
       "alreadyFiled": "该申报表已提交。",
       "periodNotEnded": "该期间尚未结束。",
-      "taxNumber": "该税号似乎无效。"
+      "taxNumber": "该税号似乎无效。",
+      "xeroConnected": "该工作室的账簿在 Xero 中。请先在 资金 → 会计 中切换。"
     }
   }
 }

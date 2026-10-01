@@ -73,6 +73,11 @@ export const AUDIT_ACTIONS = {
   "books.bill_voided": "high",
   "books.bank_imported": "notable",
   "books.tax_return_filed": "high",
+  //  Pausing stops auto-posting; resuming catches the ledger up, which can
+  //  post a batch of journals at once. Both change where the books are kept.
+  "books.paused": "high",
+  "books.resumed": "high",
+  "accounting.xero_stopped": "high",
 
   // ─── Configuration that changes who can reach what ───────────────────────
   "integration.connected": "high",

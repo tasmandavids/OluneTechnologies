@@ -46,8 +46,7 @@
         "periods": "Date",
         "review": "Riepilogo"
       },
-      "xeroBlocks": "La contabilità di questo studio è in Xero ({org}). Uno studio usa un solo libro contabile: scollega Xero in Impostazioni → Connessioni prima di passare a Olune Books.",
-      "openConnections": "Apri Connessioni",
+      "xeroBlocks": "La contabilità di questo studio è tenuta in Xero ({org}). Per usare Olune Books, cambia in Denaro → Contabilità: Xero verrà scollegato per te.",
       "back": "Indietro",
       "next": "Continua",
       "create": "Crea la mia contabilità",
@@ -133,7 +132,8 @@
         "rate": "Inserisci un'aliquota tra 0 e 100%.",
         "invalid": "Qualcosa nel modulo non va. Controlla e riprova.",
         "xeroConnected": "Xero è collegato. Scollegalo prima: uno studio usa un solo libro contabile."
-      }
+      },
+      "openAccounting": "Vai a Denaro → Contabilità"
     },
     "dashboard": {
       "title": "Contabilità",
@@ -594,26 +594,6 @@
       "saving": "Salvataggio…",
       "save": "Salva impostazioni"
     },
-    "bridge": {
-      "eyebrow": "Olune Books",
-      "reconcile": {
-        "title": "Riconcilia in Olune Books",
-        "body": "Importa gli estratti conto e abbina ogni movimento a una fattura, un incasso, una fattura passiva o un accredito Stripe."
-      },
-      "reports": {
-        "title": "La tua contabilità è in Olune Books",
-        "body": "Conto economico, stato patrimoniale, dichiarazioni e il resto arrivano direttamente dalla tua contabilità."
-      },
-      "setup": {
-        "title": "La riconciliazione bancaria è inclusa in Olune Books",
-        "body": "Nessun software contabile collegato? Olune Books ti offre una contabilità completa, la riconciliazione bancaria e dichiarazioni configurate per il tuo Paese."
-      },
-      "openBank": "Apri riconciliazione",
-      "openPl": "Conto economico",
-      "openBs": "Stato patrimoniale",
-      "openTax": "Dichiarazioni",
-      "setUp": "Configura Olune Books"
-    },
     "errors": {
       "invalid": "Qualcosa nel modulo non va. Controlla e riprova.",
       "unexpected": "Qualcosa è andato storto. Riprova.",
@@ -640,7 +620,8 @@
       "alreadyLocked": "Questo periodo è già bloccato.",
       "alreadyFiled": "Questa dichiarazione è già stata presentata.",
       "periodNotEnded": "Il periodo non è ancora terminato.",
-      "taxNumber": "Questo numero fiscale non sembra valido."
+      "taxNumber": "Questo numero fiscale non sembra valido.",
+      "xeroConnected": "La contabilità di questo studio è tenuta in Xero. Cambia prima in Denaro → Contabilità."
     }
   }
 }

@@ -854,15 +854,10 @@
         "invoices": "Factures",
         "collections": "Recouvrement",
         "plans": "Échéanciers",
-        "ledger": "Grand livre",
-        "reconcile": "Rapprochement",
         "payouts": "Versements",
-        "reports": "Rapports",
-        "products": "Produits"
-      },
-      "comingSoon": {
-        "title": "Bientôt disponible",
-        "body": "Cette partie d'Argent est encore en cours de développement."
+        "products": "Produits",
+        "transactions": "Transactions",
+        "accounting": "Comptabilité"
       },
       "overview": {
         "title": "Aperçu",
@@ -908,7 +903,10 @@
           "draftsTitle": "{count} factures brouillon prêtes à envoyer",
           "draftsDetail": "Pas encore envoyées aux familles",
           "gstTitle": "{amount} de GST perçue ce mois-ci",
-          "gstDetail": "Voir le détail complet dans Rapports"
+          "accountingTitle": "Choisissez où tenir votre comptabilité",
+          "accountingDetail": "Choisissez Xero ou Olune Books pour que factures et paiements arrivent dans vos comptes",
+          "gstDetailXero": "Sur les factures payées dans Olune. Votre déclaration se prépare dans Xero",
+          "gstDetailBooks": "Sur les factures payées dans Olune. Votre déclaration est dans Olune Books"
         },
         "chart": {
           "title": "Revenu mensuel de scolarité",
@@ -937,11 +935,11 @@
       },
       "reports": {
         "title": "Rapports",
-        "subtitle": "Compte de résultat depuis Xero, GST perçue, et qui vous doit encore de l'argent — regroupé par retard.",
+        "subtitle": "Compte de résultat de votre organisation Xero, plus la TVA et les factures impayées d’Olune.",
         "gst": {
           "month": "GST perçue (ce mois-ci)",
           "quarter": "GST perçue (ce trimestre)",
-          "sub": "D'après les factures marquées payées"
+          "sub": "Sur les factures marquées payées dans Olune. La déclaration se prépare dans Xero"
         },
         "aged": {
           "title": "Créances par ancienneté",
@@ -951,19 +949,10 @@
           "d31to60": "31 à 60 jours de retard",
           "d61plus": "61 jours de retard ou plus",
           "count": "{count, plural, one {# facture} other {# factures}}"
-        },
-        "comingSoon": {
-          "programme": "Revenu par programme",
-          "programmeBody": "Bientôt disponible — revenu, effectif et attrition côte à côte pour chaque type de cours.",
-          "export": "Export personnalisé",
-          "exportBody": "Bientôt disponible — toute période, tous comptes, CSV ou PDF."
-        },
-        "manageConnection": "Gérer dans les Paramètres",
-        "connectInSettings": "Connecter Xero dans les Paramètres",
-        "otherLedger": "{provider} est connecté comme grand livre de ce studio. Les rapports lisent toujours depuis Xero — les rapports {provider} sont en cours de développement."
+        }
       },
       "ledger": {
-        "title": "Grand livre",
+        "title": "Transactions",
         "subtitle": "Chaque paiement et remboursement réel enregistré dans Olune, dans l'ordre — pas un registre manuel modifiable.",
         "stats": {
           "net": "Total net",
@@ -983,11 +972,6 @@
           "payment": "Paiement",
           "refund": "Remboursement"
         }
-      },
-      "reconcile": {
-        "title": "Le rapprochement bancaire n'est pas encore disponible",
-        "body": "Le rapprochement ligne par ligne de votre relevé bancaire avec les factures et versements arrive bientôt dans Olune.",
-        "note": "Le statut des factures est déjà synchronisé automatiquement avec Xero — voir Rapports."
       },
       "products": {
         "title": "Produits et tarifs",
@@ -1037,11 +1021,6 @@
           "term": "Trimestre",
           "year": "Année"
         },
-        "ledgers": {
-          "xero": "Xero",
-          "quickbooks": "QuickBooks Online",
-          "myob": "MYOB Business"
-        },
         "sections": {
           "basics": "Informations de base",
           "pricing": "Mode de tarification",
@@ -1074,7 +1053,6 @@
           "accountCode": "Compte de produits",
           "itemCode": "Code article",
           "customCode": "Autre chose…",
-          "otherLedgers": "Des codes différents dans QuickBooks ou MYOB ?",
           "autoApply": "Appliquer automatiquement"
         },
         "hints": {
@@ -1084,7 +1062,7 @@
           "volume": "À partir de cette quantité, l'unité coûte ce prix. La ligne la plus élevée qui correspond l'emporte.",
           "itemCode": "Ne renseignez ceci que si le code existe déjà dans votre système comptable — un code article inconnu fait échouer la synchronisation de toute la facture.",
           "accountingConnected": "Sélectionné depuis votre plan comptable {ledger} en direct.",
-          "accountingOffline": "Connectez un système comptable dans les Paramètres pour choisir dans une liste.",
+          "accountingOffline": "Choisissez Xero ou Olune Books dans Finances → Comptabilité pour les sélectionner dans une liste.",
           "autoApply": "Quand une famille choisit ces cours, ce prix leur est proposé au lieu du prix de chaque cours.",
           "comboSaves": "Fait économiser {amount} à une famille par rapport au paiement de chaque cours.",
           "comboNeverFires": "Ceci coûte autant ou plus que les cours couverts, donc ne s'appliquera jamais. Baissez le prix."
@@ -1176,6 +1154,82 @@
         "save": "Enregistrer la grille tarifaire",
         "saving": "Enregistrement…",
         "saved": "Grille tarifaire enregistrée"
+      },
+      "accounting": {
+        "title": "Comptabilité",
+        "subtitle": "L’endroit où votre studio tient sa comptabilité. Choisissez un système et Olune y envoie automatiquement chaque facture, paiement et remboursement : rien n’est saisi deux fois.",
+        "banner": {
+          "xeroConnected": "Xero est connecté. Les nouvelles factures, paiements et remboursements apparaîtront désormais dans Xero."
+        },
+        "current": "Votre comptabilité est tenue dans",
+        "lastSent": "Dernier envoi vers Xero : {time}",
+        "nothingSentYet": "Rien n’a encore été envoyé vers Xero.",
+        "lastPosted": "Dernière mise à jour : {time}",
+        "nothingPostedYet": "Rien n’a encore été comptabilisé.",
+        "switchLater": "Vous pourrez changer plus tard. Changer de système ne supprime jamais d’écritures, ni d’un côté ni de l’autre.",
+        "books": {
+          "name": "Olune Books",
+          "tag": "Intégré",
+          "chooseIf": "Choisissez-le si vous n’utilisez pas encore de logiciel comptable ou voulez tout au même endroit.",
+          "p1": "Configuré pour votre pays : devise, taux de TVA et plan comptable",
+          "p2": "Factures, paiements par carte, remboursements, ventes boutique et billets se comptabilisent seuls",
+          "p3": "Rapprochement bancaire, factures fournisseurs et déclarations prêtes à déposer",
+          "p4": "Compte de résultat, bilan et les rapports que demande votre comptable",
+          "limits": "Aucun abonnement supplémentaire. Les relevés bancaires s’importent en CSV et vous déposez vous-même la déclaration à partir des chiffres préparés par Books.",
+          "setUp": "Configurer Olune Books",
+          "resume": "Reprendre Olune Books",
+          "pausedNote": "Olune Books était en pause. La reprise le remet à jour : tout ce qui a été facturé pendant la pause est comptabilisé, y compris les factures aussi envoyées vers Xero.",
+          "exportPaused": "Besoin des écritures d’Olune Books en pause pour votre comptable ? Téléchargez l’export du journal :",
+          "open": "Ouvrir Olune Books",
+          "how": "Factures, paiements et remboursements sont comptabilisés automatiquement. Rapprochez votre banque, saisissez vos factures fournisseurs et préparez vos déclarations dans Books.",
+          "links": {
+            "bank": "Rapprochement bancaire",
+            "tax": "Déclarations fiscales",
+            "pl": "Compte de résultat",
+            "bs": "Bilan",
+            "bills": "Factures fournisseurs"
+          }
+        },
+        "xero": {
+          "name": "Xero",
+          "tag": "Se connecte à Xero",
+          "chooseIf": "Choisissez-le si vous ou votre comptable utilisez déjà Xero.",
+          "p1": "Les factures apparaissent dans Xero dès leur création",
+          "p2": "Les paiements par carte et remboursements y sont rattachés",
+          "p3": "Rapprochez, éditez vos rapports et déclarez la TVA dans Xero, comme aujourd’hui",
+          "limits": "Nécessite votre propre abonnement Xero. Factures fournisseurs, rapprochement bancaire et déclarations restent dans Xero.",
+          "connect": "Connecter Xero",
+          "notConfigured": "Xero n’est pas encore disponible sur cette installation d’Olune.",
+          "open": "Ouvrir Xero",
+          "syncError": "Le dernier envoi vers Xero a échoué : {error}",
+          "how": "Olune envoie chaque facture, paiement et remboursement vers Xero. Le rapprochement bancaire, les factures fournisseurs et les déclarations se font dans Xero."
+        },
+        "switch": {
+          "title": "Changer de système comptable",
+          "toBooks": "Passer à Olune Books",
+          "toBooksTitle": "Passer de Xero à Olune Books ?",
+          "toBooksBody": "Olune va déconnecter Xero puis vous mener à la configuration d’Olune Books. Tout ce qui est déjà dans Xero y reste. Désormais, les factures iront uniquement dans Olune Books.",
+          "toBooksConfirm": "Déconnecter Xero et continuer",
+          "disconnectXero": "Déconnecter Xero sans changer",
+          "disconnectXeroTitle": "Déconnecter Xero ?",
+          "disconnectXeroBody": "Les nouvelles factures et paiements ne seront envoyés à aucun système comptable tant que vous n’en aurez pas choisi un. Tout ce qui est déjà dans Xero y reste.",
+          "disconnectXeroConfirm": "Déconnecter Xero",
+          "toXero": "Passer à Xero",
+          "toXeroTitle": "Passer d’Olune Books à Xero ?",
+          "toXeroBody": "Olune Books sera mis en pause (rien n’est supprimé et vous pourrez toujours l’exporter) et vous serez redirigé vers Xero pour le connecter. Seules les factures créées à partir de maintenant sont envoyées vers Xero ; les précédentes ne sont pas copiées.",
+          "toXeroConfirm": "Mettre Books en pause et connecter Xero",
+          "pauseBooks": "Mettre Olune Books en pause sans changer",
+          "pauseBooksTitle": "Mettre Olune Books en pause ?",
+          "pauseBooksBody": "Rien n’est supprimé, mais les nouvelles factures et paiements ne seront pas comptabilisés tant que vous ne l’aurez pas repris ou choisi Xero.",
+          "pauseBooksConfirm": "Mettre Olune Books en pause"
+        },
+        "errors": {
+          "booksChosen": "Ce studio utilise Olune Books. Pour passer à Xero, utilisez « Passer à Xero » ci-dessous.",
+          "xeroNotConfigured": "Xero n’est pas encore disponible sur cette installation d’Olune.",
+          "invalidState": "La connexion à Xero a expiré ou a été interrompue. Réessayez de vous connecter.",
+          "booksNotSetUp": "Olune Books n’est pas encore configuré pour ce studio.",
+          "xeroStillConnected": "Xero est toujours connecté. Déconnectez-le d’abord : un studio tient sa comptabilité à un seul endroit."
+        }
       }
     },
     "accounting": {

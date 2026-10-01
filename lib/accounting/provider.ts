@@ -1,20 +1,41 @@
 import "server-only";
 
 // ============================================================================
-//  Which ledger is this studio's source of truth?
+//  Where does this studio keep its books?
 //
-//  Until now the answer was always Xero, and lib/xero/* was called directly.
-//  QuickBooks and MYOB change that, so the rest of the app should ask here
-//  instead of assuming. Today only Xero reports `syncSupported: true` — the
-//  other two connect and store tokens but have no sync code, and callers must
-//  respect that rather than pretending.
+//  A studio makes ONE accounting choice, recorded in studios.accounting_provider
+//  and made on Money → Accounting:
 //
-//  The intended migration path: as each provider's sync lands, implement it
-//  behind this resolver and flip `syncSupported`. No caller changes.
+//    xero   — Olune pushes invoices, payments and refunds to their Xero org.
+//             Xero is where they reconcile, report and file GST.
+//    olune  — Olune Books keeps the ledger inside Olune (lib/ledger/*).
+//    null   — not chosen yet. Nothing is pushed or posted anywhere.
+//
+//  The choice is the source of truth. Having a Xero token row or a
+//  ledger_settings row is not enough on its own: Books' data survives a switch
+//  to Xero (journals are immutable, filed returns are history), so "Books has
+//  rows" can't mean "Books is on". Everything — Xero pushes, Books
+//  auto-posting, the Money UI — asks here.
+//
+//  The two are mutually exclusive and the server enforces it: the Xero connect
+//  route refuses while Books is chosen, Books setup refuses while Xero is
+//  connected. Switching goes through Money → Accounting, which takes the old
+//  one down before the new one goes up.
 // ============================================================================
 
-import { ACCOUNTING_PROVIDER_IDS, type AccountingProviderId } from "@/lib/integrations/catalog";
 import type { IntegrationsQueryClient } from "@/lib/integrations/state";
+
+export const ACCOUNTING_CHOICES = ["xero", "olune"] as const;
+export type AccountingChoice = (typeof ACCOUNTING_CHOICES)[number];
+
+export function isAccountingChoice(v: unknown): v is AccountingChoice {
+  return (ACCOUNTING_CHOICES as readonly unknown[]).includes(v);
+}
+
+export const ACCOUNTING_NAMES: Record<AccountingChoice, string> = {
+  xero: "Xero",
+  olune: "Olune Books",
+};
 
 type QueryBuilder = {
   select: (cols: string) => {
@@ -22,122 +43,91 @@ type QueryBuilder = {
   };
 };
 
-export type AccountingProviderCapabilities = {
-  id: AccountingProviderId;
-  name: string;
-  /** Does invoice/payment sync actually run for this provider? */
-  syncSupported: boolean;
-  /** Can classes carry a provider account/item code? (Xero-only today.) */
-  lineItemCoding: boolean;
+export type AccountingSetup = {
+  /** What the studio chose. */
+  choice: AccountingChoice | null;
+  /** The studio's Xero org, when a token row exists. */
+  xero: { tenantName: string | null; orgShortCode: string | null; syncError: string | null } | null;
+  /** Olune Books' settings, when Books has ever been set up (kept after a switch). */
+  books: { jurisdiction: string; baseCurrency: string; lastSyncedAt: string | null } | null;
 };
 
-export const ACCOUNTING_CAPABILITIES: Record<
-  AccountingProviderId,
-  AccountingProviderCapabilities
-> = {
-  xero: { id: "xero", name: "Xero", syncSupported: true, lineItemCoding: true },
-  // lineItemCoding is true for all three now: the billing catalogue (0105)
-  // stores account/item codes provider-neutrally, with per-provider overrides
-  // in billing_product_ledger_codes, so a studio can code its products for
-  // QuickBooks or MYOB today. syncSupported stays false — the codes are
-  // captured and ready, but nothing pushes them yet.
-  quickbooks: {
-    id: "quickbooks",
-    name: "QuickBooks Online",
-    syncSupported: false,
-    lineItemCoding: true,
-  },
-  myob: { id: "myob", name: "MYOB Business", syncSupported: false, lineItemCoding: true },
-  // The built-in ledger. "Sync" here means pushing to an external system, which
-  // Books never needs: it reads Olune's own records (lib/ledger/server/sync.ts).
-  olune: { id: "olune", name: "Olune Books", syncSupported: false, lineItemCoding: true },
-};
+/** Everything Money → Accounting needs to explain the studio's position. */
+export async function loadAccountingSetup(
+  supabase: IntegrationsQueryClient,
+  studioId: string,
+): Promise<AccountingSetup> {
+  const first = async (table: string, cols: string, idColumn = "studio_id") => {
+    try {
+      const { data } = await (supabase.from(table) as QueryBuilder).select(cols).eq(idColumn, studioId);
+      return ((data as Record<string, unknown>[] | null) ?? [])[0] ?? null;
+    } catch {
+      return null;
+    }
+  };
+
+  const [studio, xero, books] = await Promise.all([
+    first("studios", "accounting_provider", "id"),
+    first("xero_connections", "tenant_name, org_short_code, sync_error"),
+    first("ledger_settings", "jurisdiction, base_currency, last_synced_at"),
+  ]);
+
+  const pinned = studio?.accounting_provider;
+  // A choice only counts while the system behind it exists — a Xero token row
+  // deleted out from under us reads as "not chosen", so the studio is asked
+  // again instead of being shown a broken Xero page. And belt and braces for a
+  // Xero row that predates the recorded choice (20261001200000 backfilled
+  // these, but a mid-deploy connect could slip by).
+  const choice: AccountingChoice | null =
+    pinned === "xero" ? (xero ? "xero" : null)
+    : pinned === "olune" ? (books ? "olune" : null)
+    : xero ? "xero"
+    : null;
+
+  return {
+    choice,
+    xero: xero
+      ? {
+          tenantName: (xero.tenant_name as string | null) ?? null,
+          orgShortCode: (xero.org_short_code as string | null) ?? null,
+          syncError: (xero.sync_error as string | null) ?? null,
+        }
+      : null,
+    books: books
+      ? {
+          jurisdiction: books.jurisdiction as string,
+          baseCurrency: books.base_currency as string,
+          lastSyncedAt: (books.last_synced_at as string | null) ?? null,
+        }
+      : null,
+  };
+}
 
 export type ActiveAccountingProvider = {
-  provider: AccountingProviderId;
-  capabilities: AccountingProviderCapabilities;
-  /** Studio-facing name of the connected organisation / company file. */
+  provider: AccountingChoice;
+  name: string;
+  /** Studio-facing name of the Xero org, or "NZ · NZD" for Books. */
   accountLabel: string | null;
-  /** True when more than one ledger is connected and one had to be picked. */
-  ambiguous: boolean;
 };
 
-
 /**
- * Resolve the studio's active ledger. Preference order:
- *   1. studios.accounting_provider, when that provider is actually connected
- *   2. Xero, if connected (the historical default)
- *   3. Whichever of QuickBooks/MYOB/Olune Books is connected
- *   4. null — no ledger connected
+ * The studio's working ledger: its choice, and only when that choice is
+ * actually live (Xero still connected / Books set up). Null otherwise.
  */
 export async function resolveAccountingProvider(
   supabase: IntegrationsQueryClient,
   studioId: string,
 ): Promise<ActiveAccountingProvider | null> {
-  const readMany = async (
-    table: string,
-    cols: string,
-    idColumn = "studio_id",
-  ): Promise<Record<string, unknown>[]> => {
-    try {
-      const { data } = await (supabase.from(table) as QueryBuilder)
-        .select(cols)
-        .eq(idColumn, studioId);
-      return (data as Record<string, unknown>[] | null) ?? [];
-    } catch {
-      return [];
-    }
-  };
-
-  const [studioRows, xeroRows, genericRows, booksRows] = await Promise.all([
-    readMany("studios", "accounting_provider", "id"),
-    readMany("xero_connections", "tenant_name"),
-    readMany("studio_integrations", "provider, display_name, status"),
-    readMany("ledger_settings", "jurisdiction, base_currency"),
-  ]);
-
-  const connected = new Map<AccountingProviderId, string | null>();
-  if (booksRows[0]) {
-    connected.set("olune", `${booksRows[0].jurisdiction as string} · ${booksRows[0].base_currency as string}`);
+  const setup = await loadAccountingSetup(supabase, studioId);
+  if (setup.choice === "xero" && setup.xero) {
+    return { provider: "xero", name: ACCOUNTING_NAMES.xero, accountLabel: setup.xero.tenantName };
   }
-  if (xeroRows[0]) {
-    connected.set("xero", (xeroRows[0].tenant_name as string | null) ?? null);
+  if (setup.choice === "olune" && setup.books) {
+    return {
+      provider: "olune",
+      name: ACCOUNTING_NAMES.olune,
+      accountLabel: `${setup.books.jurisdiction} · ${setup.books.baseCurrency}`,
+    };
   }
-  for (const row of genericRows) {
-    const id = row.provider as string;
-    if ((ACCOUNTING_PROVIDER_IDS as readonly string[]).includes(id)) {
-      connected.set(id as AccountingProviderId, (row.display_name as string | null) ?? null);
-    }
-  }
-
-  if (connected.size === 0) return null;
-
-  const pinned = studioRows[0]?.accounting_provider as AccountingProviderId | null | undefined;
-  const chosen: AccountingProviderId =
-    pinned && connected.has(pinned)
-      ? pinned
-      : connected.has("xero")
-        ? "xero"
-        : ([...connected.keys()][0] as AccountingProviderId);
-
-  return {
-    provider: chosen,
-    capabilities: ACCOUNTING_CAPABILITIES[chosen],
-    accountLabel: connected.get(chosen) ?? null,
-    ambiguous: connected.size > 1,
-  };
-}
-
-/**
- * Guard for code paths that push to the ledger. Returns the provider only when
- * sync is genuinely implemented, so a QuickBooks studio silently skips the
- * Xero-shaped push instead of erroring or writing to the wrong place.
- */
-export async function resolveSyncableAccountingProvider(
-  supabase: IntegrationsQueryClient,
-  studioId: string,
-): Promise<ActiveAccountingProvider | null> {
-  const active = await resolveAccountingProvider(supabase, studioId);
-  if (!active?.capabilities.syncSupported) return null;
-  return active;
+  return null;
 }

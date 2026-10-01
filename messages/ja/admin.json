@@ -854,15 +854,10 @@
         "invoices": "請求書",
         "collections": "回収",
         "plans": "プラン",
-        "ledger": "台帳",
-        "reconcile": "照合",
         "payouts": "入金",
-        "reports": "レポート",
-        "products": "商品"
-      },
-      "comingSoon": {
-        "title": "近日公開",
-        "body": "この機能は現在開発中です。"
+        "products": "商品",
+        "transactions": "取引",
+        "accounting": "会計"
       },
       "overview": {
         "title": "概要",
@@ -908,7 +903,10 @@
           "draftsTitle": "送信待ちの下書き請求書{count}件",
           "draftsDetail": "まだご家族に送信されていません",
           "gstTitle": "今月の消費税徴収額 {amount}",
-          "gstDetail": "詳細な内訳はレポートでご確認いただけます"
+          "accountingTitle": "帳簿の管理先を選んでください",
+          "accountingDetail": "請求書と入金を会計に反映させるため、Xero か Olune Books を選んでください",
+          "gstDetailXero": "Olune で支払われた請求書分。申告は Xero で作成します",
+          "gstDetailBooks": "Olune で支払われた請求書分。申告は Olune Books にあります"
         },
         "chart": {
           "title": "月次学費収益",
@@ -937,11 +935,11 @@
       },
       "reports": {
         "title": "レポート",
-        "subtitle": "Xeroからの損益、消費税徴収額、そして期限超過日数別にグループ化した未払い状況をご覧いただけます。",
+        "subtitle": "Xero の損益計算書と、Olune の税額・未払い請求書。",
         "gst": {
           "month": "消費税徴収額（今月）",
           "quarter": "消費税徴収額（今四半期）",
-          "sub": "支払い済みとなった請求書より"
+          "sub": "Olune で支払済みの請求書分。申告は Xero で作成します"
         },
         "aged": {
           "title": "未収金年齢分析",
@@ -951,19 +949,10 @@
           "d31to60": "31〜60日超過",
           "d61plus": "61日以上超過",
           "count": "{count, plural, one {#件の請求書} other {#件の請求書}}"
-        },
-        "comingSoon": {
-          "programme": "プログラム別収益",
-          "programmeBody": "近日公開 — クラス種別ごとの収益、人数、離脱率を並べて表示予定です。",
-          "export": "カスタムエクスポート",
-          "exportBody": "近日公開 — 任意の期間・勘定科目でCSVまたはPDFに出力可能になります。"
-        },
-        "manageConnection": "設定で管理",
-        "connectInSettings": "設定でXeroを接続",
-        "otherLedger": "このスタジオの台帳として{provider}が接続されています。レポートは引き続きXeroのデータを参照します — {provider}向けレポートは開発中です。"
+        }
       },
       "ledger": {
-        "title": "台帳",
+        "title": "取引",
         "subtitle": "Oluneに記録されたすべての実際の支払いと返金を時系列で表示します — 手動編集可能な台帳ではありません。",
         "stats": {
           "net": "純合計",
@@ -983,11 +972,6 @@
           "payment": "支払い",
           "refund": "返金"
         }
-      },
-      "reconcile": {
-        "title": "銀行照合機能は未実装です",
-        "body": "銀行明細と請求書・入金を1件ずつ照合する機能は今後Oluneに追加予定です。",
-        "note": "請求書のステータスはすでにXeroと自動同期しています — 詳細はレポートをご覧ください。"
       },
       "products": {
         "title": "商品と料金",
@@ -1037,11 +1021,6 @@
           "term": "学期",
           "year": "年"
         },
-        "ledgers": {
-          "xero": "Xero",
-          "quickbooks": "QuickBooks Online",
-          "myob": "MYOB Business"
-        },
         "sections": {
           "basics": "基本情報",
           "pricing": "課金方法",
@@ -1074,7 +1053,6 @@
           "accountCode": "収益勘定科目",
           "itemCode": "品目コード",
           "customCode": "その他…",
-          "otherLedgers": "QuickBooksやMYOBで異なるコードを使用しますか？",
           "autoApply": "自動適用する"
         },
         "hints": {
@@ -1084,7 +1062,7 @@
           "volume": "この数量以上から、それぞれこの単価が適用されます。条件に合う中で最も高い行が優先されます。",
           "itemCode": "会計システムにすでに存在するコードの場合のみ設定してください。未知の品目コードがあると請求書全体の同期に失敗します。",
           "accountingConnected": "接続中の{ledger}の勘定科目一覧から選択されます。",
-          "accountingOffline": "リストから選択するには、設定で会計システムを接続してください。",
+          "accountingOffline": "お金 → 会計 で Xero か Olune Books を選ぶと、一覧から選択できます。",
           "autoApply": "ご家族がこれらのクラスを選択すると、個別料金の代わりにこの料金が提示されます。",
           "comboSaves": "各クラスを個別に支払う場合と比べ、{amount}お得です。",
           "comboNeverFires": "これらのクラスの合計と同額かそれ以上のため、このセット料金は適用されません。料金を下げてください。"
@@ -1176,6 +1154,82 @@
         "save": "料金表を保存",
         "saving": "保存中…",
         "saved": "料金表を保存しました"
+      },
+      "accounting": {
+        "title": "会計",
+        "subtitle": "スタジオの帳簿の管理先です。1つ選ぶと、Olune がすべての請求書・入金・返金を自動で送るので、二重入力は不要です。",
+        "banner": {
+          "xeroConnected": "Xero に接続しました。今後の請求書・入金・返金は Xero に表示されます。"
+        },
+        "current": "帳簿の管理先",
+        "lastSent": "Xero への最終送信：{time}",
+        "nothingSentYet": "まだ Xero には何も送信されていません。",
+        "lastPosted": "最終更新：{time}",
+        "nothingPostedYet": "まだ何も記帳されていません。",
+        "switchLater": "後から変更できます。切り替えても、どちらのシステムの記録も削除されません。",
+        "books": {
+          "name": "Olune Books",
+          "tag": "内蔵",
+          "chooseIf": "会計ソフトをまだ使っていない場合や、すべてを1か所にまとめたい場合に。",
+          "p1": "国ごとに設定済み：通貨、税率、勘定科目表",
+          "p2": "請求書、カード決済、返金、ショップとチケットの売上は自動で記帳",
+          "p3": "銀行照合、仕入先の請求書、提出できる税務申告",
+          "p4": "損益計算書、貸借対照表、会計士が求めるレポート",
+          "limits": "追加の契約は不要。銀行明細は CSV で取り込み、申告は Books が用意した数字をもとにご自身で提出します。",
+          "setUp": "Olune Books を設定",
+          "resume": "Olune Books を再開",
+          "pausedNote": "Olune Books は一時停止中でした。再開すると、停止中に発行した請求書（Xero にも送信したものを含む）がすべて記帳されます。",
+          "exportPaused": "一時停止中の Olune Books の記録が会計士に必要ですか？仕訳をエクスポート：",
+          "open": "Olune Books を開く",
+          "how": "請求書・入金・返金は自動で記帳されます。銀行照合、仕入先の請求書、税務申告は Books で行います。",
+          "links": {
+            "bank": "銀行照合",
+            "tax": "税務申告",
+            "pl": "損益計算書",
+            "bs": "貸借対照表",
+            "bills": "仕入先の請求書"
+          }
+        },
+        "xero": {
+          "name": "Xero",
+          "tag": "Xero と連携",
+          "chooseIf": "ご自身や会計士がすでに Xero を使っている場合に。",
+          "p1": "請求書は作成と同時に Xero に表示",
+          "p2": "カード決済と返金はその請求書に記録",
+          "p3": "照合・レポート・税務申告は今まで通り Xero で",
+          "limits": "ご自身の Xero 契約が必要です。仕入先の請求書、銀行照合、税務申告は Xero で行います。",
+          "connect": "Xero に接続",
+          "notConfigured": "この Olune 環境ではまだ Xero を利用できません。",
+          "open": "Xero を開く",
+          "syncError": "Xero への最後の送信に失敗しました：{error}",
+          "how": "Olune はすべての請求書・入金・返金を Xero に送ります。銀行照合、仕入先の請求書、税務申告は Xero で行います。"
+        },
+        "switch": {
+          "title": "会計システムを変更",
+          "toBooks": "Olune Books に切り替え",
+          "toBooksTitle": "Xero から Olune Books に切り替えますか？",
+          "toBooksBody": "Olune は Xero の接続を解除し、Olune Books の設定に移動します。Xero にある記録はそのまま残ります。今後の請求書は Olune Books にのみ送られます。",
+          "toBooksConfirm": "Xero を解除して続行",
+          "disconnectXero": "切り替えずに Xero を解除",
+          "disconnectXeroTitle": "Xero の接続を解除しますか？",
+          "disconnectXeroBody": "会計システムを選び直すまで、新しい請求書と入金はどこにも送られません。Xero にある記録はそのまま残ります。",
+          "disconnectXeroConfirm": "Xero を解除",
+          "toXero": "Xero に切り替え",
+          "toXeroTitle": "Olune Books から Xero に切り替えますか？",
+          "toXeroBody": "Olune Books は一時停止され（削除はされず、エクスポートも可能）、Xero の接続画面に移動します。Xero に送られるのは今後作成する請求書のみで、過去の請求書はコピーされません。",
+          "toXeroConfirm": "Books を停止して Xero に接続",
+          "pauseBooks": "切り替えずに Olune Books を一時停止",
+          "pauseBooksTitle": "Olune Books を一時停止しますか？",
+          "pauseBooksBody": "何も削除されませんが、再開するか Xero を選ぶまで、新しい請求書と入金は記帳されません。",
+          "pauseBooksConfirm": "Olune Books を一時停止"
+        },
+        "errors": {
+          "booksChosen": "このスタジオは Olune Books を使用しています。Xero に移るには、下の「Xero に切り替え」を使ってください。",
+          "xeroNotConfigured": "この Olune 環境ではまだ Xero を利用できません。",
+          "invalidState": "Xero へのサインインが期限切れか中断されました。もう一度接続してください。",
+          "booksNotSetUp": "このスタジオではまだ Olune Books が設定されていません。",
+          "xeroStillConnected": "Xero がまだ接続されています。先に解除してください。帳簿は1か所で管理します。"
+        }
       }
     },
     "accounting": {

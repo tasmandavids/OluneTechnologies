@@ -46,8 +46,7 @@
         "periods": "日付",
         "review": "確認"
       },
-      "xeroBlocks": "このスタジオの帳簿は Xero（{org}）にあります。帳簿は1つだけ使えるため、Olune Books に切り替える前に「設定 → 連携」で Xero の連携を解除してください。",
-      "openConnections": "連携を開く",
+      "xeroBlocks": "このスタジオの帳簿は Xero（{org}）で管理されています。Olune Books を使うには、お金 → 会計 で切り替えてください。Xero の解除も自動で行います。",
       "back": "戻る",
       "next": "次へ",
       "create": "帳簿を作成",
@@ -133,7 +132,8 @@
         "rate": "0〜100% の税率を入力してください。",
         "invalid": "入力内容に誤りがあります。確認してもう一度お試しください。",
         "xeroConnected": "Xero と連携中です。帳簿は1つだけ使えるため、先に連携を解除してください。"
-      }
+      },
+      "openAccounting": "お金 → 会計 へ"
     },
     "dashboard": {
       "title": "帳簿",
@@ -594,26 +594,6 @@
       "saving": "保存中…",
       "save": "設定を保存"
     },
-    "bridge": {
-      "eyebrow": "Olune Books",
-      "reconcile": {
-        "title": "Olune Books で照合",
-        "body": "銀行明細をインポートし、各行を請求書・入金・仕入請求書・Stripe 入金と照合します。"
-      },
-      "reports": {
-        "title": "帳簿は Olune Books にあります",
-        "body": "損益計算書・貸借対照表・税務申告などは帳簿から直接作成されます。"
-      },
-      "setup": {
-        "title": "銀行照合は Olune Books で利用できます",
-        "body": "会計ソフトを連携していませんか？Olune Books なら、国に合わせて設定された帳簿・銀行照合・税務申告をすべて使えます。"
-      },
-      "openBank": "銀行照合を開く",
-      "openPl": "損益計算書",
-      "openBs": "貸借対照表",
-      "openTax": "税務申告",
-      "setUp": "Olune Books をセットアップ"
-    },
     "errors": {
       "invalid": "入力内容に誤りがあります。確認してもう一度お試しください。",
       "unexpected": "問題が発生しました。もう一度お試しください。",
@@ -640,7 +620,8 @@
       "alreadyLocked": "この期間はすでに締め済みです。",
       "alreadyFiled": "この申告はすでに提出済みです。",
       "periodNotEnded": "この期間はまだ終わっていません。",
-      "taxNumber": "税番号が正しくないようです。"
+      "taxNumber": "税番号が正しくないようです。",
+      "xeroConnected": "このスタジオの帳簿は Xero で管理されています。先に お金 → 会計 で切り替えてください。"
     }
   }
 }

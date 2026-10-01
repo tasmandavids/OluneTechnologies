@@ -53,7 +53,15 @@ export async function GET(req: NextRequest) {
   let synced = 0;
   let failed = 0;
   let posted = 0;
-  for (const row of studios ?? []) {
+  // Skip studios whose ledger is paused (they moved to Xero) without a
+  // round-trip each: syncStudioLedger would refuse them anyway.
+  const ids = (studios ?? []).map((r) => r.studio_id as string);
+  const { data: chosen } = ids.length
+    ? await supabase.from("studios").select("id").in("id", ids).eq("accounting_provider", "olune")
+    : { data: [] as { id: string }[] };
+  const active = new Set((chosen ?? []).map((r) => r.id as string));
+
+  for (const row of (studios ?? []).filter((r) => active.has(r.studio_id as string))) {
     // Leave headroom under maxDuration; the rest go first tomorrow.
     if (Date.now() - started > 240_000) break;
     try {

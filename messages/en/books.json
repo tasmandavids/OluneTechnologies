@@ -46,8 +46,7 @@
         "periods": "Dates",
         "review": "Review"
       },
-      "xeroBlocks": "This studio's books are in Xero ({org}). A studio keeps one ledger, so disconnect Xero in Settings → Connections before switching to Olune Books.",
-      "openConnections": "Open Connections",
+      "xeroBlocks": "This studio's books are kept in Xero ({org}). To use Olune Books instead, switch on Money → Accounting; it disconnects Xero for you.",
       "back": "Back",
       "next": "Continue",
       "create": "Create my books",
@@ -133,7 +132,8 @@
         "rate": "Enter a tax rate between 0 and 100%.",
         "invalid": "Something in the form isn't right. Check it and try again.",
         "xeroConnected": "Xero is connected. Disconnect it first: a studio keeps one ledger."
-      }
+      },
+      "openAccounting": "Go to Money → Accounting"
     },
     "dashboard": {
       "title": "Books",
@@ -594,26 +594,6 @@
       "saving": "Saving…",
       "save": "Save settings"
     },
-    "bridge": {
-      "eyebrow": "Olune Books",
-      "reconcile": {
-        "title": "Reconcile in Olune Books",
-        "body": "Import your bank statements and match every line to an invoice, payment, bill or Stripe payout."
-      },
-      "reports": {
-        "title": "Your books are in Olune Books",
-        "body": "Profit and loss, balance sheet, tax returns and the rest come straight from your ledger."
-      },
-      "setup": {
-        "title": "Bank reconciliation comes with Olune Books",
-        "body": "No accounting software connected? Olune Books gives you a full ledger, bank reconciliation and tax returns set up for your country."
-      },
-      "openBank": "Open bank reconciliation",
-      "openPl": "Profit and loss",
-      "openBs": "Balance sheet",
-      "openTax": "Tax returns",
-      "setUp": "Set up Olune Books"
-    },
     "errors": {
       "invalid": "Something in the form isn't right. Check it and try again.",
       "unexpected": "Something went wrong. Try again.",
@@ -640,7 +620,8 @@
       "alreadyLocked": "That period is already locked.",
       "alreadyFiled": "That return has already been filed.",
       "periodNotEnded": "That period hasn't ended yet.",
-      "taxNumber": "That tax number doesn't look valid."
+      "taxNumber": "That tax number doesn't look valid.",
+      "xeroConnected": "This studio's books are kept in Xero. Switch on Money → Accounting first."
     }
   }
 }

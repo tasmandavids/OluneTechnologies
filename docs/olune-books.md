@@ -1,13 +1,42 @@
 # Olune Books — the built-in ledger
 
-Olune Books is the fourth accounting option beside Xero, QuickBooks and MYOB,
-for studios that don't want external accounting software. A studio picks its
-country and gets a working double-entry ledger set up for that country's tax
-system: currency, tax rates, chart of accounts, filing frequency, accounting
-basis and the official tax return form.
+Olune Books is one of the two ways a studio keeps its books — the other is
+Xero. A studio picks its country and gets a working double-entry ledger set up
+for that country's tax system: currency, tax rates, chart of accounts, filing
+frequency, accounting basis and the official tax return form.
 
 Routes: `/portal/admin/books/*` (admin only). Setup: `/portal/admin/books/setup`,
-also reachable from Settings → Connections ("Set up Olune Books").
+reached from Money → Accounting.
+
+## One accounting choice: Xero or Olune Books
+
+`studios.accounting_provider` is the studio's decision — `'xero'`, `'olune'` or
+null (not chosen) — made and managed on **Money → Accounting**
+(`/portal/admin/money?tab=accounting`). It is the source of truth for every
+money path: `lib/accounting/provider.ts` (`loadAccountingSetup`,
+`resolveAccountingProvider`) reads it, and a choice only counts while the
+system behind it exists (Xero still connected / Books set up).
+
+- **Exclusive, enforced on the server.** The Xero connect route and OAuth
+  callback refuse while Books is chosen; Books setup refuses while Xero is
+  connected. Connecting Xero records `'xero'`; finishing Books setup records
+  `'olune'`; disconnecting Xero clears the choice.
+- **Books on = `accounting_provider = 'olune'`.** A `ledger_settings` row alone
+  can mean *paused*. `loadBooksContext` (and so every Books page, action,
+  auto-post and the daily cron) returns null unless Books is chosen; pass
+  `{ includePaused: true }` only to read records back out (the CSV export).
+- **Switching** (Money → Accounting, `app/portal/admin/money/accounting-actions.ts`):
+  Xero → Books disconnects Xero, then runs Books setup (or resumes paused
+  Books). Books → Xero pauses Books, then starts the Xero OAuth. Nothing is
+  deleted either way; history isn't copied between systems. Resuming Books
+  catches it up from its start date, so invoices raised while on Xero are
+  posted too — the resume card says so.
+- **Xero pushes skip quietly** for studios not on Xero (`isXeroSkip` in
+  `lib/xero/sync-sale.ts`): no "Xero sync failed" warning for Books studios.
+- QuickBooks and MYOB are not offered (no sync was ever built); the DB
+  constraint allows only `xero`/`olune` (migration `20261001200000`).
+- Settings → Connections shows a single Accounting card linking to Money →
+  Accounting rather than its own connect buttons.
 
 ## What it does
 

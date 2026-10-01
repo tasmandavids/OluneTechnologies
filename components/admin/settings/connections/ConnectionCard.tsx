@@ -61,7 +61,6 @@ export function ConnectionCard({
   provider,
   state,
   missingEnv,
-  blockedBy,
   busy,
   onConnect,
   onManage,
@@ -70,8 +69,6 @@ export function ConnectionCard({
   provider: IntegrationProvider;
   state: IntegrationState;
   missingEnv: string[];
-  /** Name of the sibling holding this provider's exclusive slot, if any. */
-  blockedBy: string | null;
   busy: boolean;
   onConnect: () => void;
   onManage: () => void;
@@ -134,12 +131,6 @@ export function ConnectionCard({
         <p className="mt-2 text-[11.5px] leading-snug text-muted">
           Not available on this deployment
           {missingEnv.length > 0 && <> — missing {missingEnv.join(", ")}</>}.
-        </p>
-      )}
-
-      {blockedBy && !state.connected && (
-        <p className="mt-2 text-[11.5px] leading-snug text-muted">
-          {blockedBy} is already the studio&apos;s ledger. Disconnect it first.
         </p>
       )}
 
@@ -212,7 +203,7 @@ export function ConnectionCard({
           <button
             type="button"
             onClick={onConnect}
-            disabled={busy || unavailable || Boolean(blockedBy)}
+            disabled={busy || unavailable}
             className="rounded-full px-4 py-1.5 text-[12px] font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-40"
             style={{
               background: "linear-gradient(150deg, var(--tg), var(--brand) 60%, var(--brand-deep))",

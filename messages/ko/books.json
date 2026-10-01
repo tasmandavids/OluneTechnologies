@@ -46,8 +46,7 @@
         "periods": "날짜",
         "review": "확인"
       },
-      "xeroBlocks": "이 스튜디오의 장부는 Xero({org})에 있습니다. 장부는 하나만 사용할 수 있으므로 Olune Books로 전환하기 전에 설정 → 연결에서 Xero 연결을 해제하세요.",
-      "openConnections": "연결 열기",
+      "xeroBlocks": "이 스튜디오의 장부는 Xero({org})에서 관리됩니다. Olune Books를 사용하려면 돈 → 회계에서 전환하세요. Xero 연결은 자동으로 해제됩니다.",
       "back": "뒤로",
       "next": "계속",
       "create": "장부 만들기",
@@ -133,7 +132,8 @@
         "rate": "0~100% 사이의 세율을 입력하세요.",
         "invalid": "입력 내용에 문제가 있습니다. 확인 후 다시 시도하세요.",
         "xeroConnected": "Xero가 연결되어 있습니다. 장부는 하나만 사용할 수 있으니 먼저 연결을 해제하세요."
-      }
+      },
+      "openAccounting": "돈 → 회계로 이동"
     },
     "dashboard": {
       "title": "장부",
@@ -594,26 +594,6 @@
       "saving": "저장 중…",
       "save": "설정 저장"
     },
-    "bridge": {
-      "eyebrow": "Olune Books",
-      "reconcile": {
-        "title": "Olune Books에서 대사하기",
-        "body": "은행 거래내역을 가져와 각 행을 청구서, 입금, 매입 청구서 또는 Stripe 정산금과 대사하세요."
-      },
-      "reports": {
-        "title": "장부는 Olune Books에 있습니다",
-        "body": "손익계산서, 재무상태표, 세금 신고 등이 장부에서 바로 작성됩니다."
-      },
-      "setup": {
-        "title": "은행 대사는 Olune Books에서 사용할 수 있습니다",
-        "body": "연결된 회계 소프트웨어가 없나요? Olune Books는 국가에 맞게 설정된 장부, 은행 대사, 세금 신고를 모두 제공합니다."
-      },
-      "openBank": "은행 대사 열기",
-      "openPl": "손익계산서",
-      "openBs": "재무상태표",
-      "openTax": "세금 신고",
-      "setUp": "Olune Books 설정하기"
-    },
     "errors": {
       "invalid": "입력 내용에 문제가 있습니다. 확인 후 다시 시도하세요.",
       "unexpected": "문제가 발생했습니다. 다시 시도하세요.",
@@ -640,7 +620,8 @@
       "alreadyLocked": "이미 마감된 기간입니다.",
       "alreadyFiled": "이미 제출한 신고서입니다.",
       "periodNotEnded": "아직 끝나지 않은 기간입니다.",
-      "taxNumber": "세금 번호가 올바르지 않은 것 같습니다."
+      "taxNumber": "세금 번호가 올바르지 않은 것 같습니다.",
+      "xeroConnected": "이 스튜디오의 장부는 Xero에서 관리됩니다. 먼저 돈 → 회계에서 전환하세요."
     }
   }
 }

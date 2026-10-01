@@ -46,8 +46,7 @@
         "periods": "Dates",
         "review": "Vérification"
       },
-      "xeroBlocks": "La comptabilité de ce studio est dans Xero ({org}). Un studio n'a qu'un seul grand livre : déconnectez Xero dans Paramètres → Connexions avant de passer à Olune Books.",
-      "openConnections": "Ouvrir Connexions",
+      "xeroBlocks": "La comptabilité de ce studio est tenue dans Xero ({org}). Pour utiliser Olune Books, changez dans Finances → Comptabilité : Xero y sera déconnecté pour vous.",
       "back": "Retour",
       "next": "Continuer",
       "create": "Créer ma comptabilité",
@@ -133,7 +132,8 @@
         "rate": "Saisissez un taux entre 0 et 100 %.",
         "invalid": "Un élément du formulaire est incorrect. Vérifiez et réessayez.",
         "xeroConnected": "Xero est connecté. Déconnectez-le d'abord : un studio n'a qu'un seul grand livre."
-      }
+      },
+      "openAccounting": "Aller à Finances → Comptabilité"
     },
     "dashboard": {
       "title": "Comptabilité",
@@ -594,26 +594,6 @@
       "saving": "Enregistrement…",
       "save": "Enregistrer"
     },
-    "bridge": {
-      "eyebrow": "Olune Books",
-      "reconcile": {
-        "title": "Rapprochez dans Olune Books",
-        "body": "Importez vos relevés bancaires et rapprochez chaque ligne d'une facture, d'un encaissement, d'une facture fournisseur ou d'un virement Stripe."
-      },
-      "reports": {
-        "title": "Votre comptabilité est dans Olune Books",
-        "body": "Compte de résultat, bilan, déclarations de taxe et le reste viennent directement de votre comptabilité."
-      },
-      "setup": {
-        "title": "Le rapprochement bancaire est inclus dans Olune Books",
-        "body": "Pas de logiciel comptable connecté ? Olune Books vous offre une comptabilité complète, le rapprochement bancaire et des déclarations configurées pour votre pays."
-      },
-      "openBank": "Ouvrir le rapprochement",
-      "openPl": "Compte de résultat",
-      "openBs": "Bilan",
-      "openTax": "Déclarations",
-      "setUp": "Configurer Olune Books"
-    },
     "errors": {
       "invalid": "Un élément du formulaire est incorrect. Vérifiez et réessayez.",
       "unexpected": "Une erreur s'est produite. Réessayez.",
@@ -640,7 +620,8 @@
       "alreadyLocked": "Cette période est déjà verrouillée.",
       "alreadyFiled": "Cette déclaration a déjà été déposée.",
       "periodNotEnded": "Cette période n'est pas encore terminée.",
-      "taxNumber": "Ce numéro fiscal ne semble pas valide."
+      "taxNumber": "Ce numéro fiscal ne semble pas valide.",
+      "xeroConnected": "La comptabilité de ce studio est tenue dans Xero. Changez d’abord dans Finances → Comptabilité."
     }
   }
 }
