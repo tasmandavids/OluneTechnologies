@@ -15,6 +15,7 @@
 import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
+import { useNumberFormat } from "@/lib/i18n/format";
 import { PLANS, PLAN_ORDER } from "@/lib/plans/catalog";
 import { PoweredByOlune } from "@/components/brand/PoweredByOlune";
 import { AuroraPage } from "./chrome";
@@ -92,6 +93,7 @@ function spherePoints(n: number): [number, number, number, boolean][] {
 
 export default function LandingPage() {
   const locale = useLocale();
+  const numberFormat = useNumberFormat();
   const T = auroraCopy(locale).hero;
 
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -248,7 +250,7 @@ export default function LandingPage() {
         const t0 = performance.now(), dur = 1600;
         const step = (t: number) => {
           const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 4);
-          el.textContent = pre + Math.round(to * e).toLocaleString("en-NZ");
+          el.textContent = pre + numberFormat.format(Math.round(to * e));
           if (p < 1) counters.push(requestAnimationFrame(step));
         };
         if (!reduced) counters.push(requestAnimationFrame(step));
@@ -261,7 +263,7 @@ export default function LandingPage() {
       window.clearTimeout(countTimer);
       window.removeEventListener("pointermove", onMove);
     };
-  }, []);
+  }, [numberFormat]);
 
   useEffect(() => {
     if (rootRef.current) applyTint(rootRef.current, tint);
@@ -361,7 +363,7 @@ export default function LandingPage() {
                           )}
                           <div style={{ display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: 8, marginTop: 20 }}>
                             <span data-count={s.count} data-prefix={s.prefix} style={{ fontSize: 34, fontWeight: 700, letterSpacing: "-.02em", fontVariantNumeric: "tabular-nums" }}>
-                              {s.prefix}{s.count.toLocaleString("en-NZ")}
+                              {s.prefix}{numberFormat.format(s.count)}
                             </span>
                             {s.trend && <span style={{ ...quietChip, fontSize: 11, padding: "2px 8px" }}>{s.trend}</span>}
                           </div>
