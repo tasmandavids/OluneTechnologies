@@ -10,6 +10,7 @@ import {
 import CheckoutForm from "@/components/payments/CheckoutForm";
 import { PaymentModalBody, PaymentModalShell } from "@/components/payments/PaymentModalShell";
 import { monthlyFromTermFeeCents } from "@/lib/term-payments";
+import { useFormatMoney } from "@/lib/i18n/format";
 
 export type AutoPayItem = {
   studentId: string;
@@ -22,15 +23,13 @@ export type AutoPayItem = {
   cancelAtPeriodEnd: boolean;
 };
 
-const money = (cents: number) =>
-  new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD" }).format(cents / 100);
-
 function itemKey(i: AutoPayItem) {
   return `${i.studentId}:${i.classId}`;
 }
 
 export default function AutoPaySetup({ items }: { items: AutoPayItem[] }) {
   const t = useTranslations("parent.autoPay");
+  const formatMoney = useFormatMoney();
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState<Set<string>>(new Set());
@@ -93,7 +92,7 @@ export default function AutoPaySetup({ items }: { items: AutoPayItem[] }) {
                   <p className="font-semibold text-ink">{item.className}</p>
                   <p className="text-xs text-muted">
                     {item.studentName ?? t("studentFallback")} ·{" "}
-                    {t("pricePerMonth", { price: money(monthlyFromTermFeeCents(item.priceCents)) })}
+                    {t("pricePerMonth", { price: formatMoney(monthlyFromTermFeeCents(item.priceCents)) })}
                   </p>
                 </div>
                 {isActive && !isCancelling && (

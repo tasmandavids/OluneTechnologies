@@ -5,7 +5,8 @@
 
 import { useTranslations } from "next-intl";
 import { TERM_INSTALLMENT_COUNT } from "@/lib/term-payments";
-import { NZD, type EnrollData } from "./types";
+import { useFormatMoney } from "@/lib/i18n/format";
+import type { EnrollData } from "./types";
 
 export function Step4Confirmation({
   enrollData,
@@ -15,6 +16,7 @@ export function Step4Confirmation({
   onClose: () => void;
 }) {
   const t = useTranslations("parent.enroll");
+  const formatMoney = useFormatMoney();
   const dancerName = enrollData.childName ?? t("yourDancer");
   const classes = enrollData.classes;
   const totalBillableCents =
@@ -49,15 +51,15 @@ export function Step4Confirmation({
         {totalBillableCents > 0 && !enrollData.waitlisted && (
           <p className="mt-2 text-xs text-muted">
             {enrollData.paidOnline
-              ? t("paidOnlineHint", { amount: NZD.format(totalBillableCents / 100) })
+              ? t("paidOnlineHint", { amount: formatMoney(totalBillableCents) })
               : enrollData.payMonthly
                 ? t("termPaidHint", {
-                    amount: NZD.format((enrollData.installmentCents ?? 0) / 100),
+                    amount: formatMoney(enrollData.installmentCents ?? 0),
                     count: TERM_INSTALLMENT_COUNT,
                   })
                 : enrollData.payLater
-                ? t("payLaterHint", { amount: NZD.format(totalBillableCents / 100) })
-                : t("invoiceHint", { amount: NZD.format(totalBillableCents / 100) })}
+                ? t("payLaterHint", { amount: formatMoney(totalBillableCents) })
+                : t("invoiceHint", { amount: formatMoney(totalBillableCents) })}
           </p>
         )}
       </div>

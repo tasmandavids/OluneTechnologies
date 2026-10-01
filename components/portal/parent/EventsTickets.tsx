@@ -5,6 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { trackConversion, toTrackedValue } from "@/lib/analytics/track";
 import { CURRENCY } from "@/lib/currency";
+import { useFormatMoney } from "@/lib/i18n/format";
 import CheckoutForm from "@/components/payments/CheckoutForm";
 import { PaymentModalBody, PaymentModalShell } from "@/components/payments/PaymentModalShell";
 
@@ -25,14 +26,10 @@ interface Props {
   events: ParentEvent[];
 }
 
-const NZD = new Intl.NumberFormat("en-NZ", {
-  style: "currency",
-  currency: "NZD",
-});
-
 export default function EventsTickets({ events }: Props) {
   const t = useTranslations("parent.events");
   const locale = useLocale();
+  const formatMoney = useFormatMoney();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
   const [busy, setBusy] = useState(false);
@@ -141,7 +138,7 @@ export default function EventsTickets({ events }: Props) {
                 )}
                 <div className="mt-auto flex items-center justify-between pt-3">
                   <span className="font-black text-brand">
-                    {ev.ticketPrice === 0 ? t("free") : NZD.format(ev.ticketPrice / 100)}
+                    {ev.ticketPrice === 0 ? t("free") : formatMoney(ev.ticketPrice)}
                   </span>
                   {owned ? (
                     <span className="rounded-full bg-[color-mix(in_srgb,#22c55e_18%,transparent)] px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-emerald-600">
@@ -205,13 +202,13 @@ export default function EventsTickets({ events }: Props) {
                   <div className="mb-4 flex items-center justify-between">
                     <span className="text-sm text-muted">{t("ticketCount", { count: qty })}</span>
                     <span className="text-lg font-black text-brand">
-                      {NZD.format((active.ticketPrice * qty) / 100)}
+                      {formatMoney(active.ticketPrice * qty)}
                     </span>
                   </div>
                   <CheckoutForm
                     clientSecret={clientSecret}
                     submitLabel={t("payAmount", {
-                      amount: NZD.format((active.ticketPrice * qty) / 100),
+                      amount: formatMoney(active.ticketPrice * qty),
                     })}
                     onSuccess={() => {
                       setClientSecret(null);
@@ -254,7 +251,7 @@ export default function EventsTickets({ events }: Props) {
                     <span className="text-lg font-black text-brand">
                       {active.ticketPrice === 0
                         ? t("free")
-                        : NZD.format((active.ticketPrice * qty) / 100)}
+                        : formatMoney(active.ticketPrice * qty)}
                     </span>
                   </div>
 
