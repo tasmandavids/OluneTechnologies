@@ -28,7 +28,7 @@ export type DomainActionResult<T = null> =
   | { ok: true; data: T }
   | { ok: false; error: string };
 
-const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
+const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.co.nz";
 
 async function getAdminStudioId(): Promise<{ studioId: string } | { error: string }> {
   const ctx = await getAdminStudioAccess();
