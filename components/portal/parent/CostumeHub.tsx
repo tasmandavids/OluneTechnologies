@@ -67,12 +67,13 @@ export function CostumeHub({
 }: {
   costumes: Costume[];
   recitals: RecitalInfo[];
-  onUpdateSize: (costumeId: string, sizeLabel: string, sizeNotes: string) => Promise<void>;
+  onUpdateSize: (costumeId: string, sizeLabel: string, sizeNotes: string) => Promise<{ ok: true } | { ok: false; error: string }>;
 }) {
   const locale = useLocale();
   const t = useTranslations("parent.costumes");
   const NZD = useNumberFormat({ style: "currency", currency: "NZD", maximumFractionDigits: 2 });
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [sizeLabel, setSizeLabel] = useState("");
   const [sizeNotes, setSizeNotes] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -86,8 +87,15 @@ export function CostumeHub({
   }
 
   function handleSave(costumeId: string) {
+    setError(null);
     startTransition(async () => {
-      await onUpdateSize(costumeId, sizeLabel, sizeNotes);
+      // Closing the editor was unconditional, so a rejected update left the
+      // parent believing their size had been recorded.
+      const res = await onUpdateSize(costumeId, sizeLabel, sizeNotes);
+      if (!res.ok) {
+        setError(res.error);
+        return;
+      }
       setEditingId(null);
     });
   }
@@ -97,6 +105,11 @@ export function CostumeHub({
       <div>
         <h1 className="text-2xl font-black tracking-tight text-ink">{t("title")}</h1>
         <p className="text-sm text-muted">{t("subtitle")}</p>
+        {error && (
+          <p className="mt-2 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600" role="alert">
+            {error}
+          </p>
+        )}
       </div>
 
       {/* Urgent: sizes needed */}

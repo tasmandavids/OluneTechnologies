@@ -94,7 +94,10 @@
       "pickFutureDate": "Pick a date in the future.",
       "classNotFound": "Class not found.",
       "classNoRecurringFee": "Class has no recurring fee.",
-      "autoPayAlreadySetUp": "This dancer already has auto-pay set up for this programme."
+      "autoPayAlreadySetUp": "This dancer already has auto-pay set up for this programme.",
+      "couldNotSaveAbsence": "We couldn’t save that absence. Please try again.",
+      "couldNotMarkRead": "We couldn’t update that notification. Please try again.",
+      "couldNotSaveCostumeSize": "We couldn’t save that size. Please try again."
     },
     "installment": {
       "invalid": "Enter a valid plan and positive payment amount.",

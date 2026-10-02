@@ -94,7 +94,10 @@
       "pickFutureDate": "请选择一个将来的日期。",
       "classNotFound": "未找到该课程。",
       "classNoRecurringFee": "该课程没有周期性费用。",
-      "autoPayAlreadySetUp": "该学员已为此项目设置了自动付款。"
+      "autoPayAlreadySetUp": "该学员已为此项目设置了自动付款。",
+      "couldNotSaveAbsence": "未能保存该缺课记录，请重试。",
+      "couldNotMarkRead": "未能更新该通知，请重试。",
+      "couldNotSaveCostumeSize": "未能保存该尺码，请重试。"
     },
     "installment": {
       "invalid": "请输入有效的付款计划和大于零的付款金额。",

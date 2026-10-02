@@ -174,7 +174,7 @@ if (process.argv.includes("--json")) {
   const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 1000);
   // 30 → 25 (2026-10-01): parent shopping, events, autopay, balances and
   // enrolment now format currency using the signed-in reader's locale.
-  const MAX_LOCALE_SITES = Number(process.env.I18N_MAX_LOCALE_SITES ?? 25);
+  const MAX_LOCALE_SITES = Number(process.env.I18N_MAX_LOCALE_SITES ?? 24);
 
   let failed = false;
   if (findings.length > MAX_STRINGS) {

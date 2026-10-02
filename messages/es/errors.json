@@ -94,7 +94,10 @@
       "pickFutureDate": "Elige una fecha futura.",
       "classNotFound": "Clase no encontrada.",
       "classNoRecurringFee": "La clase no tiene una cuota recurrente.",
-      "autoPayAlreadySetUp": "Este bailarín ya tiene el pago automático configurado para este programa."
+      "autoPayAlreadySetUp": "Este bailarín ya tiene el pago automático configurado para este programa.",
+      "couldNotSaveAbsence": "No hemos podido guardar esa ausencia. Inténtalo de nuevo.",
+      "couldNotMarkRead": "No hemos podido actualizar esa notificación. Inténtalo de nuevo.",
+      "couldNotSaveCostumeSize": "No hemos podido guardar esa talla. Inténtalo de nuevo."
     },
     "installment": {
       "invalid": "Introduce un plan válido y un importe de pago positivo.",

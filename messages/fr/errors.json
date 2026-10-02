@@ -94,7 +94,10 @@
       "pickFutureDate": "Choisissez une date future.",
       "classNotFound": "Cours introuvable.",
       "classNoRecurringFee": "Ce cours n'a pas de tarif récurrent.",
-      "autoPayAlreadySetUp": "Ce danseur a déjà le prélèvement automatique configuré pour ce programme."
+      "autoPayAlreadySetUp": "Ce danseur a déjà le prélèvement automatique configuré pour ce programme.",
+      "couldNotSaveAbsence": "Nous n'avons pas pu enregistrer cette absence. Veuillez réessayer.",
+      "couldNotMarkRead": "Nous n'avons pas pu mettre à jour cette notification. Veuillez réessayer.",
+      "couldNotSaveCostumeSize": "Nous n'avons pas pu enregistrer cette taille. Veuillez réessayer."
     },
     "installment": {
       "invalid": "Indiquez un échéancier valide et un montant de paiement positif.",

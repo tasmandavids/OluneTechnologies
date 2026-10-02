@@ -43,7 +43,7 @@ export function AbsenceManager({
     absenceDate: string;
     reason: string;
     notes: string;
-  }) => Promise<void>;
+  }) => Promise<{ ok: true } | { ok: false; error: string }>;
 }) {
   const t = useTranslations("parent.absences");
   const dayNames = useFullDayNames();
@@ -56,14 +56,22 @@ export function AbsenceManager({
   const [reason, setReason] = useState("sick");
   const [notes, setNotes] = useState("");
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   const child = dancers.find((c) => c.studentId === selectedChild);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedClass || !absenceDate) return;
+    setError(null);
     startTransition(async () => {
-      await onReport({ studentId: selectedChild, classId: selectedClass, absenceDate, reason, notes });
+      // Only dismiss the form once the insert actually landed. This used to
+      // close and clear unconditionally, so a failure looked like a success.
+      const res = await onReport({ studentId: selectedChild, classId: selectedClass, absenceDate, reason, notes });
+      if (!res.ok) {
+        setError(res.error);
+        return;
+      }
       setShowForm(false);
       setNotes("");
     });
@@ -135,6 +143,11 @@ export function AbsenceManager({
               className="w-full max-w-md rounded-2xl bg-canvas p-6 shadow-2xl"
             >
               <h2 className="mb-4 text-lg font-black text-ink">{t("form.title")}</h2>
+              {error && (
+                <p className="mb-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600" role="alert">
+                  {error}
+                </p>
+              )}
               <form onSubmit={handleSubmit} className="space-y-4">
                 {dancers.length > 1 && (
                   <div>

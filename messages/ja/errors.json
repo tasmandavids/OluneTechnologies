@@ -94,7 +94,10 @@
       "pickFutureDate": "今日より後の日付を選んでください。",
       "classNotFound": "クラスが見つかりません。",
       "classNoRecurringFee": "このクラスには継続料金が設定されていません。",
-      "autoPayAlreadySetUp": "この生徒にはこのプログラムの自動支払いが既に設定されています。"
+      "autoPayAlreadySetUp": "この生徒にはこのプログラムの自動支払いが既に設定されています。",
+      "couldNotSaveAbsence": "欠席を保存できませんでした。もう一度お試しください。",
+      "couldNotMarkRead": "お知らせを更新できませんでした。もう一度お試しください。",
+      "couldNotSaveCostumeSize": "サイズを保存できませんでした。もう一度お試しください。"
     },
     "installment": {
       "invalid": "有効なプランと正の支払金額を入力してください。",
