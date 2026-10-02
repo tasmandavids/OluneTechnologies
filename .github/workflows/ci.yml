@@ -74,8 +74,14 @@ jobs:
       # Fails the build on a known-vulnerable *production* dependency. Dev-only
       # advisories (eslint toolchain and friends) are deliberately excluded —
       # they never ship to a user.
+      #
+      # Wrapped rather than calling `npm audit` directly so that an advisory
+      # with no upstream fix can be reviewed and recorded instead of either
+      # blocking every branch forever or being silenced by lowering
+      # --audit-level for everything. Exceptions live in scripts/check-audit.mjs
+      # with a reason and an expiry date, and expire loudly.
       - name: Audit production dependencies
-        run: npm audit --omit=dev --audit-level=high
+        run: npm run check:audit
 
   # Every merge to main: apply pending migrations.
   #
