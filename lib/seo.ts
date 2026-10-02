@@ -7,7 +7,7 @@
 import { canonicalAppUrl } from "@/lib/app-url";
 import { CURRENCY_CODE } from "@/lib/currency";
 
-const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
+const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.co.nz";
 
 /**
  * The origin Olune-brand pages actually serve a 200 on — the one URL Google

@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { DomainSetupWizard } from "@/components/admin/domain/DomainSetupWizard";
 import { getTranslations } from "@/lib/i18n/server";
 
-const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
+const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.co.nz";
 
 export default async function DomainSetupPage() {
   const supabase = await createClient();

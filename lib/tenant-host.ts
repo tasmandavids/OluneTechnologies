@@ -4,7 +4,7 @@
 //  lib/tenant.ts.
 // ============================================================================
 
-const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
+const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.co.nz";
 
 /** Extract the studio slug from a host, or null if this is a custom/root domain. */
 export function slugFromHost(host: string | null): string | null {

@@ -18,10 +18,17 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { findStudios } from "@/lib/tenant";
+import { checkRateLimit, clientIpKey } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  // Public and unauthenticated, so cap how fast one address can walk the
+  // studio list. Generous: a person typing a name fires a request per keystroke.
+  if (!(await checkRateLimit(clientIpKey("studios-lookup", req.headers), { limit: 60, windowMs: 60_000 }))) {
+    return new NextResponse(null, { status: 429 });
+  }
+
   const studios = await findStudios(req.nextUrl.searchParams.get("q"));
 
   return NextResponse.json(
