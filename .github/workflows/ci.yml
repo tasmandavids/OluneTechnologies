@@ -28,6 +28,19 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      # Rebuild the schema from migrations and exercise real Postgres RLS before
+      # this required quality check can pass or production migrations can run.
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
+        with:
+          version: 2.107.0
+
+      - name: Start disposable database
+        run: supabase start --exclude edge-runtime,imgproxy,logflare,mailpit,postgres-meta,realtime,storage-api,studio,supavisor,vector --yes
+
+      - name: Test tenant isolation
+        run: npm run test:rls
+
       - name: Typecheck
         run: npm run typecheck
 

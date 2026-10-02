@@ -17,8 +17,8 @@ olune/
 ├─ lib/                              branding, tenant, stripe, site blocks
 ├─ supabase/
 │  ├─ config.toml                    CLI + GitHub integration config
-│  ├─ migrations/0001–0056.sql       schema (applied via GitHub or db push)
-│  └─ seed.sql                       optional sample data (local reset only)
+│  ├─ migrations/                   schema history (applied via GitHub or db push)
+│  └─ seed.sql                       manual sample-data template
 └─ tests/                            vitest unit + integration tests
 ```
 
@@ -146,10 +146,13 @@ GitHub Actions runs on every PR and push to `main` (see
 `.github/workflows/ci.yml`):
 
 ```bash
-npm test        # unit tests (131+)
+npm test        # unit and focused database tests
 npm run typecheck
 npm run lint
 ```
+
+CI also rebuilds a disposable Supabase database and runs the cross-studio RLS
+suite. See [authenticated release tests](docs/E2E_TESTING.md) to run it locally.
 
 Local integration tests need a live Supabase project:
 

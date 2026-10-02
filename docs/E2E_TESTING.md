@@ -43,6 +43,27 @@ npm run test:e2e
 ```
 
 The next expansion is mutation coverage for registration, onboarding, enrolment,
-attendance and payment recording. That requires a confirmed non-production Supabase
-project plus deterministic seed/reset automation; do not point those future tests at
-the currently ambiguous production/staging project.
+attendance and payment recording. That requires a separate non-production Supabase
+project plus deterministic seed/reset automation. Project `wnoxcwihrzbxvogvmhqv`
+is production and must never be the target of mutation tests.
+
+## Database tenant-isolation gate
+
+CI starts a disposable local Supabase database, replays all migrations, and runs
+`supabase/tests/tenant_isolation.sql` before it can apply migrations to production.
+The suite exercises live Postgres RLS with two studios, separate families, a
+cross-studio membership, stale token claims, and revoked access. Its fixtures
+and write attempts run in a rolled-back transaction.
+
+To run the same check locally with Docker available:
+
+```bash
+npx supabase start --exclude edge-runtime,imgproxy,logflare,mailpit,postgres-meta,realtime,storage-api,studio,supavisor,vector --yes
+npm run test:rls
+npx supabase stop --no-backup
+```
+
+`supabase/seed.sql` remains a manual sample-data template with placeholder IDs;
+automatic seeding is disabled so a new local database can start cleanly.
+If another local Supabase project already uses ports 54321–54322, assign unused
+ports in your local `supabase/config.toml` before starting this test database.

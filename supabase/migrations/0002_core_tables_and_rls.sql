@@ -37,6 +37,9 @@ create table if not exists public.profiles (
   phone      text,
   created_at timestamptz not null default now()
 );
+-- 0001 may already have created profiles without email. CREATE TABLE IF NOT
+-- EXISTS leaves that older shape untouched on a fresh migration replay.
+alter table public.profiles add column if not exists email text;
 create index if not exists profiles_studio_idx on public.profiles(studio_id);
 
 -- ============================================================================

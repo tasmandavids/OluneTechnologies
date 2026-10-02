@@ -19,7 +19,8 @@ major_version = 17
 enabled = true
 
 [db.seed]
-enabled = true
+# seed.sql is a manual template with placeholder studio/user IDs.
+enabled = false
 sql_paths = ["./seed.sql"]
 
 # Production remote — used by GitHub integration when merging to main.
