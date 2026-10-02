@@ -6,7 +6,7 @@ export type InstructorProfileData = {
   headline: string | null;
   bio: string | null;
   disciplines: string[];
-  syllabusСerts: string[];
+  syllabusCerts: string[];
   trainingInstitutions: string[];
   ageGroups: string[];
   engagementTypes: string[];
@@ -51,7 +51,7 @@ export default async function InstructorProfilePage() {
     headline:             profile?.headline ?? null,
     bio:                  profile?.bio ?? null,
     disciplines:          (profile?.disciplines as string[] | null) ?? [],
-    syllabusСerts:        (profile?.syllabus_certs as string[] | null) ?? [],
+    syllabusCerts:        (profile?.syllabus_certs as string[] | null) ?? [],
     trainingInstitutions: (profile?.training_institutions as string[] | null) ?? [],
     ageGroups:            (profile?.age_groups as string[] | null) ?? [],
     engagementTypes:      (profile?.engagement_types as string[] | null) ?? [],

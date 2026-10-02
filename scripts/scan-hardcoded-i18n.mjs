@@ -66,8 +66,13 @@ for (const dir of SCAN_DIRS) {
       if (/^\s*(\/\/|\*|\/\*)/.test(line)) return; // comments
 
       if (isTsx) {
-        // JSX text nodes: >text< on one line
+        // JSX text nodes: >text< on one line.
+        //
+        // The `>` of an arrow function makes `=> Promise<void>` look like a text
+        // node holding "Promise", so skip a match whose `>` is the tail of `=>`.
+        // Without this the sweep counted 15 generic type parameters as copy.
         for (const m of line.matchAll(/>([^<>{}\n]+)</g)) {
+          if (m.index > 0 && line[m.index - 1] === "=") continue;
           if (isProse(m[1])) findings.push({ file: rel, line: n, kind: "jsx-text", text: m[1].trim() });
         }
         // User-facing attributes with literal values
@@ -81,6 +86,17 @@ for (const dir of SCAN_DIRS) {
         // .ts action/route files: thrown or returned user-facing messages
         for (const m of line.matchAll(/(?:Error\(|error:\s*|message:\s*|toast\.\w+\()\s*"([^"]+)"/g)) {
           if (isProse(m[1])) findings.push({ file: rel, line: n, kind: "error-msg", text: m[1] });
+        }
+        // `error: error ?? "Unknown error"` — the fallback arm of a nullish
+        // coalesce. The pattern above cannot see it, because `error:` is not
+        // adjacent to the literal, and it is how ~260 untranslated error
+        // strings stayed invisible to this sweep. Restricted to lines that
+        // mention error/message so that data defaults (`?? "month"`,
+        // `?? "student"`, `?? "dance"`) are not counted as copy.
+        if (/error|message/i.test(line)) {
+          for (const m of line.matchAll(/\?\?\s*"([^"]+)"/g)) {
+            if (isProse(m[1])) findings.push({ file: rel, line: n, kind: "error-fallback", text: m[1] });
+          }
         }
       }
     });
@@ -103,13 +119,21 @@ const areas = Object.entries(byArea).sort((a, b) => b[1].length - a[1].length);
 //  untranslated *number or date*, so a Russian reader gets Latin grouping on
 //  every price. `en-CA` is exempt — that is the ISO YYYY-MM-DD idiom used for
 //  date keys in lib/date/, not display formatting.
+//
+//  Counts three shapes, because the first one on its own missed real cases:
+//    1. an explicit wrong locale   toLocaleDateString("en-NZ", …)
+//    2. no locale at all           toLocaleDateString()
+//    3. an explicit opt-out        toLocaleDateString(undefined, …)
+//  (2) and (3) fall back to the runtime's locale — the server's on an RSC, the
+//  reader's OS on a client component — neither of which is the app locale the
+//  rest of the page is rendered in.
 
 import { execSync } from "node:child_process";
 
 function hardcodedLocaleCallSites() {
   try {
     const out = execSync(
-      `grep -rn 'toLocaleDateString("en-\\|toLocaleTimeString("en-\\|toLocaleString("en-\\|NumberFormat("en-\\|DateTimeFormat("en-' app components lib --include=*.ts --include=*.tsx || true`,
+      `grep -rnE 'toLocale(Date|Time)?String\\("en-|(Number|DateTime)Format\\("en-|toLocale(Date|Time)?String\\(\\)|toLocale(Date|Time)?String\\(undefined|(Number|DateTime)Format\\(undefined' app components lib --include=*.ts --include=*.tsx || true`,
       { encoding: "utf8" },
     );
     return out.split("\n").filter((l) => l.trim() && !l.includes("en-CA"));
@@ -132,6 +156,11 @@ if (process.argv.includes("--json")) {
   // Ratchet: these two numbers may fall, never rise. Lower them as areas are
   // migrated — that is the point. Raising one needs a reason in the diff.
   //
+  // The string budget rose once, 770 -> 1000, when `error-fallback` detection
+  // landed: the sweep had never been able to see `error: error ?? "Unknown
+  // error"`, so ~260 untranslated strings were outside the count rather than
+  // inside it. Widening what is measured is not a regression in the code.
+  //
   // 874 → 881 (2026-09-03): /api/webhooks/stripe-v2 and
   // /api/cron/sync-connect-accounts added 7 JSON error bodies of the same kind
   // the existing Stripe webhook routes already contribute ("Missing signature",
@@ -142,10 +171,10 @@ if (process.argv.includes("--json")) {
   // total: app/api/stripe/connect/route.ts passes its messages through a
   // redirect query param that the Connections page renders, so some route
   // literals genuinely are user-facing and must keep being counted.
-  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 881);
+  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 1000);
   // 30 → 25 (2026-10-01): parent shopping, events, autopay, balances and
   // enrolment now format currency using the signed-in reader's locale.
-  const MAX_LOCALE_SITES = Number(process.env.I18N_MAX_LOCALE_SITES ?? 25);
+  const MAX_LOCALE_SITES = Number(process.env.I18N_MAX_LOCALE_SITES ?? 24);
 
   let failed = false;
   if (findings.length > MAX_STRINGS) {

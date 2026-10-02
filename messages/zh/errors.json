@@ -82,7 +82,22 @@
       "invalidTemplateDetails": "模板信息无效。",
       "templateNotFound": "未找到模板。",
       "onlyDraftsCanBeSent": "只有草稿状态的账单才能以此方式发送。",
-      "noDraftInvoices": "没有可发送的草稿账单。"
+      "noDraftInvoices": "没有可发送的草稿账单。",
+      "tooManyInviteAttempts": "邀请尝试次数过多，请稍后再试。",
+      "childrenNeedStudioConfig": "添加孩子需要先完成舞蹈室配置，请联系客服。",
+      "ownEmailAddress": "这是你自己的邮箱地址。",
+      "addDancerBeforeCoParent": "请先为家庭添加学员，再邀请共同家长。",
+      "coParentNeedsStudioConfig": "邀请共同家长需要先完成舞蹈室配置，请联系客服。",
+      "emailBelongsToOtherAccountType": "该邮箱已属于其他类型的账号。",
+      "fillEveryField": "请填写所有字段。",
+      "endTimeAfterStart": "结束时间必须晚于开始时间。",
+      "pickFutureDate": "请选择一个将来的日期。",
+      "classNotFound": "未找到该课程。",
+      "classNoRecurringFee": "该课程没有周期性费用。",
+      "autoPayAlreadySetUp": "该学员已为此项目设置了自动付款。",
+      "couldNotSaveAbsence": "未能保存该缺课记录，请重试。",
+      "couldNotMarkRead": "未能更新该通知，请重试。",
+      "couldNotSaveCostumeSize": "未能保存该尺码，请重试。"
     },
     "installment": {
       "invalid": "请输入有效的付款计划和大于零的付款金额。",

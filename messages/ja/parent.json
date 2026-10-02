@@ -62,7 +62,8 @@
         "draft": "下書き",
         "void": "無効"
       },
-      "viewSchedule": "週間スケジュールを見る"
+      "viewSchedule": "週間スケジュールを見る",
+      "noClassesThisWeek": "今週のレッスンはありません。"
     },
     "shop": {
       "title": "スタジオショップ",
@@ -392,6 +393,84 @@
       "family": "マイファミリー",
       "studio": "スタジオ全体",
       "bookPrivateLesson": "個人レッスンを予約"
+    },
+    "absences": {
+      "title": "欠席",
+      "subtitle": "休んだレッスンを連絡します。",
+      "reportAbsence": "欠席を連絡",
+      "reportedHeading": "連絡済みの欠席",
+      "empty": "連絡済みの欠席はまだありません。",
+      "statusReported": "連絡済み",
+      "unnamedDancer": "名前未設定",
+      "reasons": {
+        "sick": "体調不良",
+        "holiday": "旅行・休暇",
+        "other": "その他"
+      },
+      "form": {
+        "title": "欠席を連絡する",
+        "dancer": "生徒",
+        "class": "クラス",
+        "selectClass": "クラスを選択…",
+        "date": "欠席する日",
+        "reason": "理由",
+        "notes": "備考（任意）",
+        "notesPlaceholder": "スタジオへの連絡事項があればご記入ください…",
+        "cancel": "キャンセル",
+        "submit": "欠席を連絡",
+        "submitting": "送信中…"
+      }
+    },
+    "privateLessons": {
+      "title": "プライベートレッスン",
+      "subtitle": "講師との個人レッスンをリクエストします。講師が承認すると、スタジオから請求書が届きます。",
+      "noDancers": "アカウントに生徒が登録されていません。スタジオにご連絡ください。",
+      "noTeachers": "現在プライベートレッスンに対応できる講師がいません。",
+      "requestHeading": "レッスンをリクエスト",
+      "sent": "リクエストを送信しました。講師からの返答があればお知らせします。",
+      "teacher": "講師",
+      "teacherFallback": "講師",
+      "dancer": "生徒",
+      "dancerFallback": "生徒",
+      "availability": "{name} の空き状況",
+      "thisTeacher": "この講師",
+      "noWindows": "公開されている時間帯はありませんが、希望の時間をリクエストできます。",
+      "date": "日付",
+      "from": "開始",
+      "to": "終了",
+      "location": "場所（任意）",
+      "locationPlaceholder": "例: スタジオ2、または Zoom",
+      "note": "講師へのメッセージ（任意）",
+      "notePlaceholder": "例: 発表会のソロに向けた練習",
+      "send": "リクエストを送信",
+      "sending": "送信中…",
+      "myRequests": "自分のリクエスト",
+      "noRequests": "リクエストはまだありません。",
+      "bookingLine": "{student}（講師: {teacher}）",
+      "teacherLower": "講師",
+      "declinedReason": "理由: {note}",
+      "statuses": {
+        "requested": "承認待ち",
+        "accepted": "確定",
+        "declined": "見送り",
+        "cancelled": "キャンセル"
+      },
+      "cancelRequest": "リクエストを取り消す"
+    },
+    "costumes": {
+      "title": "衣装と発表会",
+      "subtitle": "お子さまの衣装、フィッティング日、発表会の情報をまとめて確認できます。",
+      "returnRequired": "返却が必要",
+      "size": "サイズ",
+      "customSize": "サイズを直接入力…",
+      "notes": "備考（任意）",
+      "notesPlaceholder": "例: S と M の間、細身"
+    },
+    "notifications": {
+      "title": "お知らせ",
+      "unread": "未読 {count} 件",
+      "allCaughtUp": "すべて確認済みです",
+      "markAsRead": "既読にする"
     }
   }
 }

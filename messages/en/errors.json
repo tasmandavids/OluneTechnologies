@@ -82,7 +82,22 @@
       "invalidTemplateDetails": "Invalid template details.",
       "templateNotFound": "Template not found.",
       "onlyDraftsCanBeSent": "Only draft invoices can be sent this way.",
-      "noDraftInvoices": "No draft invoices to send."
+      "noDraftInvoices": "No draft invoices to send.",
+      "tooManyInviteAttempts": "Too many invite attempts. Please try again later.",
+      "childrenNeedStudioConfig": "Adding children requires studio configuration. Contact support.",
+      "ownEmailAddress": "That’s your own email address.",
+      "addDancerBeforeCoParent": "Add a dancer to your family before inviting a co-parent.",
+      "coParentNeedsStudioConfig": "Inviting a co-parent requires studio configuration. Contact support.",
+      "emailBelongsToOtherAccountType": "That email already belongs to a different type of account.",
+      "fillEveryField": "Please fill in every field.",
+      "endTimeAfterStart": "End time must be after the start time.",
+      "pickFutureDate": "Pick a date in the future.",
+      "classNotFound": "Class not found.",
+      "classNoRecurringFee": "Class has no recurring fee.",
+      "autoPayAlreadySetUp": "This dancer already has auto-pay set up for this programme.",
+      "couldNotSaveAbsence": "We couldn’t save that absence. Please try again.",
+      "couldNotMarkRead": "We couldn’t update that notification. Please try again.",
+      "couldNotSaveCostumeSize": "We couldn’t save that size. Please try again."
     },
     "installment": {
       "invalid": "Enter a valid plan and positive payment amount.",

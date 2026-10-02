@@ -122,3 +122,59 @@ export function useDateTimeFormat(opts?: Intl.DateTimeFormatOptions) {
     [locale, key],
   );
 }
+
+/**
+ * Locale-aware formatting for a date-only ISO string ("YYYY-MM-DD").
+ *
+ * Anchors to local noon before formatting. `new Date("2026-01-05")` parses as
+ * UTC midnight, which renders as the 4th anywhere west of Greenwich — the bug
+ * the hand-rolled `${iso}T12:00:00` helpers in this codebase were working
+ * around. Keeping that here means call sites get both the anchor and the
+ * reader's locale, instead of picking one.
+ */
+export function useFormatDateOnly(opts: Intl.DateTimeFormatOptions) {
+  const locale = useLocale();
+  const key = JSON.stringify(opts);
+  return useCallback(
+    (iso: string) =>
+      new Date(`${iso}T12:00:00`).toLocaleDateString(
+        locale,
+        JSON.parse(key) as Intl.DateTimeFormatOptions,
+      ),
+    [locale, key],
+  );
+}
+
+/**
+ * Locale-aware relative time ("5 min ago", "il y a 5 min", "5分前").
+ *
+ * Replaces hand-rolled `${mins}m ago` strings, which were English word order
+ * and English abbreviations baked into the markup — invisible to the message
+ * files and untranslatable without rewriting the call site. Intl picks the
+ * unit's plural form and the before/after word order per locale.
+ *
+ * Falls back to an absolute date past the week mark, which is what the
+ * hand-rolled versions did and reads better than "47 days ago".
+ */
+export function useTimeAgo(absoluteOpts: Intl.DateTimeFormatOptions = { day: "numeric", month: "short" }) {
+  const locale = useLocale();
+  const absKey = JSON.stringify(absoluteOpts);
+  return useCallback(
+    (iso: string) => {
+      const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" });
+      const diffMs = Date.now() - new Date(iso).getTime();
+      const mins = Math.floor(diffMs / 60_000);
+      if (mins < 1) return rtf.format(0, "minute");
+      if (mins < 60) return rtf.format(-mins, "minute");
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return rtf.format(-hrs, "hour");
+      const days = Math.floor(hrs / 24);
+      if (days < 7) return rtf.format(-days, "day");
+      return new Date(iso).toLocaleDateString(
+        locale,
+        JSON.parse(absKey) as Intl.DateTimeFormatOptions,
+      );
+    },
+    [locale, absKey],
+  );
+}

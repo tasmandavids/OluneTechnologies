@@ -54,6 +54,161 @@
         "unavailable": "지금은 업로드할 수 없습니다. 나중에 다시 시도하세요.",
         "invalidFile": "이 파일은 이 청구서에 첨부할 수 없습니다. 다시 첨부하세요."
       }
+    },
+    "invoices": {
+      "title": "청구서",
+      "subtitle": "스튜디오와 개인 고객에게 청구합니다",
+      "newInvoice": "+ 새 청구서",
+      "paidAllTime": "입금 완료(누적)",
+      "outstanding": "미수금",
+      "filters": {
+        "all": "전체",
+        "draft": "임시저장",
+        "sent": "발송",
+        "paid": "입금 완료",
+        "void": "취소"
+      },
+      "statuses": {
+        "draft": "임시저장",
+        "sent": "발송",
+        "paid": "입금 완료",
+        "void": "취소"
+      },
+      "empty": "아직 청구서가 없습니다.",
+      "due": "{date} 마감",
+      "paidOn": "{date} 입금",
+      "paidShort": "입금 완료",
+      "actions": {
+        "edit": "편집",
+        "send": "발송",
+        "markSent": "발송 처리",
+        "markSentHint": "메일을 보내지 않고 발송된 것으로 기록합니다 — 직접 전달한 청구서에 사용하세요",
+        "delete": "삭제",
+        "markPaid": "입금 처리",
+        "void": "취소 처리"
+      },
+      "form": {
+        "createTitle": "새 청구서",
+        "editTitle": "청구서 편집",
+        "close": "닫기",
+        "billTo": "청구 대상",
+        "selectPrompt": "— 선택하거나 아래에 입력 —",
+        "studiosGroup": "스튜디오",
+        "privateClientsGroup": "개인 고객",
+        "typeName": "이름을 직접 입력할 수도 있습니다",
+        "description": "내용 *",
+        "descriptionPlaceholder": "예: 강습료 — 2025년 6월",
+        "lineItems": "항목",
+        "itemPlaceholder": "항목",
+        "qtyPlaceholder": "수량",
+        "unitPlaceholder": "단가",
+        "addLine": "+ 항목 추가",
+        "removeLine": "항목 삭제",
+        "total": "합계: {amount}",
+        "dueDate": "마감일",
+        "notes": "메모",
+        "cancel": "취소",
+        "save": "저장",
+        "saving": "저장 중…"
+      }
+    },
+    "expenses": {
+      "title": "지출",
+      "subtitle": "사업 지출과 환급 신청을 관리합니다",
+      "logExpense": "+ 지출 기록",
+      "totalLogged": "기록 합계",
+      "pendingReimbursement": "환급 대기",
+      "filterAll": "전체",
+      "categories": {
+        "travel": "교통비",
+        "equipment": "장비",
+        "uniform": "의상",
+        "training": "교육",
+        "software": "소프트웨어",
+        "marketing": "마케팅",
+        "insurance": "보험",
+        "other": "기타"
+      },
+      "empty": "지출 내역이 없습니다.",
+      "awaitingReimbursement": "환급 대기",
+      "reimbursed": "환급 완료",
+      "actions": {
+        "edit": "편집",
+        "markReimbursed": "환급 처리",
+        "delete": "삭제"
+      },
+      "form": {
+        "createTitle": "지출 기록",
+        "editTitle": "지출 편집",
+        "close": "닫기",
+        "description": "내용 *",
+        "category": "분류",
+        "amount": "금액 *",
+        "date": "날짜 *",
+        "studio": "스튜디오",
+        "personal": "개인",
+        "receiptUrl": "영수증 URL",
+        "reimbursable": "환급 대상",
+        "reimbursed": "환급 완료",
+        "notes": "메모",
+        "cancel": "취소",
+        "save": "저장",
+        "saving": "저장 중…"
+      }
+    },
+    "profileEditor": {
+      "title": "공개 프로필",
+      "subtitle": "Olune 네트워크에서 스튜디오와 고객에게 보이는 모습입니다",
+      "viewPublic": "공개 프로필 보기 →",
+      "makePublic": "프로필 공개",
+      "makePublicHint": "Olune 네트워크 강사 디렉터리에 표시됩니다",
+      "optional": "(선택)",
+      "fullName": "이름",
+      "headline": "한 줄 소개",
+      "headlinePlaceholder": "예: 발레·컨템퍼러리 강사 · RAD 인증",
+      "bio": "소개",
+      "bioPlaceholder": "경력, 훈련 과정, 지도 방식을 적어 주세요…",
+      "disciplines": "장르",
+      "addOther": "기타 추가…",
+      "add": "추가",
+      "syllabusCerts": "교육과정 인증",
+      "trainingInstitutions": "수료 기관",
+      "trainingPlaceholder": "예: 바가노바 아카데미, NZSD, VCA",
+      "ageGroupsLabel": "지도 연령대",
+      "ageGroups": {
+        "earlyChildhood": "유아 (0–5세)",
+        "primary": "초등 (5–12세)",
+        "secondary": "중고등 (13–18세)",
+        "adult": "성인",
+        "vocational": "전공 / 예비 전문"
+      },
+      "availableForLabel": "가능한 의뢰",
+      "engagementTypes": {
+        "oneOffCover": "단기 대강",
+        "workshop": "워크숍",
+        "weekIntensive": "1주 집중 과정",
+        "summerSchool": "여름 학교",
+        "residency": "레지던시"
+      },
+      "travelLabel": "출장 가능 범위",
+      "availabilityTypes": {
+        "localCover": "인근 대강",
+        "regional": "지역 내",
+        "international": "해외 출장"
+      },
+      "dayRate": "일일 요금 범위 ({currency})",
+      "rateMin": "최소",
+      "rateMax": "최대",
+      "teachingVideo": "수업 영상 URL",
+      "teachingVideoHint": "(YouTube 또는 Vimeo)",
+      "cityRegion": "도시 / 지역",
+      "cityPlaceholder": "예: 오클랜드",
+      "website": "웹사이트",
+      "photoUrl": "프로필 사진 URL",
+      "photoPreview": "프로필 사진 미리보기",
+      "saved": "프로필을 저장했습니다.",
+      "save": "프로필 저장",
+      "saving": "저장 중…"
     }
   }
 }

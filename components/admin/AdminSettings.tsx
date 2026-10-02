@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useFormatDate } from "@/lib/i18n/format";
 import { motion } from "framer-motion";
 import {
   updateStudioName,
@@ -127,6 +128,7 @@ export default function AdminSettings({
   userEmail?: string | null;
   connections: ConnectionsSummary;
 }) {
+  const formatCreated = useFormatDate({ day: "numeric", month: "long", year: "numeric" });
   const t = useTranslations("admin.settings");
   const tShared = useTranslations("admin.shared");
   const tStatus = useTranslations("admin.shared.status");
@@ -515,7 +517,7 @@ export default function AdminSettings({
 
             <InfoRow label={t("created")}>
               <span className="text-sm text-muted">
-                {new Date(studio.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}
+                {formatCreated(studio.createdAt)}
               </span>
             </InfoRow>
 

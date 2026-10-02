@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { inviteRedirectUrl } from "@/lib/app-url";
+import { getTranslations } from "@/lib/i18n/server";
 
 export type InviteCoParentResult = { ok: true; linked: boolean } | { ok: false; error: string };
 
@@ -17,6 +18,7 @@ const InviteCoParentSchema = z.object({
 // dancer the inviting parent already guards, instead of letting them register
 // separately and (re)create duplicate child profiles for kids that already exist.
 export async function inviteCoParent(input: unknown): Promise<InviteCoParentResult> {
+  const t = await getTranslations("errors.actions");
   const parsed = InviteCoParentSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -26,7 +28,7 @@ export async function inviteCoParent(input: unknown): Promise<InviteCoParentResu
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Not signed in." };
+  if (!user) return { ok: false, error: t("notSignedIn") };
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -35,12 +37,12 @@ export async function inviteCoParent(input: unknown): Promise<InviteCoParentResu
     .single();
 
   if (profile?.role !== "parent" || !profile.studio_id) {
-    return { ok: false, error: "Parent access required." };
+    return { ok: false, error: t("parentAccessRequired") };
   }
 
   const { email, relationship } = parsed.data;
   if (profile.email && profile.email.toLowerCase() === email) {
-    return { ok: false, error: "That's your own email address." };
+    return { ok: false, error: t("ownEmailAddress") };
   }
 
   const { data: guardianships } = await supabase
@@ -50,14 +52,14 @@ export async function inviteCoParent(input: unknown): Promise<InviteCoParentResu
 
   const studentIds = (guardianships ?? []).map((g) => g.student_id as string);
   if (studentIds.length === 0) {
-    return { ok: false, error: "Add a dancer to your family before inviting a co-parent." };
+    return { ok: false, error: t("addDancerBeforeCoParent") };
   }
 
   let admin;
   try {
     admin = createAdminClient();
   } catch {
-    return { ok: false, error: "Inviting a co-parent requires studio configuration. Contact support." };
+    return { ok: false, error: t("coParentNeedsStudioConfig") };
   }
 
   const studioId = profile.studio_id as string;
@@ -72,7 +74,7 @@ export async function inviteCoParent(input: unknown): Promise<InviteCoParentResu
 
   if (existing) {
     if (existing.role !== "parent") {
-      return { ok: false, error: "That email already belongs to a different type of account." };
+      return { ok: false, error: t("emailBelongsToOtherAccountType") };
     }
 
     const { error: linkErr } = await admin.from("guardianships").upsert(

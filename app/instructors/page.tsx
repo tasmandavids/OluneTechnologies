@@ -18,7 +18,7 @@ export type DirectoryInstructor = {
   headline: string | null;
   locationCity: string | null;
   disciplines: string[];
-  syllabusСerts: string[];
+  syllabusCerts: string[];
   engagementTypes: string[];
   availabilityType: string[];
   avatarUrl: string | null;
@@ -58,7 +58,7 @@ export default async function InstructorsPage({
     if (!studioRow?.slug) return [];
 
     const disciplines = (r.disciplines as string[] | null) ?? [];
-    const syllabusСerts = (r.syllabus_certs as string[] | null) ?? [];
+    const syllabusCerts = (r.syllabus_certs as string[] | null) ?? [];
     const engagementTypes = (r.engagement_types as string[] | null) ?? [];
     const availabilityType = (r.availability_type as string[] | null) ?? [];
 
@@ -72,7 +72,7 @@ export default async function InstructorsPage({
       headline:        r.headline ?? null,
       locationCity:    r.location_city ?? null,
       disciplines,
-      syllabusСerts,
+      syllabusCerts,
       engagementTypes,
       availabilityType,
       avatarUrl:       r.avatar_url ?? null,

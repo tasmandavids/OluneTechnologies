@@ -82,7 +82,22 @@
       "invalidTemplateDetails": "Détails du modèle invalides.",
       "templateNotFound": "Modèle introuvable.",
       "onlyDraftsCanBeSent": "Seules les factures en brouillon peuvent être envoyées ainsi.",
-      "noDraftInvoices": "Aucune facture brouillon à envoyer."
+      "noDraftInvoices": "Aucune facture brouillon à envoyer.",
+      "tooManyInviteAttempts": "Trop de tentatives d'invitation. Réessayez plus tard.",
+      "childrenNeedStudioConfig": "L'ajout d'enfants nécessite la configuration du studio. Contactez le support.",
+      "ownEmailAddress": "C'est votre propre adresse e-mail.",
+      "addDancerBeforeCoParent": "Ajoutez un danseur à votre famille avant d'inviter un co-parent.",
+      "coParentNeedsStudioConfig": "L'invitation d'un co-parent nécessite la configuration du studio. Contactez le support.",
+      "emailBelongsToOtherAccountType": "Cette adresse e-mail appartient déjà à un autre type de compte.",
+      "fillEveryField": "Veuillez remplir tous les champs.",
+      "endTimeAfterStart": "L'heure de fin doit être postérieure à l'heure de début.",
+      "pickFutureDate": "Choisissez une date future.",
+      "classNotFound": "Cours introuvable.",
+      "classNoRecurringFee": "Ce cours n'a pas de tarif récurrent.",
+      "autoPayAlreadySetUp": "Ce danseur a déjà le prélèvement automatique configuré pour ce programme.",
+      "couldNotSaveAbsence": "Nous n'avons pas pu enregistrer cette absence. Veuillez réessayer.",
+      "couldNotMarkRead": "Nous n'avons pas pu mettre à jour cette notification. Veuillez réessayer.",
+      "couldNotSaveCostumeSize": "Nous n'avons pas pu enregistrer cette taille. Veuillez réessayer."
     },
     "installment": {
       "invalid": "Indiquez un échéancier valide et un montant de paiement positif.",

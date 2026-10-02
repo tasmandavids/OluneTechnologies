@@ -2,6 +2,9 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+// Locale-aware money and dates. lib/currency's formatMoney pins en-NZ, so the
+// hook replaces it here rather than being imported alongside it.
+import { useFormatMoney, useFormatDate } from "@/lib/i18n/format";
 import type { ContractorInvoice, ClientOption } from "@/app/portal/teacher/invoices/page";
 import {
   createContractorInvoice,
@@ -13,7 +16,6 @@ import {
   deleteContractorInvoice,
   startInvoiceAttachmentUpload,
 } from "@/app/portal/teacher/invoices/actions";
-import { formatMoney } from "@/lib/currency";
 import { createClient } from "@/lib/supabase/client";
 import { ATTACHMENT_ACCEPT, BOOKS_ATTACHMENT_BUCKET, checkAttachment } from "@/lib/ledger/attachments";
 
@@ -48,6 +50,9 @@ export function ContractorInvoicesManager({
   invoices: ContractorInvoice[];
   clientOptions: ClientOption[];
 }) {
+  const t = useTranslations("teacher.invoices");
+  const formatMoney = useFormatMoney();
+  const formatDate = useFormatDate({ day: "numeric", month: "short", year: "numeric" });
   const [invoices, setInvoices] = useState(initial);
   const [filter, setFilter] = useState<"all" | ContractorInvoice["status"]>("all");
   const [slide, setSlide] = useState<"create" | ContractorInvoice | null>(null);
@@ -178,22 +183,22 @@ export function ContractorInvoicesManager({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-base-content">Invoices</h1>
-          <p className="text-sm text-base-content/60 mt-0.5">Bill studios and private clients</p>
+          <h1 className="text-2xl font-bold text-base-content">{t("title")}</h1>
+          <p className="text-sm text-base-content/60 mt-0.5">{t("subtitle")}</p>
         </div>
         <button onClick={openCreate} className="btn-brand px-4 py-2 rounded-lg text-sm font-medium">
-          + New invoice
+          {t("newInvoice")}
         </button>
       </div>
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-surface rounded-xl p-4 shadow-sm">
-          <p className="text-xs text-base-content/50 uppercase tracking-wide">Paid (all time)</p>
+          <p className="text-xs text-base-content/50 uppercase tracking-wide">{t("paidAllTime")}</p>
           <p className="text-2xl font-bold text-green-600 mt-1">{formatMoney(paidTotal)}</p>
         </div>
         <div className="bg-surface rounded-xl p-4 shadow-sm">
-          <p className="text-xs text-base-content/50 uppercase tracking-wide">Outstanding</p>
+          <p className="text-xs text-base-content/50 uppercase tracking-wide">{t("outstanding")}</p>
           <p className="text-2xl font-bold text-brand mt-1">{formatMoney(outstandingTotal)}</p>
         </div>
       </div>
@@ -208,7 +213,7 @@ export function ContractorInvoicesManager({
               filter === f ? "bg-brand text-white" : "bg-base-200 text-base-content/70 hover:bg-base-300"
             }`}
           >
-            {f.charAt(0).toUpperCase() + f.slice(1)}
+            {t(`filters.${f}`)}
           </button>
         ))}
       </div>
@@ -218,7 +223,7 @@ export function ContractorInvoicesManager({
       {/* Invoice list */}
       {visible.length === 0 ? (
         <div className="border-2 border-dashed border-base-300 rounded-xl p-12 text-center">
-          <p className="text-base-content/50 text-sm">No invoices here yet.</p>
+          <p className="text-base-content/50 text-sm">{t("empty")}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -231,12 +236,12 @@ export function ContractorInvoicesManager({
                   )}
                   <p className="font-semibold text-base-content truncate">{inv.recipientLabel}</p>
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[inv.status]}`}>
-                    {inv.status}
+                    {t(`statuses.${inv.status}`)}
                   </span>
                 </div>
                 <p className="text-sm text-base-content/60 truncate mt-0.5">{inv.description}</p>
                 {inv.dueDate && (
-                  <p className="text-xs text-base-content/40 mt-0.5">Due {inv.dueDate}</p>
+                  <p className="text-xs text-base-content/40 mt-0.5">{t("due", { date: formatDate(inv.dueDate) })}</p>
                 )}
               </div>
               <div className="text-right shrink-0">
@@ -244,21 +249,21 @@ export function ContractorInvoicesManager({
                 <div className="flex gap-2 mt-1 justify-end">
                   {inv.status === "draft" && (
                     <>
-                      <button onClick={() => openEdit(inv)} className="text-xs text-brand hover:underline">Edit</button>
-                      <button onClick={() => handleAction(inv.id, "send")} disabled={pending} className="text-xs text-blue-600 hover:underline">Send</button>
-                      <button onClick={() => handleAction(inv.id, "sent")} disabled={pending} className="text-xs text-base-content/60 hover:underline" title="Record it as sent without emailing — for an invoice you delivered yourself">Mark sent</button>
-                      <button onClick={() => handleAction(inv.id, "delete")} disabled={pending} className="text-xs text-red-500 hover:underline">Delete</button>
+                      <button onClick={() => openEdit(inv)} className="text-xs text-brand hover:underline">{t("actions.edit")}</button>
+                      <button onClick={() => handleAction(inv.id, "send")} disabled={pending} className="text-xs text-blue-600 hover:underline">{t("actions.send")}</button>
+                      <button onClick={() => handleAction(inv.id, "sent")} disabled={pending} className="text-xs text-base-content/60 hover:underline" title={t("actions.markSentHint")}>{t("actions.markSent")}</button>
+                      <button onClick={() => handleAction(inv.id, "delete")} disabled={pending} className="text-xs text-red-500 hover:underline">{t("actions.delete")}</button>
                     </>
                   )}
                   {inv.status === "sent" && (
                     <>
-                      <button onClick={() => handleAction(inv.id, "paid")} disabled={pending} className="text-xs text-green-600 hover:underline">Mark paid</button>
-                      <button onClick={() => handleAction(inv.id, "void")} disabled={pending} className="text-xs text-red-500 hover:underline">Void</button>
+                      <button onClick={() => handleAction(inv.id, "paid")} disabled={pending} className="text-xs text-green-600 hover:underline">{t("actions.markPaid")}</button>
+                      <button onClick={() => handleAction(inv.id, "void")} disabled={pending} className="text-xs text-red-500 hover:underline">{t("actions.void")}</button>
                     </>
                   )}
                   {inv.status === "paid" && (
                     <span className="text-xs text-base-content/40">
-                      {inv.paidAt ? `Paid ${new Date(inv.paidAt).toLocaleDateString()}` : "Paid"}
+                      {inv.paidAt ? t("paidOn", { date: formatDate(inv.paidAt) }) : t("paidShort")}
                     </span>
                   )}
                 </div>
@@ -275,16 +280,16 @@ export function ContractorInvoicesManager({
           <div className="w-full max-w-lg bg-surface shadow-xl flex flex-col overflow-hidden">
             <div className="p-5 border-b border-base-200 flex items-center justify-between">
               <h2 className="font-semibold text-base-content">
-                {slide === "create" ? "New invoice" : "Edit invoice"}
+                {slide === "create" ? t("form.createTitle") : t("form.editTitle")}
               </h2>
-              <button onClick={() => setSlide(null)} className="text-base-content/40 hover:text-base-content text-xl leading-none">×</button>
+              <button onClick={() => setSlide(null)} aria-label={t("form.close")} className="text-base-content/40 hover:text-base-content text-xl leading-none">×</button>
             </div>
             <div className="flex-1 overflow-y-auto p-5 space-y-4">
               {error && <p className="text-sm text-red-500 bg-red-50 rounded p-2">{error}</p>}
 
               {/* Recipient */}
               <label className="block space-y-1">
-                <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">Bill to</span>
+                <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">{t("form.billTo")}</span>
                 <select
                   value={
                     form.studio_id
@@ -302,16 +307,16 @@ export function ContractorInvoicesManager({
                   }}
                   className="w-full border border-base-300 rounded-lg px-3 py-2 text-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-brand/30"
                 >
-                  <option value="">— select or type below —</option>
+                  <option value="">{t("form.selectPrompt")}</option>
                   {clientOptions.filter((o) => o.kind === "studio").length > 0 && (
-                    <optgroup label="Studios">
+                    <optgroup label={t("form.studiosGroup")}>
                       {clientOptions.filter((o) => o.kind === "studio").map((o) => (
                         <option key={o.id} value={`studio:${o.id}`}>{o.label}</option>
                       ))}
                     </optgroup>
                   )}
                   {clientOptions.filter((o) => o.kind === "private").length > 0 && (
-                    <optgroup label="Private clients">
+                    <optgroup label={t("form.privateClientsGroup")}>
                       {clientOptions.filter((o) => o.kind === "private").map((o) => (
                         <option key={o.id} value={`private:${o.id}`}>{o.label}</option>
                       ))}
@@ -320,7 +325,7 @@ export function ContractorInvoicesManager({
                 </select>
                 <input
                   type="text"
-                  placeholder="Or type a name directly"
+                  placeholder={t("form.typeName")}
                   value={form.recipient_label}
                   onChange={(e) => setForm((f) => ({ ...f, recipient_label: e.target.value, studio_id: null, private_client_id: null, attachment: null }))}
                   className="w-full border border-base-300 rounded-lg px-3 py-2 text-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-brand/30"
@@ -329,31 +334,31 @@ export function ContractorInvoicesManager({
 
               {/* Description */}
               <label className="block space-y-1">
-                <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">Description *</span>
+                <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">{t("form.description")}</span>
                 <input
                   type="text"
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                   className="w-full border border-base-300 rounded-lg px-3 py-2 text-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-brand/30"
-                  placeholder="e.g. Teaching services — June 2025"
+                  placeholder={t("form.descriptionPlaceholder")}
                 />
               </label>
 
               {/* Line items */}
               <div className="space-y-2">
-                <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">Line items</span>
+                <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">{t("form.lineItems")}</span>
                 {form.line_items.map((li, i) => (
                   <div key={i} className="flex gap-2 items-start">
                     <input
                       type="text"
-                      placeholder="Item"
+                      placeholder={t("form.itemPlaceholder")}
                       value={li.description}
                       onChange={(e) => setLineItem(i, { description: e.target.value })}
                       className="flex-1 border border-base-300 rounded-lg px-3 py-2 text-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-brand/30"
                     />
                     <input
                       type="number"
-                      placeholder="Qty"
+                      placeholder={t("form.qtyPlaceholder")}
                       min={0.5}
                       step={0.5}
                       value={li.quantity}
@@ -362,7 +367,7 @@ export function ContractorInvoicesManager({
                     />
                     <input
                       type="number"
-                      placeholder="Unit $"
+                      placeholder={t("form.unitPlaceholder")}
                       min={0}
                       step={0.01}
                       value={(li.unit_cents / 100).toFixed(2)}
@@ -372,6 +377,7 @@ export function ContractorInvoicesManager({
                     {form.line_items.length > 1 && (
                       <button
                         onClick={() => setForm((f) => ({ ...f, line_items: f.line_items.filter((_, j) => j !== i) }))}
+                        aria-label={t("form.removeLine")}
                         className="text-red-400 hover:text-red-600 text-lg leading-none mt-2"
                       >×</button>
                     )}
@@ -381,10 +387,10 @@ export function ContractorInvoicesManager({
                   onClick={() => setForm((f) => ({ ...f, line_items: [...f.line_items, { description: "", quantity: 1, unit_cents: 0 }] }))}
                   className="text-xs text-brand hover:underline"
                 >
-                  + Add line
+                  {t("form.addLine")}
                 </button>
                 <p className="text-sm font-semibold text-base-content text-right">
-                  Total: {formatMoney(totalCents(form.line_items))}
+                  {t("form.total", { amount: formatMoney(totalCents(form.line_items)) })}
                 </p>
               </div>
 
@@ -425,7 +431,7 @@ export function ContractorInvoicesManager({
 
               {/* Due date */}
               <label className="block space-y-1">
-                <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">Due date</span>
+                <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">{t("form.dueDate")}</span>
                 <input
                   type="date"
                   value={form.due_date}
@@ -436,7 +442,7 @@ export function ContractorInvoicesManager({
 
               {/* Notes */}
               <label className="block space-y-1">
-                <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">Notes</span>
+                <span className="text-xs font-medium text-base-content/70 uppercase tracking-wide">{t("form.notes")}</span>
                 <textarea
                   rows={3}
                   value={form.notes}
@@ -446,13 +452,13 @@ export function ContractorInvoicesManager({
               </label>
             </div>
             <div className="p-5 border-t border-base-200 flex gap-3">
-              <button onClick={() => setSlide(null)} className="flex-1 border border-base-300 rounded-lg py-2 text-sm">Cancel</button>
+              <button onClick={() => setSlide(null)} className="flex-1 border border-base-300 rounded-lg py-2 text-sm">{t("form.cancel")}</button>
               <button
                 onClick={handleSave}
                 disabled={pending || uploading || !form.description.trim() || !form.recipient_label.trim()}
                 className="flex-1 btn-brand rounded-lg py-2 text-sm font-medium disabled:opacity-50"
               >
-                {pending ? "Saving…" : "Save"}
+                {pending ? t("form.saving") : t("form.save")}
               </button>
             </div>
           </div>

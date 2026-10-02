@@ -54,6 +54,161 @@
         "unavailable": "Il caricamento non è disponibile ora. Riprova più tardi.",
         "invalidFile": "Il file non può essere allegato a questa fattura. Allegalo di nuovo."
       }
+    },
+    "invoices": {
+      "title": "Fatture",
+      "subtitle": "Fattura a studi e clienti privati",
+      "newInvoice": "+ Nuova fattura",
+      "paidAllTime": "Incassato (totale)",
+      "outstanding": "Da incassare",
+      "filters": {
+        "all": "Tutte",
+        "draft": "Bozza",
+        "sent": "Inviata",
+        "paid": "Pagata",
+        "void": "Annullata"
+      },
+      "statuses": {
+        "draft": "Bozza",
+        "sent": "Inviata",
+        "paid": "Pagata",
+        "void": "Annullata"
+      },
+      "empty": "Qui non ci sono ancora fatture.",
+      "due": "Scadenza il {date}",
+      "paidOn": "Pagata il {date}",
+      "paidShort": "Pagata",
+      "actions": {
+        "edit": "Modifica",
+        "send": "Invia",
+        "markSent": "Segna come inviata",
+        "markSentHint": "Registrala come inviata senza mandare l'e-mail — per una fattura consegnata da te",
+        "delete": "Elimina",
+        "markPaid": "Segna come pagata",
+        "void": "Annulla"
+      },
+      "form": {
+        "createTitle": "Nuova fattura",
+        "editTitle": "Modifica fattura",
+        "close": "Chiudi",
+        "billTo": "Intestata a",
+        "selectPrompt": "— seleziona o scrivi qui sotto —",
+        "studiosGroup": "Studi",
+        "privateClientsGroup": "Clienti privati",
+        "typeName": "Oppure scrivi direttamente un nome",
+        "description": "Descrizione *",
+        "descriptionPlaceholder": "es. Prestazioni didattiche — giugno 2025",
+        "lineItems": "Voci",
+        "itemPlaceholder": "Voce",
+        "qtyPlaceholder": "Qtà",
+        "unitPlaceholder": "Prezzo unitario",
+        "addLine": "+ Aggiungi voce",
+        "removeLine": "Rimuovi voce",
+        "total": "Totale: {amount}",
+        "dueDate": "Data di scadenza",
+        "notes": "Note",
+        "cancel": "Annulla",
+        "save": "Salva",
+        "saving": "Salvataggio…"
+      }
+    },
+    "expenses": {
+      "title": "Spese",
+      "subtitle": "Tieni traccia delle spese aziendali e delle richieste di rimborso",
+      "logExpense": "+ Registra spesa",
+      "totalLogged": "Totale registrato",
+      "pendingReimbursement": "Rimborso in attesa",
+      "filterAll": "Tutte",
+      "categories": {
+        "travel": "Trasferte",
+        "equipment": "Attrezzatura",
+        "uniform": "Abbigliamento",
+        "training": "Formazione",
+        "software": "Software",
+        "marketing": "Marketing",
+        "insurance": "Assicurazione",
+        "other": "Altro"
+      },
+      "empty": "Nessuna spesa qui.",
+      "awaitingReimbursement": "Rimborso in attesa",
+      "reimbursed": "Rimborsata",
+      "actions": {
+        "edit": "Modifica",
+        "markReimbursed": "Segna come rimborsata",
+        "delete": "Elimina"
+      },
+      "form": {
+        "createTitle": "Registra spesa",
+        "editTitle": "Modifica spesa",
+        "close": "Chiudi",
+        "description": "Descrizione *",
+        "category": "Categoria",
+        "amount": "Importo *",
+        "date": "Data *",
+        "studio": "Studio",
+        "personal": "Personale",
+        "receiptUrl": "URL della ricevuta",
+        "reimbursable": "Rimborsabile",
+        "reimbursed": "Rimborsata",
+        "notes": "Note",
+        "cancel": "Annulla",
+        "save": "Salva",
+        "saving": "Salvataggio…"
+      }
+    },
+    "profileEditor": {
+      "title": "Profilo pubblico",
+      "subtitle": "Come ti vedono studi e clienti sulla Rete Olune",
+      "viewPublic": "Vedi profilo pubblico →",
+      "makePublic": "Rendi pubblico il profilo",
+      "makePublicHint": "Compari nella directory degli insegnanti della Rete Olune",
+      "optional": "(facoltativo)",
+      "fullName": "Nome completo",
+      "headline": "Titolo",
+      "headlinePlaceholder": "es. Insegnante di danza classica e contemporanea · certificata RAD",
+      "bio": "Biografia",
+      "bioPlaceholder": "Il tuo percorso, la formazione e il tuo stile di insegnamento…",
+      "disciplines": "Discipline",
+      "addOther": "Aggiungi altra…",
+      "add": "Aggiungi",
+      "syllabusCerts": "Certificazioni di programma",
+      "trainingInstitutions": "Istituti di formazione",
+      "trainingPlaceholder": "es. Accademia Vaganova, NZSD, VCA",
+      "ageGroupsLabel": "Fasce d'età seguite",
+      "ageGroups": {
+        "earlyChildhood": "Prima infanzia (0–5)",
+        "primary": "Primaria (5–12)",
+        "secondary": "Secondaria (13–18)",
+        "adult": "Adulti",
+        "vocational": "Professionale / pre-professionale"
+      },
+      "availableForLabel": "Disponibile per",
+      "engagementTypes": {
+        "oneOffCover": "Sostituzione singola",
+        "workshop": "Workshop",
+        "weekIntensive": "Intensivo settimanale",
+        "summerSchool": "Scuola estiva",
+        "residency": "Residenza"
+      },
+      "travelLabel": "Disponibilità a spostarsi",
+      "availabilityTypes": {
+        "localCover": "Sostituzioni locali",
+        "regional": "Regionale",
+        "international": "Viaggi internazionali"
+      },
+      "dayRate": "Tariffa giornaliera ({currency})",
+      "rateMin": "min",
+      "rateMax": "max",
+      "teachingVideo": "URL del video di lezione",
+      "teachingVideoHint": "(YouTube o Vimeo)",
+      "cityRegion": "Città / regione",
+      "cityPlaceholder": "es. Auckland",
+      "website": "Sito web",
+      "photoUrl": "URL della foto profilo",
+      "photoPreview": "Anteprima della foto profilo",
+      "saved": "Profilo salvato.",
+      "save": "Salva profilo",
+      "saving": "Salvataggio…"
     }
   }
 }

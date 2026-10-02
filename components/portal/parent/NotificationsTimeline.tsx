@@ -1,5 +1,9 @@
 "use client";
 
+import { useTimeAgo } from "@/lib/i18n/format";
+
+import { useTranslations } from "next-intl";
+
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -54,29 +58,31 @@ const TYPE_COLORS: Record<string, string> = {
   general: "var(--muted)",
 };
 
-function timeAgo(iso: string) {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString("en-NZ", { day: "numeric", month: "short" });
-}
-
 export function NotificationsTimeline({
   notifications,
   onMarkRead,
   onMarkAllRead,
 }: {
   notifications: Notification[];
-  onMarkRead: (id: string) => Promise<void>;
-  onMarkAllRead: () => Promise<void>;
+  onMarkRead: (id: string) => Promise<{ ok: true } | { ok: false; error: string }>;
+  onMarkAllRead: () => Promise<{ ok: true } | { ok: false; error: string }>;
 }) {
+  const t = useTranslations("parent.notifications");
+  const timeAgo = useTimeAgo();
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  // These calls used to be fired into startTransition with their result
+  // dropped, so a failed update was indistinguishable from a successful one:
+  // the row simply stayed unread.
+  function run(action: () => ReturnType<typeof onMarkRead>) {
+    setError(null);
+    startTransition(async () => {
+      const res = await action();
+      if (!res.ok) setError(res.error);
+    });
+  }
 
   const unreadCount = notifications.filter((n) => !n.readAt).length;
   const visible = filter === "unread" ? notifications.filter((n) => !n.readAt) : notifications;
@@ -85,15 +91,20 @@ export function NotificationsTimeline({
     <div className="mx-auto max-w-2xl space-y-6 p-6">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-ink">Notifications</h1>
+          <h1 className="text-2xl font-black tracking-tight text-ink">{t("title")}</h1>
           <p className="text-sm text-muted">
-            {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
+            {unreadCount > 0 ? t("unread", { count: unreadCount }) : t("allCaughtUp")}
           </p>
+          {error && (
+            <p className="mt-1 text-sm text-red-600" role="alert">
+              {error}
+            </p>
+          )}
         </div>
         {unreadCount > 0 && (
           <button
             type="button"
-            onClick={() => startTransition(() => onMarkAllRead())}
+            onClick={() => run(() => onMarkAllRead())}
             disabled={isPending}
             className="text-xs font-semibold text-[--brand] hover:underline disabled:opacity-50"
           >
@@ -133,7 +144,7 @@ export function NotificationsTimeline({
               className={`group relative rounded-2xl transition ${n.readAt ? "box" : "box-tint"}`}
             >
               {n.actionUrl ? (
-                <Link href={n.actionUrl} className="block p-4" onClick={() => !n.readAt && startTransition(() => onMarkRead(n.id))}>
+                <Link href={n.actionUrl} className="block p-4" onClick={() => !n.readAt && run(() => onMarkRead(n.id))}>
                   <NotificationContent n={n} />
                 </Link>
               ) : (
@@ -144,9 +155,9 @@ export function NotificationsTimeline({
               {!n.readAt && (
                 <button
                   type="button"
-                  onClick={() => startTransition(() => onMarkRead(n.id))}
+                  onClick={() => run(() => onMarkRead(n.id))}
                   className="absolute right-3 top-3 rounded-full p-1 text-muted opacity-0 transition-opacity hover:text-ink group-hover:opacity-100"
-                  title="Mark as read"
+                  title={t("markAsRead")}
                 >
                   ✕
                 </button>
@@ -160,6 +171,7 @@ export function NotificationsTimeline({
 }
 
 function NotificationContent({ n }: { n: Notification }) {
+  const timeAgo = useTimeAgo();
   return (
     <div className="flex items-start gap-3">
       <span

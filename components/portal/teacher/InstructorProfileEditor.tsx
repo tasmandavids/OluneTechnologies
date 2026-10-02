@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -16,17 +18,33 @@ const SYLLABUS_CERTS = [
   "RAD", "ISTD", "CSTD", "NZAMD", "BATD", "Cecchetti", "ADAPT", "BBO",
 ];
 
-const AGE_GROUPS = [
-  "Early childhood (0–5)", "Primary (5–12)", "Secondary (13–18)",
-  "Adult", "Vocational / pre-professional",
+// `value` is what lands in profiles.age_groups / engagement_types /
+// availability_type (text[]) and what the Network directory matches on across
+// studios, so it stays English regardless of who is reading. Only `key` is
+// translated. Changing a value here would orphan every profile already saved
+// with the old one.
+type TagOption = { value: string; key: string };
+
+const AGE_GROUPS: TagOption[] = [
+  { value: "Early childhood (0–5)",         key: "earlyChildhood" },
+  { value: "Primary (5–12)",                key: "primary" },
+  { value: "Secondary (13–18)",             key: "secondary" },
+  { value: "Adult",                         key: "adult" },
+  { value: "Vocational / pre-professional", key: "vocational" },
 ];
 
-const ENGAGEMENT_TYPES = [
-  "One-off cover", "Workshop", "Week intensive", "Summer school", "Residency",
+const ENGAGEMENT_TYPES: TagOption[] = [
+  { value: "One-off cover",  key: "oneOffCover" },
+  { value: "Workshop",       key: "workshop" },
+  { value: "Week intensive", key: "weekIntensive" },
+  { value: "Summer school",  key: "summerSchool" },
+  { value: "Residency",      key: "residency" },
 ];
 
-const AVAILABILITY_TYPES = [
-  "Local cover", "Regional", "International travel",
+const AVAILABILITY_TYPES: TagOption[] = [
+  { value: "Local cover",          key: "localCover" },
+  { value: "Regional",             key: "regional" },
+  { value: "International travel", key: "international" },
 ];
 
 function TagSelector({
@@ -36,7 +54,7 @@ function TagSelector({
   onChange,
 }: {
   label: string;
-  options: string[];
+  options: { value: string; label: string }[];
   selected: string[];
   onChange: (next: string[]) => void;
 }) {
@@ -51,16 +69,16 @@ function TagSelector({
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <button
-            key={o}
+            key={o.value}
             type="button"
-            onClick={() => toggle(o)}
+            onClick={() => toggle(o.value)}
             className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-              selected.includes(o)
+              selected.includes(o.value)
                 ? "bg-indigo-600 border-indigo-600 text-white"
                 : "bg-white border-gray-300 text-gray-600 hover:border-indigo-400"
             }`}
           >
-            {o}
+            {o.label}
           </button>
         ))}
       </div>
@@ -69,6 +87,7 @@ function TagSelector({
 }
 
 export function InstructorProfileEditor({ profile }: { profile: InstructorProfileData }) {
+  const t = useTranslations("teacher.profileEditor");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -77,7 +96,7 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
     headline:             profile.headline ?? "",
     bio:                  profile.bio ?? "",
     disciplines:          profile.disciplines,
-    syllabusСerts:        profile.syllabusСerts,
+    syllabusCerts:        profile.syllabusCerts,
     trainingInstitutions: profile.trainingInstitutions,
     ageGroups:            profile.ageGroups,
     engagementTypes:      profile.engagementTypes,
@@ -128,7 +147,7 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
         headline:              form.headline || undefined,
         bio:                   form.bio || undefined,
         disciplines:           form.disciplines,
-        syllabus_certs:        form.syllabusСerts,
+        syllabus_certs:        form.syllabusCerts,
         training_institutions: form.trainingInstitutions,
         age_groups:            form.ageGroups,
         engagement_types:      form.engagementTypes,
@@ -153,15 +172,13 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
     <div className="p-6 max-w-2xl mx-auto space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Public profile</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            How you appear to studios and clients on the Olune Network
-          </p>
+          <h1 className="text-xl font-semibold text-gray-900">{t("title")}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{t("subtitle")}</p>
         </div>
         {publicUrl && form.profilePublic && (
           <a href={publicUrl} target="_blank" rel="noopener noreferrer"
             className="text-sm text-indigo-600 hover:underline">
-            View public profile →
+            {t("viewPublic")}
           </a>
         )}
       </div>
@@ -171,8 +188,8 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
         {/* Visibility */}
         <div className="px-5 py-4 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-900">Make profile public</p>
-            <p className="text-xs text-gray-500 mt-0.5">Appear in the Olune Network instructor directory</p>
+            <p className="text-sm font-medium text-gray-900">{t("makePublic")}</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t("makePublicHint")}</p>
           </div>
           <button
             type="button"
@@ -187,7 +204,7 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
 
         {/* Name */}
         <div className="px-5 py-4 space-y-1">
-          <label className="block text-sm font-medium text-gray-700">Full name</label>
+          <label className="block text-sm font-medium text-gray-700">{t("fullName")}</label>
           <input value={form.fullName} onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
@@ -195,10 +212,10 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
         {/* Headline */}
         <div className="px-5 py-4 space-y-1">
           <label className="block text-sm font-medium text-gray-700">
-            Headline <span className="font-normal text-gray-400">(optional)</span>
+            {t("headline")} <span className="font-normal text-gray-400">{t("optional")}</span>
           </label>
           <input value={form.headline} onChange={(e) => setForm((f) => ({ ...f, headline: e.target.value }))}
-            maxLength={160} placeholder="e.g. Ballet & contemporary instructor · RAD certified"
+            maxLength={160} placeholder={t("headlinePlaceholder")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           <p className="text-xs text-gray-400">{form.headline.length}/160</p>
         </div>
@@ -206,18 +223,18 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
         {/* Bio */}
         <div className="px-5 py-4 space-y-1">
           <label className="block text-sm font-medium text-gray-700">
-            Bio <span className="font-normal text-gray-400">(optional)</span>
+            {t("bio")} <span className="font-normal text-gray-400">{t("optional")}</span>
           </label>
           <textarea value={form.bio} onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
             rows={5} maxLength={2000}
-            placeholder="Your background, training, and teaching style…"
+            placeholder={t("bioPlaceholder")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none" />
           <p className="text-xs text-gray-400">{form.bio.length}/2000</p>
         </div>
 
         {/* Disciplines */}
         <div className="px-5 py-4 space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Disciplines</label>
+          <label className="block text-sm font-medium text-gray-700">{t("disciplines")}</label>
           <div className="flex flex-wrap gap-2">
             {COMMON_DISCIPLINES.map((d) => (
               <button key={d} type="button" onClick={() => toggleDiscipline(d)}
@@ -233,10 +250,10 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
           <div className="flex gap-2 mt-2">
             <input value={customDiscipline} onChange={(e) => setCustomDiscipline(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomDiscipline(); } }}
-              placeholder="Add other…"
+              placeholder={t("addOther")}
               className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             <button type="button" onClick={addCustomDiscipline}
-              className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Add</button>
+              className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">{t("add")}</button>
           </div>
           {form.disciplines.filter((d) => !COMMON_DISCIPLINES.includes(d)).map((d) => (
             <span key={d} className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-indigo-600 text-white mr-1">
@@ -248,24 +265,24 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
 
         {/* Syllabus certs */}
         <TagSelector
-          label="Syllabus certifications"
-          options={SYLLABUS_CERTS}
-          selected={form.syllabusСerts}
-          onChange={(v) => setForm((f) => ({ ...f, syllabusСerts: v }))}
+          label={t("syllabusCerts")}
+          options={SYLLABUS_CERTS.map((v) => ({ value: v, label: v }))}
+          selected={form.syllabusCerts}
+          onChange={(v) => setForm((f) => ({ ...f, syllabusCerts: v }))}
         />
 
         {/* Training institutions */}
         <div className="px-5 py-4 space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            Training institutions <span className="font-normal text-gray-400">(optional)</span>
+            {t("trainingInstitutions")} <span className="font-normal text-gray-400">{t("optional")}</span>
           </label>
           <div className="flex gap-2">
             <input value={customInstitution} onChange={(e) => setCustomInstitution(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomInstitution(); } }}
-              placeholder="e.g. Vaganova Academy, NZSD, VCA"
+              placeholder={t("trainingPlaceholder")}
               className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             <button type="button" onClick={addCustomInstitution}
-              className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Add</button>
+              className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">{t("add")}</button>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {form.trainingInstitutions.map((v) => (
@@ -281,24 +298,24 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
 
         {/* Age groups */}
         <TagSelector
-          label="Age groups taught"
-          options={AGE_GROUPS}
+          label={t("ageGroupsLabel")}
+          options={AGE_GROUPS.map((o) => ({ value: o.value, label: t(`ageGroups.${o.key}`) }))}
           selected={form.ageGroups}
           onChange={(v) => setForm((f) => ({ ...f, ageGroups: v }))}
         />
 
         {/* Engagement types */}
         <TagSelector
-          label="Available for"
-          options={ENGAGEMENT_TYPES}
+          label={t("availableForLabel")}
+          options={ENGAGEMENT_TYPES.map((o) => ({ value: o.value, label: t(`engagementTypes.${o.key}`) }))}
           selected={form.engagementTypes}
           onChange={(v) => setForm((f) => ({ ...f, engagementTypes: v }))}
         />
 
         {/* Availability type */}
         <TagSelector
-          label="Travel availability"
-          options={AVAILABILITY_TYPES}
+          label={t("travelLabel")}
+          options={AVAILABILITY_TYPES.map((o) => ({ value: o.value, label: t(`availabilityTypes.${o.key}`) }))}
           selected={form.availabilityType}
           onChange={(v) => setForm((f) => ({ ...f, availabilityType: v }))}
         />
@@ -306,14 +323,14 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
         {/* Rate */}
         <div className="px-5 py-4 space-y-1">
           <label className="block text-sm font-medium text-gray-700">
-            Day rate range (NZD) <span className="font-normal text-gray-400">(optional)</span>
+            {t("dayRate", { currency: "NZD" })} <span className="font-normal text-gray-400">{t("optional")}</span>
           </label>
           <div className="flex gap-3 items-center">
             <div className="relative flex-1">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
               <input type="number" value={form.rateMinNzd}
                 onChange={(e) => setForm((f) => ({ ...f, rateMinNzd: e.target.value }))}
-                min={0} placeholder="min"
+                min={0} placeholder={t("rateMin")}
                 className="w-full border border-gray-300 rounded-lg pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
             <span className="text-gray-400 text-sm">–</span>
@@ -321,7 +338,7 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
               <input type="number" value={form.rateMaxNzd}
                 onChange={(e) => setForm((f) => ({ ...f, rateMaxNzd: e.target.value }))}
-                min={0} placeholder="max"
+                min={0} placeholder={t("rateMax")}
                 className="w-full border border-gray-300 rounded-lg pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
           </div>
@@ -330,7 +347,7 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
         {/* Teaching video */}
         <div className="px-5 py-4 space-y-1">
           <label className="block text-sm font-medium text-gray-700">
-            Teaching video URL <span className="font-normal text-gray-400">(YouTube or Vimeo)</span>
+            {t("teachingVideo")} <span className="font-normal text-gray-400">{t("teachingVideoHint")}</span>
           </label>
           <input type="url" value={form.teachingVideoUrl}
             onChange={(e) => setForm((f) => ({ ...f, teachingVideoUrl: e.target.value }))}
@@ -341,18 +358,18 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
         {/* Location */}
         <div className="px-5 py-4 space-y-1">
           <label className="block text-sm font-medium text-gray-700">
-            City / region <span className="font-normal text-gray-400">(optional)</span>
+            {t("cityRegion")} <span className="font-normal text-gray-400">{t("optional")}</span>
           </label>
           <input value={form.locationCity}
             onChange={(e) => setForm((f) => ({ ...f, locationCity: e.target.value }))}
-            placeholder="e.g. Auckland"
+            placeholder={t("cityPlaceholder")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
 
         {/* Website */}
         <div className="px-5 py-4 space-y-1">
           <label className="block text-sm font-medium text-gray-700">
-            Website <span className="font-normal text-gray-400">(optional)</span>
+            {t("website")} <span className="font-normal text-gray-400">{t("optional")}</span>
           </label>
           <input type="url" value={form.websiteUrl}
             onChange={(e) => setForm((f) => ({ ...f, websiteUrl: e.target.value }))}
@@ -363,14 +380,14 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
         {/* Avatar */}
         <div className="px-5 py-4 space-y-1">
           <label className="block text-sm font-medium text-gray-700">
-            Profile photo URL <span className="font-normal text-gray-400">(optional)</span>
+            {t("photoUrl")} <span className="font-normal text-gray-400">{t("optional")}</span>
           </label>
           <input type="url" value={form.avatarUrl}
             onChange={(e) => setForm((f) => ({ ...f, avatarUrl: e.target.value }))}
             placeholder="https://…"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           {form.avatarUrl && (
-            <Image src={form.avatarUrl} alt="Preview"
+            <Image src={form.avatarUrl} alt={t("photoPreview")}
               className="mt-2 h-16 w-16 rounded-full object-cover border border-gray-200"
               width={64}
               height={64}
@@ -380,11 +397,11 @@ export function InstructorProfileEditor({ profile }: { profile: InstructorProfil
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
-      {saved && <p className="text-sm text-green-600">Profile saved.</p>}
+      {saved && <p className="text-sm text-green-600">{t("saved")}</p>}
 
       <button disabled={pending} onClick={handleSave}
         className="w-full bg-indigo-600 text-white rounded-lg py-2.5 text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
-        {pending ? "Saving…" : "Save profile"}
+        {pending ? t("saving") : t("save")}
       </button>
     </div>
   );

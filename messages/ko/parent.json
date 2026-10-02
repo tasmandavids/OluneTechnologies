@@ -62,7 +62,8 @@
         "draft": "임시 저장",
         "void": "무효"
       },
-      "viewSchedule": "주간 일정 보기"
+      "viewSchedule": "주간 일정 보기",
+      "noClassesThisWeek": "이번 주에는 수업이 없습니다."
     },
     "shop": {
       "title": "스튜디오 샵",
@@ -392,6 +393,84 @@
       "family": "우리 가족",
       "studio": "전체 스튜디오",
       "bookPrivateLesson": "개인 레슨 예약하기"
+    },
+    "absences": {
+      "title": "결석",
+      "subtitle": "빠진 수업을 알려 주세요.",
+      "reportAbsence": "결석 알리기",
+      "reportedHeading": "알린 결석",
+      "empty": "아직 알린 결석이 없습니다.",
+      "statusReported": "접수됨",
+      "unnamedDancer": "이름 없음",
+      "reasons": {
+        "sick": "몸이 아픔",
+        "holiday": "휴가 / 여행",
+        "other": "기타"
+      },
+      "form": {
+        "title": "결석 알리기",
+        "dancer": "수강생",
+        "class": "수업",
+        "selectClass": "수업을 선택하세요…",
+        "date": "결석 날짜",
+        "reason": "사유",
+        "notes": "메모 (선택)",
+        "notesPlaceholder": "스튜디오에 전달할 내용이 있으면 적어 주세요…",
+        "cancel": "취소",
+        "submit": "결석 알리기",
+        "submitting": "전송 중…"
+      }
+    },
+    "privateLessons": {
+      "title": "개인 레슨",
+      "subtitle": "강사와의 1:1 레슨을 신청합니다. 강사가 확정하면 스튜디오에서 청구서를 보냅니다.",
+      "noDancers": "계정에 연결된 수강생이 없습니다. 스튜디오에 문의해 주세요.",
+      "noTeachers": "현재 개인 레슨이 가능한 강사가 없습니다.",
+      "requestHeading": "레슨 신청",
+      "sent": "신청을 보냈습니다. 강사가 답하면 알려 드립니다.",
+      "teacher": "강사",
+      "teacherFallback": "강사",
+      "dancer": "수강생",
+      "dancerFallback": "수강생",
+      "availability": "{name} 강사의 가능 시간",
+      "thisTeacher": "이 강사",
+      "noWindows": "공개된 시간대가 없지만 원하는 시간을 신청할 수 있습니다.",
+      "date": "날짜",
+      "from": "시작",
+      "to": "종료",
+      "location": "장소 (선택)",
+      "locationPlaceholder": "예: 2번 연습실 또는 Zoom",
+      "note": "강사에게 전할 말 (선택)",
+      "notePlaceholder": "예: 발표회 솔로 준비",
+      "send": "신청 보내기",
+      "sending": "전송 중…",
+      "myRequests": "내 신청",
+      "noRequests": "아직 신청이 없습니다.",
+      "bookingLine": "{student} · 강사 {teacher}",
+      "teacherLower": "강사",
+      "declinedReason": "사유: {note}",
+      "statuses": {
+        "requested": "대기 중",
+        "accepted": "확정",
+        "declined": "거절",
+        "cancelled": "취소"
+      },
+      "cancelRequest": "신청 취소"
+    },
+    "costumes": {
+      "title": "의상 및 발표회",
+      "subtitle": "자녀의 의상, 가봉 일정, 발표회 정보를 한곳에서 확인하세요.",
+      "returnRequired": "반납 필요",
+      "size": "사이즈",
+      "customSize": "사이즈를 직접 입력…",
+      "notes": "메모 (선택)",
+      "notesPlaceholder": "예: S와 M 사이, 마른 체형"
+    },
+    "notifications": {
+      "title": "알림",
+      "unread": "읽지 않음 {count}건",
+      "allCaughtUp": "모두 확인했습니다",
+      "markAsRead": "읽음으로 표시"
     }
   }
 }

@@ -82,7 +82,22 @@
       "invalidTemplateDetails": "テンプレートの内容が無効です。",
       "templateNotFound": "テンプレートが見つかりません。",
       "onlyDraftsCanBeSent": "この方法で送信できるのは下書きの請求書のみです。",
-      "noDraftInvoices": "送信する下書きの請求書がありません。"
+      "noDraftInvoices": "送信する下書きの請求書がありません。",
+      "tooManyInviteAttempts": "招待の試行回数が多すぎます。しばらくしてからお試しください。",
+      "childrenNeedStudioConfig": "お子さまの追加にはスタジオの設定が必要です。サポートにご連絡ください。",
+      "ownEmailAddress": "ご自身のメールアドレスです。",
+      "addDancerBeforeCoParent": "共同保護者を招待する前に、ご家族に生徒を追加してください。",
+      "coParentNeedsStudioConfig": "共同保護者の招待にはスタジオの設定が必要です。サポートにご連絡ください。",
+      "emailBelongsToOtherAccountType": "このメールアドレスは別の種類のアカウントで既に使われています。",
+      "fillEveryField": "すべての項目を入力してください。",
+      "endTimeAfterStart": "終了時刻は開始時刻より後にしてください。",
+      "pickFutureDate": "今日より後の日付を選んでください。",
+      "classNotFound": "クラスが見つかりません。",
+      "classNoRecurringFee": "このクラスには継続料金が設定されていません。",
+      "autoPayAlreadySetUp": "この生徒にはこのプログラムの自動支払いが既に設定されています。",
+      "couldNotSaveAbsence": "欠席を保存できませんでした。もう一度お試しください。",
+      "couldNotMarkRead": "お知らせを更新できませんでした。もう一度お試しください。",
+      "couldNotSaveCostumeSize": "サイズを保存できませんでした。もう一度お試しください。"
     },
     "installment": {
       "invalid": "有効なプランと正の支払金額を入力してください。",

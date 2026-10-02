@@ -1,5 +1,7 @@
 "use client";
 
+import { useDateTimeFormat } from "@/lib/i18n/format";
+
 // ============================================================================
 //  DebugTapForm — exercises the tap-resolution path from an admin session,
 //  without physical NFC hardware. Web NFC only runs on real Android Chrome,
@@ -12,6 +14,7 @@ import { useState, useTransition } from "react";
 import { toast } from "@/lib/feedback";
 
 export function DebugTapForm() {
+  const timeFmt = useDateTimeFormat({ hour: "numeric", minute: "2-digit", second: "2-digit" });
   const [token, setToken] = useState("");
   const [direction, setDirection] = useState<"" | "in" | "out">("");
   const [pending, startTransition] = useTransition();
@@ -32,7 +35,7 @@ export function DebugTapForm() {
         toast.error(json.error ?? "Tap failed.");
         return;
       }
-      setResult(`Tapped ${json.direction} at ${new Date(json.tappedAt).toLocaleTimeString()}`);
+      setResult(`Tapped ${json.direction} at ${timeFmt.format(new Date(json.tappedAt))}`);
       toast.success("Tap recorded.");
     });
   };

@@ -8,6 +8,7 @@ import { createStudentAuthUser } from "@/lib/students/login-email";
 import { escapeHtml } from "@/lib/notify/messages";
 import { getParentStudio } from "@/lib/portal/access";
 import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
+import { getTranslations } from "@/lib/i18n/server";
 
 export type ChildActionResult = { ok: true; studentId: string } | { ok: false; error: string };
 
@@ -18,6 +19,7 @@ const AddChildSchema = z.object({
 });
 
 export async function addChildToFamily(input: unknown): Promise<ChildActionResult> {
+  const t = await getTranslations("errors.actions");
   const parsed = AddChildSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -29,14 +31,14 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
   }
 
   if (!(await checkRateLimit(rateLimitKey("add-child", ctx.userId), { limit: 10, windowMs: 60 * 60_000 }))) {
-    return { ok: false, error: "Too many invite attempts. Please try again later." };
+    return { ok: false, error: t("tooManyInviteAttempts") };
   }
 
   let admin;
   try {
     admin = createAdminClient();
   } catch {
-    return { ok: false, error: "Adding children requires studio configuration. Contact support." };
+    return { ok: false, error: t("childrenNeedStudioConfig") };
   }
 
   const d = parsed.data;

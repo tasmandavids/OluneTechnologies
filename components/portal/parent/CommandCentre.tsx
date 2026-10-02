@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useFormatMoney } from "@/lib/i18n/format";
@@ -72,6 +74,7 @@ export function CommandCentre({
   unreadNotificationCount,
   unreadMessageCount = 0,
 }: CommandCentreProps) {
+  const tHub = useTranslations("parent.hub");
   const formatMoney = useFormatMoney();
   const schedule = getNextOccurrences(upcomingClasses);
   const today = new Date();
@@ -166,7 +169,7 @@ export function CommandCentre({
         {/* Schedule strip */}
         <div className="overflow-x-auto">
           {schedule.length === 0 ? (
-            <p className="px-5 py-4 text-sm text-muted">No classes this week.</p>
+            <p className="px-5 py-4 text-sm text-muted">{tHub("noClassesThisWeek")}</p>
           ) : (
             <div className="flex min-w-max gap-0 divide-x divide-[--hair]">
               {schedule.map(({ date, cls }, i) => {
