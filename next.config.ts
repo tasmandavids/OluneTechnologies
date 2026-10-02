@@ -32,6 +32,11 @@ const sentrySource = sentryHost ? ` ${sentryHost}` : "";
 // dev only rather than widening the production policy for nothing.
 const devOnlySources = process.env.NODE_ENV === "development" ? " https://va.vercel-scripts.com" : "";
 
+// React's dev tooling (callstack reconstruction, Fast Refresh) needs eval();
+// production bundles do not. Allowing it only in development keeps a stray
+// XSS from reaching eval() on the live site without breaking `next dev`.
+const devOnlyEval = process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : "";
+
 // Baseline HTTP security headers applied to every response. Deliberately
 // conservative — no Content-Security-Policy (which needs per-app tuning to
 // avoid breaking inline styles/scripts). HSTS is ignored by browsers over
@@ -73,7 +78,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://js.stripe.com https://fonts.googleapis.com",
       // googletagmanager.com is the studio's own GA4 tag (StudioAnalytics),
       // loaded only when a studio has connected Google Analytics.
-      `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://maps.googleapis.com https://www.googletagmanager.com${devOnlySources}`,
+      `script-src 'self' 'unsafe-inline'${devOnlyEval} https://js.stripe.com https://maps.googleapis.com https://www.googletagmanager.com${devOnlySources}`,
       `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://maps.googleapis.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com${sentrySource}${devOnlySources}`,
       // *.supabase.co: Olune Books previews a bill's PDF from the private
       // books-attachments bucket through a ten-minute signed URL.
