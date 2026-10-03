@@ -23,7 +23,7 @@ export default async function TaxPage({ searchParams }: { searchParams: Promise<
         <EmptyState
           title={t("notRegistered", { tax: j.taxName })}
           body={t("notRegisteredBody")}
-          action={<Link href={`${BOOKS_PATH}/settings`} className="text-sm font-semibold text-[--brand]">{t("openSettings")}</Link>}
+          action={<Link href={`${BOOKS_PATH}/settings`} className="text-sm font-semibold text-(--brand)">{t("openSettings")}</Link>}
         />
       </div>
     );
@@ -89,7 +89,7 @@ export default async function TaxPage({ searchParams }: { searchParams: Promise<
                   {t("dueOn", { date: j.returnForm.dueDate(end, settings.filingFrequency) })} · {t("basis", { basis: j.bases.find((b) => b.id === settings.taxScheme)?.label ?? settings.salesTaxBasis })}
                 </p>
               </div>
-              <a href={j.returnForm.authorityUrl || undefined} target="_blank" rel="noreferrer" className="text-xs font-semibold text-[--brand]">
+              <a href={j.returnForm.authorityUrl || undefined} target="_blank" rel="noreferrer" className="text-xs font-semibold text-(--brand)">
                 {t("authorityLink", { authority: j.returnForm.authority })}
               </a>
             </div>

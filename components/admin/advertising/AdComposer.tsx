@@ -139,7 +139,7 @@ export function AdComposer({
               onChange={(e) => setPrompt(e.target.value)}
               rows={3}
               placeholder={t("adCreator.promptPlaceholder")}
-              className="w-full rounded-xl border border-[--hair] bg-base px-4 py-3 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
+              className="w-full rounded-xl border border-(--hair) bg-base px-4 py-3 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
             />
           </div>
 
@@ -149,7 +149,7 @@ export function AdComposer({
               <select
                 value={objective}
                 onChange={(e) => setObjective(e.target.value as AdObjective)}
-                className="w-full rounded-xl border border-[--hair] bg-base px-4 py-2.5 text-sm text-ink"
+                className="w-full rounded-xl border border-(--hair) bg-base px-4 py-2.5 text-sm text-ink"
               >
                 {OBJECTIVES.map((o) => (
                   <option key={o} value={o}>{o.charAt(0).toUpperCase() + o.slice(1)}</option>
@@ -163,7 +163,7 @@ export function AdComposer({
                 value={targetUrl}
                 onChange={(e) => setTargetUrl(e.target.value)}
                 placeholder={t("adCreator.targetUrlPlaceholder")}
-                className="w-full rounded-xl border border-[--hair] bg-base px-4 py-2.5 text-sm text-ink placeholder:text-muted"
+                className="w-full rounded-xl border border-(--hair) bg-base px-4 py-2.5 text-sm text-ink placeholder:text-muted"
               />
             </div>
           </div>
@@ -180,7 +180,7 @@ export function AdComposer({
                     type="button"
                     onClick={() => togglePlatform(p)}
                     className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                      active ? "text-white shadow-sm" : "border border-[--hair] bg-base text-muted hover:text-ink"
+                      active ? "text-white shadow-sm" : "border border-(--hair) bg-base text-muted hover:text-ink"
                     }`}
                     style={active ? { background: PLATFORM_META[p].color } : undefined}
                     title={connected ? undefined : t("adCreator.notConnectedTitle")}
@@ -208,28 +208,28 @@ export function AdComposer({
               value={campaignName}
               onChange={(e) => setCampaignName(e.target.value)}
               placeholder={t("adCreator.campaignName")}
-              className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm sm:col-span-2"
+              className="rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm sm:col-span-2"
             />
             <input
               type="text"
               value={headline}
               onChange={(e) => setHeadline(e.target.value)}
               placeholder={t("adCreator.headlinePlaceholder")}
-              className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm"
+              className="rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm"
             />
             <input
               type="text"
               value={callToAction}
               onChange={(e) => setCallToAction(e.target.value)}
               placeholder={t("adCreator.ctaPlaceholder")}
-              className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm"
+              className="rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm"
             />
             <textarea
               value={bodyText}
               onChange={(e) => setBodyText(e.target.value)}
               rows={2}
               placeholder={t("adCreator.bodyPlaceholder")}
-              className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm sm:col-span-2"
+              className="rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm sm:col-span-2"
             />
             {/* Upload, not paste-a-URL. Facebook and Instagram need a fetchable
                 image; TikTok won't publish at all without a video, which is why
@@ -254,7 +254,7 @@ export function AdComposer({
               type="button"
               onClick={() => handleSave(false)}
               disabled={saving || platforms.length === 0}
-              className="rounded-xl border border-[--hair] bg-surface px-4 py-2 text-sm font-semibold text-ink hover:bg-base disabled:opacity-50"
+              className="rounded-xl border border-(--hair) bg-surface px-4 py-2 text-sm font-semibold text-ink hover:bg-base disabled:opacity-50"
             >
               {t("adCreator.saveDraft")}
             </button>

@@ -16,7 +16,7 @@ export function PlatformAnnouncementsBanner({
   if (announcements.length === 0) return null;
 
   return (
-    <div className="space-y-2 border-b border-[--hair] bg-surface px-5 py-3">
+    <div className="space-y-2 border-b border-(--hair) bg-surface px-5 py-3">
       {announcements.map((a) => (
         <div
           key={a.id}

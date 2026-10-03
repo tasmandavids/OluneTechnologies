@@ -52,27 +52,24 @@ export type BillingPlanSummary = {
 
 const STATUS_KEYS = ["paid", "sent", "overdue", "draft", "void", "refunded"] as const;
 
-const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  paid: { bg: "color-mix(in srgb, #22c55e 18%, transparent)", text: "#16a34a" },
-  sent: { bg: "color-mix(in srgb, var(--brand-hot) 18%, transparent)", text: "var(--brand-deep)" },
-  overdue: { bg: "color-mix(in srgb, #ef4444 18%, transparent)", text: "#dc2626" },
-  draft: { bg: "color-mix(in srgb, var(--muted) 18%, transparent)", text: "var(--muted)" },
-  void: { bg: "color-mix(in srgb, var(--muted) 10%, transparent)", text: "var(--muted)" },
-  refunded: { bg: "color-mix(in srgb, #8b5cf6 18%, transparent)", text: "#7c3aed" },
+const STATUS_DOTS: Record<string, string> = {
+  paid: "var(--success, #16a34a)",
+  sent: "var(--brand)",
+  overdue: "var(--error, #dc2626)",
+  draft: "var(--muted)",
+  void: "var(--muted)",
+  refunded: "var(--brand-deep)",
 };
 
 function StatusBadge({ status }: { status: string }) {
   const t = useTranslations("parent.billing.invoiceStatus");
-  const s = STATUS_STYLES[status] ?? { bg: "var(--hair)", text: "var(--muted)" };
   const label = (STATUS_KEYS as readonly string[]).includes(status)
     ? t(status as (typeof STATUS_KEYS)[number])
     : status;
 
   return (
-    <span
-      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider"
-      style={{ background: s.bg, color: s.text }}
-    >
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-(--hair) bg-(--t1) px-2.5 py-1 text-[11.5px] font-semibold text-ink">
+      <span className="h-[7px] w-[7px] rounded-full" style={{ background: STATUS_DOTS[status] ?? "var(--muted)" }} />
       {label}
     </span>
   );
@@ -180,16 +177,16 @@ export function ParentBillingHub({
 
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="box rounded-2xl p-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("outstanding")}</p>
-          <p className="mt-1 text-xl font-black text-ink">{formatMoney(outstanding)}</p>
+          <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-muted">{t("outstanding")}</p>
+          <p className="my-1 font-display text-[25px] font-medium leading-[1.1] tabular-nums text-ink">{formatMoney(outstanding)}</p>
         </div>
         <div className="box rounded-2xl p-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("totalPaid")}</p>
-          <p className="mt-1 text-xl font-black text-ink">{formatMoney(totalPaid)}</p>
+          <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-muted">{t("totalPaid")}</p>
+          <p className="my-1 font-display text-[25px] font-medium leading-[1.1] tabular-nums text-ink">{formatMoney(totalPaid)}</p>
         </div>
         <div className="box rounded-2xl p-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("invoiceCount")}</p>
-          <p className="mt-1 text-xl font-black text-ink">{invoices.length}</p>
+          <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-muted">{t("invoiceCount")}</p>
+          <p className="my-1 font-display text-[25px] font-medium leading-[1.1] tabular-nums text-ink">{invoices.length}</p>
         </div>
       </div>
 
@@ -286,7 +283,7 @@ export function ParentBillingHub({
       )}
 
       <section>
-        <h2 className="mb-3 text-xs uppercase tracking-widest text-muted">{t("invoicesTitle")}</h2>
+        <h2 className="mb-3 font-display text-lg font-medium tracking-tight text-ink">{t("invoicesTitle")}</h2>
         {invoices.length === 0 ? (
           <div className="box rounded-2xl px-6 py-10 text-center">
             <p className="text-sm text-muted">{t("noInvoices")}</p>
@@ -348,7 +345,7 @@ export function ParentBillingHub({
       </section>
 
       <section>
-        <h2 className="mb-3 text-xs uppercase tracking-widest text-muted">{t("paymentsTitle")}</h2>
+        <h2 className="mb-3 font-display text-lg font-medium tracking-tight text-ink">{t("paymentsTitle")}</h2>
         {payments.length === 0 ? (
           <div className="box rounded-2xl px-6 py-10 text-center">
             <p className="text-sm text-muted">{t("noPayments")}</p>
@@ -388,7 +385,7 @@ export function ParentBillingHub({
 
       {orders.length > 0 && (
         <section>
-          <h2 className="mb-3 text-xs uppercase tracking-widest text-muted">{t("ordersTitle")}</h2>
+          <h2 className="mb-3 font-display text-lg font-medium tracking-tight text-ink">{t("ordersTitle")}</h2>
           <div className="box overflow-hidden rounded-2xl">
             <table className="w-full min-w-[360px] text-sm">
               <thead>

@@ -53,10 +53,10 @@ type StudioInfo = {
 };
 
 // Shared field chrome for the glass shell — matches the frosted inputs used
-// across the Claude Design "Studio Settings" import (border-[--hair] on
+// across the Claude Design "Studio Settings" import (border-(--hair) on
 // var(--surface), no separate "field-premium" skin like the pre-glass pages).
 const fieldClass =
-  "w-full rounded-xl border px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-[--brand]";
+  "w-full rounded-xl border px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-(--brand)";
 const fieldStyle = { background: "var(--surface)", borderColor: "var(--hair)" } as const;
 
 function StatusPill({ status }: { status: string }) {
@@ -247,7 +247,7 @@ export default function AdminSettings({
           <a
             key={key}
             href={`#${key}`}
-            className="rounded-[10px] px-3.5 py-2 text-[12.5px] font-semibold text-muted transition-colors hover:bg-[--t2] hover:text-ink"
+            className="rounded-[10px] px-3.5 py-2 text-[12.5px] font-semibold text-muted transition-colors hover:bg-(--t2) hover:text-ink"
           >
             {t(`nav.${key}`)}
           </a>
@@ -291,7 +291,7 @@ export default function AdminSettings({
               <p className="mt-0.5 text-sm text-muted">{t("brandingDescription")}</p>
               <Link
                 href="/portal/admin/branding"
-                className="mt-3 inline-flex rounded-full border px-4 py-2 text-sm font-medium text-ink transition hover:bg-[--t2]"
+                className="mt-3 inline-flex rounded-full border px-4 py-2 text-sm font-medium text-ink transition hover:bg-(--t2)"
                 style={{ borderColor: "var(--ring)" }}
               >
                 {t("openBranding")}
@@ -532,7 +532,7 @@ export default function AdminSettings({
               <p className="text-sm leading-relaxed text-muted">{t("customDomainDescription")}</p>
               <Link
                 href="/portal/admin/site/domain"
-                className="mt-3 inline-flex rounded-full border px-4 py-2 text-sm font-medium text-ink transition hover:bg-[--t2]"
+                className="mt-3 inline-flex rounded-full border px-4 py-2 text-sm font-medium text-ink transition hover:bg-(--t2)"
                 style={{ borderColor: "var(--ring)" }}
               >
                 {t("openDomainWizard")}
@@ -553,7 +553,7 @@ export default function AdminSettings({
                 type="button"
                 disabled={signingOut}
                 onClick={() => startSignOutTransition(async () => void (await signOut()))}
-                className="shrink-0 rounded-full border px-5 py-2 text-sm font-semibold text-ink transition hover:bg-[--t2] disabled:opacity-50"
+                className="shrink-0 rounded-full border px-5 py-2 text-sm font-semibold text-ink transition hover:bg-(--t2) disabled:opacity-50"
                 style={{ borderColor: "var(--ring)" }}
               >
                 {signingOut ? tShared("saving") : tCommon("signOut")}

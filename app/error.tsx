@@ -59,7 +59,7 @@ export default function Error({
           >
             {busy ? tAuth("signingIn") : recoverToLogin ? t("signInAgain") : t("retry")}
           </button>
-          <Link href="/" className="rounded-full border border-[--hair] px-5 py-2 text-sm text-ink">
+          <Link href="/" className="rounded-full border border-(--hair) px-5 py-2 text-sm text-ink">
             {t("goHome")}
           </Link>
         </div>

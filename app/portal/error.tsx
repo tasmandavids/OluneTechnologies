@@ -47,7 +47,7 @@ export default function PortalError({
             </button>
             <Link
               href="/portal"
-              className="rounded-xl border border-[--hair] px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-base"
+              className="rounded-xl border border-(--hair) px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-base"
             >
               {t("goToPortal")}
             </Link>

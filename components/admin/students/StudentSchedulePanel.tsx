@@ -163,7 +163,7 @@ export default function StudentSchedulePanel({
           <button
             type="button"
             onClick={() => setWeekStart(addWeeks(weekStart, -1))}
-            className="rounded-lg border border-[--hair] px-3 py-1.5 text-sm text-muted hover:text-ink"
+            className="rounded-lg border border-(--hair) px-3 py-1.5 text-sm text-muted hover:text-ink"
           >
             ←
           </button>
@@ -171,7 +171,7 @@ export default function StudentSchedulePanel({
           <button
             type="button"
             onClick={() => setWeekStart(addWeeks(weekStart, 1))}
-            className="rounded-lg border border-[--hair] px-3 py-1.5 text-sm text-muted hover:text-ink"
+            className="rounded-lg border border-(--hair) px-3 py-1.5 text-sm text-muted hover:text-ink"
           >
             →
           </button>
@@ -181,11 +181,11 @@ export default function StudentSchedulePanel({
       <GlassPanel className="!p-0 overflow-hidden">
         <div className="overflow-x-auto">
         <div className="min-w-[720px]">
-          <div className="grid grid-cols-7 border-b border-[--hair]">
+          <div className="grid grid-cols-7 border-b border-(--hair)">
             {weekDates.map((date, i) => (
               <div
                 key={date}
-                className="border-r border-[--hair] px-2 py-2 text-center last:border-r-0"
+                className="border-r border-(--hair) px-2 py-2 text-center last:border-r-0"
               >
                 <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-muted">
                   {t(`days.${DAY_KEYS[i]}`)}
@@ -202,12 +202,12 @@ export default function StudentSchedulePanel({
               return (
                 <div
                   key={date}
-                  className="min-h-[120px] border-r border-[--hair] p-2 last:border-r-0"
+                  className="min-h-[120px] border-r border-(--hair) p-2 last:border-r-0"
                 >
                   <button
                     type="button"
                     onClick={() => openNew(date)}
-                    className="mb-2 w-full rounded-lg border border-dashed border-[--hair] px-2 py-1 text-[0.65rem] font-semibold text-muted hover:border-brand hover:text-brand"
+                    className="mb-2 w-full rounded-lg border border-dashed border-(--hair) px-2 py-1 text-[0.65rem] font-semibold text-muted hover:border-brand hover:text-brand"
                   >
                     {t("addEntry")}
                   </button>
@@ -217,7 +217,7 @@ export default function StudentSchedulePanel({
                         key={entry.id}
                         type="button"
                         onClick={() => openEdit(entry)}
-                        className={`w-full rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-[--hair]/40 ${
+                        className={`w-full rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-(--hair)/40 ${
                           entry.cancelledAt ? "opacity-50 line-through" : "bg-brand/10"
                         }`}
                       >
@@ -257,7 +257,7 @@ export default function StudentSchedulePanel({
               <input
                 value={form.title}
                 onChange={(e) => setForm((f) => f && { ...f, title: e.target.value })}
-                className="mt-1 w-full rounded-xl border border-[--hair] bg-bg px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-xl border border-(--hair) bg-bg px-3 py-2 text-sm"
               />
             </label>
             <label className="block sm:col-span-2">
@@ -266,7 +266,7 @@ export default function StudentSchedulePanel({
                 value={form.description}
                 onChange={(e) => setForm((f) => f && { ...f, description: e.target.value })}
                 rows={2}
-                className="mt-1 w-full rounded-xl border border-[--hair] bg-bg px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-xl border border-(--hair) bg-bg px-3 py-2 text-sm"
               />
             </label>
             <label className="block">
@@ -276,7 +276,7 @@ export default function StudentSchedulePanel({
                 onChange={(e) =>
                   setForm((f) => f && { ...f, entryType: e.target.value as ScheduleEntryType })
                 }
-                className="mt-1 w-full rounded-xl border border-[--hair] bg-bg px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-xl border border-(--hair) bg-bg px-3 py-2 text-sm"
               >
                 {SCHEDULE_ENTRY_TYPES.map((type) => (
                   <option key={type} value={type}>
@@ -290,7 +290,7 @@ export default function StudentSchedulePanel({
               <input
                 value={form.locationName}
                 onChange={(e) => setForm((f) => f && { ...f, locationName: e.target.value })}
-                className="mt-1 w-full rounded-xl border border-[--hair] bg-bg px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-xl border border-(--hair) bg-bg px-3 py-2 text-sm"
               />
             </label>
             <label className="block">
@@ -299,7 +299,7 @@ export default function StudentSchedulePanel({
                 type="time"
                 value={form.startTime}
                 onChange={(e) => setForm((f) => f && { ...f, startTime: e.target.value })}
-                className="mt-1 w-full rounded-xl border border-[--hair] bg-bg px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-xl border border-(--hair) bg-bg px-3 py-2 text-sm"
               />
             </label>
             <label className="block">
@@ -308,7 +308,7 @@ export default function StudentSchedulePanel({
                 type="time"
                 value={form.endTime}
                 onChange={(e) => setForm((f) => f && { ...f, endTime: e.target.value })}
-                className="mt-1 w-full rounded-xl border border-[--hair] bg-bg px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-xl border border-(--hair) bg-bg px-3 py-2 text-sm"
               />
             </label>
           </div>
@@ -327,7 +327,7 @@ export default function StudentSchedulePanel({
             <button
               type="button"
               onClick={() => setForm(null)}
-              className="rounded-xl border border-[--hair] px-4 py-2 text-sm text-muted"
+              className="rounded-xl border border-(--hair) px-4 py-2 text-sm text-muted"
             >
               {tCommon("cancel")}
             </button>

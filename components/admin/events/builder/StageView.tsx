@@ -308,11 +308,11 @@ export function StageView({ actId, actTitle, cues, participants, onSave, onClose
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3.5 border-b border-[--hair] bg-surface shrink-0">
+      <div className="flex items-center justify-between px-5 py-3.5 border-b border-(--hair) bg-surface shrink-0">
         <div className="flex items-center gap-3">
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-[--subtle] text-muted hover:text-ink transition"
+            className="p-1.5 rounded-lg hover:bg-(--t1) text-muted hover:text-ink transition"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
@@ -392,7 +392,7 @@ export function StageView({ actId, actTitle, cues, participants, onSave, onClose
           </div>
 
           {/* ── Right: controls panel ─────────────────────────────────── */}
-          <div className="border-l border-[--hair] p-5 space-y-6 bg-surface">
+          <div className="border-l border-(--hair) p-5 space-y-6 bg-surface">
 
             {/* Selected light */}
             {selectedLight && selectedDef ? (
@@ -406,7 +406,7 @@ export function StageView({ actId, actTitle, cues, participants, onSave, onClose
                 <ColorPicker current={selectedLight.colorPreset} onSelect={handleColorSelect} />
                 <button
                   onClick={handleDeactivateLight}
-                  className="mt-3 w-full rounded-xl border border-[--hair] py-2 text-xs font-semibold text-muted hover:text-red-600 hover:border-red-300 transition"
+                  className="mt-3 w-full rounded-xl border border-(--hair) py-2 text-xs font-semibold text-muted hover:text-red-600 hover:border-red-300 transition"
                 >
                   Turn off this light
                 </button>
@@ -417,7 +417,7 @@ export function StageView({ actId, actTitle, cues, participants, onSave, onClose
               </div>
             )}
 
-            <div className="border-t border-[--hair]" />
+            <div className="border-t border-(--hair)" />
 
             {/* Backdrop */}
             <div>
@@ -425,7 +425,7 @@ export function StageView({ actId, actTitle, cues, participants, onSave, onClose
               <select
                 value={backdrop}
                 onChange={e => { setBackdrop(e.target.value); setSaved(false); }}
-                className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition appearance-none"
+                className="w-full rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition appearance-none"
               >
                 <option value="">No backdrop set</option>
                 <option value="black">Black / full blackout</option>
@@ -446,7 +446,7 @@ export function StageView({ actId, actTitle, cues, participants, onSave, onClose
                 value={sceneryNotes}
                 onChange={e => { setSceneryNotes(e.target.value); setSaved(false); }}
                 rows={4}
-                className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition resize-none"
+                className="w-full rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition resize-none"
               />
             </div>
 

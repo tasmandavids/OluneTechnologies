@@ -112,6 +112,17 @@ export type AssignedForm = {
   subjects: FormSubject[];
 };
 
+/** Required signatures still owed: one per (required form × subject) with no
+ *  signed response. Shared by the Forms inbox and the Family Hub so both
+ *  screens agree on the number. */
+export function countOutstandingForms(forms: AssignedForm[], responses: FormResponseRecord[]): number {
+  const signed = new Set(responses.filter((r) => r.signedAt).map((r) => `${r.formId}:${r.subjectId}`));
+  return forms.reduce((total, entry) => {
+    if (!entry.form.isRequired) return total;
+    return total + entry.subjects.filter((s) => !signed.has(`${entry.form.id}:${s.profileId}`)).length;
+  }, 0);
+}
+
 export function isFormFieldType(value: unknown): value is FormFieldType {
   return FORM_FIELD_TYPES.includes(value as FormFieldType);
 }

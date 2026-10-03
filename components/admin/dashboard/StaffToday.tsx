@@ -82,7 +82,7 @@ export function StaffToday({
               key={teacher.id}
               className="box flex items-center gap-2.5 rounded-xl px-2.5 py-2"
             >
-              <span className="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-full bg-[color-mix(in_srgb,var(--brand)_12%,transparent)] text-xs font-bold text-[--brand-deep]">
+              <span className="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-full bg-[color-mix(in_srgb,var(--brand)_12%,transparent)] text-xs font-bold text-(--brand-deep)">
                 {initials(teacher.name)}
               </span>
               <div className="min-w-0 flex-1">

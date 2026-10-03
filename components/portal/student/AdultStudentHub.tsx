@@ -122,14 +122,14 @@ export default function AdultStudentHub({
           )}
           <Link
             href="/portal/student/progress"
-            className="rounded-xl border border-[--hair] px-4 py-2.5 text-sm font-semibold text-ink hover:bg-surface"
+            className="rounded-xl border border-(--hair) px-4 py-2.5 text-sm font-semibold text-ink hover:bg-surface"
           >
             Progress & certificates
           </Link>
           <button
             type="button"
             onClick={() => setShowEnroll(true)}
-            className="rounded-xl border border-[--brand] bg-[color-mix(in_srgb,var(--brand)_10%,var(--surface))] px-5 py-2.5 text-sm font-bold text-ink shadow-sm transition hover:bg-[color-mix(in_srgb,var(--brand)_16%,var(--surface))]"
+            className="rounded-xl border border-(--brand) bg-[color-mix(in_srgb,var(--brand)_10%,var(--surface))] px-5 py-2.5 text-sm font-bold text-ink shadow-sm transition hover:bg-[color-mix(in_srgb,var(--brand)_16%,var(--surface))]"
           >
             + Enrol in a class
           </button>
@@ -291,7 +291,7 @@ export default function AdultStudentHub({
           </h2>
           <Link
             href="/portal/parent/billing"
-            className="text-xs font-semibold text-[--brand] hover:underline"
+            className="text-xs font-semibold text-(--brand) hover:underline"
           >
             {tHub("viewBilling")} →
           </Link>
@@ -304,7 +304,7 @@ export default function AdultStudentHub({
           <div className="box overflow-hidden rounded-2xl">
             <table className="w-full min-w-[400px] text-sm">
               <thead>
-                <tr className="border-b border-[--hair]">
+                <tr className="border-b border-(--hair)">
                   {[tHub("tableAmount"), tHub("tableStatus"), tHub("tableDue"), tHub("tableActions")].map((h) => (
                     <th
                       key={h}
@@ -319,7 +319,7 @@ export default function AdultStudentHub({
                 {invoices.map((inv) => (
                   <tr
                     key={inv.id}
-                    className={`border-b border-[--hair] last:border-0 ${
+                    className={`border-b border-(--hair) last:border-0 ${
                       inv.status === "overdue" ? "bg-[color-mix(in_srgb,#ef4444_4%,transparent)]" : ""
                     }`}
                   >
@@ -339,7 +339,7 @@ export default function AdultStudentHub({
                         <button
                           type="button"
                           onClick={() => setPayInvoice(inv)}
-                          className="rounded-lg border border-[--brand] px-3 py-1.5 text-xs font-bold text-[--brand] transition hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]"
+                          className="rounded-lg border border-(--brand) px-3 py-1.5 text-xs font-bold text-(--brand) transition hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]"
                         >
                           {tHub("payNow")}
                         </button>

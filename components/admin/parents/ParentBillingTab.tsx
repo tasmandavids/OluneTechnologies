@@ -83,10 +83,10 @@ export default function ParentBillingTab({
         {invoices.length === 0 ? (
           <p className="text-sm italic text-muted">{t("noInvoices")}</p>
         ) : (
-          <div className="overflow-x-auto rounded-2xl border border-[--hair]">
+          <div className="overflow-x-auto rounded-2xl border border-(--hair)">
             <table className="w-full min-w-[520px] text-left text-sm">
               <thead>
-                <tr className="border-b border-[--hair] bg-surface/60 text-xs uppercase tracking-wider text-muted">
+                <tr className="border-b border-(--hair) bg-surface/60 text-xs uppercase tracking-wider text-muted">
                   <th className="px-4 py-3 font-semibold">{t("table.number")}</th>
                   <th className="px-4 py-3 font-semibold">{t("table.issued")}</th>
                   <th className="px-4 py-3 font-semibold">{t("table.student")}</th>
@@ -97,7 +97,7 @@ export default function ParentBillingTab({
               </thead>
               <tbody>
                 {invoices.map((inv) => (
-                  <tr key={inv.id} className="border-b border-[--hair] last:border-0">
+                  <tr key={inv.id} className="border-b border-(--hair) last:border-0">
                     <td className="px-4 py-3 font-mono text-xs">
                       {/* Contextual read-only view — actions (send/remind/refund) live in
                           Money, so link out instead of duplicating them here. */}
@@ -130,10 +130,10 @@ export default function ParentBillingTab({
         {payments.length === 0 ? (
           <p className="text-sm italic text-muted">{t("noPayments")}</p>
         ) : (
-          <div className="overflow-x-auto rounded-2xl border border-[--hair]">
+          <div className="overflow-x-auto rounded-2xl border border-(--hair)">
             <table className="w-full min-w-[520px] text-left text-sm">
               <thead>
-                <tr className="border-b border-[--hair] bg-surface/60 text-xs uppercase tracking-wider text-muted">
+                <tr className="border-b border-(--hair) bg-surface/60 text-xs uppercase tracking-wider text-muted">
                   <th className="px-4 py-3 font-semibold">{t("receiptsTable.date")}</th>
                   <th className="px-4 py-3 font-semibold">{t("receiptsTable.amount")}</th>
                   <th className="px-4 py-3 font-semibold">{t("receiptsTable.invoice")}</th>
@@ -142,7 +142,7 @@ export default function ParentBillingTab({
               </thead>
               <tbody>
                 {payments.map((p) => (
-                  <tr key={p.id} className="border-b border-[--hair] last:border-0">
+                  <tr key={p.id} className="border-b border-(--hair) last:border-0">
                     <td className="px-4 py-3 text-ink">{fmtDate(p.createdAt)}</td>
                     <td className="px-4 py-3 font-medium text-ink">
                       {formatMoney(p.amountCents)}
@@ -166,10 +166,10 @@ export default function ParentBillingTab({
       {orders.length > 0 && (
         <section>
           <h3 className="mb-3 text-sm font-bold text-ink">{t("shopOrders")}</h3>
-          <div className="overflow-x-auto rounded-2xl border border-[--hair]">
+          <div className="overflow-x-auto rounded-2xl border border-(--hair)">
             <table className="w-full min-w-[400px] text-left text-sm">
               <thead>
-                <tr className="border-b border-[--hair] bg-surface/60 text-xs uppercase tracking-wider text-muted">
+                <tr className="border-b border-(--hair) bg-surface/60 text-xs uppercase tracking-wider text-muted">
                   <th className="px-4 py-3 font-semibold">{t("ordersTable.date")}</th>
                   <th className="px-4 py-3 font-semibold">{t("ordersTable.amount")}</th>
                   <th className="px-4 py-3 font-semibold">{t("ordersTable.status")}</th>
@@ -177,7 +177,7 @@ export default function ParentBillingTab({
               </thead>
               <tbody>
                 {orders.map((o) => (
-                  <tr key={o.id} className="border-b border-[--hair] last:border-0">
+                  <tr key={o.id} className="border-b border-(--hair) last:border-0">
                     <td className="px-4 py-3 text-ink">{fmtDate(o.createdAt)}</td>
                     <td className="px-4 py-3 font-medium text-ink">
                       {formatMoney(o.totalCents)}

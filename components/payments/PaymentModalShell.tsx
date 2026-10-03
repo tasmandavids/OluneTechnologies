@@ -26,7 +26,7 @@ export function PaymentModalShell({
           initial={{ scale: 0.96, opacity: 0, y: 8 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.96, opacity: 0, y: 8 }}
-          className={`flex w-full ${maxWidthClass} max-h-[calc(100dvh-2rem)] flex-col overflow-hidden rounded-2xl border border-[--hair] bg-surface shadow-2xl`}
+          className={`flex w-full ${maxWidthClass} max-h-[calc(100dvh-2rem)] flex-col overflow-hidden rounded-2xl border border-(--hair) bg-surface shadow-2xl`}
           onClick={(e) => e.stopPropagation()}
         >
           {children}

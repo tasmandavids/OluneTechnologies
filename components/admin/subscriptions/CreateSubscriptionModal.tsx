@@ -142,7 +142,7 @@ export function CreateSubscriptionModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-[--hair] bg-surface p-6 shadow-xl">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-(--hair) bg-surface p-6 shadow-xl">
         <h2 className="text-lg font-bold text-ink">{t("title")}</h2>
         <p className="mt-1 text-sm text-muted">{t("description")}</p>
 
@@ -156,7 +156,7 @@ export function CreateSubscriptionModal({
                   setPayerId(e.target.value);
                   setStudentId("");
                 }}
-                className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
               >
                 {parents.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -172,7 +172,7 @@ export function CreateSubscriptionModal({
                 <select
                   value={studentId}
                   onChange={(e) => setStudentId(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 >
                   <option value="">{tShared("familyPlan")}</option>
                   {students.map((s) => (
@@ -191,7 +191,7 @@ export function CreateSubscriptionModal({
               <select
                 value={billingInterval}
                 onChange={(e) => setBillingInterval(e.target.value as BillingInterval)}
-                className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
               >
                 <option value="week">{tIntervals("week")}</option>
                 <option value="fortnight">{tIntervals("fortnight")}</option>
@@ -204,7 +204,7 @@ export function CreateSubscriptionModal({
                 value={planLabel}
                 onChange={(e) => setPlanLabel(e.target.value)}
                 placeholder={t("planNamePlaceholder")}
-                className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
               />
             </label>
           </div>
@@ -217,7 +217,7 @@ export function CreateSubscriptionModal({
                   if (e.target.value) addClass(e.target.value);
                   e.target.value = "";
                 }}
-                className="rounded-lg border border-[--hair] bg-surface px-3 py-1.5 text-xs font-semibold text-ink"
+                className="rounded-lg border border-(--hair) bg-surface px-3 py-1.5 text-xs font-semibold text-ink"
               >
                 <option value="">{t("addClass")}</option>
                 {classes.map((c) => (
@@ -232,7 +232,7 @@ export function CreateSubscriptionModal({
                   if (e.target.value) addProduct(e.target.value);
                   e.target.value = "";
                 }}
-                className="rounded-lg border border-[--hair] bg-surface px-3 py-1.5 text-xs font-semibold text-ink"
+                className="rounded-lg border border-(--hair) bg-surface px-3 py-1.5 text-xs font-semibold text-ink"
               >
                 <option value="">{t("addProduct")}</option>
                 {products.map((p) => (
@@ -244,7 +244,7 @@ export function CreateSubscriptionModal({
               <button
                 type="button"
                 onClick={addDiscount}
-                className="rounded-lg border border-[--hair] bg-surface px-3 py-1.5 text-xs font-semibold text-ink"
+                className="rounded-lg border border-(--hair) bg-surface px-3 py-1.5 text-xs font-semibold text-ink"
               >
                 {t("addDiscount")}
               </button>
@@ -265,7 +265,7 @@ export function CreateSubscriptionModal({
                     <input
                       value={line.description}
                       onChange={(e) => updateLine(line.key, { description: e.target.value })}
-                      className="min-w-[8rem] flex-1 rounded border border-[--hair] bg-base px-2 py-1 text-sm"
+                      className="min-w-[8rem] flex-1 rounded border border-(--hair) bg-base px-2 py-1 text-sm"
                     />
                     <input
                       type="number"
@@ -274,7 +274,7 @@ export function CreateSubscriptionModal({
                       onChange={(e) =>
                         updateLine(line.key, { quantity: Math.max(1, Number(e.target.value) || 1) })
                       }
-                      className="w-16 rounded border border-[--hair] bg-base px-2 py-1 text-sm"
+                      className="w-16 rounded border border-(--hair) bg-base px-2 py-1 text-sm"
                     />
                     <span className="text-xs text-muted">×</span>
                     <input
@@ -286,7 +286,7 @@ export function CreateSubscriptionModal({
                           unitMonthlyCents: Math.round(Number.parseFloat(e.target.value || "0") * 100),
                         })
                       }
-                      className="w-24 rounded border border-[--hair] bg-base px-2 py-1 text-sm"
+                      className="w-24 rounded border border-(--hair) bg-base px-2 py-1 text-sm"
                     />
                     <span className="text-sm font-semibold tabular-nums">
                       {formatMoney(lineTotalCents(line))}
@@ -323,7 +323,7 @@ export function CreateSubscriptionModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-[--hair] px-4 py-2 text-sm font-semibold text-muted"
+              className="rounded-xl border border-(--hair) px-4 py-2 text-sm font-semibold text-muted"
             >
               {tCommon("cancel")}
             </button>

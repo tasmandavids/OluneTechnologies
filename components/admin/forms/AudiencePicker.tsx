@@ -105,7 +105,7 @@ export function AudiencePicker({
           type="checkbox"
           checked={everyone}
           onChange={toggleEveryone}
-          className="mt-0.5 h-4 w-4 accent-[--brand]"
+          className="mt-0.5 h-4 w-4 accent-(--brand)"
         />
         <span>
           <span className="block text-sm font-semibold text-ink">Everyone at the studio</span>
@@ -191,7 +191,7 @@ export function AudiencePicker({
                   togglePerson(person.id);
                   setSearch("");
                 }}
-                className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition hover:bg-[--glass2]"
+                className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition hover:bg-(--glass2)"
               >
                 <span className="text-ink">{person.name ?? person.email ?? "Unnamed"}</span>
                 <span className="text-xs text-muted">

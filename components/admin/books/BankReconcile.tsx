@@ -105,7 +105,7 @@ function TxnCard({ row, accounts, rates, taxRegistered, stripeClearingId, bankFe
           <div className="flex items-center gap-2">
             <Badge tone={row.status === "reconciled" ? "good" : "neutral"}>{t(`statuses.${row.status}`)}</Badge>
             {row.journalId && (
-              <Link href={`/portal/admin/books/journals/${row.journalId}`} className="text-xs font-semibold text-[--brand]">
+              <Link href={`/portal/admin/books/journals/${row.journalId}`} className="text-xs font-semibold text-(--brand)">
                 {t("viewJournal")}
               </Link>
             )}

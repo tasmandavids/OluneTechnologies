@@ -68,7 +68,7 @@ export function ReaderCredentialCard({ status }: { status: ReaderCredentialStatu
         type="button"
         onClick={handleRotate}
         disabled={pending}
-        className="rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[--t2] disabled:opacity-60"
+        className="rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-(--t2) disabled:opacity-60"
         style={{ borderColor: "var(--ring)" }}
       >
         {pending ? "Generating…" : status.connected ? "Rotate credential" : "Generate credential"}

@@ -182,7 +182,7 @@ export function MessageThread({
   return (
     <div className={`flex flex-col ${compact ? "h-[420px]" : "h-full min-h-[480px]"}`}>
       {!compact && (
-        <div className="flex items-center gap-3 border-b border-[--hair] bg-surface px-6 py-4">
+        <div className="flex items-center gap-3 border-b border-(--hair) bg-surface px-6 py-4">
           <span
             className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-bold text-white"
             style={{ background: "var(--brand)" }}
@@ -253,7 +253,7 @@ export function MessageThread({
         <div ref={bottomRef} />
       </div>
 
-      <div className="border-t border-[--hair] bg-surface px-4 py-4 sm:px-6">
+      <div className="border-t border-(--hair) bg-surface px-4 py-4 sm:px-6">
         {sendError && (
           <p className="mb-2 rounded-lg border border-red-400/30 bg-red-400/10 px-3 py-2 text-xs text-red-400">
             {sendError}
@@ -267,7 +267,7 @@ export function MessageThread({
             onKeyDown={handleKeyDown}
             placeholder={placeholder ?? t("placeholder")}
             rows={1}
-            className="flex-1 resize-none rounded-xl border border-[--hair] bg-base px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
+            className="flex-1 resize-none rounded-xl border border-(--hair) bg-base px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
             style={{ maxHeight: "120px", overflowY: "auto" }}
           />
           <button

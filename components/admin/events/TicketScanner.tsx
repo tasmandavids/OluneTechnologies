@@ -184,7 +184,7 @@ export function TicketScanner({ events }: { events: ScannableEvent[] }) {
           id="ticket-scanner-event"
           value={eventId}
           onChange={(e) => setEventId(e.target.value)}
-          className="mb-4 w-full rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+          className="mb-4 w-full rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
         >
           {events.map((ev) => (
             <option key={ev.id} value={ev.id}>
@@ -208,7 +208,7 @@ export function TicketScanner({ events }: { events: ScannableEvent[] }) {
           }}
           className={
             cameraRequested
-              ? "mb-4 w-full rounded-xl border border-[--hair] bg-base py-3 text-sm font-semibold text-muted hover:text-ink"
+              ? "mb-4 w-full rounded-xl border border-(--hair) bg-base py-3 text-sm font-semibold text-muted hover:text-ink"
               : "mb-4 w-full rounded-xl bg-brand py-3 text-sm font-semibold text-white hover:opacity-90"
           }
         >
@@ -217,7 +217,7 @@ export function TicketScanner({ events }: { events: ScannableEvent[] }) {
 
         {cameraError && <p className="mb-3 text-sm text-red-500">{cameraError}</p>}
 
-        <div className="border-t border-[--hair] pt-4">
+        <div className="border-t border-(--hair) pt-4">
           <label
             htmlFor="ticket-scanner-manual"
             className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted"
@@ -230,12 +230,12 @@ export function TicketScanner({ events }: { events: ScannableEvent[] }) {
             onChange={(e) => setManualPayload(e.target.value)}
             placeholder={t("manualEntryPlaceholder")}
             rows={3}
-            className="w-full rounded-xl border border-[--hair] bg-base px-3 py-2 font-mono text-xs text-ink"
+            className="w-full rounded-xl border border-(--hair) bg-base px-3 py-2 font-mono text-xs text-ink"
           />
           <button
             type="button"
             onClick={submitManual}
-            className="mt-2 w-full rounded-xl border border-[--hair] bg-base py-2 text-sm font-semibold text-ink hover:bg-surface"
+            className="mt-2 w-full rounded-xl border border-(--hair) bg-base py-2 text-sm font-semibold text-ink hover:bg-surface"
           >
             {t("useManualEntry")}
           </button>

@@ -18,7 +18,7 @@ const STATUS_COLORS: Record<string, string> = {
   replied:   "bg-indigo-50 text-indigo-700 border-indigo-200",
   declined:  "bg-red-50 text-red-700 border-red-200",
   accepted:  "bg-green-50 text-green-700 border-green-200",
-  withdrawn: "border-[--hair] bg-surface text-muted",
+  withdrawn: "border-(--hair) bg-surface text-muted",
 };
 
 export default async function NetworkInquiriesPage() {
@@ -53,7 +53,7 @@ export default async function NetworkInquiriesPage() {
         <GlassPanel className="!py-16 !px-6">
           <div className="text-center text-sm text-muted">
             No inquiries yet.{" "}
-            <Link href="/instructors" className="text-[--brand] hover:underline">
+            <Link href="/instructors" className="text-(--brand) hover:underline">
               Browse the instructor directory
             </Link>{" "}
             to get started.
@@ -73,7 +73,7 @@ export default async function NetworkInquiriesPage() {
               <Link
                 key={inq.id}
                 href={`/portal/admin/network/inquiries/${inq.id}`}
-                className="flex items-start gap-4 px-4 py-4 transition-colors hover:bg-[--t1]"
+                className="flex items-start gap-4 px-4 py-4 transition-colors hover:bg-(--t1)"
                 style={i > 0 ? { borderTop: "1px solid var(--hair)" } : undefined}
               >
                 {instructor?.avatar_url ? (
@@ -89,7 +89,7 @@ export default async function NetworkInquiriesPage() {
                     className="h-10 w-10 rounded-full flex items-center justify-center shrink-0"
                     style={{ background: "color-mix(in srgb, var(--brand) 14%, transparent)" }}
                   >
-                    <span className="text-sm font-bold text-[--brand]">
+                    <span className="text-sm font-bold text-(--brand)">
                       {(instructor?.full_name ?? "?").charAt(0).toUpperCase()}
                     </span>
                   </div>

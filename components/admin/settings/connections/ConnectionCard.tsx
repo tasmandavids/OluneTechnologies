@@ -167,7 +167,7 @@ export function ConnectionCard({
                 type="button"
                 onClick={onManage}
                 disabled={busy}
-                className="rounded-full border px-3.5 py-1.5 text-[12px] font-semibold text-ink transition hover:bg-[--t2] disabled:opacity-50"
+                className="rounded-full border px-3.5 py-1.5 text-[12px] font-semibold text-ink transition hover:bg-(--t2) disabled:opacity-50"
                 style={{ borderColor: "var(--ring)" }}
               >
                 Update keys
@@ -176,7 +176,7 @@ export function ConnectionCard({
             {provider.usedBy && (
               <a
                 href={provider.usedBy.href}
-                className="rounded-full border px-3.5 py-1.5 text-[12px] font-semibold text-ink transition hover:bg-[--t2]"
+                className="rounded-full border px-3.5 py-1.5 text-[12px] font-semibold text-ink transition hover:bg-(--t2)"
                 style={{ borderColor: "var(--ring)" }}
               >
                 {provider.usedBy.label}

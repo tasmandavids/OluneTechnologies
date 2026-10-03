@@ -68,7 +68,7 @@ export function InquiryThread({
 
   return (
     <GlassPanel className="!p-0 overflow-hidden">
-      <div className="px-5 py-3 border-b border-[--hair]">
+      <div className="px-5 py-3 border-b border-(--hair)">
         <p className="text-sm font-medium text-ink">Conversation</p>
       </div>
 
@@ -104,7 +104,7 @@ export function InquiryThread({
 
       {/* Accept / Decline for instructor */}
       {isInstructor && !isClosed && status !== "accepted" && (
-        <div className="px-4 pb-3 flex gap-2 border-t border-[--hair] pt-3">
+        <div className="px-4 pb-3 flex gap-2 border-t border-(--hair) pt-3">
           <button
             disabled={pending}
             onClick={handleAccept}
@@ -131,7 +131,7 @@ export function InquiryThread({
 
       {/* Input area */}
       {!isClosed && (
-        <div className="border-t border-[--hair] p-4 space-y-2">
+        <div className="border-t border-(--hair) p-4 space-y-2">
           {error && <p className="text-xs text-red-600">{error}</p>}
           <div className="flex gap-2">
             <textarea
@@ -145,7 +145,7 @@ export function InquiryThread({
               }}
               rows={2}
               placeholder="Write a message… (Enter to send)"
-              className="flex-1 border border-[--hair] bg-surface rounded-lg px-3 py-2 text-sm text-ink resize-none focus:outline-none focus:ring-2 focus:ring-[--brand]"
+              className="flex-1 border border-(--hair) bg-surface rounded-lg px-3 py-2 text-sm text-ink resize-none focus:outline-none focus:ring-2 focus:ring-(--brand)"
             />
             <button
               disabled={pending || !body.trim()}
@@ -170,7 +170,7 @@ export function InquiryThread({
       )}
 
       {isClosed && (
-        <div className="px-5 py-3 bg-surface border-t border-[--hair]">
+        <div className="px-5 py-3 bg-surface border-t border-(--hair)">
           <p className="text-xs text-muted capitalize">{status} — this inquiry is closed.</p>
         </div>
       )}

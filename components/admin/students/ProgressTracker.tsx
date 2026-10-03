@@ -128,7 +128,7 @@ export default function ProgressTracker({
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
           placeholder={t("notesPlaceholder")}
-          className="mb-4 w-full resize-none rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-[--brand] focus:outline-none"
+          className="mb-4 w-full resize-none rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-(--brand) focus:outline-none"
         />
 
         <div className="mb-4 grid gap-4 sm:grid-cols-2">
@@ -139,7 +139,7 @@ export default function ProgressTracker({
             <select
               value={level}
               onChange={(e) => setLevel(e.target.value)}
-              className="w-full rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink focus:border-[--brand] focus:outline-none"
+              className="w-full rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink focus:border-(--brand) focus:outline-none"
             >
               <option value="">{tShared("unchanged")}</option>
               {LEVEL_KEYS.map((key) => (
@@ -165,12 +165,12 @@ export default function ProgressTracker({
                   }
                 }}
                 placeholder={t("certPlaceholder")}
-                className="flex-1 rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-[--brand] focus:outline-none"
+                className="flex-1 rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-(--brand) focus:outline-none"
               />
               <button
                 type="button"
                 onClick={addCert}
-                className="shrink-0 rounded-xl border border-[--hair] px-3 py-2 text-sm text-muted hover:text-ink"
+                className="shrink-0 rounded-xl border border-(--hair) px-3 py-2 text-sm text-muted hover:text-ink"
               >
                 {tCommon("add")}
               </button>
@@ -183,13 +183,13 @@ export default function ProgressTracker({
             {certs.map((c) => (
               <span
                 key={c}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_srgb,var(--brand)_14%,transparent)] px-3 py-1 text-xs font-semibold text-[--brand]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_srgb,var(--brand)_14%,transparent)] px-3 py-1 text-xs font-semibold text-(--brand)"
               >
                 🏅 {c}
                 <button
                   type="button"
                   onClick={() => setCerts((prev) => prev.filter((x) => x !== c))}
-                  className="text-[--brand] hover:opacity-70"
+                  className="text-(--brand) hover:opacity-70"
                 >
                   ✕
                 </button>
@@ -228,7 +228,7 @@ export default function ProgressTracker({
             </p>
           </GlassPanel>
         ) : (
-          <ol className="relative space-y-5 border-l border-[--hair] pl-6">
+          <ol className="relative space-y-5 border-l border-(--hair) pl-6">
             <AnimatePresence initial={false}>
               {entries.map((entry) => (
                 <motion.li
@@ -246,7 +246,7 @@ export default function ProgressTracker({
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex flex-wrap items-center gap-2">
                         {entry.level && (
-                          <span className="rounded-full bg-[color-mix(in_srgb,var(--brand)_14%,transparent)] px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-[--brand]">
+                          <span className="rounded-full bg-[color-mix(in_srgb,var(--brand)_14%,transparent)] px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-(--brand)">
                             {entry.level}
                           </span>
                         )}
@@ -280,7 +280,7 @@ export default function ProgressTracker({
                               key={c}
                               href={certDownloadHref(entry.id, c)}
                               download
-                              className="box-pill inline-flex items-center gap-1 px-2.5 py-0.5 text-[0.62rem] font-semibold text-ink transition-colors hover:text-[--brand]"
+                              className="box-pill inline-flex items-center gap-1 px-2.5 py-0.5 text-[0.62rem] font-semibold text-ink transition-colors hover:text-(--brand)"
                             >
                               🏅 {c} ↓
                             </a>

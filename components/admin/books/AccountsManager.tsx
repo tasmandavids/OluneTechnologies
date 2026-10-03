@@ -158,7 +158,7 @@ export function AccountsManager({ accounts, rates, balances, currency, locale, t
                         <Amount cents={balances[a.id] ?? 0} currency={currency} locale={locale} blankZero />
                       </td>
                       <td className={`${tdClass} text-right`}>
-                        <button type="button" className="text-xs font-semibold text-[--brand]" onClick={() => edit(a)}>
+                        <button type="button" className="text-xs font-semibold text-(--brand)" onClick={() => edit(a)}>
                           {t("edit")}
                         </button>
                         {!a.systemKey && (
@@ -179,7 +179,7 @@ export function AccountsManager({ accounts, rates, balances, currency, locale, t
       <GlassPanel className="!p-0 overflow-hidden">
         <div className="flex items-center justify-between px-5 pt-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("ratesTitle", { tax: taxName })}</p>
-          <button type="button" className="text-xs font-semibold text-[--brand]" onClick={() => { setError(null); setRateDraft({ code: "", name: "", pct: "", appliesTo: "both", category: "standard" }); }}>
+          <button type="button" className="text-xs font-semibold text-(--brand)" onClick={() => { setError(null); setRateDraft({ code: "", name: "", pct: "", appliesTo: "both", category: "standard" }); }}>
             {t("newRate")}
           </button>
         </div>

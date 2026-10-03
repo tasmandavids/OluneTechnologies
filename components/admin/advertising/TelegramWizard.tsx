@@ -74,7 +74,7 @@ export function TelegramWizard({
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="relative z-10 w-full max-w-lg overflow-hidden rounded-3xl border border-[--hair] bg-surface shadow-2xl"
+        className="relative z-10 w-full max-w-lg overflow-hidden rounded-3xl border border-(--hair) bg-surface shadow-2xl"
       >
         <div className="bg-gradient-to-br from-[#26A5E4] to-[#229ED9] px-6 py-5 text-white">
           <div className="flex items-start justify-between">
@@ -120,7 +120,7 @@ export function TelegramWizard({
                     value={botToken}
                     onChange={(e) => setBotToken(e.target.value)}
                     placeholder={t("tokenPlaceholder")}
-                    className="w-full rounded-xl border border-[--hair] bg-base px-4 py-3 font-mono text-sm text-ink placeholder:text-muted focus:border-[#26A5E4] focus:outline-none"
+                    className="w-full rounded-xl border border-(--hair) bg-base px-4 py-3 font-mono text-sm text-ink placeholder:text-muted focus:border-[#26A5E4] focus:outline-none"
                   />
                 </div>
                 <button
@@ -149,16 +149,16 @@ export function TelegramWizard({
                     value={channelInput}
                     onChange={(e) => setChannelInput(e.target.value)}
                     placeholder={t("channelPlaceholder")}
-                    className="w-full rounded-xl border border-[--hair] bg-base px-4 py-3 text-sm text-ink placeholder:text-muted focus:border-[#26A5E4] focus:outline-none"
+                    className="w-full rounded-xl border border-(--hair) bg-base px-4 py-3 text-sm text-ink placeholder:text-muted focus:border-[#26A5E4] focus:outline-none"
                   />
                   <p className="mt-1.5 text-[0.65rem] text-muted">{t("channelHint")}</p>
                 </div>
                 <label className="flex cursor-pointer items-center gap-2 text-sm text-ink">
-                  <input type="checkbox" checked={sendTest} onChange={(e) => setSendTest(e.target.checked)} className="rounded border-[--hair]" />
+                  <input type="checkbox" checked={sendTest} onChange={(e) => setSendTest(e.target.checked)} className="rounded border-(--hair)" />
                   {t("sendTest")}
                 </label>
                 <div className="flex gap-2">
-                  <button type="button" onClick={() => setStep(1)} className="rounded-xl border border-[--hair] px-4 py-2.5 text-sm font-semibold text-muted hover:text-ink">
+                  <button type="button" onClick={() => setStep(1)} className="rounded-xl border border-(--hair) px-4 py-2.5 text-sm font-semibold text-muted hover:text-ink">
                     {t("back")}
                   </button>
                   <button

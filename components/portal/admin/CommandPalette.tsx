@@ -176,7 +176,7 @@ export function CommandPalette({
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
-                className="grid h-6 w-6 shrink-0 place-items-center rounded-md text-muted transition hover:bg-[--glass2] hover:text-ink"
+                className="grid h-6 w-6 shrink-0 place-items-center rounded-md text-muted transition hover:bg-(--glass2) hover:text-ink"
               >
                 <IconX className="h-3.5 w-3.5" />
               </button>
@@ -202,7 +202,7 @@ export function CommandPalette({
                             key={row.key}
                             type="button"
                             onClick={() => go(row.href)}
-                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-ink transition-colors hover:bg-[--t2]"
+                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-ink transition-colors hover:bg-(--t2)"
                           >
                             {Icon && <Icon className="h-4 w-4 shrink-0 text-muted" />}
                             <span className="flex-1 truncate">{row.label}</span>

@@ -68,7 +68,7 @@ export function LedgerDashboard({ rows, totalCount, netCents }: { rows: LedgerRo
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-sm">
               <thead>
-                <tr className="border-b border-[--hair]">
+                <tr className="border-b border-(--hair)">
                   {[t("table.date"), t("table.description"), t("table.family"), t("table.amount"), t("table.runningTotal")].map(
                     (h) => (
                       <th
@@ -90,7 +90,7 @@ export function LedgerDashboard({ rows, totalCount, netCents }: { rows: LedgerRo
                       ? t("table.invoiceRef", { number: r.invoiceNumber })
                       : t(r.status === "refunded" ? "table.refund" : "table.payment"));
                   return (
-                    <tr key={r.id} className="border-b border-[--hair] last:border-0">
+                    <tr key={r.id} className="border-b border-(--hair) last:border-0">
                       <td className="px-4 py-3 text-muted">{formatShortDate(r.createdAt.slice(0, 10))}</td>
                       <td className="px-4 py-3 text-ink">
                         {label}

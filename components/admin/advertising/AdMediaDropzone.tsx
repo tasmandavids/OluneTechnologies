@@ -108,7 +108,7 @@ export function AdMediaDropzone({
       <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted">{label}</div>
 
       {value ? (
-        <div className="rounded-xl border border-[--hair] bg-base p-2">
+        <div className="rounded-xl border border-(--hair) bg-base p-2">
           {kind === "video" ? (
             <video src={value} controls className="max-h-48 w-full rounded-lg bg-black" />
           ) : (
@@ -123,14 +123,14 @@ export function AdMediaDropzone({
               type="button"
               onClick={() => inputRef.current?.click()}
               disabled={busy}
-              className="rounded-lg border border-[--hair] bg-surface px-3 py-1.5 text-xs font-semibold text-ink disabled:opacity-50"
+              className="rounded-lg border border-(--hair) bg-surface px-3 py-1.5 text-xs font-semibold text-ink disabled:opacity-50"
             >
               {busy ? t("uploading") : t("replace")}
             </button>
             <button
               type="button"
               onClick={clear}
-              className="rounded-lg border border-[--hair] bg-surface px-3 py-1.5 text-xs font-semibold text-muted hover:text-ink"
+              className="rounded-lg border border-(--hair) bg-surface px-3 py-1.5 text-xs font-semibold text-muted hover:text-ink"
             >
               {t("remove")}
             </button>

@@ -39,7 +39,7 @@ function GuardianFields({
   const tCommon = useTranslations("common");
 
   return (
-    <div className="space-y-3 rounded-xl border border-[--hair] bg-base/50 p-4">
+    <div className="space-y-3 rounded-xl border border-(--hair) bg-base/50 p-4">
       <p className="text-xs font-bold uppercase tracking-wider text-muted">{label}</p>
       <div>
         <label className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-wider text-muted">
@@ -49,7 +49,7 @@ function GuardianFields({
           value={form.fullName}
           onChange={(e) => onChange("fullName", e.target.value)}
           placeholder={t("namePlaceholder")}
-          className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
+          className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-(--brand)"
         />
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -62,7 +62,7 @@ function GuardianFields({
             value={form.email}
             onChange={(e) => onChange("email", e.target.value)}
             placeholder={t("emailPlaceholder")}
-            className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
+            className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-(--brand)"
           />
         </div>
         <div>
@@ -73,7 +73,7 @@ function GuardianFields({
             value={form.phone}
             onChange={(e) => onChange("phone", e.target.value)}
             placeholder={t("phonePlaceholder")}
-            className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
+            className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-(--brand)"
           />
         </div>
       </div>
@@ -84,7 +84,7 @@ function GuardianFields({
         <select
           value={form.relationship}
           onChange={(e) => onChange("relationship", e.target.value)}
-          className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+          className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
         >
           {RELATIONSHIPS.map((r) => (
             <option key={r} value={r}>
@@ -157,10 +157,10 @@ export default function AddFamilyPanel({
         onClick={onClose}
       />
       <motion.aside
-        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-[--hair] bg-surface shadow-2xl"
+        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-(--hair) bg-surface shadow-2xl"
         {...panelSlide}
       >
-        <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">
+        <div className="flex items-center justify-between border-b border-(--hair) px-6 py-4">
           <h2 className="font-black text-ink">{t("title")}</h2>
           <button type="button" onClick={onClose} className="text-muted hover:text-ink">
             ✕
@@ -221,7 +221,7 @@ export default function AddFamilyPanel({
               <p className="text-xs font-semibold uppercase tracking-wider text-muted">
                 {t("linkChildren")}
               </p>
-              <div className="max-h-40 space-y-1 overflow-y-auto rounded-xl border border-[--hair] p-2">
+              <div className="max-h-40 space-y-1 overflow-y-auto rounded-xl border border-(--hair) p-2">
                 {students.map((s) => (
                   <label
                     key={s.id}
@@ -248,11 +248,11 @@ export default function AddFamilyPanel({
           )}
         </div>
 
-        <div className="flex gap-3 border-t border-[--hair] px-6 py-4">
+        <div className="flex gap-3 border-t border-(--hair) px-6 py-4">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 rounded-xl border border-[--hair] py-2.5 text-sm text-muted hover:text-ink"
+            className="flex-1 rounded-xl border border-(--hair) py-2.5 text-sm text-muted hover:text-ink"
           >
             {tCommon("cancel")}
           </button>

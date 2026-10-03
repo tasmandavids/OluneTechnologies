@@ -59,11 +59,11 @@ function DeleteConfirm({
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
       >
-        <div className="w-full max-w-sm rounded-2xl border border-[--hair] bg-surface p-6 shadow-2xl">
+        <div className="w-full max-w-sm rounded-2xl border border-(--hair) bg-surface p-6 shadow-2xl">
           <h3 className="font-black text-ink mb-1">{t("title", { name: cls.name })}</h3>
           <p className="text-sm text-muted mb-4">{t("description")}</p>
           {isRecurring && (
-            <label className="mb-4 flex items-start gap-2 rounded-lg border border-[--hair] bg-base px-3 py-2.5 text-xs text-ink cursor-pointer">
+            <label className="mb-4 flex items-start gap-2 rounded-lg border border-(--hair) bg-base px-3 py-2.5 text-xs text-ink cursor-pointer">
               <input
                 type="checkbox"
                 checked={deleteSeries}
@@ -75,7 +75,7 @@ function DeleteConfirm({
           )}
           {error && <p className="mb-3 text-xs text-red-400">{error}</p>}
           <div className="flex gap-3">
-            <button onClick={onClose} className="flex-1 rounded-xl border border-[--hair] py-2.5 text-sm text-muted hover:text-ink">
+            <button onClick={onClose} className="flex-1 rounded-xl border border-(--hair) py-2.5 text-sm text-muted hover:text-ink">
               {tCommon("cancel")}
             </button>
             <button
@@ -118,7 +118,7 @@ function ClassRowItem({
 
   return (
     <tr
-      className="border-b border-[--hair] last:border-0 hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)] transition-colors cursor-pointer"
+      className="border-b border-(--hair) last:border-0 hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)] transition-colors cursor-pointer"
       onClick={onView}
     >
       <td className="px-4 py-3">
@@ -160,7 +160,7 @@ function ClassRowItem({
           >
             {cls.enrolled}/{cls.capacity}
           </span>
-          <div className="hidden sm:block h-1.5 w-16 rounded-full bg-[--hair] overflow-hidden">
+          <div className="hidden sm:block h-1.5 w-16 rounded-full bg-(--hair) overflow-hidden">
             <div
               className="h-full rounded-full transition-all"
               style={{
@@ -279,15 +279,15 @@ export default function ClassesManager({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("searchPlaceholder")}
-          className="w-full max-w-sm rounded-xl border border-[--hair] bg-surface px-4 py-2.5 text-sm
-                     text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
+          className="w-full max-w-sm rounded-xl border border-(--hair) bg-surface px-4 py-2.5 text-sm
+                     text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-(--brand)"
         />
         {rooms.length > 0 && (
           <select
             value={roomFilter}
             onChange={(e) => setRoomFilter(e.target.value)}
-            className="rounded-xl border border-[--hair] bg-surface px-4 py-2.5 text-sm
-                       text-ink focus:outline-none focus:ring-1 focus:ring-[--brand]"
+            className="rounded-xl border border-(--hair) bg-surface px-4 py-2.5 text-sm
+                       text-ink focus:outline-none focus:ring-1 focus:ring-(--brand)"
           >
             <option value="">{tShared("allRooms")}</option>
             {rooms.map((r) => (
@@ -317,7 +317,7 @@ export default function ClassesManager({
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] text-left">
               <thead>
-                <tr className="border-b border-[--hair]">
+                <tr className="border-b border-(--hair)">
                   {tableHeaders.map((h) => (
                     <th
                       key={h || "actions"}

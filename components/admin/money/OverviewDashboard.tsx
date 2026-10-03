@@ -295,7 +295,7 @@ export function OverviewDashboard({
           <ul>
             {attention.map((a, i) => (
               <li key={a.key} style={i > 0 ? { borderTop: "1px solid var(--hair)" } : undefined}>
-                <Link href={a.href} className="flex items-center gap-3 px-6 py-4 transition-colors hover:bg-[--t1]">
+                <Link href={a.href} className="flex items-center gap-3 px-6 py-4 transition-colors hover:bg-(--t1)">
                   <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: a.warn ? "#dc2626" : "var(--brand)" }} />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-ink">{a.title}</p>

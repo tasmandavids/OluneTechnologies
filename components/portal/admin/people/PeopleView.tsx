@@ -58,7 +58,7 @@ function SearchInput({ value, onChange, placeholder }: { value: string; onChange
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full min-w-[200px] flex-1 rounded-[12px] border px-3.5 py-2 text-[12.5px] text-ink outline-none transition-colors placeholder:text-muted focus:border-[--ring] sm:max-w-[320px]"
+      className="w-full min-w-[200px] flex-1 rounded-[12px] border px-3.5 py-2 text-[12.5px] text-ink outline-none transition-colors placeholder:text-muted focus:border-(--ring) sm:max-w-[320px]"
       style={CONTROL_STYLE}
     />
   );
@@ -77,7 +77,7 @@ function FilterSelect<T extends string>({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value as T)}
-      className="rounded-[12px] border px-3 py-2 text-[12.5px] font-medium text-ink outline-none transition-colors focus:border-[--ring]"
+      className="rounded-[12px] border px-3 py-2 text-[12.5px] font-medium text-ink outline-none transition-colors focus:border-(--ring)"
       style={CONTROL_STYLE}
     >
       {options.map((o) => (
@@ -554,7 +554,7 @@ function StudentsTable({
           checked={allShownSelected}
           onChange={onToggleAll}
           aria-label={tStudents("selectAll")}
-          className="h-3.5 w-3.5 accent-[--brand]"
+          className="h-3.5 w-3.5 accent-(--brand)"
         />
         <div className={`grid ${COLS} items-center gap-3.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-muted`}>
           <span />
@@ -578,7 +578,7 @@ function StudentsTable({
                 checked={selectedIds.includes(s.id)}
                 onChange={() => onToggle(s.id)}
                 aria-label={s.name ?? t("unnamed")}
-                className="h-3.5 w-3.5 accent-[--brand]"
+                className="h-3.5 w-3.5 accent-(--brand)"
               />
               <button
                 type="button"
@@ -668,14 +668,14 @@ function StudentsTable({
                 <div>
                   <p className="mb-2.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-muted">{t("expand.actions")}</p>
                   <div className="flex flex-wrap gap-1.5">
-                    <Link href="/portal/admin/messages" className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-[--t2]" style={{ borderColor: "var(--ring)" }}>
+                    <Link href="/portal/admin/messages" className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-(--t2)" style={{ borderColor: "var(--ring)" }}>
                       {t("actions.messageGuardian")}
                     </Link>
-                    <Link href={`/portal/admin/students/${s.id}`} className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-[--t2]" style={{ borderColor: "var(--ring)" }}>
+                    <Link href={`/portal/admin/students/${s.id}`} className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-(--t2)" style={{ borderColor: "var(--ring)" }}>
                       {t("actions.viewProfile")}
                     </Link>
                     {s.balanceCents > 0 && (
-                      <Link href="/portal/admin/money?tab=collections" className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-[--t2]" style={{ borderColor: "var(--ring)" }}>
+                      <Link href="/portal/admin/money?tab=collections" className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-(--t2)" style={{ borderColor: "var(--ring)" }}>
                         {t("actions.chasePayment")}
                       </Link>
                     )}
@@ -722,7 +722,7 @@ function DraftInvoiceButton({ studentId }: { studentId: string }) {
         type="button"
         onClick={run}
         disabled={pending}
-        className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-[--t2] disabled:opacity-50"
+        className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-(--t2) disabled:opacity-50"
         style={{ borderColor: "var(--ring)" }}
       >
         {t("createDraftInvoice")}
@@ -776,10 +776,10 @@ function FamiliesTable({
                 {f.email && <p>{f.email}</p>}
                 {f.phone && <p>{f.phone}</p>}
                 <div className="mt-2.5 flex flex-wrap gap-1.5">
-                  <Link href="/portal/admin/messages" className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-[--t2]" style={{ borderColor: "var(--ring)" }}>
+                  <Link href="/portal/admin/messages" className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-(--t2)" style={{ borderColor: "var(--ring)" }}>
                     {t("actions.message")}
                   </Link>
-                  <Link href={`/portal/admin/parents/${f.id}`} className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-[--t2]" style={{ borderColor: "var(--ring)" }}>
+                  <Link href={`/portal/admin/parents/${f.id}`} className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-(--t2)" style={{ borderColor: "var(--ring)" }}>
                     {t("actions.viewProfile")}
                   </Link>
                 </div>
@@ -836,7 +836,7 @@ function LeadsTable({
                 {l.phone && <p>{l.phone}</p>}
                 {l.notes && <p className="mt-1.5">{l.notes}</p>}
                 <div className="mt-2.5">
-                  <Link href="/portal/admin/leads" className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-[--t2]" style={{ borderColor: "var(--ring)" }}>
+                  <Link href="/portal/admin/leads" className="rounded-[10px] border px-3 py-2 text-[11.5px] font-semibold text-ink transition-colors hover:bg-(--t2)" style={{ borderColor: "var(--ring)" }}>
                     {t("leads.openBoard")}
                   </Link>
                 </div>

@@ -168,7 +168,7 @@ export function AppearancePanel({
                     step={step}
                     value={state[key]}
                     onChange={(e) => update(key, Number(e.target.value))}
-                    className="w-full accent-[--brand]"
+                    className="w-full accent-(--brand)"
                   />
                   <p className="mt-1 text-[11px] leading-[1.4] text-muted">{t(`sliders.${key}.hint`)}</p>
                 </div>

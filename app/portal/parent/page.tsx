@@ -20,6 +20,9 @@ import EventsTickets, {
 import CheckinCardPanel from "@/components/portal/checkin/CheckinCardPanel";
 import { fetchPortalCheckinCards } from "@/lib/portal/checkin-card-data";
 import { isAppleWalletConfigured } from "@/lib/apple-wallet/config";
+import { loadAssignedForms } from "@/lib/forms/data";
+import { countOutstandingForms } from "@/lib/forms/types";
+import { getEntitlementsCached, hasModule } from "@/lib/portal/entitlements";
 
 export type ShopProduct = {
   id: string;
@@ -77,8 +80,6 @@ export default async function ParentPortal() {
     productsRes,
     eventsRes,
     ticketsRes,
-    pendingFormsRes,
-    costumeActionRes,
     unreadNotifRes,
     unreadMsgRes,
     unreadEmailRes,
@@ -139,12 +140,6 @@ export default async function ParentPortal() {
       .from("event_tickets")
       .select("event_id, quantity, status, qr_code")
       .eq("user_id", user!.id),
-
-    // Pending required forms count — fetched after we know studentIds below
-    Promise.resolve({ count: 0 }),
-
-    // Costumes needing size confirmation
-    Promise.resolve({ count: 0 }),
 
     // Unread notifications
     supabase
@@ -272,6 +267,25 @@ export default async function ParentPortal() {
     .filter((i) => i.status === "sent" || i.status === "overdue")
     .reduce((s, i) => s + i.amountCents, 0);
 
+  // "Needs you this week": required forms still unsigned, and costumes waiting
+  // on a size. Both depend on the children resolved above, so they run here.
+  const studentIds = children.map((c) => c.studentId);
+  const [pendingFormCount, costumeActionCount] = await Promise.all([
+    studioId
+      ? loadAssignedForms(supabase, user!.id, studioId, "parent", profileRes.data?.full_name ?? null)
+          .then(({ forms, responses }) => countOutstandingForms(forms, responses))
+          .catch(() => 0)
+      : Promise.resolve(0),
+    studioId && studentIds.length > 0 && hasModule(await getEntitlementsCached(studioId), "costumes")
+      ? supabase
+          .from("student_costumes")
+          .select("id", { count: "exact", head: true })
+          .in("student_id", studentIds)
+          .eq("status", "pending_size")
+          .then((r) => r.count ?? 0)
+      : Promise.resolve(0),
+  ]);
+
   const upcomingClasses = children.flatMap((child) =>
     child.classes.map((c) => ({
       childName: child.name ?? "Dancer",
@@ -290,8 +304,8 @@ export default async function ParentPortal() {
         commandCentre={{
           upcomingClasses,
           outstandingCents: outstanding,
-          pendingFormCount: 0,
-          costumeActionCount: 0,
+          pendingFormCount,
+          costumeActionCount,
           unreadNotificationCount: unreadNotifRes.count ?? 0,
           unreadMessageCount,
         }}

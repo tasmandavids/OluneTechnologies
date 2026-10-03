@@ -43,7 +43,7 @@ export function ManageBillingButton({ variant = "solid" }: { variant?: "solid" |
         className={
           variant === "solid"
             ? "rounded-full bg-brand px-5 py-2 text-xs font-bold text-white disabled:opacity-60"
-            : "rounded-full border border-[--hair] px-5 py-2 text-xs font-bold text-ink disabled:opacity-60"
+            : "rounded-full border border-(--hair) px-5 py-2 text-xs font-bold text-ink disabled:opacity-60"
         }
       >
         {busy ? t("opening") : t("manageBilling")}

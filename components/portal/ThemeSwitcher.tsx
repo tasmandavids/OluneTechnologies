@@ -36,7 +36,7 @@ export function ThemeSwitcher({ value, className = "" }: Props) {
         disabled={pending}
         aria-label={t("selectTheme")}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-xs text-ink outline-none transition hover:bg-base disabled:opacity-60"
+        className="rounded-lg border border-(--hair) bg-surface px-2 py-1.5 text-xs text-ink outline-none transition hover:bg-base disabled:opacity-60"
       >
         <option value="light">{t("themeLight")}</option>
         <option value="dark">{t("themeDark")}</option>

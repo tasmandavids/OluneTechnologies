@@ -139,7 +139,7 @@ export default function TimeClockCard({ state }: { state: ClockState }) {
               onChange={(e) => setNote(e.target.value)}
               maxLength={500}
               placeholder={t("notePlaceholder")}
-              className="w-full rounded-xl border border-[--hair] bg-surface px-4 py-2.5 text-sm text-ink"
+              className="w-full rounded-xl border border-(--hair) bg-surface px-4 py-2.5 text-sm text-ink"
             />
           )}
           <div className="flex flex-wrap gap-2">
@@ -156,7 +156,7 @@ export default function TimeClockCard({ state }: { state: ClockState }) {
               <button
                 type="button"
                 onClick={() => setShowNote(true)}
-                className="rounded-xl border border-[--hair] px-4 py-2.5 text-sm font-medium text-muted transition hover:text-ink"
+                className="rounded-xl border border-(--hair) px-4 py-2.5 text-sm font-medium text-muted transition hover:text-ink"
               >
                 {t("addNote")}
               </button>
@@ -175,7 +175,7 @@ export default function TimeClockCard({ state }: { state: ClockState }) {
         </button>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-[--hair] pt-3 text-xs text-muted">
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-(--hair) pt-3 text-xs text-muted">
         <span>{t("weekTotal", { total: formatMinutes(weekSoFar) })}</span>
         {state.scheduledMinutes > 0 && (
           <span>{t("rostered", { total: formatMinutes(state.scheduledMinutes) })}</span>

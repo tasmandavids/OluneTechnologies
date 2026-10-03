@@ -30,7 +30,7 @@ function ProgressBar({ paid, total }: { paid: number; total: number }) {
   return (
     <div className="flex items-center gap-2">
       <div className="h-1.5 flex-1 rounded-full bg-[color-mix(in_srgb,var(--text)_8%,transparent)]">
-        <div className="h-1.5 rounded-full bg-[--brand]" style={{ width: `${pct}%` }} />
+        <div className="h-1.5 rounded-full bg-(--brand)" style={{ width: `${pct}%` }} />
       </div>
       <span className="whitespace-nowrap text-xs text-muted">{paid}/{total}</span>
     </div>
@@ -186,10 +186,10 @@ export function TermPaymentPlansManager({
       {/* Active plans */}
       {active.length > 0 && (
         <GlassPanel className="!p-0 overflow-hidden">
-          <div className="border-b border-[--hair] px-6 py-4">
+          <div className="border-b border-(--hair) px-6 py-4">
             <h2 className="text-sm font-bold text-ink">Active plans</h2>
           </div>
-          <ul className="divide-y divide-[--hair]">
+          <ul className="divide-y divide-(--hair)">
             {active.map((plan) => {
               const nextAmount = plan.installmentAmounts[plan.installmentsPaid];
               return (
@@ -234,10 +234,10 @@ export function TermPaymentPlansManager({
       {/* Historical plans */}
       {historical.length > 0 && (
         <GlassPanel className="!p-0 overflow-hidden">
-          <div className="border-b border-[--hair] px-6 py-4">
+          <div className="border-b border-(--hair) px-6 py-4">
             <h2 className="text-sm font-bold text-ink">Completed &amp; cancelled</h2>
           </div>
-          <ul className="divide-y divide-[--hair]">
+          <ul className="divide-y divide-(--hair)">
             {historical.map((plan) => (
               <li key={plan.id} className="flex items-center justify-between px-6 py-3">
                 <div>
@@ -266,7 +266,7 @@ export function TermPaymentPlansManager({
         <div className="fixed inset-0 z-50 flex">
           <div className="fixed inset-0 bg-black/40" onClick={() => setShowCreate(false)} />
           <div className="relative ml-auto flex h-full w-full max-w-md flex-col bg-surface shadow-xl">
-            <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">
+            <div className="flex items-center justify-between border-b border-(--hair) px-6 py-4">
               <h2 className="text-base font-bold text-ink">New payment plan</h2>
               <button onClick={() => setShowCreate(false)} className="text-xl leading-none text-muted hover:text-ink">&times;</button>
             </div>
@@ -277,7 +277,7 @@ export function TermPaymentPlansManager({
                 <select
                   value={form.payerId}
                   onChange={(e) => setPayerId(e.target.value)}
-                  className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 >
                   {payers.map((p) => (
                     <option key={p.id} value={p.id}>{p.name}{p.email ? ` — ${p.email}` : ""}</option>
@@ -298,7 +298,7 @@ export function TermPaymentPlansManager({
                           type="checkbox"
                           checked={form.invoiceIds.includes(inv.id)}
                           onChange={() => toggleInvoice(inv.id)}
-                          className="rounded border-[--hair]"
+                          className="rounded border-(--hair)"
                         />
                         <span className="text-ink">
                           #{inv.invoiceNumber} — {formatMoney(inv.amountCents)}
@@ -326,7 +326,7 @@ export function TermPaymentPlansManager({
                     step="0.01"
                     value={form.totalDollars}
                     onChange={(e) => setForm((f) => ({ ...f, totalDollars: e.target.value }))}
-                    className="w-full rounded-lg border border-[--hair] bg-base py-2 pl-7 pr-3 text-sm text-ink"
+                    className="w-full rounded-lg border border-(--hair) bg-base py-2 pl-7 pr-3 text-sm text-ink"
                     placeholder="0.00"
                   />
                 </div>
@@ -338,7 +338,7 @@ export function TermPaymentPlansManager({
                 <select
                   value={form.installmentCount}
                   onChange={(e) => setForm((f) => ({ ...f, installmentCount: e.target.value }))}
-                  className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 >
                   {[2, 3, 4, 6, 9, 10, 12].map((n) => (
                     <option key={n} value={n}>{n} installments</option>
@@ -358,14 +358,14 @@ export function TermPaymentPlansManager({
                   type="date"
                   value={form.firstDueDate}
                   onChange={(e) => setForm((f) => ({ ...f, firstDueDate: e.target.value }))}
-                  className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 />
               </div>
 
               {error && <p className="text-sm text-red-600">{error}</p>}
             </div>
-            <div className="flex gap-3 border-t border-[--hair] px-6 py-4">
-              <button onClick={() => setShowCreate(false)} className="flex-1 rounded-xl border border-[--hair] py-2 text-sm font-semibold text-ink hover:bg-base">Cancel</button>
+            <div className="flex gap-3 border-t border-(--hair) px-6 py-4">
+              <button onClick={() => setShowCreate(false)} className="flex-1 rounded-xl border border-(--hair) py-2 text-sm font-semibold text-ink hover:bg-base">Cancel</button>
               <button
                 disabled={pending}
                 onClick={handleCreate}

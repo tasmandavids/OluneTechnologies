@@ -86,7 +86,7 @@ export default async function PlanLockedPage() {
         </div>
 
         {suspended ? (
-          <div className="mx-auto max-w-md rounded-2xl border border-[--hair] bg-surface p-6 text-center">
+          <div className="mx-auto max-w-md rounded-2xl border border-(--hair) bg-surface p-6 text-center">
             <p className="text-sm text-muted">{t("locked.contactSupport")}</p>
           </div>
         ) : (

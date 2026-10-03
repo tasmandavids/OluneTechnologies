@@ -57,7 +57,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className={`w-full rounded-xl border border-[--hair] bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition ${props.className ?? ""}`}
+      className={`w-full rounded-xl border border-(--hair) bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition ${props.className ?? ""}`}
     />
   );
 }
@@ -66,7 +66,7 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
       {...props}
-      className={`w-full rounded-xl border border-[--hair] bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition resize-none ${props.className ?? ""}`}
+      className={`w-full rounded-xl border border-(--hair) bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition resize-none ${props.className ?? ""}`}
     />
   );
 }
@@ -75,7 +75,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
       {...props}
-      className={`w-full rounded-xl border border-[--hair] bg-surface px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition appearance-none cursor-pointer ${props.className ?? ""}`}
+      className={`w-full rounded-xl border border-(--hair) bg-surface px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition appearance-none cursor-pointer ${props.className ?? ""}`}
     />
   );
 }
@@ -144,7 +144,7 @@ function Step1Details({
               className={`rounded-xl border py-2.5 text-sm font-medium transition ${
                 state.eventType === value
                   ? "border-brand bg-brand/10 text-brand"
-                  : "border-[--hair] bg-surface text-ink hover:border-brand/40"
+                  : "border-(--hair) bg-surface text-ink hover:border-brand/40"
               }`}
             >
               {t(`eventTypes.${value}`)}
@@ -269,7 +269,7 @@ function Step2Venue({
               className={`rounded-xl border px-4 py-3 text-left transition ${
                 state.stageType === value
                   ? "border-brand bg-brand/10"
-                  : "border-[--hair] bg-surface hover:border-brand/40"
+                  : "border-(--hair) bg-surface hover:border-brand/40"
               }`}
             >
               <div className={`text-sm font-semibold ${state.stageType === value ? "text-brand" : "text-ink"}`}>{t(`stageTypes.${value}.label`)}</div>
@@ -482,7 +482,7 @@ function Step3Team({
       <button
         type="button"
         onClick={addCrew}
-        className="w-full rounded-xl border-2 border-dashed border-[--hair] py-3 text-sm text-muted hover:border-brand/40 hover:text-brand transition flex items-center justify-center gap-2"
+        className="w-full rounded-xl border-2 border-dashed border-(--hair) py-3 text-sm text-muted hover:border-brand/40 hover:text-brand transition flex items-center justify-center gap-2"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -619,7 +619,7 @@ function Step4Cast({
       {state.castGroups.map((group, gi) => (
         <div key={gi} className="box rounded-xl overflow-hidden">
           {/* Group header */}
-          <div className="flex items-center gap-3 px-4 py-3 bg-[--subtle]/40 border-b border-[--hair]">
+          <div className="flex items-center gap-3 px-4 py-3 bg-(--t1)/40 border-b border-(--hair)">
             <Input
               placeholder={t("cast.groupNamePlaceholder")}
               value={group.name}
@@ -753,7 +753,7 @@ function Step6Review({
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="box rounded-2xl overflow-hidden">
-        <div className="px-5 py-4 bg-[--subtle]/30 border-b border-[--hair]">
+        <div className="px-5 py-4 bg-(--t1)/30 border-b border-(--hair)">
           <h3 className="text-sm font-bold text-ink">{state.name || t("review.unnamedEvent")}</h3>
           <p className="text-xs text-muted mt-0.5">{t(`eventTypes.${state.eventType}`)}</p>
         </div>
@@ -895,11 +895,11 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-surface overflow-hidden">
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="shrink-0 flex items-center justify-between px-6 py-4 border-b border-[--hair] bg-surface">
+      <div className="shrink-0 flex items-center justify-between px-6 py-4 border-b border-(--hair) bg-surface">
         <div className="flex items-center gap-4">
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-[--subtle] text-muted hover:text-ink transition"
+            className="p-1.5 rounded-lg hover:bg-(--t1) text-muted hover:text-ink transition"
             title={t("shell.close")}
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -932,7 +932,7 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
                   w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold transition
                   ${current ? "bg-brand text-white"
                     : done    ? "bg-brand/20 text-brand cursor-pointer hover:bg-brand/30"
-                    : "bg-[--subtle] text-muted"}
+                    : "bg-(--t1) text-muted"}
                 `}>
                   {done ? (
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -944,7 +944,7 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
                   {t(`steps.${s.key}`)}
                 </span>
                 {i < STEPS.length - 1 && (
-                  <div className={`w-4 h-0.5 rounded-full mx-1 ${done ? "bg-brand/30" : "bg-[--hair]"}`} />
+                  <div className={`w-4 h-0.5 rounded-full mx-1 ${done ? "bg-brand/30" : "bg-(--hair)"}`} />
                 )}
               </button>
             );
@@ -995,11 +995,11 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
       </div>
 
       {/* ── Footer ─────────────────────────────────────────────────────────── */}
-      <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-[--hair] bg-surface">
+      <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-(--hair) bg-surface">
         <button
           onClick={goBack}
           disabled={step === 1 || isPending}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-ink bg-[--subtle] hover:bg-[--hair] transition disabled:opacity-40"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-ink bg-(--t1) hover:bg-(--hair) transition disabled:opacity-40"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -1013,7 +1013,7 @@ export function ProductionWizard({ initialState, profiles, classes, onClose }: P
               <button
                 onClick={() => handlePublish(false)}
                 disabled={isPending}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-ink bg-[--subtle] hover:bg-[--hair] transition disabled:opacity-40"
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-ink bg-(--t1) hover:bg-(--hair) transition disabled:opacity-40"
               >
                 {t("shell.saveDraft")}
               </button>

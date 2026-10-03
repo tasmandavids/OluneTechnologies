@@ -61,7 +61,7 @@ export function AdvertisingHub({
           </p>
           <Link
             href={CONNECTIONS_PATH}
-            className="shrink-0 rounded-full border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[--t2]"
+            className="shrink-0 rounded-full border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-(--t2)"
             style={{ borderColor: "var(--ring)" }}
           >
             {t("connect.manageInSettings")}

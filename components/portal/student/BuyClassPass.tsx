@@ -141,7 +141,7 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
       <AnimatePresence>
         {modal && (
           <PaymentModalShell onClose={close}>
-            <div className="shrink-0 border-b border-[--hair] px-6 py-5">
+            <div className="shrink-0 border-b border-(--hair) px-6 py-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-black text-ink">{modalTitle}</h3>
@@ -189,7 +189,7 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
                     <img
                       src={modal.pass.qrCode}
                       alt={t("qrAlt")}
-                      className="h-48 w-48 rounded-xl border border-[--hair] bg-white p-2"
+                      className="h-48 w-48 rounded-xl border border-(--hair) bg-white p-2"
                     />
                   )}
                   <p className="mt-3 text-xs text-muted">{t("qrHint")}</p>
@@ -228,7 +228,7 @@ export default function BuyClassPass({ priceCents, existingPasses }: Props) {
                   <img
                     src={purchasedQr}
                     alt={t("qrAlt")}
-                    className="h-48 w-48 rounded-xl border border-[--hair] bg-white p-2"
+                    className="h-48 w-48 rounded-xl border border-(--hair) bg-white p-2"
                   />
                   <p className="mt-3 text-xs text-muted">{t("qrHint")}</p>
                   <button

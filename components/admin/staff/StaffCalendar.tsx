@@ -154,7 +154,7 @@ export default function StaffCalendar({
           <button
             type="button"
             onClick={() => setWeekStart(addWeeks(weekStart, -1))}
-            className="rounded-lg border border-[--hair] px-3 py-1.5 text-sm text-muted hover:text-ink"
+            className="rounded-lg border border-(--hair) px-3 py-1.5 text-sm text-muted hover:text-ink"
           >
             {t("prevWeek")}
           </button>
@@ -164,7 +164,7 @@ export default function StaffCalendar({
           <button
             type="button"
             onClick={() => setWeekStart(addWeeks(weekStart, 1))}
-            className="rounded-lg border border-[--hair] px-3 py-1.5 text-sm text-muted hover:text-ink"
+            className="rounded-lg border border-(--hair) px-3 py-1.5 text-sm text-muted hover:text-ink"
           >
             {t("nextWeek")}
           </button>
@@ -173,7 +173,7 @@ export default function StaffCalendar({
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value as typeof roleFilter)}
-            className="rounded-lg border border-[--hair] bg-surface px-3 py-1.5 text-sm text-ink"
+            className="rounded-lg border border-(--hair) bg-surface px-3 py-1.5 text-sm text-ink"
           >
             <option value="all">{t("filterAllRoles")}</option>
             <option value="teacher">{t("filterTeachers")}</option>
@@ -183,7 +183,7 @@ export default function StaffCalendar({
             <select
               value={locationFilter}
               onChange={(e) => setLocationFilter(e.target.value)}
-              className="rounded-lg border border-[--hair] bg-surface px-3 py-1.5 text-sm text-ink"
+              className="rounded-lg border border-(--hair) bg-surface px-3 py-1.5 text-sm text-ink"
             >
               <option value="">{t("filterAllLocations")}</option>
               {locations.map((loc) => (
@@ -199,7 +199,7 @@ export default function StaffCalendar({
       <GlassPanel className="!p-0 overflow-x-auto">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead>
-            <tr className="border-b border-[--hair]">
+            <tr className="border-b border-(--hair)">
               <th className="sticky left-0 z-10 bg-surface px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-wider text-muted">
                 {tCommon("name")}
               </th>
@@ -216,7 +216,7 @@ export default function StaffCalendar({
           </thead>
           <tbody>
             {filteredStaff.map((member) => (
-              <tr key={member.id} className="border-b border-[--hair] last:border-0">
+              <tr key={member.id} className="border-b border-(--hair) last:border-0">
                 <td className="sticky left-0 z-10 bg-surface px-3 py-2 font-medium text-ink">
                   <div>{member.name ?? tShared("unknown")}</div>
                   <div className="text-[0.62rem] uppercase tracking-wider text-muted">
@@ -232,7 +232,7 @@ export default function StaffCalendar({
                       <button
                         type="button"
                         onClick={() => openNewShift(member.id, date)}
-                        className="mb-1 w-full min-h-[48px] rounded-lg border border-dashed border-[--hair] p-1 text-left transition hover:border-brand/40 hover:bg-base/50"
+                        className="mb-1 w-full min-h-[48px] rounded-lg border border-dashed border-(--hair) p-1 text-left transition hover:border-brand/40 hover:bg-base/50"
                       >
                         {dayShifts.map((s) => (
                           <div
@@ -250,7 +250,7 @@ export default function StaffCalendar({
                         {teaching.map((tb) => (
                           <div
                             key={tb.id}
-                            className="mb-1 rounded-md border border-[--hair] bg-base/80 px-1.5 py-0.5 text-[0.65rem] text-muted"
+                            className="mb-1 rounded-md border border-(--hair) bg-base/80 px-1.5 py-0.5 text-[0.65rem] text-muted"
                             title={t("teachingClass")}
                           >
                             {tb.className} {formatTimeShort(tb.startTime, locale)}
@@ -293,7 +293,7 @@ export default function StaffCalendar({
                 type="date"
                 value={shiftForm.shiftDate}
                 onChange={(e) => setShiftForm({ ...shiftForm, shiftDate: e.target.value })}
-                className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
               />
             </div>
             <div>
@@ -302,7 +302,7 @@ export default function StaffCalendar({
                 type="time"
                 value={shiftForm.startTime}
                 onChange={(e) => setShiftForm({ ...shiftForm, startTime: e.target.value })}
-                className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
               />
             </div>
             <div>
@@ -311,7 +311,7 @@ export default function StaffCalendar({
                 type="time"
                 value={shiftForm.endTime}
                 onChange={(e) => setShiftForm({ ...shiftForm, endTime: e.target.value })}
-                className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
               />
             </div>
             {locations.length > 0 && (
@@ -320,7 +320,7 @@ export default function StaffCalendar({
                 <select
                   value={shiftForm.locationName}
                   onChange={(e) => setShiftForm({ ...shiftForm, locationName: e.target.value })}
-                  className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
                 >
                   <option value="">{tShared("none")}</option>
                   {locations.map((loc) => (
@@ -337,7 +337,7 @@ export default function StaffCalendar({
             <input
               value={shiftForm.notes}
               onChange={(e) => setShiftForm({ ...shiftForm, notes: e.target.value })}
-              className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
             />
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -353,7 +353,7 @@ export default function StaffCalendar({
             <button
               type="button"
               onClick={() => setShiftForm(null)}
-              className="rounded-xl border border-[--hair] px-4 py-2 text-sm text-muted"
+              className="rounded-xl border border-(--hair) px-4 py-2 text-sm text-muted"
             >
               {tCommon("cancel")}
             </button>

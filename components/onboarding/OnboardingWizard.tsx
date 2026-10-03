@@ -279,7 +279,7 @@ export function OnboardingWizard({
                             key={key}
                             type="button"
                             onClick={() => pickVertical(key)}
-                            className="rounded-2xl border border-[--hair] bg-base/40 p-4 text-left transition hover:border-[--brand]"
+                            className="rounded-2xl border border-(--hair) bg-base/40 p-4 text-left transition hover:border-(--brand)"
                           >
                             <p className="text-sm font-black text-ink">{t(`vertical.options.${key}`)}</p>
                             {!ready && (
@@ -366,7 +366,7 @@ export function OnboardingWizard({
                       <button
                         type="button"
                         onClick={() => pickSystem("studio_owner")}
-                        className="w-full rounded-2xl border border-[--hair] bg-base/40 p-5 text-left transition hover:border-[--brand]"
+                        className="w-full rounded-2xl border border-(--hair) bg-base/40 p-5 text-left transition hover:border-(--brand)"
                       >
                         <p className="font-black text-ink">{t("system.studioOwner.title")}</p>
                         <p className="mt-1 text-sm text-muted">{t("system.studioOwner.desc")}</p>
@@ -374,7 +374,7 @@ export function OnboardingWizard({
                       <button
                         type="button"
                         onClick={() => pickSystem("instructor")}
-                        className="w-full rounded-2xl border border-[--hair] bg-base/40 p-5 text-left transition hover:border-[--brand]"
+                        className="w-full rounded-2xl border border-(--hair) bg-base/40 p-5 text-left transition hover:border-(--brand)"
                       >
                         <p className="font-black text-ink">{t("system.instructor.title")}</p>
                         <p className="mt-1 text-sm text-muted">{t("system.instructor.desc")}</p>
@@ -453,7 +453,7 @@ export function OnboardingWizard({
                         autoFocus
                       />
                       <div>
-                        <div className="flex items-center overflow-hidden rounded-xl border border-[--hair] bg-base/40 focus-within:border-[--brand]">
+                        <div className="flex items-center overflow-hidden rounded-xl border border-(--hair) bg-base/40 focus-within:border-(--brand)">
                           <input className="flex-1 bg-transparent px-3 py-2.5 text-sm outline-none" value={slug}
                             onChange={(e) => { setSlugEdited(true); setSlug(slugify(e.target.value)); }}
                             placeholder={isInstructor ? t("profile.slugPlaceholder") : t("studio.slugPlaceholder")} />
@@ -477,7 +477,7 @@ export function OnboardingWizard({
                             style={{ background: c, boxShadow: brand === c ? "0 0 0 2px var(--surface), 0 0 0 4px #fff" : "none" }} />
                         ))}
                         <input type="color" value={brand} onChange={(e) => setBrand(e.target.value)}
-                          className="ml-auto h-8 w-10 cursor-pointer rounded-lg border border-[--hair] bg-transparent p-0.5" aria-label={t("brand.customColour")} />
+                          className="ml-auto h-8 w-10 cursor-pointer rounded-lg border border-(--hair) bg-transparent p-0.5" aria-label={t("brand.customColour")} />
                       </div>
                       <p className="mt-1.5 text-xs text-muted">{t("brand.changeLater")}</p>
                     </div>

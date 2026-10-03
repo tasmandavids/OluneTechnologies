@@ -74,7 +74,7 @@ export default async function InquiryDetailPage({
                 className="h-10 w-10 rounded-full flex items-center justify-center"
                 style={{ background: "color-mix(in srgb, var(--brand) 14%, transparent)" }}
               >
-                <span className="text-sm font-bold text-[--brand]">
+                <span className="text-sm font-bold text-(--brand)">
                   {(instructor?.full_name ?? "?").charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -89,14 +89,14 @@ export default async function InquiryDetailPage({
           {instructorSlug && (
             <Link
               href={`/instructor/${instructorSlug}`}
-              className="text-xs text-[--brand] hover:underline shrink-0"
+              className="text-xs text-(--brand) hover:underline shrink-0"
             >
               View profile
             </Link>
           )}
         </div>
 
-        <div className="border-t border-[--hair] pt-3 space-y-1.5">
+        <div className="border-t border-(--hair) pt-3 space-y-1.5">
           <p className="text-sm font-medium text-ink">{inquiry.subject}</p>
           {inquiry.engagement_type && (
             <Detail label="Type" value={inquiry.engagement_type} />
@@ -112,7 +112,7 @@ export default async function InquiryDetailPage({
           )}
         </div>
 
-        <div className="border-t border-[--hair] pt-3">
+        <div className="border-t border-(--hair) pt-3">
           <p className="text-xs font-medium text-muted mb-1">Opening message</p>
           <p className="text-sm text-ink whitespace-pre-line">{inquiry.message}</p>
         </div>

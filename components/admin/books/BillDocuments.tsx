@@ -156,7 +156,7 @@ export function BillDocuments({ billId, documents, draft, aiAvailable, preview }
               ) : (
                 <p className="px-4 py-6 text-sm text-muted">
                   {t("previewUnavailable")}{" "}
-                  <button type="button" className="font-semibold text-[--brand]" onClick={() => open(current.id)}>
+                  <button type="button" className="font-semibold text-(--brand)" onClick={() => open(current.id)}>
                     {t("openInTab")}
                   </button>
                 </p>

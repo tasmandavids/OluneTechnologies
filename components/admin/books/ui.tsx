@@ -5,10 +5,10 @@ import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
 import { formatLedgerMoney } from "@/lib/ledger/money";
 
 export const fieldClass =
-  "w-full rounded-xl border px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-[--brand] disabled:opacity-60";
+  "w-full rounded-xl border px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-(--brand) disabled:opacity-60";
 export const fieldStyle = { background: "var(--surface)", borderColor: "var(--hair)" } as const;
 export const smallFieldClass =
-  "w-full rounded-lg border px-2.5 py-1.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-[--brand] disabled:opacity-60";
+  "w-full rounded-lg border px-2.5 py-1.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-(--brand) disabled:opacity-60";
 
 export const primaryButton = "btn-brand rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-50";
 export const secondaryButton = "rounded-xl border px-4 py-2 text-sm font-semibold text-ink disabled:opacity-50";

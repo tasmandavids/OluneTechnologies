@@ -81,7 +81,7 @@ export function DebugTapForm() {
         <button
           type="submit"
           disabled={pending || !token}
-          className="rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[--t2] disabled:opacity-60"
+          className="rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-(--t2) disabled:opacity-60"
           style={{ borderColor: "var(--ring)" }}
         >
           {pending ? "Tapping…" : "Tap"}

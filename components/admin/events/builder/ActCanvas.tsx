@@ -40,7 +40,7 @@ function formatDuration(secs: number): string {
 function ActConnector({ hasWarning }: { hasWarning: boolean }) {
   return (
     <div className="flex flex-col items-center py-0.5">
-      <div className={`w-px h-3 ${hasWarning ? "bg-amber-400" : "bg-[--hair]"}`} />
+      <div className={`w-px h-3 ${hasWarning ? "bg-amber-400" : "bg-(--hair)"}`} />
       {hasWarning ? (
         <div className="flex flex-col items-center gap-0.5">
           <svg className="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -50,11 +50,11 @@ function ActConnector({ hasWarning }: { hasWarning: boolean }) {
         </div>
       ) : (
         // Arrow tip
-        <svg width="10" height="6" viewBox="0 0 10 6" className="text-[--hair]">
+        <svg width="10" height="6" viewBox="0 0 10 6" className="text-(--hair)">
           <path d="M5 6L0 0h10L5 6z" fill="currentColor" />
         </svg>
       )}
-      <div className={`w-px h-3 ${hasWarning ? "bg-amber-400" : "bg-[--hair]"}`} />
+      <div className={`w-px h-3 ${hasWarning ? "bg-amber-400" : "bg-(--hair)"}`} />
     </div>
   );
 }
@@ -85,7 +85,7 @@ function ActCard({
         mx-3 rounded-xl border cursor-pointer transition-all select-none
         ${isSelected
           ? "border-brand bg-brand/5 shadow-sm"
-          : "border-[--hair] bg-surface hover:border-brand/40 hover:shadow-sm"
+          : "border-(--hair) bg-surface hover:border-brand/40 hover:shadow-sm"
         }
       `}
     >
@@ -152,7 +152,7 @@ function AddActMenu({ onAdd }: { onAdd: (type: ActType) => void }) {
     <div className="relative mx-3 mt-2">
       <button
         onClick={() => setOpen(v => !v)}
-        className="w-full rounded-xl border-2 border-dashed border-[--hair] py-2.5 text-xs font-semibold text-muted hover:border-brand/40 hover:text-brand transition flex items-center justify-center gap-1.5"
+        className="w-full rounded-xl border-2 border-dashed border-(--hair) py-2.5 text-xs font-semibold text-muted hover:border-brand/40 hover:text-brand transition flex items-center justify-center gap-1.5"
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -164,7 +164,7 @@ function AddActMenu({ onAdd }: { onAdd: (type: ActType) => void }) {
         <>
           {/* Backdrop */}
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute bottom-full mb-1 left-0 right-0 z-20 rounded-xl border border-[--hair] bg-surface shadow-lg overflow-hidden">
+          <div className="absolute bottom-full mb-1 left-0 right-0 z-20 rounded-xl border border-(--hair) bg-surface shadow-lg overflow-hidden">
             {ADD_ACT_TYPES.map(({ type, label, icon }) => (
               <button
                 key={type}

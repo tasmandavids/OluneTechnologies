@@ -42,7 +42,7 @@ import {
 } from "@/app/portal/admin/money/product-actions";
 
 const fieldClass =
-  "w-full rounded-xl border px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-[--brand]";
+  "w-full rounded-xl border px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-(--brand)";
 const fieldStyle = { background: "var(--surface)", borderColor: "var(--hair)" } as const;
 
 type CodeOption = { code: string; name: string };
@@ -736,7 +736,7 @@ export function ProductsCatalog({
                             ],
                           })
                         }
-                        className="text-xs font-semibold text-[--brand]"
+                        className="text-xs font-semibold text-(--brand)"
                       >
                         {t("fields.addIncluded")}
                       </button>
@@ -855,7 +855,7 @@ export function ProductsCatalog({
                       tiers: [...draft.tiers, { minQuantity: "2", unitDollars: "" }],
                     })
                   }
-                  className="text-xs font-semibold text-[--brand]"
+                  className="text-xs font-semibold text-(--brand)"
                 >
                   {t("tiers.add")}
                 </button>
@@ -1099,7 +1099,7 @@ function CodeInput({
           style={fieldStyle}
         />
         {options && (
-          <button onClick={() => setFreeText(false)} className="text-[11px] text-[--brand]">
+          <button onClick={() => setFreeText(false)} className="text-[11px] text-(--brand)">
             ↩
           </button>
         )}

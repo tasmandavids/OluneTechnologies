@@ -89,14 +89,14 @@ export function OwnerSupportPanel({
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder={t("subject")}
-            className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm"
           />
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={4}
             placeholder={t("bodyPlaceholder")}
-            className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm"
           />
           <button
             onClick={createThread}
@@ -147,13 +147,13 @@ export function OwnerSupportPanel({
             value={reply}
             onChange={(e) => setReply(e.target.value)}
             rows={2}
-            className="mb-2 w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm"
+            className="mb-2 w-full rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm"
             placeholder={t("replyPlaceholder")}
           />
           <button
             onClick={sendReply}
             disabled={pending}
-            className="rounded-full border border-[--hair] px-4 py-1.5 text-xs font-bold uppercase"
+            className="rounded-full border border-(--hair) px-4 py-1.5 text-xs font-bold uppercase"
           >
             {pending ? tShared("sending") : t("sendReply")}
           </button>

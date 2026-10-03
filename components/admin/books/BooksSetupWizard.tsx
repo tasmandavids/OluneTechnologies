@@ -414,7 +414,7 @@ export function BooksSetupWizard(props: Props) {
               </Field>
             </div>
             {registered && conversionDate !== suggestedStart && (
-              <button type="button" className="text-xs font-semibold text-[--brand]" onClick={() => setConversionDate(suggestedStart)}>
+              <button type="button" className="text-xs font-semibold text-(--brand)" onClick={() => setConversionDate(suggestedStart)}>
                 {t("periods.useSuggested", { date: suggestedStart })}
               </button>
             )}

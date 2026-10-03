@@ -84,7 +84,7 @@ function ToastCard({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
       onMouseLeave={resume}
       onFocus={pause}
       onBlur={resume}
-      className="pointer-events-auto flex w-full items-start gap-3 rounded-2xl border border-[--hair] bg-surface px-4 py-3 text-sm text-ink shadow-[0_16px_40px_-16px_rgba(10,10,10,0.35)]"
+      className="pointer-events-auto flex w-full items-start gap-3 rounded-2xl border border-(--hair) bg-surface px-4 py-3 text-sm text-ink shadow-[0_16px_40px_-16px_rgba(10,10,10,0.35)]"
       style={{ borderLeft: `3px solid ${VARIANT_ACCENT[toast.variant]}` }}
     >
       <VariantIcon variant={toast.variant} />

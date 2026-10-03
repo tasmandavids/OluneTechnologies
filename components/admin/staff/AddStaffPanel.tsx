@@ -114,10 +114,10 @@ export default function AddStaffPanel({
       >
         <motion.div
           {...panelSlide}
-          className="flex h-full w-full max-w-md flex-col border-l border-[--hair] bg-surface shadow-2xl"
+          className="flex h-full w-full max-w-md flex-col border-l border-(--hair) bg-surface shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between border-b border-[--hair] px-5 py-4">
+          <div className="flex items-center justify-between border-b border-(--hair) px-5 py-4">
             <h2 className="text-lg font-bold text-ink">{t("title")}</h2>
             <button type="button" onClick={onClose} className="text-muted hover:text-ink">
               {tShared("close")}
@@ -140,7 +140,7 @@ export default function AddStaffPanel({
                   required
                   value={form.fullName}
                   onChange={(e) => set("fullName", e.target.value)}
-                  className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 />
               </div>
 
@@ -154,7 +154,7 @@ export default function AddStaffPanel({
                     type="email"
                     value={form.email}
                     onChange={(e) => set("email", e.target.value)}
-                    className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                    className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                   />
                 </div>
                 <div>
@@ -164,7 +164,7 @@ export default function AddStaffPanel({
                   <input
                     value={form.phone}
                     onChange={(e) => set("phone", e.target.value)}
-                    className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                    className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                   />
                 </div>
               </div>
@@ -176,7 +176,7 @@ export default function AddStaffPanel({
                 <select
                   value={form.role}
                   onChange={(e) => set("role", e.target.value as StaffPortalRole)}
-                  className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 >
                   {STAFF_PORTAL_ROLES.map((r) => (
                     <option key={r} value={r}>
@@ -196,7 +196,7 @@ export default function AddStaffPanel({
                     onChange={(e) =>
                       set("employmentType", e.target.value as StaffEmploymentType | "")
                     }
-                    className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                    className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                   >
                     <option value="">{tShared("none")}</option>
                     {EMPLOYMENT_TYPES.map((et) => (
@@ -215,7 +215,7 @@ export default function AddStaffPanel({
                     onChange={(e) =>
                       set("workLocation", e.target.value as StaffWorkLocation | "")
                     }
-                    className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                    className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                   >
                     <option value="">{tShared("none")}</option>
                     {WORK_LOCATIONS.map((wl) => (
@@ -234,7 +234,7 @@ export default function AddStaffPanel({
                 <select
                   value={form.managerId}
                   onChange={(e) => set("managerId", e.target.value)}
-                  className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 >
                   <option value="">{tShared("unassignedOption")}</option>
                   {managerOptions.map((m) => (
@@ -259,7 +259,7 @@ export default function AddStaffPanel({
                         className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
                           form.locationNames.includes(loc)
                             ? "border-brand bg-brand/15 text-brand"
-                            : "border-[--hair] text-muted hover:text-ink"
+                            : "border-(--hair) text-muted hover:text-ink"
                         }`}
                       >
                         {loc}
@@ -277,7 +277,7 @@ export default function AddStaffPanel({
                   type="date"
                   value={form.startDate}
                   onChange={(e) => set("startDate", e.target.value)}
-                  className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 />
               </div>
 
@@ -289,12 +289,12 @@ export default function AddStaffPanel({
                   rows={2}
                   value={form.scheduleNotes}
                   onChange={(e) => set("scheduleNotes", e.target.value)}
-                  className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 />
               </div>
             </div>
 
-            <div className="border-t border-[--hair] p-5">
+            <div className="border-t border-(--hair) p-5">
               <button
                 type="submit"
                 disabled={pending}

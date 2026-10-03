@@ -52,17 +52,17 @@ function StaffCard({ member }: { member: StaffRow }) {
         </div>
         <div className="flex flex-wrap gap-1.5 text-[0.62rem] text-muted">
           {member.employmentType && (
-            <span className="rounded-full border border-[--hair] px-2 py-0.5">
+            <span className="rounded-full border border-(--hair) px-2 py-0.5">
               {t(`employment.${member.employmentType}`)}
             </span>
           )}
           {member.workLocation && (
-            <span className="rounded-full border border-[--hair] px-2 py-0.5">
+            <span className="rounded-full border border-(--hair) px-2 py-0.5">
               {t(`workLocationOptions.${member.workLocation}`)}
             </span>
           )}
           {member.managerName && (
-            <span className="rounded-full border border-[--hair] px-2 py-0.5">
+            <span className="rounded-full border border-(--hair) px-2 py-0.5">
               {t("reportsTo", { name: member.managerName })}
             </span>
           )}
@@ -138,7 +138,7 @@ export default function StaffManager({
         </p>
       )}
 
-      <div className="flex gap-1 rounded-xl border border-[--hair] bg-base p-1 w-fit">
+      <div className="flex gap-1 rounded-xl border border-(--hair) bg-base p-1 w-fit">
         {(["roster", "calendar", "timesheets"] as const).map((tab) => (
           <button
             key={tab}
@@ -174,7 +174,7 @@ export default function StaffManager({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("searchPlaceholder")}
-            className="w-full max-w-sm rounded-xl border border-[--hair] bg-surface px-4 py-2.5 text-sm text-ink"
+            className="w-full max-w-sm rounded-xl border border-(--hair) bg-surface px-4 py-2.5 text-sm text-ink"
           />
           {filtered.length === 0 ? (
             <GlassPanel>

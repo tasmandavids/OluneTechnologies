@@ -136,7 +136,7 @@ export default function BillingPeriodSettings({
   };
 
   return (
-    <div className="space-y-5 border-t border-[--hair] pt-5">
+    <div className="space-y-5 border-t border-(--hair) pt-5">
       <div>
         <h3 className="text-sm font-semibold text-ink">{t("billingPeriod.title")}</h3>
         <p className="mt-1 text-sm text-muted">{t("billingPeriod.description")}</p>
@@ -237,7 +237,7 @@ export default function BillingPeriodSettings({
                   value={draft.name}
                   onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
                   placeholder={t("billingPeriod.termNamePlaceholder")}
-                  className="mt-1 w-full rounded-lg border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
+                  className="mt-1 w-full rounded-lg border border-(--hair) bg-surface px-3 py-2 text-sm text-ink"
                 />
               </label>
               <label className="block text-xs font-semibold text-muted">
@@ -248,7 +248,7 @@ export default function BillingPeriodSettings({
                   max={120}
                   value={draft.invoiceLeadDays}
                   onChange={(e) => setDraft((d) => ({ ...d, invoiceLeadDays: e.target.value }))}
-                  className="mt-1 w-full rounded-lg border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
+                  className="mt-1 w-full rounded-lg border border-(--hair) bg-surface px-3 py-2 text-sm text-ink"
                 />
               </label>
               <label className="block text-xs font-semibold text-muted">
@@ -257,7 +257,7 @@ export default function BillingPeriodSettings({
                   type="date"
                   value={draft.startDate}
                   onChange={(e) => setDraft((d) => ({ ...d, startDate: e.target.value }))}
-                  className="mt-1 w-full rounded-lg border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
+                  className="mt-1 w-full rounded-lg border border-(--hair) bg-surface px-3 py-2 text-sm text-ink"
                 />
               </label>
               <label className="block text-xs font-semibold text-muted">
@@ -266,7 +266,7 @@ export default function BillingPeriodSettings({
                   type="date"
                   value={draft.endDate}
                   onChange={(e) => setDraft((d) => ({ ...d, endDate: e.target.value }))}
-                  className="mt-1 w-full rounded-lg border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
+                  className="mt-1 w-full rounded-lg border border-(--hair) bg-surface px-3 py-2 text-sm text-ink"
                 />
               </label>
             </div>
@@ -288,7 +288,7 @@ export default function BillingPeriodSettings({
                 <button
                   type="button"
                   onClick={cancelEdit}
-                  className="rounded-xl border border-[--hair] px-4 py-2 text-sm font-semibold text-muted hover:bg-surface"
+                  className="rounded-xl border border-(--hair) px-4 py-2 text-sm font-semibold text-muted hover:bg-surface"
                 >
                   {tCommon("cancel")}
                 </button>

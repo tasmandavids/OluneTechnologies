@@ -144,9 +144,9 @@ export function NotificationBell({ size = "sm" }: { size?: "sm" | "lg" }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-[--hair] bg-surface shadow-2xl"
+            className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-(--hair) bg-surface shadow-2xl"
           >
-            <div className="border-b border-[--hair] px-4 py-3">
+            <div className="border-b border-(--hair) px-4 py-3">
               <h3 className="text-sm font-semibold text-ink">{t("title")}</h3>
             </div>
 
@@ -161,7 +161,7 @@ export function NotificationBell({ size = "sm" }: { size?: "sm" | "lg" }) {
                   <button
                     key={n.id}
                     onClick={() => handleClick(n)}
-                    className={`flex w-full items-start gap-3 border-b border-[--hair] px-4 py-3 text-left transition-colors last:border-0 hover:bg-base ${
+                    className={`flex w-full items-start gap-3 border-b border-(--hair) px-4 py-3 text-left transition-colors last:border-0 hover:bg-base ${
                       !n.read_at ? "bg-brand/5" : ""
                     }`}
                   >

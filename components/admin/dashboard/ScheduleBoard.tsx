@@ -126,7 +126,7 @@ function ClassCard({
   return (
     <div
       className={`group relative rounded-lg border px-2.5 py-2 transition-transform hover:-translate-y-0.5 ${
-        dragging ? "border-[--brand] shadow-2xl" : "border-transparent"
+        dragging ? "border-(--brand) shadow-2xl" : "border-transparent"
       }`}
       style={{
         background: fillColor(ratio),
@@ -308,8 +308,8 @@ export function ScheduleBoard({
                 <select
                   value={roomFilter}
                   onChange={(e) => setRoomFilter(e.target.value)}
-                  className="rounded-lg border border-[--hair] bg-base px-3 py-1.5 text-xs text-ink
-                             focus:outline-none focus:ring-1 focus:ring-[--brand]"
+                  className="rounded-lg border border-(--hair) bg-base px-3 py-1.5 text-xs text-ink
+                             focus:outline-none focus:ring-1 focus:ring-(--brand)"
                 >
                   <option value="">{tShared("allRooms")}</option>
                   {rooms.map((r) => (

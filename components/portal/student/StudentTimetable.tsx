@@ -70,7 +70,7 @@ export default function StudentTimetable({
           </p>
           <Link
             href="/portal/student/progress"
-            className="text-xs font-semibold text-[--brand] hover:underline"
+            className="text-xs font-semibold text-(--brand) hover:underline"
           >
             {t("viewProgress")}
           </Link>

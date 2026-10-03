@@ -43,7 +43,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className={`w-full rounded-xl border border-[--hair] bg-surface px-3.5 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition ${props.className ?? ""}`}
+      className={`w-full rounded-xl border border-(--hair) bg-surface px-3.5 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition ${props.className ?? ""}`}
     />
   );
 }
@@ -52,7 +52,7 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
       {...props}
-      className={`w-full rounded-xl border border-[--hair] bg-surface px-3.5 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition resize-none ${props.className ?? ""}`}
+      className={`w-full rounded-xl border border-(--hair) bg-surface px-3.5 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition resize-none ${props.className ?? ""}`}
     />
   );
 }
@@ -99,16 +99,16 @@ function ParticipantPicker({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
       <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-sm flex flex-col max-h-[80vh] overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[--hair]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-(--hair)">
           <h3 className="text-sm font-bold text-ink">Add cast members</h3>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-[--subtle] text-muted transition">
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-(--t1) text-muted transition">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <div className="px-4 py-2 border-b border-[--hair]">
+        <div className="px-4 py-2 border-b border-(--hair)">
           <Input placeholder="Search name…" value={search} onChange={e => setSearch(e.target.value)} />
         </div>
 
@@ -124,7 +124,7 @@ function ParticipantPicker({
                 onClick={() => toggle(m.profileId)}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-brand/5 transition ${selected.has(m.profileId) ? "bg-brand/5" : ""}`}
               >
-                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition ${selected.has(m.profileId) ? "border-brand bg-brand" : "border-[--hair]"}`}>
+                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition ${selected.has(m.profileId) ? "border-brand bg-brand" : "border-(--hair)"}`}>
                   {selected.has(m.profileId) && (
                     <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -140,8 +140,8 @@ function ParticipantPicker({
           )}
         </div>
 
-        <div className="px-4 py-3 border-t border-[--hair] flex gap-2">
-          <button onClick={onClose} className="flex-1 rounded-xl py-2 text-sm font-semibold text-ink bg-[--subtle] hover:bg-[--hair] transition">
+        <div className="px-4 py-3 border-t border-(--hair) flex gap-2">
+          <button onClick={onClose} className="flex-1 rounded-xl py-2 text-sm font-semibold text-ink bg-(--t1) hover:bg-(--hair) transition">
             Cancel
           </button>
           <button
@@ -193,7 +193,7 @@ function ParticipantRow({
           onChange={e => setCostume(e.target.value)}
           onBlur={e => commitCostume(e.target.value)}
           onKeyDown={e => { if (e.key === "Enter") commitCostume((e.target as HTMLInputElement).value); }}
-          className="w-full rounded-lg border border-[--hair] bg-[--subtle]/30 px-2.5 py-1.5 text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:ring-1 focus:ring-brand/30 focus:border-brand transition"
+          className="w-full rounded-lg border border-(--hair) bg-(--t1)/30 px-2.5 py-1.5 text-xs text-ink placeholder:text-muted/60 focus:outline-none focus:ring-1 focus:ring-brand/30 focus:border-brand transition"
         />
       </div>
       <button
@@ -234,7 +234,7 @@ function DurationInput({
         placeholder="0"
         value={mins}
         onChange={e => parse(e.target.value, secs)}
-        className="w-14 rounded-xl border border-[--hair] bg-surface px-2 py-2 text-sm text-center text-ink focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"
+        className="w-14 rounded-xl border border-(--hair) bg-surface px-2 py-2 text-sm text-center text-ink focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"
       />
       <span className="text-sm text-muted font-medium">m</span>
       <input
@@ -244,7 +244,7 @@ function DurationInput({
         placeholder="00"
         value={secs}
         onChange={e => parse(mins, e.target.value)}
-        className="w-14 rounded-xl border border-[--hair] bg-surface px-2 py-2 text-sm text-center text-ink focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"
+        className="w-14 rounded-xl border border-(--hair) bg-surface px-2 py-2 text-sm text-center text-ink focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"
       />
       <span className="text-sm text-muted font-medium">s</span>
       {value !== null && (
@@ -346,7 +346,7 @@ export function ActDetailPanel({ act, castGroups, onUpdate }: ActDetailPanelProp
                 className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition flex items-center gap-1 ${
                   act.actType === t.value
                     ? "border-brand bg-brand/10 text-brand"
-                    : "border-[--hair] text-muted hover:border-brand/30 hover:text-ink"
+                    : "border-(--hair) text-muted hover:border-brand/30 hover:text-ink"
                 }`}
               >
                 <span>{t.icon}</span> {t.label}
@@ -442,7 +442,7 @@ export function ActDetailPanel({ act, castGroups, onUpdate }: ActDetailPanelProp
             className="box w-full rounded-xl hover:bg-brand/5 transition px-4 py-3 flex items-center gap-3"
           >
             {/* Mini stage preview */}
-            <div className="w-10 h-8 rounded bg-[--subtle]/40 flex items-center justify-center shrink-0">
+            <div className="w-10 h-8 rounded bg-(--t1)/40 flex items-center justify-center shrink-0">
               <svg className="w-5 h-5 text-muted/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
               </svg>

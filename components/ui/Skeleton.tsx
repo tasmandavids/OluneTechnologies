@@ -45,7 +45,7 @@ export function SkeletonToolbar() {
 export function SkeletonTable({ rows = 8 }: { rows?: number }) {
   return (
     <div className="box overflow-hidden rounded-2xl">
-      <div className="border-b border-[--hair] px-5 py-3">
+      <div className="border-b border-(--hair) px-5 py-3">
         <Skeleton className="h-4 w-2/3 max-w-md" />
       </div>
       <div className="flex flex-col gap-2">
@@ -84,7 +84,7 @@ export function SkeletonCardGrid({ count = 6 }: { count?: number }) {
 
 export function SkeletonTabs({ count = 3 }: { count?: number }) {
   return (
-    <div className="flex gap-2 border-b border-[--hair] pb-px">
+    <div className="flex gap-2 border-b border-(--hair) pb-px">
       {Array.from({ length: count }, (_, i) => (
         <Skeleton key={i} className="h-9 w-28 rounded-t-xl" />
       ))}
@@ -122,7 +122,7 @@ export function SkeletonTwoPane() {
 export function SkeletonCalendar() {
   return (
     <div className="box overflow-hidden rounded-2xl">
-      <div className="grid grid-cols-7 gap-px border-b border-[--hair] p-3">
+      <div className="grid grid-cols-7 gap-px border-b border-(--hair) p-3">
         {Array.from({ length: 7 }, (_, i) => (
           <Skeleton key={i} className="mx-auto h-4 w-10" />
         ))}

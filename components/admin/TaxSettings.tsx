@@ -16,7 +16,7 @@ import { useTranslations } from "next-intl";
 import { updateTaxSettings } from "@/app/portal/admin/settings/actions";
 
 const fieldClass =
-  "w-full rounded-xl border px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-[--brand]";
+  "w-full rounded-xl border px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-(--brand)";
 const fieldStyle = { background: "var(--surface)", borderColor: "var(--hair)" } as const;
 
 export type StudioTaxInfo = {
@@ -116,7 +116,7 @@ export default function TaxSettings({ tax }: { tax: StudioTaxInfo }) {
 
       <p className="text-xs text-muted">
         {t("productsHint")}{" "}
-        <Link href="/portal/admin/money?tab=products" className="font-semibold text-[--brand]">
+        <Link href="/portal/admin/money?tab=products" className="font-semibold text-(--brand)">
           {t("productsLink")}
         </Link>
       </p>

@@ -112,7 +112,7 @@ export function XeroReports({
           type="button"
           onClick={onRefresh}
           disabled={refreshing}
-          className="rounded-xl border border-[--hair] bg-surface px-3 py-1.5 text-xs font-semibold text-ink hover:bg-base disabled:opacity-50"
+          className="rounded-xl border border-(--hair) bg-surface px-3 py-1.5 text-xs font-semibold text-ink hover:bg-base disabled:opacity-50"
         >
           {refreshing ? tShared("refreshing") : t("refresh")}
         </button>
@@ -172,11 +172,11 @@ export function XeroReports({
       </div>
 
       <GlassPanel className="!p-0 overflow-hidden">
-        <div className="border-b border-[--hair] px-6 py-4">
+        <div className="border-b border-(--hair) px-6 py-4">
           <h3 className="text-sm font-bold text-ink">{tReports("aged.title")}</h3>
           <p className="text-xs text-muted">{tReports("aged.subtitle", { total: formatMoney(agedTotalCents) })}</p>
         </div>
-        <div className="grid gap-px bg-[--hair] sm:grid-cols-4">
+        <div className="grid gap-px bg-(--hair) sm:grid-cols-4">
           {agedRows.map((r) => (
             <div key={r.key} className="bg-surface p-5">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted">{r.label}</p>

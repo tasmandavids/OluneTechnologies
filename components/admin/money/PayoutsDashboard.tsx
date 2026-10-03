@@ -52,7 +52,7 @@ function DashboardLinkButton() {
             else window.open(res.url, "_blank", "noopener,noreferrer");
           });
         }}
-        className="rounded-xl border border-[--hair] bg-surface px-4 py-2.5 text-sm font-semibold text-ink hover:bg-base disabled:opacity-50"
+        className="rounded-xl border border-(--hair) bg-surface px-4 py-2.5 text-sm font-semibold text-ink hover:bg-base disabled:opacity-50"
       >
         {opening ? "Opening…" : "View Stripe dashboard"}
       </button>
@@ -145,7 +145,7 @@ export function PayoutsDashboard({
           </div>
 
           <GlassPanel className="!p-0 overflow-hidden">
-            <div className="border-b border-[--hair] px-6 py-4">
+            <div className="border-b border-(--hair) px-6 py-4">
               <h2 className="text-sm font-bold text-ink">Recent payouts</h2>
             </div>
             {payouts.length === 0 ? (
@@ -154,7 +154,7 @@ export function PayoutsDashboard({
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[560px] text-sm">
                   <thead>
-                    <tr className="border-b border-[--hair]">
+                    <tr className="border-b border-(--hair)">
                       {["Date", "Arrives", "Method", "Status", "Amount"].map((h) => (
                         <th
                           key={h}
@@ -173,7 +173,7 @@ export function PayoutsDashboard({
                         label: p.status,
                       };
                       return (
-                        <tr key={p.id} className="border-b border-[--hair] last:border-0">
+                        <tr key={p.id} className="border-b border-(--hair) last:border-0">
                           <td className="px-4 py-3 text-muted">{formatDate(p.createdAt)}</td>
                           <td className="px-4 py-3 text-muted">{formatDate(p.arrivalDate)}</td>
                           <td className="px-4 py-3 text-muted capitalize">{p.method}</td>

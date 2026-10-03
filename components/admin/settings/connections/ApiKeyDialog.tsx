@@ -16,7 +16,7 @@ import { saveApiKeyConnection } from "@/app/portal/admin/settings/connections/ac
 import { ProviderMark } from "./ProviderMark";
 
 const fieldClass =
-  "w-full rounded-xl border px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-[--brand]";
+  "w-full rounded-xl border px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-(--brand)";
 const fieldStyle = { background: "var(--surface)", borderColor: "var(--hair)" } as const;
 
 export function ApiKeyDialog({

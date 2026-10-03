@@ -193,7 +193,7 @@ export function IssueCardButton({
         {currentCard?.status === "active" && appleWalletEnabled && (
           <a
             href={`/api/apple-wallet/checkin-card/${currentCard.id}`}
-            className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[--t2]"
+            className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-(--t2)"
             style={{ borderColor: "var(--ring)" }}
           >
             <svg
@@ -216,7 +216,7 @@ export function IssueCardButton({
             type="button"
             onClick={handleIssue}
             disabled={writeState === "starting" || writeState === "waiting" || writeState === "writing"}
-            className="rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[--t2] disabled:opacity-60"
+            className="rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-(--t2) disabled:opacity-60"
             style={{ borderColor: "var(--ring)" }}
           >
             {writeState === "starting" || writeState === "waiting" || writeState === "writing"
@@ -229,7 +229,7 @@ export function IssueCardButton({
             type="button"
             onClick={() => handleLifecycle("freeze")}
             disabled={pending}
-            className="rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[--t2] disabled:opacity-60"
+            className="rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-(--t2) disabled:opacity-60"
             style={{ borderColor: "var(--ring)" }}
           >
             Freeze
@@ -240,7 +240,7 @@ export function IssueCardButton({
             type="button"
             onClick={() => handleLifecycle("unfreeze")}
             disabled={pending}
-            className="rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[--t2] disabled:opacity-60"
+            className="rounded-xl border px-4 py-2 text-sm font-semibold text-ink transition hover:bg-(--t2) disabled:opacity-60"
             style={{ borderColor: "var(--ring)" }}
           >
             Unfreeze

@@ -53,7 +53,7 @@ export default async function AdminPlanPage() {
         <p className="mt-1 text-sm text-muted">{t("page.subtitle")}</p>
       </header>
 
-      <section className="mb-10 rounded-2xl border border-[--hair] bg-surface p-6">
+      <section className="mb-10 rounded-2xl border border-(--hair) bg-surface p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -98,7 +98,7 @@ export default async function AdminPlanPage() {
         </div>
 
         {subscription?.stripeCustomerId && (
-          <div className="mt-6 border-t border-[--hair] pt-5">
+          <div className="mt-6 border-t border-(--hair) pt-5">
             <p className="mb-3 text-xs text-muted">{t("current.portalHint")}</p>
             <ManageBillingButton variant="quiet" />
           </div>

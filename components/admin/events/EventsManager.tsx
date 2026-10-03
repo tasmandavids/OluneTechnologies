@@ -163,12 +163,12 @@ function EventCard({
         </div>
 
         {/* Ticket stats */}
-        <div className="mt-4 pt-4 border-t border-[--hair]">
+        <div className="mt-4 pt-4 border-t border-(--hair)">
           <div className="flex items-center justify-between text-xs text-muted mb-1.5">
             <span>{fmtPrice(event.ticket_price)} · {sold}/{cap} sold</span>
             <span>{pct}%</span>
           </div>
-          <div className="h-1.5 rounded-full bg-[--subtle] overflow-hidden">
+          <div className="h-1.5 rounded-full bg-(--t1) overflow-hidden">
             <div
               className="h-full rounded-full bg-brand transition-all"
               style={{ width: `${pct}%` }}
@@ -185,7 +185,7 @@ function EventCard({
           <div className="flex gap-2">
             <button
               onClick={() => setConfirmDelete(false)}
-              className="px-4 py-2 rounded-xl text-sm bg-[--subtle] text-ink hover:bg-[--hair] transition"
+              className="px-4 py-2 rounded-xl text-sm bg-(--t1) text-ink hover:bg-(--hair) transition"
             >
               Cancel
             </button>
@@ -299,7 +299,7 @@ export function EventsManager({ events: initialEvents, profiles, classes }: Even
               rather than living inside an event's edit screen. */}
           <Link
             href="/portal/admin/events/scan"
-            className="flex items-center gap-2 rounded-xl border border-[--hair] bg-surface px-5 py-2.5 text-sm font-semibold text-ink transition hover:bg-base"
+            className="flex items-center gap-2 rounded-xl border border-(--hair) bg-surface px-5 py-2.5 text-sm font-semibold text-ink transition hover:bg-base"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.5h4.5v4.5h-4.5V4.5zm12 0h4.5v4.5h-4.5V4.5zm-12 10.5h4.5v4.5h-4.5V15zm12 3h4.5m-4.5-3h1.5m3 6v.008M12 3.75v16.5" />
@@ -330,7 +330,7 @@ export function EventsManager({ events: initialEvents, profiles, classes }: Even
               placeholder="Search events…"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-xl border border-[--hair] bg-surface text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"
+              className="w-full pl-9 pr-4 py-2 rounded-xl border border-(--hair) bg-surface text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"
             />
           </div>
         </div>

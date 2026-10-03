@@ -50,7 +50,7 @@ export function OAuthButtons({
         type="button"
         disabled={disabled || busy}
         onClick={signInWithGoogle}
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-[--hair] bg-surface px-4 py-2.5 text-sm font-medium text-ink transition hover:bg-base disabled:opacity-60"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-(--hair) bg-surface px-4 py-2.5 text-sm font-medium text-ink transition hover:bg-base disabled:opacity-60"
       >
         <GoogleIcon />
         {busy ? t("redirecting") : t("continueWithGoogle")}
@@ -65,7 +65,7 @@ export function AuthDivider({ label }: { label?: string }) {
   return (
     <div className="relative my-6">
       <div className="absolute inset-0 flex items-center" aria-hidden>
-        <div className="w-full border-t border-[--hair]" />
+        <div className="w-full border-t border-(--hair)" />
       </div>
       <p className="relative mx-auto w-fit bg-surface px-3 text-xs uppercase tracking-widest text-muted">
         {text}

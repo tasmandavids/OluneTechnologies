@@ -192,7 +192,7 @@ function CreateInvoiceModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-md rounded-2xl border border-[--hair] bg-surface p-6 shadow-xl">
+      <div className="w-full max-w-md rounded-2xl border border-(--hair) bg-surface p-6 shadow-xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-bold text-ink">{t("createModal.title")}</h2>
@@ -214,7 +214,7 @@ function CreateInvoiceModal({
               <select
                 value={templateId}
                 onChange={(e) => applyTemplate(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
               >
                 <option value="">{t("templates.noTemplate")}</option>
                 {templates.map((tpl) => (
@@ -234,7 +234,7 @@ function CreateInvoiceModal({
                 setPayerId(e.target.value);
                 setStudentId("");
               }}
-              className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+              className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
             >
               {parents.length === 0 && <option value="">{tShared("noParentsFound")}</option>}
               {parents.map((p) => (
@@ -253,7 +253,7 @@ function CreateInvoiceModal({
               <select
                 value={studentId}
                 onChange={(e) => setStudentId(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
               >
                 <option value="">{tShared("notLinkedStudent")}</option>
                 {students.map((s) => (
@@ -276,7 +276,7 @@ function CreateInvoiceModal({
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder={t("createModal.amountPlaceholder")}
-                  className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                   required
                 />
               </label>
@@ -287,7 +287,7 @@ function CreateInvoiceModal({
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 required
               />
             </label>
@@ -300,7 +300,7 @@ function CreateInvoiceModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t("createModal.descriptionPlaceholder")}
-              className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+              className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
             />
           </label>
 
@@ -313,7 +313,7 @@ function CreateInvoiceModal({
                   setItemized(e.target.checked);
                   if (e.target.checked && items.length === 0) setItems([emptyLineItem()]);
                 }}
-                className="rounded border-[--hair]"
+                className="rounded border-(--hair)"
               />
               {t("templates.itemize")}
             </label>
@@ -342,7 +342,7 @@ function CreateInvoiceModal({
               type="checkbox"
               checked={sendNow}
               onChange={(e) => setSendNow(e.target.checked)}
-              className="rounded border-[--hair]"
+              className="rounded border-(--hair)"
             />
             {t("createModal.sendNow")}
           </label>
@@ -353,7 +353,7 @@ function CreateInvoiceModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-[--hair] px-4 py-2 text-sm font-semibold text-muted hover:bg-base"
+              className="rounded-xl border border-(--hair) px-4 py-2 text-sm font-semibold text-muted hover:bg-base"
             >
               {tCommon("cancel")}
             </button>
@@ -408,7 +408,7 @@ function SendInvoiceButton({
             }
           });
         }}
-        className="rounded-lg border border-[--hair] bg-ink px-2.5 py-1 text-[0.7rem] font-semibold text-paper hover:opacity-90 disabled:opacity-50"
+        className="rounded-lg border border-(--hair) bg-ink px-2.5 py-1 text-[0.7rem] font-semibold text-paper hover:opacity-90 disabled:opacity-50"
       >
         {pending ? tShared("sending") : t("send")}
       </button>
@@ -518,7 +518,7 @@ function RefundButton({ invoice, onDone }: { invoice: InvoiceRow; onDone: (id: s
           step="0.01"
           value={amountStr}
           onChange={(e) => setAmountStr(e.target.value)}
-          className="w-20 rounded border border-[--hair] px-1.5 py-0.5 text-[0.7rem] tabular-nums focus:outline-none focus:ring-1 focus:ring-brand"
+          className="w-20 rounded border border-(--hair) px-1.5 py-0.5 text-[0.7rem] tabular-nums focus:outline-none focus:ring-1 focus:ring-brand"
           autoFocus
         />
       </div>
@@ -621,7 +621,7 @@ function RefreshXeroButton({ onDone }: { onDone: () => void }) {
             }
           });
         }}
-        className="rounded-xl border border-[--hair] bg-base px-3 py-1.5 text-xs font-semibold text-ink hover:bg-surface disabled:opacity-50"
+        className="rounded-xl border border-(--hair) bg-base px-3 py-1.5 text-xs font-semibold text-ink hover:bg-surface disabled:opacity-50"
       >
         {pending ? tShared("refreshing") : t("refreshXero")}
       </button>
@@ -885,7 +885,7 @@ export function BillingDashboard({
 
         <motion.section variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}>
           <GlassPanel className="!p-0 overflow-hidden">
-          <div className="flex flex-wrap items-center gap-3 border-b border-[--hair] px-6 py-4">
+          <div className="flex flex-wrap items-center gap-3 border-b border-(--hair) px-6 py-4">
             <div className="mr-auto">
               <h2 className="text-sm font-bold text-ink">{t("reminders.title")}</h2>
               <p className="text-xs text-muted">{t("reminders.subtitle")}</p>
@@ -905,7 +905,7 @@ export function BillingDashboard({
           </div>
 
           {bulkError && (
-            <p className="border-b border-[--hair] px-6 py-2 text-sm text-red-600">{bulkError}</p>
+            <p className="border-b border-(--hair) px-6 py-2 text-sm text-red-600">{bulkError}</p>
           )}
 
           {unpaidInvoices.length === 0 ? (
@@ -914,7 +914,7 @@ export function BillingDashboard({
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
-                  <tr className="border-b border-[--hair]">
+                  <tr className="border-b border-(--hair)">
                     {reminderHeaders.map((h) => (
                       <th
                         key={h || "actions"}
@@ -929,7 +929,7 @@ export function BillingDashboard({
                   {unpaidInvoices.map((inv) => (
                     <tr
                       key={inv.id}
-                      className={`border-b border-[--hair] last:border-0 transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)] ${
+                      className={`border-b border-(--hair) last:border-0 transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)] ${
                         inv.status === "overdue" ? "bg-red-50/40" : ""
                       }`}
                     >
@@ -999,7 +999,7 @@ export function BillingDashboard({
 
         <motion.div variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}>
           <GlassPanel className="!p-0 overflow-hidden">
-          <div className="flex flex-wrap items-center gap-3 border-b border-[--hair] px-6 py-4">
+          <div className="flex flex-wrap items-center gap-3 border-b border-(--hair) px-6 py-4">
             <h2 className="mr-auto text-sm font-bold text-ink">
               {t("allInvoices.title")}
               <span className="ml-2 font-normal text-muted">({filtered.length})</span>
@@ -1009,7 +1009,7 @@ export function BillingDashboard({
                 type="button"
                 onClick={sendAllDrafts}
                 disabled={draftBulkPending}
-                className="rounded-xl border border-[--hair] bg-base px-3 py-1.5 text-xs font-semibold text-ink hover:bg-surface disabled:opacity-50"
+                className="rounded-xl border border-(--hair) bg-base px-3 py-1.5 text-xs font-semibold text-ink hover:bg-surface disabled:opacity-50"
               >
                 {draftBulkPending
                   ? tShared("sending")
@@ -1022,12 +1022,12 @@ export function BillingDashboard({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") searchHistory(); }}
-              className="w-44 rounded-lg border border-[--hair] bg-base px-3 py-1.5 text-xs text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
+              className="w-44 rounded-lg border border-(--hair) bg-base px-3 py-1.5 text-xs text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-(--brand)"
             />
-            <button type="button" onClick={() => searchHistory()} className="rounded-lg border border-[--hair] px-3 py-1.5 text-xs">{tSearch("search")}</button>
+            <button type="button" onClick={() => searchHistory()} className="rounded-lg border border-(--hair) px-3 py-1.5 text-xs">{tSearch("search")}</button>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5 border-b border-[--hair] px-6 py-3">
+          <div className="flex flex-wrap items-center gap-1.5 border-b border-(--hair) px-6 py-3">
             <span className="mr-1 text-[0.62rem] font-semibold uppercase tracking-wider text-muted">
               {tShared("invoiceStatus.filterLabel")}
             </span>
@@ -1072,10 +1072,10 @@ export function BillingDashboard({
           </div>
 
           {draftBulkError && (
-            <p className="border-b border-[--hair] px-6 py-2 text-sm text-red-600">{draftBulkError}</p>
+            <p className="border-b border-(--hair) px-6 py-2 text-sm text-red-600">{draftBulkError}</p>
           )}
           {draftBulkResult && (
-            <p className="border-b border-[--hair] px-6 py-2 text-sm text-muted">
+            <p className="border-b border-(--hair) px-6 py-2 text-sm text-muted">
               {draftBulkResult.failed > 0
                 ? t("allInvoices.draftsSentWithFailures", {
                     sent: draftBulkResult.sent,
@@ -1088,7 +1088,7 @@ export function BillingDashboard({
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-sm">
               <thead>
-                <tr className="border-b border-[--hair]">
+                <tr className="border-b border-(--hair)">
                   {invoiceHeaders.map((h, idx) => (
                     <th
                       key={h || `col-${idx}`}
@@ -1110,7 +1110,7 @@ export function BillingDashboard({
                   filtered.map((inv) => (
                     <tr
                       key={inv.id}
-                      className="border-b border-[--hair] last:border-0 transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)]"
+                      className="border-b border-(--hair) last:border-0 transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)]"
                     >
                       <td className="px-4 py-3 font-mono text-xs">
                         <button

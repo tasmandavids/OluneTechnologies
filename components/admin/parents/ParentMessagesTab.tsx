@@ -42,7 +42,7 @@ export default function ParentMessagesTab({
             className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
               topic === item
                 ? "bg-brand text-white"
-                : "border border-[--hair] text-muted hover:text-ink"
+                : "border border-(--hair) text-muted hover:text-ink"
             }`}
           >
             {tTopics(`${item}.label`)}

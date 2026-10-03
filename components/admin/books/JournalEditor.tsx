@@ -159,7 +159,7 @@ export function JournalEditor({ opening, defaultDate, lockDate, accounts, rates,
               ))}
               <tr style={{ borderTop: "1px solid var(--hair)" }}>
                 <td className="px-3 py-3" colSpan={taxRegistered && !opening ? 3 : 2}>
-                  <button type="button" className="text-xs font-semibold text-[--brand]" onClick={() => setLines((ls) => [...ls, blank()])}>
+                  <button type="button" className="text-xs font-semibold text-(--brand)" onClick={() => setLines((ls) => [...ls, blank()])}>
                     {t("addLine")}
                   </button>
                 </td>
@@ -177,7 +177,7 @@ export function JournalEditor({ opening, defaultDate, lockDate, accounts, rates,
         <p className="text-sm" style={{ color: diff === 0 ? "var(--muted)" : "var(--danger, #c0392b)" }} aria-live="polite">
           {diff === 0 ? t("balanced") : t("outBy", { amount: money(Math.abs(diff)) })}
           {opening && diff !== 0 && openingBalance && (
-            <button type="button" className="ml-3 text-xs font-semibold text-[--brand]" onClick={balanceToOpening}>
+            <button type="button" className="ml-3 text-xs font-semibold text-(--brand)" onClick={balanceToOpening}>
               {t("balanceToEquity", { account: openingBalance.name })}
             </button>
           )}

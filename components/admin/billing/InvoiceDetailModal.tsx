@@ -107,7 +107,7 @@ export function InvoiceDetailModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[--hair] bg-surface p-6 shadow-xl">
+      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-(--hair) bg-surface p-6 shadow-xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-bold text-ink">
@@ -160,7 +160,7 @@ export function InvoiceDetailModal({
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
               disabled={isLocked}
-              className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink disabled:opacity-60"
+              className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink disabled:opacity-60"
             />
           </label>
 
@@ -171,7 +171,7 @@ export function InvoiceDetailModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isLocked}
-              className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink disabled:opacity-60"
+              className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink disabled:opacity-60"
             />
           </label>
 
@@ -186,7 +186,7 @@ export function InvoiceDetailModal({
                     type="checkbox"
                     checked={itemized}
                     onChange={(e) => setItemized(e.target.checked)}
-                    className="rounded border-[--hair]"
+                    className="rounded border-(--hair)"
                   />
                   {t("itemize")}
                 </label>
@@ -216,7 +216,7 @@ export function InvoiceDetailModal({
                     step="0.01"
                     value={flatAmount}
                     onChange={(e) => setFlatAmount(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                    className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                   />
                 </label>
               ) : invoice.lineItems.length > 0 ? (
@@ -250,7 +250,7 @@ export function InvoiceDetailModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-[--hair] px-4 py-2 text-sm font-semibold text-muted hover:bg-base"
+              className="rounded-xl border border-(--hair) px-4 py-2 text-sm font-semibold text-muted hover:bg-base"
             >
               {isLocked ? tCommon("close") : tCommon("cancel")}
             </button>

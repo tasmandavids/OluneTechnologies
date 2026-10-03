@@ -107,7 +107,7 @@ export default function PayRatesPanel({
           {sorted.map((rate, index) => (
             <li
               key={rate.id}
-              className="flex items-center justify-between gap-3 rounded-lg border border-[--hair] px-3 py-2 text-sm"
+              className="flex items-center justify-between gap-3 rounded-lg border border-(--hair) px-3 py-2 text-sm"
             >
               <span className="text-ink">
                 <span className="font-semibold tabular-nums">
@@ -136,7 +136,7 @@ export default function PayRatesPanel({
         </ul>
       )}
 
-      <div className="flex flex-wrap items-end gap-2 border-t border-[--hair] pt-3">
+      <div className="flex flex-wrap items-end gap-2 border-t border-(--hair) pt-3">
         <label className="text-xs text-muted">
           {t("fields.amount")}
           <input
@@ -145,7 +145,7 @@ export default function PayRatesPanel({
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="24.50"
-            className="mt-1 block w-28 rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+            className="mt-1 block w-28 rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
           />
         </label>
         <label className="text-xs text-muted">
@@ -154,7 +154,7 @@ export default function PayRatesPanel({
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="mt-1 block rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+            className="mt-1 block rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
           />
         </label>
         <button

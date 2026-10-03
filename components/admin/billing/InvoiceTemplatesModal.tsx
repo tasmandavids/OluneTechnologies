@@ -141,7 +141,7 @@ export function InvoiceTemplatesModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[--hair] bg-surface p-6 shadow-xl">
+      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-(--hair) bg-surface p-6 shadow-xl">
         <h2 className="text-lg font-bold text-ink">{t("title")}</h2>
         <p className="mt-1 text-sm text-muted">{t("subtitle")}</p>
 
@@ -203,7 +203,7 @@ export function InvoiceTemplatesModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl border border-[--hair] px-4 py-2 text-sm font-semibold text-muted hover:bg-base"
+                className="rounded-xl border border-(--hair) px-4 py-2 text-sm font-semibold text-muted hover:bg-base"
               >
                 {tCommon("close")}
               </button>
@@ -220,7 +220,7 @@ export function InvoiceTemplatesModal({
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder={t("namePlaceholder")}
-                className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 autoFocus
               />
             </label>
@@ -232,7 +232,7 @@ export function InvoiceTemplatesModal({
                   type="text"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 />
               </label>
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted">
@@ -243,7 +243,7 @@ export function InvoiceTemplatesModal({
                   step="1"
                   value={form.defaultDueDays}
                   onChange={(e) => setForm({ ...form, defaultDueDays: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                  className="mt-1 w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
                 />
               </label>
             </div>
@@ -274,7 +274,7 @@ export function InvoiceTemplatesModal({
               <button
                 type="button"
                 onClick={() => setEditingId(null)}
-                className="rounded-xl border border-[--hair] px-4 py-2 text-sm font-semibold text-muted hover:bg-base"
+                className="rounded-xl border border-(--hair) px-4 py-2 text-sm font-semibold text-muted hover:bg-base"
               >
                 {tCommon("cancel")}
               </button>

@@ -66,7 +66,7 @@ export function ConfirmDialog() {
             animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.97 }}
             transition={{ duration: DUR.base, ease: EASE_OUT }}
-            className="w-full max-w-sm rounded-2xl border border-[--hair] bg-surface p-6 shadow-[0_24px_60px_-20px_rgba(10,10,10,0.45)]"
+            className="w-full max-w-sm rounded-2xl border border-(--hair) bg-surface p-6 shadow-[0_24px_60px_-20px_rgba(10,10,10,0.45)]"
           >
             <h2 id="confirm-dialog-title" className="text-base font-semibold text-ink">
               {request.title}
@@ -77,7 +77,7 @@ export function ConfirmDialog() {
                 ref={cancelRef}
                 type="button"
                 onClick={() => resolveConfirm(false)}
-                className="rounded-xl border border-[--hair] bg-surface px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-[color-mix(in_srgb,var(--text)_5%,var(--surface))]"
+                className="rounded-xl border border-(--hair) bg-surface px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-[color-mix(in_srgb,var(--text)_5%,var(--surface))]"
               >
                 {request.cancelLabel ?? tCommon("cancel")}
               </button>

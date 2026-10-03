@@ -292,7 +292,7 @@ export function StudioRail({
                   <form action={signOut}>
                     <button
                       type="submit"
-                      className="w-full rounded-lg border border-[--hair] px-2.5 py-1.5 text-left text-xs font-medium text-muted transition hover:bg-base hover:text-ink"
+                      className="w-full rounded-lg border border-(--hair) px-2.5 py-1.5 text-left text-xs font-medium text-muted transition hover:bg-base hover:text-ink"
                     >
                       {tCommon("signOut")}
                     </button>
@@ -333,7 +333,7 @@ export function StudioRail({
                 <Link
                   href={r!.primary.href}
                   prefetch={false}
-                  className="-mx-1 flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] font-semibold text-ink transition hover:bg-[--glass2]"
+                  className="-mx-1 flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] font-semibold text-ink transition hover:bg-(--glass2)"
                 >
                   <space.icon className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.7} />
                   {t(r!.primary.labelKey as Parameters<typeof t>[0])}
@@ -345,7 +345,7 @@ export function StudioRail({
                         key={sub.href}
                         href={sub.href}
                         prefetch={false}
-                        className="rounded-lg px-2 py-1.5 text-[12.5px] text-muted transition hover:bg-[--glass2] hover:text-ink"
+                        className="rounded-lg px-2 py-1.5 text-[12.5px] text-muted transition hover:bg-(--glass2) hover:text-ink"
                       >
                         {t(sub.labelKey as Parameters<typeof t>[0])}
                       </Link>

@@ -57,20 +57,31 @@ const IconStar = ({ className, strokeWidth }: IconProps) => (
 const IconForm = ({ className, strokeWidth }: IconProps) => (
   <svg {...svgBase(className, strokeWidth)}><path d="M14 3.5H7A2.5 2.5 0 0 0 4.5 6v12A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5V9z" /><path d="M14 3.5V9h5.5M8.5 14l2 2 4-4" /></svg>
 );
+const IconProgress = ({ className, strokeWidth }: IconProps) => (
+  <svg {...svgBase(className, strokeWidth)}><path d="M4 19.5h16M7 16v-4M12 16V8M17 16V5" /></svg>
+);
 const IconMore = ({ className }: IconProps) => (
   <svg {...svgBase(className, 2)}><circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /></svg>
 );
 
-type Space = { id: string; icon: (p: IconProps) => React.JSX.Element; primaryHref: string; subHrefs: string[] };
+/** `hrefs` lists the routes that can open a space, first match wins — the same
+ *  rail serves parents and adult students who manage their own account. */
+type Space = { id: string; icon: (p: IconProps) => React.JSX.Element; hrefs: string[]; subHrefs: string[] };
 
 const PARENT_SPACES: Space[] = [
-  { id: "home", icon: IconHome, primaryHref: "/portal/parent", subHrefs: [] },
-  { id: "schedule", icon: IconCalendar, primaryHref: "/portal/parent/schedule", subHrefs: ["/portal/parent/private-lessons", "/portal/parent/absences"] },
-  { id: "billing", icon: IconCard, primaryHref: "/portal/parent/billing", subHrefs: [] },
-  { id: "messages", icon: IconChat, primaryHref: "/portal/parent/chat", subHrefs: [] },
-  { id: "recital", icon: IconStar, primaryHref: "/portal/parent/recital", subHrefs: [] },
-  { id: "forms", icon: IconForm, primaryHref: "/portal/parent/forms", subHrefs: [] },
+  { id: "home", icon: IconHome, hrefs: ["/portal/parent", "/portal/student"], subHrefs: [] },
+  { id: "schedule", icon: IconCalendar, hrefs: ["/portal/parent/schedule"], subHrefs: ["/portal/parent/private-lessons", "/portal/parent/absences"] },
+  { id: "progress", icon: IconProgress, hrefs: ["/portal/student/progress"], subHrefs: [] },
+  { id: "billing", icon: IconCard, hrefs: ["/portal/parent/billing"], subHrefs: [] },
+  { id: "messages", icon: IconChat, hrefs: ["/portal/parent/chat", "/portal/student/messages"], subHrefs: [] },
+  { id: "recital", icon: IconStar, hrefs: ["/portal/parent/recital"], subHrefs: [] },
+  { id: "forms", icon: IconForm, hrefs: ["/portal/parent/forms"], subHrefs: [] },
 ];
+
+/** Where the studio mark and "home" go: the nav's exact (hub) entry. */
+function homeHref(nav: NavItem[]) {
+  return nav.find((i) => i.exact)?.href ?? "/portal/parent";
+}
 
 const GLASS: React.CSSProperties = {
   background: "linear-gradient(148deg, var(--refract), transparent 42%), var(--glass)",
@@ -91,7 +102,7 @@ function useParentSpaces(nav: NavItem[]) {
     const byHref = (href: string) => nav.find((i) => i.href === href);
     const used = new Set<string>();
     const spaces = PARENT_SPACES.map((space) => {
-      const primary = byHref(space.primaryHref);
+      const primary = space.hrefs.map(byHref).find((i): i is NavItem => !!i);
       const subs = space.subHrefs.map(byHref).filter((i): i is NavItem => !!i);
       if (primary) used.add(primary.href);
       subs.forEach((s) => used.add(s.href));
@@ -190,7 +201,7 @@ export function ParentRail({
         style={GLASS}
       >
         <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(180deg, var(--t1), transparent 42%)" }} />
-        <Link href="/portal/parent" prefetch={false} className="relative grid h-10 w-11 shrink-0 place-items-center" title={studioName}>
+        <Link href={homeHref(nav)} prefetch={false} className="relative grid h-10 w-11 shrink-0 place-items-center" title={studioName}>
           <StudioMark studioName={studioName} logoUrl={logoUrl} />
         </Link>
         <div className="h-px w-[26px] shrink-0" style={{ background: "var(--hair)" }} />
@@ -369,7 +380,7 @@ export function ParentTopBar({
       style={{ ...GLASS, backdropFilter: "blur(var(--blur-lg)) saturate(1.9)", WebkitBackdropFilter: "blur(var(--blur-lg)) saturate(1.9)" }}
     >
       <Link
-        href="/portal/parent"
+        href={homeHref(nav)}
         prefetch={false}
         className="flex min-w-0 shrink items-center gap-2.5 rounded-[16px] border px-3 py-1.5 pr-3.5 transition-transform duration-300 hover:-translate-y-px"
         style={{ borderColor: "var(--tb)", background: "linear-gradient(140deg, var(--sheen), var(--sheen2))", boxShadow: "inset 0 1px 0 var(--sheen)" }}

@@ -158,7 +158,7 @@ function FulfilmentButton({
             onChange(order.id, next);
           })
         }
-        className="rounded-lg border border-[--hair] bg-surface px-2.5 py-1 text-xs font-semibold text-ink hover:bg-base disabled:opacity-50"
+        className="rounded-lg border border-(--hair) bg-surface px-2.5 py-1 text-xs font-semibold text-ink hover:bg-base disabled:opacity-50"
       >
         {pending ? t("fulfilment.saving") : t(`fulfilment.advance.${next}`)}
       </button>
@@ -368,7 +368,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
               <input
                 type="search" value={search} onChange={(e) => setSearch(e.target.value)}
                 placeholder={t("searchPlaceholder")}
-                className="w-64 rounded-xl border border-[--hair] bg-surface px-4 py-2 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
+                className="w-64 rounded-xl border border-(--hair) bg-surface px-4 py-2 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
               />
               <div className="flex gap-2">
                 {categories.map((c) => (
@@ -378,7 +378,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
                     className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors capitalize ${
                       catFilter === c
                         ? "bg-brand text-white"
-                        : "border border-[--hair] text-muted hover:text-ink"
+                        : "border border-(--hair) text-muted hover:text-ink"
                     }`}
                   >
                     {c === "all" ? t("allCategory") : c}
@@ -466,7 +466,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
               type="button"
               onClick={() => setOnlyOpenOrders((v) => !v)}
               className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                onlyOpenOrders ? "bg-brand text-white" : "border border-[--hair] bg-surface text-ink hover:bg-base"
+                onlyOpenOrders ? "bg-brand text-white" : "border border-(--hair) bg-surface text-ink hover:bg-base"
               }`}
             >
               {t("orders.toFulfil", { count: openOrders.length })}
@@ -475,7 +475,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
           <GlassPanel className="!p-0 overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[--hair] bg-base">
+                <tr className="border-b border-(--hair) bg-base">
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted">{t("orders.table.customer")}</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted">{t("orders.table.items")}</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted">{t("orders.table.total")}</th>
@@ -499,7 +499,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
                       ? [profile.first_name, profile.last_name].filter(Boolean).join(" ") || tShared("unknown")
                       : tShared("unknown");
                     return (
-                      <tr key={o.id} className="border-b border-[--hair] last:border-0 hover:bg-base/50">
+                      <tr key={o.id} className="border-b border-(--hair) last:border-0 hover:bg-base/50">
                         <td className="px-4 py-3 font-medium text-ink">{name}</td>
                         <td className="px-4 py-3 text-muted">
                           {o.order_items?.length
@@ -555,7 +555,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
               {...panelSlide}
               className="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-surface shadow-2xl"
             >
-              <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">
+              <div className="flex items-center justify-between border-b border-(--hair) px-6 py-4">
                 <h2 className="font-semibold text-ink">
                   {editTarget ? t("form.editProduct") : t("form.newProduct")}
                 </h2>
@@ -569,7 +569,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
                     <input
                       type={type} value={form[key] as string} onChange={(e) => field(key, e.target.value)}
                       placeholder={placeholder}
-                      className="w-full rounded-xl border border-[--hair] bg-base px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
+                      className="w-full rounded-xl border border-(--hair) bg-base px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
                     />
                   </div>
                 ))}
@@ -579,7 +579,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
                   <textarea
                     rows={3} value={form.description} onChange={(e) => field("description", e.target.value)}
                     placeholder={t("form.descriptionPlaceholder")}
-                    className="w-full resize-none rounded-xl border border-[--hair] bg-base px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
+                    className="w-full resize-none rounded-xl border border-(--hair) bg-base px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
                   />
                 </div>
 
@@ -589,7 +589,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
                     <input
                       type="number" min="0" step="100" value={form.priceCents}
                       onChange={(e) => field("priceCents", parseInt(e.target.value) || 0)}
-                      className="w-full rounded-xl border border-[--hair] bg-base px-4 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
+                      className="w-full rounded-xl border border-(--hair) bg-base px-4 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
                     />
                     <p className="mt-1 text-[0.65rem] text-muted">{formatPrice(form.priceCents as number)}</p>
                   </div>
@@ -598,7 +598,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
                     <input
                       type="number" min="0" value={form.stockQty}
                       onChange={(e) => field("stockQty", parseInt(e.target.value) || 0)}
-                      className="w-full rounded-xl border border-[--hair] bg-base px-4 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
+                      className="w-full rounded-xl border border-(--hair) bg-base px-4 py-2.5 text-sm text-ink focus:border-brand focus:outline-none"
                     />
                   </div>
                 </div>
@@ -606,7 +606,7 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => field("active", !form.active)}
-                    className={`relative h-6 w-11 rounded-full transition-colors ${form.active ? "bg-brand" : "bg-[--hair]"}`}
+                    className={`relative h-6 w-11 rounded-full transition-colors ${form.active ? "bg-brand" : "bg-(--hair)"}`}
                   >
                     <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${form.active ? "translate-x-5" : "translate-x-0.5"}`} />
                   </button>
@@ -618,8 +618,8 @@ export function ShopManager({ products: initial, recentOrders: initialOrders }: 
                 )}
               </div>
 
-              <div className="flex gap-3 border-t border-[--hair] px-6 py-4">
-                <button onClick={closeSlide} className="flex-1 rounded-xl border border-[--hair] py-2 text-sm text-muted hover:text-ink">
+              <div className="flex gap-3 border-t border-(--hair) px-6 py-4">
+                <button onClick={closeSlide} className="flex-1 rounded-xl border border-(--hair) py-2 text-sm text-muted hover:text-ink">
                   {tCommon("cancel")}
                 </button>
                 <button

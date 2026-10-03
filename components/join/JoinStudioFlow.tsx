@@ -124,7 +124,7 @@ export function JoinStudioFlow({
                 <button
                   type="button"
                   onClick={() => selectPath("parent")}
-                  className="w-full rounded-2xl border border-[--hair] bg-base px-5 py-4 text-left transition hover:border-brand"
+                  className="w-full rounded-2xl border border-(--hair) bg-base px-5 py-4 text-left transition hover:border-brand"
                 >
                   <p className="font-bold text-ink">{t("pathParentTitle")}</p>
                   <p className="mt-1 text-xs text-muted">{t("pathParentDescription")}</p>
@@ -134,7 +134,7 @@ export function JoinStudioFlow({
                 <button
                   type="button"
                   onClick={() => selectPath("adult_student")}
-                  className="w-full rounded-2xl border border-[--hair] bg-base px-5 py-4 text-left transition hover:border-brand"
+                  className="w-full rounded-2xl border border-(--hair) bg-base px-5 py-4 text-left transition hover:border-brand"
                 >
                   <p className="font-bold text-ink">{t("pathAdultTitle")}</p>
                   <p className="mt-1 text-xs text-muted">{t("pathAdultDescription")}</p>

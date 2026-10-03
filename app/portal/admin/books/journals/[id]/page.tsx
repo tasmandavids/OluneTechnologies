@@ -55,7 +55,7 @@ export default async function JournalDetailPage({ params }: { params: Promise<{ 
         )}
         <Badge>{t(`timing.${j.tax_timing as string}`)}</Badge>
         {sourceLink && (
-          <Link href={sourceLink} className="text-xs font-semibold text-[--brand]">
+          <Link href={sourceLink} className="text-xs font-semibold text-(--brand)">
             {t("openSource")}
           </Link>
         )}

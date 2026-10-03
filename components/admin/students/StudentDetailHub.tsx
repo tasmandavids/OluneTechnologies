@@ -152,7 +152,7 @@ export default function StudentDetailHub({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 border-b border-[--hair] pb-1">
+      <div className="flex flex-wrap gap-2 border-b border-(--hair) pb-1">
         {tabs.map((tabItem) => (
           <button
             key={tabItem.id}

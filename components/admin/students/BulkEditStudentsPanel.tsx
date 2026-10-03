@@ -83,16 +83,16 @@ export default function BulkEditStudentsPanel({
         onClick={onClose}
       />
       <motion.aside
-        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-[--hair] bg-surface shadow-2xl"
+        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-(--hair) bg-surface shadow-2xl"
         {...panelSlide}
       >
-        <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">
+        <div className="flex items-center justify-between border-b border-(--hair) px-6 py-4">
           <h2 className="font-black text-ink">{t("title", { count: students.length })}</h2>
           <button onClick={onClose} className="text-muted hover:text-ink">✕</button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
           {rows.map((row) => (
-            <div key={row.id} className="space-y-3 rounded-xl border border-[--hair] bg-base p-4">
+            <div key={row.id} className="space-y-3 rounded-xl border border-(--hair) bg-base p-4">
               <div>
                 <label className="block text-[0.68rem] font-semibold uppercase tracking-wider text-muted mb-1">
                   {tAdd("fullName")}
@@ -100,8 +100,8 @@ export default function BulkEditStudentsPanel({
                 <input
                   value={row.fullName}
                   onChange={(e) => setRow(row.id, "fullName", e.target.value)}
-                  className="w-full rounded-lg border border-[--hair] bg-surface px-3 py-2 text-sm text-ink
-                             focus:outline-none focus:ring-1 focus:ring-[--brand]"
+                  className="w-full rounded-lg border border-(--hair) bg-surface px-3 py-2 text-sm text-ink
+                             focus:outline-none focus:ring-1 focus:ring-(--brand)"
                 />
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
@@ -114,8 +114,8 @@ export default function BulkEditStudentsPanel({
                     value={row.email}
                     onChange={(e) => setRow(row.id, "email", e.target.value)}
                     placeholder={tAdd("emailPlaceholder")}
-                    className="w-full rounded-lg border border-[--hair] bg-surface px-3 py-2 text-sm text-ink
-                               placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
+                    className="w-full rounded-lg border border-(--hair) bg-surface px-3 py-2 text-sm text-ink
+                               placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-(--brand)"
                   />
                 </div>
                 <div>
@@ -126,8 +126,8 @@ export default function BulkEditStudentsPanel({
                     value={row.phone}
                     onChange={(e) => setRow(row.id, "phone", e.target.value)}
                     placeholder={tAdd("phonePlaceholder")}
-                    className="w-full rounded-lg border border-[--hair] bg-surface px-3 py-2 text-sm text-ink
-                               placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
+                    className="w-full rounded-lg border border-(--hair) bg-surface px-3 py-2 text-sm text-ink
+                               placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-(--brand)"
                   />
                 </div>
               </div>
@@ -139,8 +139,8 @@ export default function BulkEditStudentsPanel({
             </p>
           )}
         </div>
-        <div className="flex gap-3 border-t border-[--hair] px-6 py-4">
-          <button onClick={onClose} className="flex-1 rounded-xl border border-[--hair] py-2.5 text-sm text-muted hover:text-ink">
+        <div className="flex gap-3 border-t border-(--hair) px-6 py-4">
+          <button onClick={onClose} className="flex-1 rounded-xl border border-(--hair) py-2.5 text-sm text-muted hover:text-ink">
             {tCommon("cancel")}
           </button>
           <button

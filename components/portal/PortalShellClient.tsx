@@ -309,8 +309,9 @@ export function PortalShellClient({
   const showBell = role === "admin" || role === "office" || role === "parent" || (role === "student" && selfManagedStudent);
   const isAdminRail = role === "admin";
   // Parents get the same Aurora Glass shell as studio owners, in the studio's
-  // own colour. Self-managed adult students keep the classic sidebar for now.
-  const isParentRail = role === "parent" && !selfManagedStudent;
+  // own colour. Adult students who run their own account (same billing, forms
+  // and messages doors) share it.
+  const isParentRail = role === "parent" || (role === "student" && selfManagedStudent);
   const isGlass = isAdminRail || isParentRail;
   const parentNav = roleNav ?? PORTAL_NAV.parent;
 

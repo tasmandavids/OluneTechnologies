@@ -102,7 +102,7 @@ function RollCallCard({ cls, todayDate }: { cls: TeacherClass; todayDate: string
                 </span>
                 <Link
                   href={`/portal/teacher/students/${student.studentId}`}
-                  className="flex-1 text-sm font-medium text-ink hover:text-[--brand] hover:underline"
+                  className="flex-1 text-sm font-medium text-ink hover:text-(--brand) hover:underline"
                 >
                   {student.name ?? t("unknownStudent")}
                 </Link>
@@ -214,7 +214,7 @@ function ScheduleRow({ cls, dayName }: { cls: TeacherClass; dayName: string }) {
                     </span>
                     <Link
                       href={`/portal/teacher/students/${student.studentId}`}
-                      className="flex-1 text-sm font-medium text-ink hover:text-[--brand] hover:underline"
+                      className="flex-1 text-sm font-medium text-ink hover:text-(--brand) hover:underline"
                     >
                       {student.name ?? t("unknownStudent")}
                     </Link>

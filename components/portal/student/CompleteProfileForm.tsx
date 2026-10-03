@@ -39,7 +39,7 @@ export default function CompleteProfileForm({
             required
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="w-full rounded-xl border border-[--hair] bg-base px-3 py-2.5 text-sm text-ink"
+            className="w-full rounded-xl border border-(--hair) bg-base px-3 py-2.5 text-sm text-ink"
             autoComplete="name"
           />
         </div>
@@ -53,7 +53,7 @@ export default function CompleteProfileForm({
             required
             value={birthday}
             onChange={(e) => setBirthday(e.target.value)}
-            className="w-full rounded-xl border border-[--hair] bg-base px-3 py-2.5 text-sm text-ink"
+            className="w-full rounded-xl border border-(--hair) bg-base px-3 py-2.5 text-sm text-ink"
           />
         </div>
 

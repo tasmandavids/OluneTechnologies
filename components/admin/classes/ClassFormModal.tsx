@@ -196,8 +196,8 @@ function Label({ children }: { children: React.ReactNode }) {
 }
 
 const CONTROL =
-  "w-full rounded-lg border border-[--hair] bg-surface px-3 py-2 text-sm text-ink " +
-  "placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]";
+  "w-full rounded-lg border border-(--hair) bg-surface px-3 py-2 text-sm text-ink " +
+  "placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-(--brand)";
 
 function Input({
   value, onChange, type = "text", placeholder, min, max, step,
@@ -250,7 +250,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div
-      className={`rounded-2xl border border-[--hair] p-4 ${className}`}
+      className={`rounded-2xl border border-(--hair) p-4 ${className}`}
       style={{ background: "color-mix(in srgb, var(--surface) 72%, transparent)" }}
     >
       {children}
@@ -311,7 +311,7 @@ function BillingSection({
       ) : (
         <>
           {products.length > 0 && (
-            <div className="mb-3 flex gap-1.5 rounded-xl border border-[--hair] p-1">
+            <div className="mb-3 flex gap-1.5 rounded-xl border border-(--hair) p-1">
               {(["existing", "new"] as const).map((mode) => (
                 <button
                   key={mode}
@@ -381,7 +381,7 @@ function BillingSection({
               {/* SKU and ledger coding are bookkeeping detail — sensible
                   defaults are derived from the class name and the studio's
                   connected ledger, so most studios never open this. */}
-              <details className="mt-3 rounded-xl border border-[--hair]">
+              <details className="mt-3 rounded-xl border border-(--hair)">
                 <summary className="cursor-pointer select-none px-3 py-2 text-[0.68rem] font-semibold uppercase tracking-wider text-muted">
                   {t("productAdvanced")}
                 </summary>
@@ -439,7 +439,7 @@ function BillingSection({
 
       <Link
         href={PRODUCTS_HREF}
-        className="mt-3 inline-block text-xs font-semibold text-[--brand] hover:underline"
+        className="mt-3 inline-block text-xs font-semibold text-(--brand) hover:underline"
       >
         {t("manageProducts")}
       </Link>
@@ -634,7 +634,7 @@ export function ClassFormModal({
           }}
           {...fadeLift}
         >
-          <div className="flex items-start justify-between gap-4 border-b border-[--hair] px-6 py-4">
+          <div className="flex items-start justify-between gap-4 border-b border-(--hair) px-6 py-4">
             <div>
               <h2 className="font-black text-ink">
                 {mode === "create" ? t("newClass") : t("editClass")}
@@ -721,7 +721,7 @@ export function ClassFormModal({
                             className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                               active
                                 ? "text-white"
-                                : "border border-[--hair] text-muted hover:text-ink"
+                                : "border border-(--hair) text-muted hover:text-ink"
                             }`}
                             style={active ? { background: "var(--brand)" } : undefined}
                           >
@@ -822,8 +822,8 @@ export function ClassFormModal({
                     type="button"
                     onClick={linkSeries}
                     disabled={seriesPending}
-                    className="mt-3 w-full rounded-lg border border-[--hair] py-2 text-xs font-bold text-ink
-                               transition-colors hover:bg-[--hair] disabled:opacity-50"
+                    className="mt-3 w-full rounded-lg border border-(--hair) py-2 text-xs font-bold text-ink
+                               transition-colors hover:bg-(--hair) disabled:opacity-50"
                   >
                     {seriesPending ? t("seriesLinking") : t("seriesLinkButton")}
                   </button>
@@ -838,10 +838,10 @@ export function ClassFormModal({
             </p>
           )}
 
-          <div className="flex gap-3 border-t border-[--hair] px-6 py-4">
+          <div className="flex gap-3 border-t border-(--hair) px-6 py-4">
             <button
               onClick={onClose}
-              className="flex-1 rounded-xl border border-[--hair] py-2.5 text-sm text-muted
+              className="flex-1 rounded-xl border border-(--hair) py-2.5 text-sm text-muted
                          transition-colors hover:text-ink"
             >
               {tCommon("cancel")}

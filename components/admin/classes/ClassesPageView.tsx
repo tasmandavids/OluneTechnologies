@@ -53,7 +53,7 @@ export function ClassesPageView({
               onClick={() => setView(v)}
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                 view === v
-                  ? "bg-[color-mix(in_srgb,var(--brand)_14%,var(--surface))] text-[--brand-deep]"
+                  ? "bg-[color-mix(in_srgb,var(--brand)_14%,var(--surface))] text-(--brand-deep)"
                   : "text-muted hover:text-ink"
               }`}
             >

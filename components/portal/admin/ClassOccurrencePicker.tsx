@@ -53,11 +53,11 @@ export default function ClassOccurrencePicker({ classes, onConfirm, busy }: Prop
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t("searchClassPlaceholder")}
-          className="w-full rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+          className="w-full rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
         />
       </div>
 
-      <div className="max-h-56 overflow-y-auto rounded-xl border border-[--hair]">
+      <div className="max-h-56 overflow-y-auto rounded-xl border border-(--hair)">
         {filtered.length === 0 ? (
           <p className="px-3 py-4 text-center text-sm text-muted">{t("noClasses")}</p>
         ) : (
@@ -66,7 +66,7 @@ export default function ClassOccurrencePicker({ classes, onConfirm, busy }: Prop
               key={c.id}
               type="button"
               onClick={() => setClassId(c.id)}
-              className={`block w-full border-b border-[--hair] px-3 py-2.5 text-left text-sm last:border-b-0 ${
+              className={`block w-full border-b border-(--hair) px-3 py-2.5 text-left text-sm last:border-b-0 ${
                 classId === c.id ? "bg-[color-mix(in_srgb,var(--brand)_14%,var(--surface))]" : "hover:bg-base"
               }`}
             >
@@ -87,7 +87,7 @@ export default function ClassOccurrencePicker({ classes, onConfirm, busy }: Prop
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+          className="w-full rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
         />
       </div>
 

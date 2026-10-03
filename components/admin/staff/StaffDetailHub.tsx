@@ -218,7 +218,7 @@ export default function StaffDetailHub({
         <p className={`text-sm ${error ? "text-red-600" : "text-green-600"}`}>{error ?? success}</p>
       )}
 
-      <div className="flex flex-wrap gap-2 border-b border-[--hair] pb-1">
+      <div className="flex flex-wrap gap-2 border-b border-(--hair) pb-1">
         {tabs.map((tabItem) => (
           <button
             key={tabItem.id}
@@ -244,7 +244,7 @@ export default function StaffDetailHub({
             <input
               value={profileForm.fullName}
               onChange={(e) => setProfileForm({ ...profileForm, fullName: e.target.value })}
-              className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
             />
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -255,7 +255,7 @@ export default function StaffDetailHub({
               <input
                 value={profileForm.email}
                 disabled
-                className="w-full rounded-lg border border-[--hair] bg-base/50 px-3 py-2 text-sm text-muted"
+                className="w-full rounded-lg border border-(--hair) bg-base/50 px-3 py-2 text-sm text-muted"
               />
             </div>
             <div>
@@ -265,7 +265,7 @@ export default function StaffDetailHub({
               <input
                 value={profileForm.phone}
                 onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
-                className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
               />
             </div>
           </div>
@@ -278,7 +278,7 @@ export default function StaffDetailHub({
               onChange={(e) =>
                 setProfileForm({ ...profileForm, role: e.target.value as StaffPortalRole })
               }
-              className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
             >
               {STAFF_PORTAL_ROLES.map((r) => (
                 <option key={r} value={r}>
@@ -314,7 +314,7 @@ export default function StaffDetailHub({
                     employmentType: e.target.value as StaffEmploymentType | "",
                   })
                 }
-                className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
               >
                 <option value="">{tShared("none")}</option>
                 {EMPLOYMENT_TYPES.map((et) => (
@@ -336,7 +336,7 @@ export default function StaffDetailHub({
                     workLocation: e.target.value as StaffWorkLocation | "",
                   })
                 }
-                className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
               >
                 <option value="">{tShared("none")}</option>
                 {WORK_LOCATIONS.map((wl) => (
@@ -354,7 +354,7 @@ export default function StaffDetailHub({
             <select
               value={employmentForm.managerId}
               onChange={(e) => setEmploymentForm({ ...employmentForm, managerId: e.target.value })}
-              className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
             >
               <option value="">{tShared("unassignedOption")}</option>
               {managerOptions.map((m) => (
@@ -378,7 +378,7 @@ export default function StaffDetailHub({
                     className={`rounded-full border px-3 py-1 text-xs ${
                       employmentForm.locationNames.includes(loc)
                         ? "border-brand bg-brand/15 text-brand"
-                        : "border-[--hair] text-muted"
+                        : "border-(--hair) text-muted"
                     }`}
                   >
                     {loc}
@@ -398,7 +398,7 @@ export default function StaffDetailHub({
                 onChange={(e) =>
                   setEmploymentForm({ ...employmentForm, startDate: e.target.value })
                 }
-                className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
               />
             </div>
             <div>
@@ -411,7 +411,7 @@ export default function StaffDetailHub({
                 onChange={(e) =>
                   setEmploymentForm({ ...employmentForm, endDate: e.target.value })
                 }
-                className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
               />
             </div>
           </div>
@@ -425,7 +425,7 @@ export default function StaffDetailHub({
               onChange={(e) =>
                 setEmploymentForm({ ...employmentForm, scheduleNotes: e.target.value })
               }
-              className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
             />
           </div>
           <div className="flex flex-wrap gap-2">
@@ -442,7 +442,7 @@ export default function StaffDetailHub({
               type="button"
               disabled={pending}
               onClick={toggleActive}
-              className="rounded-xl border border-[--hair] px-4 py-2 text-sm text-muted"
+              className="rounded-xl border border-(--hair) px-4 py-2 text-sm text-muted"
             >
               {employmentForm.active ? t("deactivate") : t("reactivate")}
             </button>
@@ -463,7 +463,7 @@ export default function StaffDetailHub({
               onChange={(e) =>
                 setContractForm({ ...contractForm, contractNotes: e.target.value })
               }
-              className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
             />
           </div>
           <div>
@@ -474,7 +474,7 @@ export default function StaffDetailHub({
               rows={4}
               value={contractForm.payNotes}
               onChange={(e) => setContractForm({ ...contractForm, payNotes: e.target.value })}
-              className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
             />
           </div>
           <button
@@ -508,19 +508,19 @@ export default function StaffDetailHub({
                 type="date"
                 value={shiftDraft.shiftDate}
                 onChange={(e) => setShiftDraft({ ...shiftDraft, shiftDate: e.target.value })}
-                className="rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                className="rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
               />
               <input
                 type="time"
                 value={shiftDraft.startTime}
                 onChange={(e) => setShiftDraft({ ...shiftDraft, startTime: e.target.value })}
-                className="rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                className="rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
               />
               <input
                 type="time"
                 value={shiftDraft.endTime}
                 onChange={(e) => setShiftDraft({ ...shiftDraft, endTime: e.target.value })}
-                className="rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                className="rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
               />
               {locations.length > 0 && (
                 <select
@@ -528,7 +528,7 @@ export default function StaffDetailHub({
                   onChange={(e) =>
                     setShiftDraft({ ...shiftDraft, locationName: e.target.value })
                   }
-                  className="rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                  className="rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
                 >
                   {locations.map((loc) => (
                     <option key={loc} value={loc}>
@@ -549,7 +549,7 @@ export default function StaffDetailHub({
             </button>
           </GlassPanel>
           <GlassPanel className="!p-0 overflow-hidden">
-            <ul className="divide-y divide-[--hair]">
+            <ul className="divide-y divide-(--hair)">
               {shifts.length === 0 ? (
                 <li className="px-5 py-8 text-center text-sm text-muted">{t("noShifts")}</li>
               ) : (

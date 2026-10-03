@@ -34,7 +34,7 @@ export default async function NotFound() {
                 ),
               })}
             </p>
-            <p className="mt-4 rounded-xl border border-[--hair] bg-surface px-4 py-3 text-left text-sm text-muted">
+            <p className="mt-4 rounded-xl border border-(--hair) bg-surface px-4 py-3 text-left text-sm text-muted">
               {t("exampleLabel")}{" "}
               <code className="text-ink">https://your-slug.{root}:3000/about</code>
             </p>
@@ -42,10 +42,10 @@ export default async function NotFound() {
               <Link href="/" className="btn-glow btn-glow--solid px-5 py-2 text-sm">
                 {t("oluneHome")}
               </Link>
-              <Link href="/login" className="rounded-full border border-[--hair] px-5 py-2 text-sm text-ink">
+              <Link href="/login" className="rounded-full border border-(--hair) px-5 py-2 text-sm text-ink">
                 {t("signIn")}
               </Link>
-              <Link href="/portal/admin/site" className="rounded-full border border-[--hair] px-5 py-2 text-sm text-ink">
+              <Link href="/portal/admin/site" className="rounded-full border border-(--hair) px-5 py-2 text-sm text-ink">
                 {t("websiteAdmin")}
               </Link>
             </div>

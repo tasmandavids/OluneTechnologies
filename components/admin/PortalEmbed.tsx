@@ -146,7 +146,7 @@ export default function PortalEmbed({ slug, customDomain, root, registrationEnab
               rows={3}
               value={card.snippet}
               onFocus={(e) => e.currentTarget.select()}
-              className="w-full resize-none rounded-lg border border-[--hair] bg-base px-3 py-2 font-mono text-[0.7rem] leading-relaxed text-ink"
+              className="w-full resize-none rounded-lg border border-(--hair) bg-base px-3 py-2 font-mono text-[0.7rem] leading-relaxed text-ink"
             />
             <CopyButton
               onClick={() => copy(`${card.id}-snippet`, card.snippet)}
@@ -165,7 +165,7 @@ export default function PortalEmbed({ slug, customDomain, root, registrationEnab
                 alt={`${card.label} QR code`}
                 width={88}
                 height={88}
-                className="rounded-lg border border-[--hair] bg-white p-1"
+                className="rounded-lg border border-(--hair) bg-white p-1"
               />
             ) : (
               <div className="box h-[88px] w-[88px] rounded-lg" />

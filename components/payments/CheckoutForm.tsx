@@ -106,7 +106,7 @@ function InnerForm({
         <button
           type="button"
           onClick={onCancel ?? onSuccess}
-          className="w-full rounded-xl border border-[--hair] bg-surface py-3 text-sm font-semibold text-muted transition-colors hover:text-ink"
+          className="w-full rounded-xl border border-(--hair) bg-surface py-3 text-sm font-semibold text-muted transition-colors hover:text-ink"
         >
           {cancelLabel ?? tCommon("close")}
         </button>
@@ -136,7 +136,7 @@ function InnerForm({
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="flex-1 rounded-xl border border-[--hair] bg-surface py-3 text-sm font-semibold text-muted transition-colors hover:text-ink disabled:opacity-40"
+            className="flex-1 rounded-xl border border-(--hair) bg-surface py-3 text-sm font-semibold text-muted transition-colors hover:text-ink disabled:opacity-40"
           >
             {cancelLabel ?? tCommon("cancel")}
           </button>

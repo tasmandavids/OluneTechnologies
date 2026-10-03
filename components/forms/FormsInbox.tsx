@@ -19,6 +19,7 @@ import { useEscToClose } from "@/lib/useEscToClose";
 import { fadeLift, overlayFade } from "@/lib/motion";
 import { SignaturePad, SignatureStamp } from "./SignaturePad";
 import type { AssignedForm, FormResponseRecord, FormSignature, FormSubject } from "@/lib/forms/types";
+import { countOutstandingForms } from "@/lib/forms/types";
 
 const TYPE_LABELS: Record<string, string> = {
   policy: "Studio policy",
@@ -67,13 +68,7 @@ export function FormsInbox({
     return map;
   }, [responses]);
 
-  const outstanding = forms.reduce((total, entry) => {
-    if (!entry.form.isRequired) return total;
-    return (
-      total +
-      entry.subjects.filter((s) => !responseFor.get(`${entry.form.id}:${s.profileId}`)?.signedAt).length
-    );
-  }, 0);
+  const outstanding = useMemo(() => countOutstandingForms(forms, responses), [forms, responses]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-6">
@@ -317,7 +312,7 @@ function FormReader({
                     onChange={(e) => set(field.key, e.target.checked)}
                     required={field.required}
                     disabled={saving}
-                    className="h-4 w-4 rounded accent-[--brand]"
+                    className="h-4 w-4 rounded accent-(--brand)"
                   />
                   <span className="text-sm text-ink">{field.placeholder ?? "Yes"}</span>
                 </label>

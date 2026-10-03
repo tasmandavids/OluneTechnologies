@@ -158,7 +158,7 @@ export default function SubscriptionsManager({
             key={f}
             onClick={() => setFilter(f)}
             className={`rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition-colors ${
-              filter === f ? "text-white" : "border border-[--hair] text-muted hover:text-ink"
+              filter === f ? "text-white" : "border border-(--hair) text-muted hover:text-ink"
             }`}
             style={filter === f ? { background: "var(--brand)" } : undefined}
           >
@@ -191,7 +191,7 @@ export default function SubscriptionsManager({
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-left">
               <thead>
-                <tr className="border-b border-[--hair]">
+                <tr className="border-b border-(--hair)">
                   {(
                     [
                       t("table.plan"),
@@ -223,7 +223,7 @@ export default function SubscriptionsManager({
                     return (
                       <tr
                         key={s.id}
-                        className="border-b border-[--hair] transition-colors last:border-0 hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)]"
+                        className="border-b border-(--hair) transition-colors last:border-0 hover:bg-[color-mix(in_srgb,var(--brand)_3%,transparent)]"
                       >
                         <td className="px-4 py-3">
                           <p className="text-sm font-semibold text-ink">

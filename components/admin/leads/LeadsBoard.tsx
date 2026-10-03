@@ -89,14 +89,14 @@ function LeadCard({
           )}
           <div className="mt-1 flex flex-wrap items-center gap-1">
             {lead.source && (
-              <span className="inline-block rounded-full bg-[--surface] px-2 py-0.5 text-[0.58rem] font-medium uppercase tracking-wide text-muted">
+              <span className="inline-block rounded-full bg-(--surface) px-2 py-0.5 text-[0.58rem] font-medium uppercase tracking-wide text-muted">
                 {lead.source}
               </span>
             )}
             {/* The acquisition channel. "Direct" is a real answer, not a
                 missing one — it means we looked and there was no campaign. */}
             <span
-              className="inline-block rounded-full bg-[--surface] px-2 py-0.5 text-[0.58rem] font-medium uppercase tracking-wide text-muted"
+              className="inline-block rounded-full bg-(--surface) px-2 py-0.5 text-[0.58rem] font-medium uppercase tracking-wide text-muted"
               title={lead.campaign ? t("campaignTitle", { campaign: lead.campaign }) : undefined}
             >
               {lead.channel ?? t("directChannel")}
@@ -167,7 +167,7 @@ function LeadCard({
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
               placeholder={t("notesPlaceholder")}
-              className="mt-3 w-full resize-none rounded-lg border border-[--hair] bg-surface px-2.5 py-2 text-xs text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
+              className="mt-3 w-full resize-none rounded-lg border border-(--hair) bg-surface px-2.5 py-2 text-xs text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-(--brand)"
             />
             <div className="mt-1.5 flex justify-end">
               <button
@@ -274,7 +274,7 @@ function NewLeadSlideOver({
                 value={form[field] as string}
                 required={required}
                 onChange={(e) => handleChange(field, e.target.value)}
-                className="w-full rounded-lg border border-[--hair] bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-[--brand]"
+                className="w-full rounded-lg border border-(--hair) bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-(--brand)"
               />
             </div>
           ))}
@@ -287,7 +287,7 @@ function NewLeadSlideOver({
               value={form.notes as string}
               onChange={(e) => handleChange("notes", e.target.value)}
               rows={4}
-              className="w-full resize-none rounded-lg border border-[--hair] bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-[--brand]"
+              className="w-full resize-none rounded-lg border border-(--hair) bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-(--brand)"
             />
           </div>
 
@@ -381,7 +381,7 @@ export function LeadsBoard({ initialLeads }: { initialLeads: Lead[] }) {
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">
+      <div className="flex items-center justify-between border-b border-(--hair) px-6 py-4">
         <div>
           <h1 className="text-xl font-black text-ink">{t("title")}</h1>
           <p className="text-xs text-muted">{t("subtitle", { count: total })}</p>

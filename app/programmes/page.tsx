@@ -61,7 +61,7 @@ export default async function ProgrammesPage() {
         </p>
 
         {classes.length > 0 ? (
-          <ul className="mt-10 divide-y divide-[--hair] border-y border-[--hair]">
+          <ul className="mt-10 divide-y divide-(--hair) border-y border-(--hair)">
             {classes.map((cls) => (
               <li key={cls.id} className="flex flex-wrap items-baseline justify-between gap-2 py-4">
                 <div>

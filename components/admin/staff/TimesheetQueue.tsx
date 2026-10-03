@@ -55,7 +55,7 @@ function toIso(date: string, time: string): string | null {
 function SourceBadge({ source }: { source: ManagedTimesheet["source"] }) {
   const t = useTranslations("timeclock.admin");
   return (
-    <span className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.55rem] font-semibold uppercase tracking-wider text-muted">
+    <span className="rounded-full border border-(--hair) px-2 py-0.5 text-[0.55rem] font-semibold uppercase tracking-wider text-muted">
       {t(`source.${source}`)}
     </span>
   );
@@ -120,14 +120,14 @@ function EditRow({
   };
 
   return (
-    <div className="mt-3 flex flex-wrap items-end gap-2 rounded-xl border border-[--hair] bg-base p-3">
+    <div className="mt-3 flex flex-wrap items-end gap-2 rounded-xl border border-(--hair) bg-base p-3">
       <label className="text-xs text-muted">
         {t("fields.date")}
         <input
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="mt-1 block rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-sm text-ink"
+          className="mt-1 block rounded-lg border border-(--hair) bg-surface px-2 py-1.5 text-sm text-ink"
         />
       </label>
       <label className="text-xs text-muted">
@@ -136,7 +136,7 @@ function EditRow({
           type="time"
           value={start}
           onChange={(e) => setStart(e.target.value)}
-          className="mt-1 block rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-sm text-ink"
+          className="mt-1 block rounded-lg border border-(--hair) bg-surface px-2 py-1.5 text-sm text-ink"
         />
       </label>
       <label className="text-xs text-muted">
@@ -145,7 +145,7 @@ function EditRow({
           type="time"
           value={end}
           onChange={(e) => setEnd(e.target.value)}
-          className="mt-1 block rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-sm text-ink"
+          className="mt-1 block rounded-lg border border-(--hair) bg-surface px-2 py-1.5 text-sm text-ink"
         />
       </label>
       <label className="text-xs text-muted">
@@ -153,7 +153,7 @@ function EditRow({
         <select
           value={hourType}
           onChange={(e) => setHourType(e.target.value as ManagedTimesheet["hourType"])}
-          className="mt-1 block rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-sm text-ink"
+          className="mt-1 block rounded-lg border border-(--hair) bg-surface px-2 py-1.5 text-sm text-ink"
         >
           {(["regular", "overtime", "holiday", "sick", "vacation", "unpaid"] as const).map((h) => (
             <option key={h} value={h}>
@@ -169,7 +169,7 @@ function EditRow({
           value={note}
           maxLength={500}
           onChange={(e) => setNote(e.target.value)}
-          className="mt-1 block w-full rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-sm text-ink"
+          className="mt-1 block w-full rounded-lg border border-(--hair) bg-surface px-2 py-1.5 text-sm text-ink"
         />
       </label>
       <button
@@ -184,7 +184,7 @@ function EditRow({
       <button
         type="button"
         onClick={onDone}
-        className="rounded-lg border border-[--hair] px-3 py-1.5 text-xs font-medium text-muted"
+        className="rounded-lg border border-(--hair) px-3 py-1.5 text-xs font-medium text-muted"
       >
         {t("cancel")}
       </button>
@@ -237,7 +237,7 @@ function AddEntryPanel({
           <select
             value={staffId}
             onChange={(e) => setStaffId(e.target.value)}
-            className="mt-1 block rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-sm text-ink"
+            className="mt-1 block rounded-lg border border-(--hair) bg-surface px-2 py-1.5 text-sm text-ink"
           >
             {staffOptions.map((s) => (
               <option key={s.id} value={s.id}>
@@ -252,7 +252,7 @@ function AddEntryPanel({
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="mt-1 block rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-sm text-ink"
+            className="mt-1 block rounded-lg border border-(--hair) bg-surface px-2 py-1.5 text-sm text-ink"
           />
         </label>
         <label className="text-xs text-muted">
@@ -261,7 +261,7 @@ function AddEntryPanel({
             type="time"
             value={start}
             onChange={(e) => setStart(e.target.value)}
-            className="mt-1 block rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-sm text-ink"
+            className="mt-1 block rounded-lg border border-(--hair) bg-surface px-2 py-1.5 text-sm text-ink"
           />
         </label>
         <label className="text-xs text-muted">
@@ -270,7 +270,7 @@ function AddEntryPanel({
             type="time"
             value={end}
             onChange={(e) => setEnd(e.target.value)}
-            className="mt-1 block rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-sm text-ink"
+            className="mt-1 block rounded-lg border border-(--hair) bg-surface px-2 py-1.5 text-sm text-ink"
           />
         </label>
         <label className="text-xs text-muted">
@@ -278,7 +278,7 @@ function AddEntryPanel({
           <select
             value={hourType}
             onChange={(e) => setHourType(e.target.value as ManagedTimesheet["hourType"])}
-            className="mt-1 block rounded-lg border border-[--hair] bg-surface px-2 py-1.5 text-sm text-ink"
+            className="mt-1 block rounded-lg border border-(--hair) bg-surface px-2 py-1.5 text-sm text-ink"
           >
             {(["regular", "overtime", "holiday", "sick", "vacation", "unpaid"] as const).map((h) => (
               <option key={h} value={h}>
@@ -299,7 +299,7 @@ function AddEntryPanel({
         <button
           type="button"
           onClick={onDone}
-          className="rounded-lg border border-[--hair] px-3 py-2 text-xs font-medium text-muted"
+          className="rounded-lg border border-(--hair) px-3 py-2 text-xs font-medium text-muted"
         >
           {t("cancel")}
         </button>
@@ -393,7 +393,7 @@ export default function TimesheetQueue({
           <button
             type="button"
             onClick={() => setAdding((v) => !v)}
-            className="rounded-xl border border-[--hair] px-3 py-2 text-xs font-medium text-ink"
+            className="rounded-xl border border-(--hair) px-3 py-2 text-xs font-medium text-ink"
           >
             {t("addEntry")}
           </button>
@@ -493,7 +493,7 @@ export default function TimesheetQueue({
                         type="button"
                         disabled={pending}
                         onClick={() => run(() => unapproveTimeEntry(entry.id))}
-                        className="rounded-lg border border-[--hair] px-3 py-1.5 text-xs font-medium text-muted disabled:opacity-50"
+                        className="rounded-lg border border-(--hair) px-3 py-1.5 text-xs font-medium text-muted disabled:opacity-50"
                       >
                         {t("unapprove")}
                       </button>
@@ -511,7 +511,7 @@ export default function TimesheetQueue({
                         <button
                           type="button"
                           onClick={() => setEditing(editing === entry.id ? null : entry.id)}
-                          className="rounded-lg border border-[--hair] px-3 py-1.5 text-xs font-medium text-muted"
+                          className="rounded-lg border border-(--hair) px-3 py-1.5 text-xs font-medium text-muted"
                         >
                           {t("edit")}
                         </button>
@@ -519,7 +519,7 @@ export default function TimesheetQueue({
                           type="button"
                           disabled={pending}
                           onClick={() => run(() => deleteTimeEntry(entry.id))}
-                          className="rounded-lg border border-[--hair] px-3 py-1.5 text-xs font-medium text-red-600 disabled:opacity-50"
+                          className="rounded-lg border border-(--hair) px-3 py-1.5 text-xs font-medium text-red-600 disabled:opacity-50"
                         >
                           {t("delete")}
                         </button>

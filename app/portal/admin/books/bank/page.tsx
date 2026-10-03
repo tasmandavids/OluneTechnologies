@@ -80,7 +80,7 @@ export default async function BankPage({ searchParams }: { searchParams: Promise
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {banks.map((b) => (
           <Link key={b.id} href={`${BOOKS_PATH}/bank?account=${b.id}`}>
-            <GlassPanel className={`!p-4 ${b.id === selected.id ? "ring-2 ring-[--brand]" : ""}`}>
+            <GlassPanel className={`!p-4 ${b.id === selected.id ? "ring-2 ring-(--brand)" : ""}`}>
               <div className="flex items-center justify-between gap-2">
                 <p className="truncate text-sm font-semibold text-ink">{b.name}</p>
                 {(unreconciledBy.get(b.id) ?? 0) > 0 && <Badge tone="warn">{t("toReconcile", { count: unreconciledBy.get(b.id) ?? 0 })}</Badge>}

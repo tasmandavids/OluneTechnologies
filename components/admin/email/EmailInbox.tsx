@@ -84,7 +84,7 @@ function contactBadgeClass(type: ContactMatch["type"]): string {
     case "lead":
       return "bg-amber-100 text-amber-900 border-amber-200";
     default:
-      return "bg-base text-muted border-[--hair]";
+      return "bg-base text-muted border-(--hair)";
   }
 }
 
@@ -191,7 +191,7 @@ function EmailBody({ message }: { message: EmailMessageRow }) {
         sandbox="allow-same-origin"
         srcDoc={wrappedHtml}
         style={{ height: frameHeight }}
-        className="w-full rounded-2xl border border-[--hair] bg-white shadow-sm"
+        className="w-full rounded-2xl border border-(--hair) bg-white shadow-sm"
       />
     );
   }
@@ -534,7 +534,7 @@ export function EmailInbox({
         {/* List column — inbox nav folded into the thread list */}
         <div className="flex w-full min-w-[300px] shrink-0 lg:w-[384px]">
           <GlassPanel className="flex h-full w-full min-h-0 flex-col !p-0 overflow-hidden">
-            <div className="shrink-0 space-y-2 border-b border-[--hair] px-3.5 py-2.5">
+            <div className="shrink-0 space-y-2 border-b border-(--hair) px-3.5 py-2.5">
               <div className="flex items-center gap-2">
                 <div className="min-w-0">
                   <p className="font-display text-lg font-semibold leading-tight tracking-tight text-ink">
@@ -580,7 +580,7 @@ export function EmailInbox({
                         type="button"
                         onClick={() => disconnect(a.id)}
                         title={t("disconnectConfirm")}
-                        className="absolute -right-1 -top-1 hidden h-4 w-4 place-items-center rounded-full border border-[--hair] text-muted shadow-sm hover:text-red-500 group-hover:grid"
+                        className="absolute -right-1 -top-1 hidden h-4 w-4 place-items-center rounded-full border border-(--hair) text-muted shadow-sm hover:text-red-500 group-hover:grid"
                         style={{ background: "var(--surface)" }}
                       >
                         <IconX className="h-2.5 w-2.5" />
@@ -628,7 +628,7 @@ export function EmailInbox({
 
             {checked.length > 0 && (
               <div
-                className="flex shrink-0 items-center gap-2 border-b border-[--hair] px-3.5 py-2"
+                className="flex shrink-0 items-center gap-2 border-b border-(--hair) px-3.5 py-2"
                 style={{ background: "var(--t2)" }}
               >
                 <span className="text-[12px] text-muted">{t("selectedCount", { count: checked.length })}</span>
@@ -746,7 +746,7 @@ export function EmailInbox({
               <div className="grid flex-1 place-items-center text-sm text-muted">{tShared("loadingConversation")}</div>
             ) : (
               <>
-                <div className="shrink-0 border-b border-[--hair] px-5 py-2.5">
+                <div className="shrink-0 border-b border-(--hair) px-5 py-2.5">
                   <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
                     <div className="min-w-0 flex-1 space-y-1">
                       <h2 className="font-display text-lg font-semibold leading-snug tracking-tight text-ink">
@@ -766,7 +766,7 @@ export function EmailInbox({
                           return contact ? (
                             <ContactBadge key={email} contact={contact} />
                           ) : (
-                            <span key={email} className="inline-flex rounded-full border border-[--hair] bg-base px-2.5 py-0.5 text-xs text-muted">
+                            <span key={email} className="inline-flex rounded-full border border-(--hair) bg-base px-2.5 py-0.5 text-xs text-muted">
                               {email}
                             </span>
                           );
@@ -801,7 +801,7 @@ export function EmailInbox({
                             background: msg.is_outbound ? "color-mix(in srgb, var(--brand) 5%, var(--surface))" : "var(--surface)",
                           }}
                         >
-                          <header className="flex flex-wrap items-start justify-between gap-3 border-b border-[--hair]/70 px-5 py-2.5">
+                          <header className="flex flex-wrap items-start justify-between gap-3 border-b border-(--hair)/70 px-5 py-2.5">
                             <div className="flex items-center gap-2.5">
                               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl text-xs font-bold" style={avatarStyle(32)}>
                                 {initialsFromLabel(contact?.label ?? msg.from_name ?? msg.from_address ?? "?")}
@@ -833,7 +833,7 @@ export function EmailInbox({
 
                 {/* Composer stays one line tall until there's something to say —
                     every pixel it gives back goes to the email above it. */}
-                <div className="shrink-0 border-t border-[--hair] px-3 py-2.5 lg:px-5">
+                <div className="shrink-0 border-t border-(--hair) px-3 py-2.5 lg:px-5">
                   <div className="mx-auto flex max-w-4xl flex-col gap-2">
                     <div className="rounded-2xl px-3.5 py-2.5" style={GLASS_ROW}>
                       <textarea
@@ -947,13 +947,13 @@ export function EmailInbox({
               style={{ background: "var(--surface)", borderColor: "var(--edge)", boxShadow: "var(--shadow)" }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center gap-2.5 border-b border-[--hair] px-5 py-3.5">
+              <div className="flex items-center gap-2.5 border-b border-(--hair) px-5 py-3.5">
                 <span className="font-display text-base font-semibold text-ink">{t("composeTitle")}</span>
                 {accounts.length > 1 ? (
                   <select
                     value={composeAccountId ?? ""}
                     onChange={(e) => setComposeAccountId(e.target.value)}
-                    className="ml-2 rounded-full border border-[--hair] bg-base px-2.5 py-1 text-[11px] font-semibold text-ink"
+                    className="ml-2 rounded-full border border-(--hair) bg-base px-2.5 py-1 text-[11px] font-semibold text-ink"
                   >
                     {accounts.map((a) => (
                       <option key={a.id} value={a.id}>
@@ -969,13 +969,13 @@ export function EmailInbox({
                 <button
                   type="button"
                   onClick={() => setComposeOpen(false)}
-                  className="ml-auto grid h-7 w-7 shrink-0 place-items-center rounded-full text-muted transition hover:bg-[--t2] hover:text-ink"
+                  className="ml-auto grid h-7 w-7 shrink-0 place-items-center rounded-full text-muted transition hover:bg-(--t2) hover:text-ink"
                 >
                   <IconX className="h-4 w-4" />
                 </button>
               </div>
               <div className="flex flex-col gap-3 px-5 py-4">
-                <div className="flex items-center gap-2.5 border-b border-[--hair] pb-3">
+                <div className="flex items-center gap-2.5 border-b border-(--hair) pb-3">
                   <span className="w-14 shrink-0 text-xs text-muted">{t("composeTo")}</span>
                   <input
                     value={composeTo}
@@ -988,7 +988,7 @@ export function EmailInbox({
                   value={composeSubject}
                   onChange={(e) => setComposeSubject(e.target.value)}
                   placeholder={t("composeSubjectPlaceholder")}
-                  className="border-b border-[--hair] bg-transparent pb-3 text-sm font-semibold text-ink outline-none placeholder:text-muted placeholder:font-normal"
+                  className="border-b border-(--hair) bg-transparent pb-3 text-sm font-semibold text-ink outline-none placeholder:text-muted placeholder:font-normal"
                 />
                 <textarea
                   value={composeBody}
@@ -999,7 +999,7 @@ export function EmailInbox({
                 />
                 {composeError && <p className="text-sm text-red-500">{composeError}</p>}
               </div>
-              <div className="flex items-center gap-2.5 border-t border-[--hair] px-5 py-3.5" style={{ background: "var(--glass2)" }}>
+              <div className="flex items-center gap-2.5 border-t border-(--hair) px-5 py-3.5" style={{ background: "var(--glass2)" }}>
                 <span className="ml-auto flex gap-2">
                   <RippleButton variant="glass" size="md" onClick={() => setComposeOpen(false)}>
                     {tShared("close")}

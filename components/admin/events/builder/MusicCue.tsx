@@ -130,7 +130,7 @@ export function MusicCue({ actId, music, onSave, onRemove }: MusicCueProps) {
           value={url}
           onChange={e => { setUrl(e.target.value); setError(null); }}
           onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleFetch(); } }}
-          className="flex-1 rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"
+          className="flex-1 rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"
         />
         <button
           onClick={handleFetch}

@@ -14,7 +14,7 @@ type PreviewProps = {
 
 function FacebookPreview({ headline, bodyText, callToAction, imageUrl, accountName }: Omit<PreviewProps, "platform">) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-[--hair] bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-(--hair) bg-white shadow-sm">
       <div className="flex items-center gap-2 border-b border-slate-100 px-3 py-2.5">
         <div className="grid h-8 w-8 place-items-center rounded-full bg-[#1877F2] text-xs font-black text-white">f</div>
         <div>
@@ -44,7 +44,7 @@ function FacebookPreview({ headline, bodyText, callToAction, imageUrl, accountNa
 function InstagramPreview({ bodyText, imageUrl, accountName }: Omit<PreviewProps, "platform" | "headline" | "callToAction">) {
   const caption = bodyText || "Your caption will appear here…";
   return (
-    <div className="overflow-hidden rounded-2xl border border-[--hair] bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-(--hair) bg-white shadow-sm">
       <div className="flex items-center gap-2 border-b border-slate-100 px-3 py-2.5">
         <div className="h-7 w-7 rounded-full bg-gradient-to-br from-[#f09433] via-[#e6683c] to-[#bc1888]" />
         <p className="text-xs font-bold text-slate-900">{accountName ?? "yourstudio"}</p>
@@ -70,7 +70,7 @@ function InstagramPreview({ bodyText, imageUrl, accountName }: Omit<PreviewProps
 function TelegramPreview({ headline, bodyText, imageUrl, accountName }: Omit<PreviewProps, "platform" | "callToAction">) {
   const text = [headline, bodyText].filter(Boolean).join("\n\n") || "Your announcement will appear here…";
   return (
-    <div className="overflow-hidden rounded-2xl border border-[--hair] shadow-sm" style={{ background: "#17212b" }}>
+    <div className="overflow-hidden rounded-2xl border border-(--hair) shadow-sm" style={{ background: "#17212b" }}>
       <div className="border-b border-white/10 px-3 py-2.5">
         <p className="text-xs font-bold text-white">{accountName ?? "Studio Channel"}</p>
         <p className="text-[0.6rem] text-white/40">channel · 1.2k subscribers</p>
@@ -90,7 +90,7 @@ function TelegramPreview({ headline, bodyText, imageUrl, accountName }: Omit<Pre
 
 function TiktokPreview({ bodyText, accountName }: Omit<PreviewProps, "platform" | "headline" | "callToAction" | "imageUrl">) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-[--hair] bg-black shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-(--hair) bg-black shadow-sm">
       <div className="flex aspect-[9/16] items-end p-3">
         <div>
           <p className="text-xs font-bold text-white">@{accountName ?? "yourstudio"}</p>

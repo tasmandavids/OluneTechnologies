@@ -150,7 +150,7 @@ export default function ParentDetailHub({
         <button
           type="button"
           onClick={() => setTab("messages")}
-          className="rounded-xl border border-[--hair] px-4 py-2 text-sm font-semibold text-ink hover:bg-surface"
+          className="rounded-xl border border-(--hair) px-4 py-2 text-sm font-semibold text-ink hover:bg-surface"
         >
           {t("message")}
         </button>
@@ -168,7 +168,7 @@ export default function ParentDetailHub({
         </p>
       )}
 
-      <div className="flex flex-wrap gap-2 border-b border-[--hair] pb-1">
+      <div className="flex flex-wrap gap-2 border-b border-(--hair) pb-1">
         {tabs.map((tabItem) => (
           <button
             key={tabItem.id}
@@ -196,7 +196,7 @@ export default function ParentDetailHub({
               <input
                 value={profileForm.fullName}
                 onChange={(e) => setProfileForm((f) => ({ ...f, fullName: e.target.value }))}
-                className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
               />
             </div>
             <div>
@@ -207,7 +207,7 @@ export default function ParentDetailHub({
                 type="email"
                 value={profileForm.email}
                 onChange={(e) => setProfileForm((f) => ({ ...f, email: e.target.value }))}
-                className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
               />
             </div>
             <div>
@@ -217,7 +217,7 @@ export default function ParentDetailHub({
               <input
                 value={profileForm.phone}
                 onChange={(e) => setProfileForm((f) => ({ ...f, phone: e.target.value }))}
-                className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
               />
             </div>
             <button
@@ -251,7 +251,7 @@ export default function ParentDetailHub({
                   type="button"
                   disabled={pending}
                   onClick={() => run(() => setPrimaryContact({ guardianId: parent.id }))}
-                  className="rounded-xl border border-[--hair] px-4 py-2 text-sm font-semibold text-ink hover:bg-base"
+                  className="rounded-xl border border-(--hair) px-4 py-2 text-sm font-semibold text-ink hover:bg-base"
                 >
                   {t("makePrimaryContact")}
                 </button>
@@ -281,7 +281,7 @@ export default function ParentDetailHub({
                 </ul>
               )}
               {showCoParent && (
-                <div className="mt-4 space-y-3 border-t border-[--hair] pt-4">
+                <div className="mt-4 space-y-3 border-t border-(--hair) pt-4">
                   <GuardianFields
                     form={coParentForm}
                     onChange={(k, v) => setCoParentForm((f) => ({ ...f, [k]: v }))}
@@ -300,7 +300,7 @@ export default function ParentDetailHub({
                     <button
                       type="button"
                       onClick={() => setShowCoParent(false)}
-                      className="flex-1 rounded-xl border border-[--hair] py-2 text-sm text-muted"
+                      className="flex-1 rounded-xl border border-(--hair) py-2 text-sm text-muted"
                     >
                       {tCommon("cancel")}
                     </button>
@@ -369,7 +369,7 @@ export default function ParentDetailHub({
                 <select
                   value={linkStudentId}
                   onChange={(e) => setLinkStudentId(e.target.value)}
-                  className="min-w-[200px] flex-1 rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                  className="min-w-[200px] flex-1 rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
                 >
                   <option value="">{t("selectStudent")}</option>
                   {availableStudents.map((s) => (
@@ -383,7 +383,7 @@ export default function ParentDetailHub({
                   onChange={(e) =>
                     setLinkRelationship(e.target.value as GuardianRelationship)
                   }
-                  className="rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+                  className="rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
                 >
                   {RELATIONSHIPS.map((r) => (
                     <option key={r} value={r}>
@@ -486,7 +486,7 @@ function ChildRow({
           value={child.relationship}
           disabled={pending}
           onChange={(e) => onRelationshipChange(e.target.value as GuardianRelationship)}
-          className="rounded-lg border border-[--hair] bg-base px-2 py-1 text-xs"
+          className="rounded-lg border border-(--hair) bg-base px-2 py-1 text-xs"
         >
           {RELATIONSHIPS.map((r) => (
             <option key={r} value={r}>
@@ -532,7 +532,7 @@ function GuardianFields({
         <input
           value={form.fullName}
           onChange={(e) => onChange("fullName", e.target.value)}
-          className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
         />
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -544,7 +544,7 @@ function GuardianFields({
             type="email"
             value={form.email}
             onChange={(e) => onChange("email", e.target.value)}
-            className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
           />
         </div>
         <div>
@@ -554,7 +554,7 @@ function GuardianFields({
           <input
             value={form.phone}
             onChange={(e) => onChange("phone", e.target.value)}
-            className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
           />
         </div>
       </div>
@@ -565,7 +565,7 @@ function GuardianFields({
         <select
           value={form.relationship}
           onChange={(e) => onChange("relationship", e.target.value)}
-          className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm"
         >
           {RELATIONSHIPS.map((r) => (
             <option key={r} value={r}>

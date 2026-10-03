@@ -353,10 +353,10 @@ function MessagesPanelContent({
         className="flex w-80 shrink-0 flex-col overflow-hidden rounded-[22px] border"
         style={GLASS_PANEL_STYLE}
       >
-        <div className="border-b border-[--hair] px-5 py-4">
+        <div className="border-b border-(--hair) px-5 py-4">
           <h1 className="font-display text-xl font-bold text-ink">{t("title")}</h1>
           <p className="mb-3 mt-0.5 text-xs text-muted">{t("contacts", { count: contacts.length })}</p>
-          <div className="flex items-center gap-2 rounded-xl border border-[--hair] bg-base px-3 py-2.5">
+          <div className="flex items-center gap-2 rounded-xl border border-(--hair) bg-base px-3 py-2.5">
             <IconSearch className="h-4 w-4 shrink-0 text-muted" />
             <input
               value={query}
@@ -368,7 +368,7 @@ function MessagesPanelContent({
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          <div className="border-b border-[--hair] py-2">
+          <div className="border-b border-(--hair) py-2">
             <p className="px-4 py-2 text-[0.65rem] font-bold uppercase tracking-wider text-muted">
               {t("parentEnquiries")}
             </p>
@@ -442,7 +442,7 @@ function MessagesPanelContent({
                           key={contact.id}
                           type="button"
                           onClick={() => selectParentTopic(topic, contact.id)}
-                          className={`flex w-full items-start gap-3 border-t border-[--hair]/60 py-2.5 pl-10 pr-4 text-left transition-colors ${
+                          className={`flex w-full items-start gap-3 border-t border-(--hair)/60 py-2.5 pl-10 pr-4 text-left transition-colors ${
                             isSelected ? "bg-brand/10" : "hover:bg-surface/60"
                           }`}
                         >
@@ -508,7 +508,7 @@ function MessagesPanelContent({
                     key={c.id}
                     type="button"
                     onClick={() => selectDirectContact(c.id)}
-                    className={`flex w-full items-start gap-3 border-b border-[--hair] px-4 py-3 text-left transition-colors ${
+                    className={`flex w-full items-start gap-3 border-b border-(--hair) px-4 py-3 text-left transition-colors ${
                       isSelected ? "bg-brand/10" : "hover:bg-surface/60"
                     }`}
                   >

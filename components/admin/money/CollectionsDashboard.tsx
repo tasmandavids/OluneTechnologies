@@ -131,13 +131,13 @@ export function CollectionsDashboard({ queue }: { queue: CollectionsFamily[] }) 
         </GlassPanel>
       ) : (
         <GlassPanel className="!p-0 overflow-hidden">
-          <div className="flex items-center gap-3 border-b border-[--hair] px-6 py-4">
+          <div className="flex items-center gap-3 border-b border-(--hair) px-6 py-4">
             <h2 className="text-sm font-bold text-ink">{t("queueTitle")}</h2>
             <span className="text-xs text-muted">
               {t("queueSubtitle", { count: queue.length, amount: formatMoney(totalCents) })}
             </span>
           </div>
-          <ul className="divide-y divide-[--hair]">
+          <ul className="divide-y divide-(--hair)">
             {queue.map((f) => (
               <li key={f.payerId} className="px-6 py-4">
                 <div className="flex items-start justify-between gap-4">

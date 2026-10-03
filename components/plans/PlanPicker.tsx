@@ -94,7 +94,7 @@ export function PlanPicker({
               className={
                 popular
                   ? "relative rounded-2xl border-2 border-brand bg-surface p-5"
-                  : "relative rounded-2xl border border-[--hair] bg-surface p-5"
+                  : "relative rounded-2xl border border-(--hair) bg-surface p-5"
               }
             >
               {popular && (
@@ -135,7 +135,7 @@ export function PlanPicker({
                 className={
                   popular
                     ? "mt-5 w-full rounded-full bg-brand px-4 py-2 text-xs font-bold text-white disabled:opacity-60"
-                    : "mt-5 w-full rounded-full border border-[--hair] px-4 py-2 text-xs font-bold text-ink disabled:opacity-60"
+                    : "mt-5 w-full rounded-full border border-(--hair) px-4 py-2 text-xs font-bold text-ink disabled:opacity-60"
                 }
               >
                 {isCurrent

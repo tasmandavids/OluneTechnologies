@@ -117,10 +117,10 @@ export default function MassEmailParentsPanel({
         onClick={onClose}
       />
       <motion.aside
-        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-[--hair] bg-surface shadow-2xl"
+        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-(--hair) bg-surface shadow-2xl"
         {...panelSlide}
       >
-        <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">
+        <div className="flex items-center justify-between border-b border-(--hair) px-6 py-4">
           <div>
             <h2 className="font-black text-ink">{t("title")}</h2>
             <p className="text-xs text-muted">{t("subtitle")}</p>
@@ -155,7 +155,7 @@ export default function MassEmailParentsPanel({
           </fieldset>
 
           {scope === "selected" && (
-            <div className="space-y-2 rounded-xl border border-[--hair] bg-base/50 p-3">
+            <div className="space-y-2 rounded-xl border border-(--hair) bg-base/50 p-3">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs text-muted">
                   {t("selectedCount", { count: selectedIds.length })}
@@ -203,7 +203,7 @@ export default function MassEmailParentsPanel({
               <select
                 value={classId}
                 onChange={(e) => setClassId(e.target.value)}
-                className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink"
+                className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink"
               >
                 <option value="">{t("classPlaceholder")}</option>
                 {classes.map((c) => (
@@ -227,7 +227,7 @@ export default function MassEmailParentsPanel({
               onChange={(e) => setSubject(e.target.value)}
               maxLength={200}
               placeholder={t("subjectPlaceholder")}
-              className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
+              className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-(--brand)"
             />
           </div>
 
@@ -241,7 +241,7 @@ export default function MassEmailParentsPanel({
               maxLength={10_000}
               rows={10}
               placeholder={t("bodyPlaceholder")}
-              className="w-full resize-y rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
+              className="w-full resize-y rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-(--brand)"
             />
             <p className="mt-1 text-[0.65rem] text-muted">{t("bodyHint")}</p>
           </div>
@@ -253,11 +253,11 @@ export default function MassEmailParentsPanel({
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-2 border-t border-[--hair] px-6 py-4">
+        <div className="flex items-center justify-end gap-2 border-t border-(--hair) px-6 py-4">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-[--hair] px-4 py-2 text-sm font-semibold text-ink"
+            className="rounded-xl border border-(--hair) px-4 py-2 text-sm font-semibold text-ink"
           >
             {tCommon("cancel")}
           </button>

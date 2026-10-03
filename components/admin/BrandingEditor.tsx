@@ -85,7 +85,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
               value={b.tagline ?? ""}
               onChange={(e) => set("tagline", e.target.value || null)}
               placeholder={t("taglinePlaceholder")}
-              className="w-full rounded-lg border border-[--hair] bg-base/40 px-3 py-2"
+              className="w-full rounded-lg border border-(--hair) bg-base/40 px-3 py-2"
             />
           </label>
           <label className="block text-sm">
@@ -95,7 +95,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
               value={b.logoUrl ?? ""}
               onChange={(e) => set("logoUrl", e.target.value || null)}
               placeholder={t("logoPlaceholder")}
-              className="w-full rounded-lg border border-[--hair] bg-base/40 px-3 py-2"
+              className="w-full rounded-lg border border-(--hair) bg-base/40 px-3 py-2"
             />
           </label>
         </GlassPanel>
@@ -107,7 +107,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
               type="color"
               value={b.brandColor}
               onChange={(e) => set("brandColor", e.target.value)}
-              className="h-10 w-12 cursor-pointer rounded-lg border border-[--hair] bg-transparent p-0.5"
+              className="h-10 w-12 cursor-pointer rounded-lg border border-(--hair) bg-transparent p-0.5"
               aria-label={t("brandColorAria")}
             />
             <code className="text-sm text-muted">{b.brandColor.toUpperCase()}</code>
@@ -134,7 +134,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
         <GlassPanel className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <h2 className="text-xs uppercase tracking-widest text-muted">{t("base")}</h2>
-            <div className="inline-flex rounded-full border border-[--hair] p-1">
+            <div className="inline-flex rounded-full border border-(--hair) p-1">
               {(["dark", "light"] as ThemeBase[]).map((mode) => (
                 <button
                   key={mode}
@@ -153,7 +153,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
             <select
               value={b.fontDisplay}
               onChange={(e) => set("fontDisplay", e.target.value)}
-              className="w-full rounded-lg border border-[--hair] bg-base/40 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-(--hair) bg-base/40 px-3 py-2 text-sm"
             >
               {FONT_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
             </select>
@@ -163,7 +163,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
             <select
               value={b.fontBody}
               onChange={(e) => set("fontBody", e.target.value)}
-              className="w-full rounded-lg border border-[--hair] bg-base/40 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-(--hair) bg-base/40 px-3 py-2 text-sm"
             >
               {FONT_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
             </select>
@@ -183,7 +183,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
                   siteSettings: { ...prev.siteSettings, footerTagline: e.target.value || undefined },
                 }))
               }
-              className="w-full rounded-lg border border-[--hair] bg-base/40 px-3 py-2"
+              className="w-full rounded-lg border border-(--hair) bg-base/40 px-3 py-2"
             />
           </label>
           <label className="block text-sm">
@@ -196,7 +196,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
                   siteSettings: { ...prev.siteSettings, portalLabel: e.target.value },
                 }))
               }
-              className="w-full rounded-lg border border-[--hair] bg-base/40 px-3 py-2"
+              className="w-full rounded-lg border border-(--hair) bg-base/40 px-3 py-2"
             />
           </label>
           <label className="block text-sm">
@@ -210,7 +210,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
                   siteSettings: { ...prev.siteSettings, contactEmail: e.target.value || undefined },
                 }))
               }
-              className="w-full rounded-lg border border-[--hair] bg-base/40 px-3 py-2"
+              className="w-full rounded-lg border border-(--hair) bg-base/40 px-3 py-2"
             />
           </label>
           <label className="block text-sm">
@@ -223,7 +223,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
                   siteSettings: { ...prev.siteSettings, contactPhone: e.target.value || undefined },
                 }))
               }
-              className="w-full rounded-lg border border-[--hair] bg-base/40 px-3 py-2"
+              className="w-full rounded-lg border border-(--hair) bg-base/40 px-3 py-2"
             />
           </label>
           <label className="block text-sm">
@@ -237,7 +237,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
                 }))
               }
               placeholder={t("regionPlaceholder")}
-              className="w-full rounded-lg border border-[--hair] bg-base/40 px-3 py-2"
+              className="w-full rounded-lg border border-(--hair) bg-base/40 px-3 py-2"
             />
           </label>
           <label className="flex items-center gap-2 text-sm">
@@ -250,7 +250,7 @@ export function BrandingEditor({ initial }: { initial: Branding }) {
                   siteSettings: { ...prev.siteSettings, showPoweredBy: e.target.checked },
                 }))
               }
-              className="h-4 w-4 accent-[--brand]"
+              className="h-4 w-4 accent-(--brand)"
             />
             <span className="text-ink">{t("showPoweredBy")}</span>
           </label>

@@ -120,7 +120,7 @@ export function LineItemRows({
                   unitDollars: (product.unitAmountCents / 100).toFixed(2),
                 });
               }}
-              className="w-36 shrink-0 rounded-lg border border-[--hair] bg-base px-2 py-1.5 text-sm text-ink"
+              className="w-36 shrink-0 rounded-lg border border-(--hair) bg-base px-2 py-1.5 text-sm text-ink"
             >
               <option value="">{labels.product ?? "Custom"}</option>
               {products.map((product) => (
@@ -136,7 +136,7 @@ export function LineItemRows({
             onChange={(e) => update(idx, { description: e.target.value })}
             placeholder={labels.description}
             disabled={disabled}
-            className="min-w-0 flex-1 rounded-lg border border-[--hair] bg-base px-2.5 py-1.5 text-sm text-ink disabled:opacity-60"
+            className="min-w-0 flex-1 rounded-lg border border-(--hair) bg-base px-2.5 py-1.5 text-sm text-ink disabled:opacity-60"
           />
           <input
             type="number"
@@ -146,7 +146,7 @@ export function LineItemRows({
             onChange={(e) => update(idx, { quantity: e.target.value })}
             placeholder={labels.quantity}
             disabled={disabled}
-            className="w-16 rounded-lg border border-[--hair] bg-base px-2 py-1.5 text-sm text-ink disabled:opacity-60"
+            className="w-16 rounded-lg border border-(--hair) bg-base px-2 py-1.5 text-sm text-ink disabled:opacity-60"
           />
           <input
             type="number"
@@ -156,7 +156,7 @@ export function LineItemRows({
             onChange={(e) => update(idx, { unitDollars: e.target.value })}
             placeholder={labels.unitPrice}
             disabled={disabled}
-            className="w-24 rounded-lg border border-[--hair] bg-base px-2 py-1.5 text-sm text-ink disabled:opacity-60"
+            className="w-24 rounded-lg border border-(--hair) bg-base px-2 py-1.5 text-sm text-ink disabled:opacity-60"
           />
           {!disabled && (
             <button
@@ -176,7 +176,7 @@ export function LineItemRows({
           <button
             type="button"
             onClick={add}
-            className="rounded-lg border border-[--hair] px-2.5 py-1 text-xs font-semibold text-ink hover:bg-base"
+            className="rounded-lg border border-(--hair) px-2.5 py-1 text-xs font-semibold text-ink hover:bg-base"
           >
             + {labels.addLine}
           </button>

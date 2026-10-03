@@ -91,7 +91,7 @@ function StudentList({
               >
                 {tStudent("drop")}
               </button>
-              <span className="text-[--hair]">·</span>
+              <span className="text-(--hair)">·</span>
               <button
                 type="button"
                 onClick={() => onRemove(s.studentId)}
@@ -244,10 +244,10 @@ export function ClassDetailPanel({
         onClick={onClose}
       />
       <motion.aside
-        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-[--hair] bg-surface shadow-2xl"
+        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-(--hair) bg-surface shadow-2xl"
         {...panelSlide}
       >
-        <div className="flex items-start gap-4 border-b border-[--hair] px-6 py-5">
+        <div className="flex items-start gap-4 border-b border-(--hair) px-6 py-5">
           <div className="min-w-0 flex-1">
             <h2 className="font-black text-ink truncate">{cls.name}</h2>
             <p className="mt-0.5 text-xs text-muted">
@@ -291,7 +291,7 @@ export function ClassDetailPanel({
                 {activeCount}/{cls.capacity}
               </span>
             </div>
-            <div className="mt-2 h-1.5 w-full rounded-full bg-[--hair] overflow-hidden">
+            <div className="mt-2 h-1.5 w-full rounded-full bg-(--hair) overflow-hidden">
               <div
                 className="h-full rounded-full transition-all"
                 style={{
@@ -311,8 +311,8 @@ export function ClassDetailPanel({
                 <select
                   value={selectedStudentId}
                   onChange={(e) => setSelectedStudentId(e.target.value)}
-                  className="flex-1 rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink
-                             focus:outline-none focus:ring-1 focus:ring-[--brand]"
+                  className="flex-1 rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink
+                             focus:outline-none focus:ring-1 focus:ring-(--brand)"
                 >
                   <option value="">{tShared("chooseStudent")}</option>
                   {candidates.map((s) => (
@@ -389,11 +389,11 @@ export function ClassDetailPanel({
         </div>
 
         {!readOnly && onEdit && (
-          <div className="border-t border-[--hair] px-6 py-4">
+          <div className="border-t border-(--hair) px-6 py-4">
             <button
               type="button"
               onClick={onEdit}
-              className="w-full rounded-xl border border-[--hair] py-2.5 text-sm font-semibold text-ink transition-colors hover:border-[--brand]"
+              className="w-full rounded-xl border border-(--hair) py-2.5 text-sm font-semibold text-ink transition-colors hover:border-(--brand)"
             >
               {t("editClass")}
             </button>

@@ -85,7 +85,7 @@ const EMPTY_STUDENT: ParsedStudent = {
 
 /** Glass-scale inputs for the rate card, matching Money → Products. */
 const RATE_FIELD =
-  "rounded-xl border px-3 py-2 text-sm text-ink outline-none transition placeholder:text-muted focus:border-[--brand]";
+  "rounded-xl border px-3 py-2 text-sm text-ink outline-none transition placeholder:text-muted focus:border-(--brand)";
 const RATE_FIELD_STYLE = { background: "var(--surface)", borderColor: "var(--hair)" } as const;
 
 type BandDraft = { hours: string; dollars: string };
@@ -1056,7 +1056,7 @@ function StudentsStep({
           type="checkbox"
           checked={linkParents}
           onChange={(e) => onLinkParents(e.target.checked)}
-          className="rounded border-[--hair]"
+          className="rounded border-(--hair)"
         />
         {t("students.linkParents")}
       </label>
@@ -1131,7 +1131,7 @@ function ClassesStep({
         <InsetPanel className="mt-4 overflow-x-auto">
           <table className="w-full min-w-[480px] text-left text-xs">
             <thead>
-              <tr className="border-b border-[--hair] text-muted">
+              <tr className="border-b border-(--hair) text-muted">
                 <th className="px-3 py-2 font-semibold">{t("classes.tableClass")}</th>
                 <th className="px-3 py-2 font-semibold">{t("classes.tableStyle")}</th>
                 <th className="px-3 py-2 font-semibold">{t("classes.tableDay")}</th>
@@ -1140,7 +1140,7 @@ function ClassesStep({
             </thead>
             <tbody>
               {manualClasses.map((c, i) => (
-                <tr key={i} className="border-b border-[--hair]/60 last:border-0">
+                <tr key={i} className="border-b border-(--hair)/60 last:border-0">
                   <td className="px-3 py-2 text-ink">{c.name}</td>
                   <td className="px-3 py-2 text-muted">
                     {c.discipline && (DANCE_STYLE_KEYS as readonly string[]).includes(c.discipline)

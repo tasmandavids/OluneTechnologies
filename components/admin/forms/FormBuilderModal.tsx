@@ -319,7 +319,7 @@ export function FormBuilderModal({
                             type="checkbox"
                             checked={field.required ?? false}
                             onChange={(e) => updateField(index, { required: e.target.checked })}
-                            className="h-3.5 w-3.5 accent-[--brand]"
+                            className="h-3.5 w-3.5 accent-(--brand)"
                           />
                           Required
                         </label>
@@ -374,7 +374,7 @@ export function FormBuilderModal({
                   type="checkbox"
                   checked={signatureRequired}
                   onChange={(e) => setSignatureRequired(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 accent-[--brand]"
+                  className="mt-0.5 h-4 w-4 accent-(--brand)"
                 />
                 <span>
                   <span className="block text-sm font-semibold text-ink">Signature block at the bottom</span>
@@ -442,7 +442,7 @@ export function FormBuilderModal({
                       name="subject-scope"
                       checked={subjectScope === option.value}
                       onChange={() => setSubjectScope(option.value)}
-                      className="mt-0.5 h-3.5 w-3.5 accent-[--brand]"
+                      className="mt-0.5 h-3.5 w-3.5 accent-(--brand)"
                     />
                     <span>
                       <span className="block text-sm font-semibold text-ink">{option.label}</span>
@@ -459,7 +459,7 @@ export function FormBuilderModal({
                   type="checkbox"
                   checked={isRequired}
                   onChange={(e) => setIsRequired(e.target.checked)}
-                  className="h-4 w-4 accent-[--brand]"
+                  className="h-4 w-4 accent-(--brand)"
                 />
                 <span className="text-sm text-ink">Required — chase until it&apos;s signed</span>
               </label>

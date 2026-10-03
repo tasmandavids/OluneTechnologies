@@ -211,7 +211,7 @@ export default function PassScanner() {
       {cameraRequested && (
         <button
           onClick={stopCamera}
-          className="mb-4 w-full rounded-xl border border-[--hair] bg-base py-3 text-sm font-semibold text-muted hover:text-ink"
+          className="mb-4 w-full rounded-xl border border-(--hair) bg-base py-3 text-sm font-semibold text-muted hover:text-ink"
         >
           {t("stopCamera")}
         </button>
@@ -219,7 +219,7 @@ export default function PassScanner() {
 
       {cameraError && <p className="mb-3 text-sm text-red-500">{cameraError}</p>}
 
-      <div className="border-t border-[--hair] pt-4">
+      <div className="border-t border-(--hair) pt-4">
         <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">
           {t("manualEntryLabel")}
         </label>
@@ -228,11 +228,11 @@ export default function PassScanner() {
           onChange={(e) => setManualPayload(e.target.value)}
           placeholder={t("manualEntryPlaceholder")}
           rows={3}
-          className="w-full rounded-xl border border-[--hair] bg-base px-3 py-2 font-mono text-xs text-ink"
+          className="w-full rounded-xl border border-(--hair) bg-base px-3 py-2 font-mono text-xs text-ink"
         />
         <button
           onClick={submitManual}
-          className="mt-2 w-full rounded-xl border border-[--hair] bg-base py-2 text-sm font-semibold text-ink hover:bg-surface"
+          className="mt-2 w-full rounded-xl border border-(--hair) bg-base py-2 text-sm font-semibold text-ink hover:bg-surface"
         >
           {t("useManualEntry")}
         </button>

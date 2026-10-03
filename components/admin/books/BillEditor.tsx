@@ -251,7 +251,7 @@ export function BillEditor(props: Props) {
           </table>
         </div>
         <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-4">
-          <button type="button" className="text-xs font-semibold text-[--brand]" onClick={() => setLines((ls) => [...ls, blankLine(ls[ls.length - 1]?.accountId)])}>
+          <button type="button" className="text-xs font-semibold text-(--brand)" onClick={() => setLines((ls) => [...ls, blankLine(ls[ls.length - 1]?.accountId)])}>
             {t("addLine")}
           </button>
           <dl className="min-w-[220px] space-y-1 text-sm">

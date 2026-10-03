@@ -363,7 +363,7 @@ function AccountingPointer({ accounting }: { accounting: { name: string | null; 
         </div>
         <Link
           href="/portal/admin/money?tab=accounting"
-          className="rounded-xl border border-[--hair] px-4 py-2 text-sm font-semibold text-ink transition hover:bg-[--t3]"
+          className="rounded-xl border border-(--hair) px-4 py-2 text-sm font-semibold text-ink transition hover:bg-(--t3)"
         >
           {accounting.name ? "Manage accounting" : "Choose accounting"}
         </Link>

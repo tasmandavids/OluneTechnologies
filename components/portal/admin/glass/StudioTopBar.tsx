@@ -98,14 +98,14 @@ export function StudioTopBar({
                 href="/portal/admin/settings"
                 prefetch={false}
                 onClick={() => setAccountOpen(false)}
-                className="mb-1.5 block w-full rounded-lg border border-[--hair] px-2.5 py-1.5 text-left text-xs font-medium text-muted transition hover:bg-base hover:text-ink"
+                className="mb-1.5 block w-full rounded-lg border border-(--hair) px-2.5 py-1.5 text-left text-xs font-medium text-muted transition hover:bg-base hover:text-ink"
               >
                 {tShell("rail.settings")}
               </Link>
               <form action={signOut}>
                 <button
                   type="submit"
-                  className="w-full rounded-lg border border-[--hair] px-2.5 py-1.5 text-left text-xs font-medium text-muted transition hover:bg-base hover:text-ink"
+                  className="w-full rounded-lg border border-(--hair) px-2.5 py-1.5 text-left text-xs font-medium text-muted transition hover:bg-base hover:text-ink"
                 >
                   {tCommon("signOut")}
                 </button>

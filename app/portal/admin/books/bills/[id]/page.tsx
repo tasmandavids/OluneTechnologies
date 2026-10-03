@@ -128,7 +128,7 @@ export default async function BillDetailPage({ params }: { params: Promise<{ id:
       <div className="flex flex-wrap items-center gap-2">
         <Badge tone={tone}>{t(`status.${bill.status as string}`)}</Badge>
         {bill.journal_id ? (
-          <Link href={`${BOOKS_PATH}/journals/${bill.journal_id}`} className="text-xs font-semibold text-[--brand]">
+          <Link href={`${BOOKS_PATH}/journals/${bill.journal_id}`} className="text-xs font-semibold text-(--brand)">
             {t("viewJournal")}
           </Link>
         ) : null}
@@ -185,7 +185,7 @@ export default async function BillDetailPage({ params }: { params: Promise<{ id:
                   <td className={`${tdClass} text-right`}>{amount(Number(p.amount_cents))}</td>
                   <td className={`${tdClass} text-right`}>
                     {p.journal_id && (
-                      <Link href={`${BOOKS_PATH}/journals/${p.journal_id}`} className="text-xs font-semibold text-[--brand]">
+                      <Link href={`${BOOKS_PATH}/journals/${p.journal_id}`} className="text-xs font-semibold text-(--brand)">
                         {t("viewJournal")}
                       </Link>
                     )}

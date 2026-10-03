@@ -93,7 +93,7 @@ export function AttentionQueue({ attention }: { attention: AttentionData }) {
       <div className="mb-2.5 flex items-baseline gap-2">
         <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{t("title")}</h2>
         {items.length > 0 && (
-          <span className="inline-grid h-[18px] min-w-[18px] place-items-center rounded-full bg-[--brand] px-1 text-[11px] font-semibold text-white">
+          <span className="inline-grid h-[18px] min-w-[18px] place-items-center rounded-full bg-(--brand) px-1 text-[11px] font-semibold text-white">
             {items.length}
           </span>
         )}

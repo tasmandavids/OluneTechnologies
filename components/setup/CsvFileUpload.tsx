@@ -47,7 +47,7 @@ export function CsvFileUpload({
         type="button"
         disabled={disabled}
         onClick={() => inputRef.current?.click()}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[--hair] bg-base/40 px-4 py-3 text-sm text-muted transition hover:border-brand/40 hover:text-ink disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-(--hair) bg-base/40 px-4 py-3 text-sm text-muted transition hover:border-brand/40 hover:text-ink disabled:opacity-50"
       >
         <span aria-hidden>📁</span>
         {fileName ? t("loaded", { fileName }) : label}

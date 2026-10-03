@@ -78,7 +78,7 @@ export default async function BooksDashboard() {
       {autoCreated.length > 0 && (
         <Notice tone="warn">
           {t("autoCreated", { count: autoCreated.length, codes: autoCreated.map((a) => a.code).join(", ") })}{" "}
-          <Link href={`${BOOKS_PATH}/accounts`} className="font-semibold text-[--brand]">
+          <Link href={`${BOOKS_PATH}/accounts`} className="font-semibold text-(--brand)">
             {t("reviewAccounts")}
           </Link>
         </Notice>
@@ -86,7 +86,7 @@ export default async function BooksDashboard() {
       {outstanding.length > 0 && (
         <Notice tone="warn">
           {t("returnsDue", { count: outstanding.length, form: j.returnForm.name })}{" "}
-          <Link href={`${BOOKS_PATH}/tax?period=${outstanding[0].start}_${outstanding[0].end}`} className="font-semibold text-[--brand]">
+          <Link href={`${BOOKS_PATH}/tax?period=${outstanding[0].start}_${outstanding[0].end}`} className="font-semibold text-(--brand)">
             {t("prepareReturn")}
           </Link>
         </Notice>
@@ -115,7 +115,7 @@ export default async function BooksDashboard() {
               </p>
               <p className="text-xs text-muted">{taxNow.computed.netPayableCents >= 0 ? t("taxOwing") : t("taxRefund")}</p>
               <p className="mt-2 text-xs text-muted">{t("taxDue", { date: taxNow.dueDate })}</p>
-              <Link href={`${BOOKS_PATH}/tax`} className="mt-3 inline-block text-xs font-semibold text-[--brand]">
+              <Link href={`${BOOKS_PATH}/tax`} className="mt-3 inline-block text-xs font-semibold text-(--brand)">
                 {t("openTax")}
               </Link>
             </>
@@ -140,7 +140,7 @@ export default async function BooksDashboard() {
       <GlassPanel className="!p-0 overflow-hidden">
         <div className="flex items-center justify-between px-5 pt-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t("recent")}</p>
-          <Link href={`${BOOKS_PATH}/journals`} className="text-xs font-semibold text-[--brand]">
+          <Link href={`${BOOKS_PATH}/journals`} className="text-xs font-semibold text-(--brand)">
             {t("allJournals")}
           </Link>
         </div>

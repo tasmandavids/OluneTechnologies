@@ -25,7 +25,7 @@ import { saveHoursRateCard } from "@/app/portal/admin/money/product-actions";
 import type { BillingProduct } from "@/lib/billing/types";
 
 const fieldClass =
-  "rounded-xl border px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-[--brand]";
+  "rounded-xl border px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-(--brand)";
 const fieldStyle = { background: "var(--surface)", borderColor: "var(--hair)" } as const;
 
 type BandDraft = { hours: string; dollars: string };
@@ -171,7 +171,7 @@ export function HoursRateCard({
 
         <button
           onClick={() => setBands([...bands, { hours: "", dollars: "" }])}
-          className="text-xs font-semibold text-[--brand]"
+          className="text-xs font-semibold text-(--brand)"
         >
           {t("addRow")}
         </button>

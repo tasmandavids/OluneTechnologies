@@ -109,7 +109,7 @@ export default function StudioBadgeManager({ badges }: { badges: ManagedBadge[] 
             <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-ink/70">
               {tCat(cat)}
             </h2>
-            <ul className="divide-y divide-[--hair]">
+            <ul className="divide-y divide-(--hair)">
               {list.map((b) => {
                 const tier = TIER_STYLES[b.tier];
                 return (
@@ -210,27 +210,27 @@ function CustomBadgeForm({
           value={icon}
           onChange={(e) => setIcon(e.target.value)}
           maxLength={4}
-          className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-center text-lg outline-none focus:border-[--brand] sm:col-span-1"
+          className="rounded-xl border border-(--hair) bg-base px-3 py-2 text-center text-lg outline-none focus:border-(--brand) sm:col-span-1"
           aria-label={t("iconLabel")}
         />
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder={t("nameLabel")}
-          className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink outline-none focus:border-[--brand] sm:col-span-5"
+          className="rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink outline-none focus:border-(--brand) sm:col-span-5"
         />
       </div>
       <input
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder={t("descLabel")}
-        className="w-full rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink outline-none focus:border-[--brand]"
+        className="w-full rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink outline-none focus:border-(--brand)"
       />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink outline-none focus:border-[--brand]"
+          className="rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink outline-none focus:border-(--brand)"
         >
           {CATEGORY_ORDER.map((c) => (
             <option key={c} value={c}>
@@ -241,7 +241,7 @@ function CustomBadgeForm({
         <select
           value={tier}
           onChange={(e) => setTier(e.target.value as BadgeTier)}
-          className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink outline-none focus:border-[--brand]"
+          className="rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink outline-none focus:border-(--brand)"
         >
           {TIERS.map((tr) => (
             <option key={tr} value={tr}>
@@ -254,13 +254,13 @@ function CustomBadgeForm({
           min={0}
           value={xp}
           onChange={(e) => setXp(Number(e.target.value) || 0)}
-          className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink outline-none focus:border-[--brand]"
+          className="rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink outline-none focus:border-(--brand)"
           aria-label={t("xpLabel")}
         />
         <select
           value={recipientType}
           onChange={(e) => setRecipientType(e.target.value as BadgeRecipientType)}
-          className="rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink outline-none focus:border-[--brand]"
+          className="rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink outline-none focus:border-(--brand)"
         >
           <option value="student">{t("forStudent")}</option>
           <option value="parent">{t("forParent")}</option>

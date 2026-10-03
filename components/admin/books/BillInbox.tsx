@@ -118,7 +118,7 @@ export function BillInbox({ currency, locale, aiAvailable, compact = false }: Pr
       {!aiAvailable && !compact && (
         <p className="mt-3 text-xs text-muted">
           {t("noAiKey")}{" "}
-          <Link href="/portal/admin/settings/connections" className="font-semibold text-[--brand]">
+          <Link href="/portal/admin/settings/connections" className="font-semibold text-(--brand)">
             {t("addAiKey")}
           </Link>
         </p>

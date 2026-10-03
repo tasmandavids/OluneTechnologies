@@ -206,7 +206,7 @@ export async function PlansTab() {
   return (
     <div>
       <PaymentPlansSection />
-      <hr className="mx-auto max-w-6xl border-[--hair]" />
+      <hr className="mx-auto max-w-6xl border-(--hair)" />
       <SubscriptionsSection />
     </div>
   );
