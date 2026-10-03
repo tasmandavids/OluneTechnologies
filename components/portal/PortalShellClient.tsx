@@ -482,7 +482,7 @@ export function PortalShellClient({
           </div>
         ) : isParentRail ? (
           <div className="hidden px-[26px] pt-3.5 md:block">
-            <ParentTopBar studioName={studioName} logoUrl={logoUrl} nav={parentNav} />
+            <ParentTopBar studioName={studioName} logoUrl={logoUrl} userName={userName} nav={parentNav} />
           </div>
         ) : (
           showBell && (

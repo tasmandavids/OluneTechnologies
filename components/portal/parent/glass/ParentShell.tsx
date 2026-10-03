@@ -137,6 +137,36 @@ function StudioMark({ studioName, logoUrl, size = 40 }: { studioName: string; lo
   );
 }
 
+/** The account menu's contents — shared by the rail's avatar button and the
+ *  top bar's studio chip, matching the owner portal (name, language,
+ *  settings, sign out). */
+function AccountMenuBody({ userName, onNavigate }: { userName: string | null; onNavigate: () => void }) {
+  const tCommon = useTranslations("common");
+  const tShell = useTranslations("shell");
+  return (
+    <>
+      <p className="mb-2.5 truncate text-sm font-semibold text-ink">{userName ?? tCommon("you")}</p>
+      <LanguageSwitcher className="mb-3 w-full justify-between" />
+      <Link
+        href="/settings/notifications"
+        prefetch={false}
+        onClick={onNavigate}
+        className="mb-1.5 block w-full rounded-lg border border-(--hair) px-2.5 py-1.5 text-left text-xs font-medium text-muted transition hover:bg-base hover:text-ink"
+      >
+        {tShell("rail.settings")}
+      </Link>
+      <form action={signOut}>
+        <button
+          type="submit"
+          className="w-full rounded-lg border border-(--hair) px-2.5 py-1.5 text-left text-xs font-medium text-muted transition hover:bg-base hover:text-ink"
+        >
+          {tCommon("signOut")}
+        </button>
+      </form>
+    </>
+  );
+}
+
 export function ParentRail({
   studioName,
   logoUrl,
@@ -273,16 +303,7 @@ export function ParentRail({
                   className="absolute bottom-0 left-[56px] z-40 w-56 rounded-xl border p-3"
                   style={{ background: "var(--surface)", borderColor: "var(--hair)", boxShadow: "var(--shadow)" }}
                 >
-                  <p className="mb-2.5 truncate text-sm font-semibold text-ink">{userName ?? tCommon("you")}</p>
-                  <LanguageSwitcher className="mb-3 w-full justify-between" />
-                  <form action={signOut}>
-                    <button
-                      type="submit"
-                      className="w-full rounded-lg border border-(--hair) px-2.5 py-1.5 text-left text-xs font-medium text-muted transition hover:bg-base hover:text-ink"
-                    >
-                      {tCommon("signOut")}
-                    </button>
-                  </form>
+                  <AccountMenuBody userName={userName} onNavigate={() => setAccountOpen(false)} />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -350,10 +371,12 @@ export function ParentRail({
 export function ParentTopBar({
   studioName,
   logoUrl,
+  userName = null,
   nav = PORTAL_NAV.parent,
 }: {
   studioName: string;
   logoUrl: string | null;
+  userName?: string | null;
   nav?: NavItem[];
 }) {
   const tShell = useTranslations("shell");
@@ -364,33 +387,55 @@ export function ParentTopBar({
     has("/portal/parent/chat") && { key: "message", href: "/portal/parent/chat", icon: IconMegaphone },
   ].filter(Boolean) as { key: "absence" | "lesson" | "message"; href: string; icon: typeof IconPlus }[];
   const [open, setOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const accountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (open && ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (accountOpen && accountRef.current && !accountRef.current.contains(e.target as Node)) setAccountOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [open]);
+  }, [open, accountOpen]);
 
   return (
     <header
       className="sticky top-0 z-30 mb-3.5 flex items-center gap-3 rounded-[24px] border p-2.5"
       style={{ ...GLASS, backdropFilter: "blur(var(--blur-lg)) saturate(1.9)", WebkitBackdropFilter: "blur(var(--blur-lg)) saturate(1.9)" }}
     >
-      <Link
-        href={homeHref(nav)}
-        prefetch={false}
-        className="flex min-w-0 shrink items-center gap-2.5 rounded-[16px] border px-3 py-1.5 pr-3.5 transition-transform duration-300 hover:-translate-y-px"
-        style={{ borderColor: "var(--tb)", background: "linear-gradient(140deg, var(--sheen), var(--sheen2))", boxShadow: "inset 0 1px 0 var(--sheen)" }}
-      >
-        <StudioMark studioName={studioName} logoUrl={logoUrl} size={36} />
-        <span className="flex min-w-0 flex-col items-start gap-0.5">
-          <span className="text-[9.5px] uppercase tracking-[0.14em] text-muted">{tShell("parentBar.yourStudio")}</span>
-          <span className="truncate font-display text-[15px] leading-none tracking-tight text-ink">{studioName}</span>
-        </span>
-      </Link>
+      <div className="relative min-w-0 shrink" ref={accountRef}>
+        <button
+          type="button"
+          onClick={() => setAccountOpen((o) => !o)}
+          aria-expanded={accountOpen}
+          aria-haspopup="menu"
+          className="flex min-w-0 max-w-full items-center gap-2.5 rounded-[16px] border px-3 py-1.5 pr-3.5 text-left transition-transform duration-300 hover:-translate-y-px"
+          style={{ borderColor: "var(--tb)", background: "linear-gradient(140deg, var(--sheen), var(--sheen2))", boxShadow: "inset 0 1px 0 var(--sheen)" }}
+        >
+          <StudioMark studioName={studioName} logoUrl={logoUrl} size={36} />
+          <span className="flex min-w-0 flex-col items-start gap-0.5">
+            <span className="text-[9.5px] uppercase tracking-[0.14em] text-muted">{tShell("parentBar.yourStudio")}</span>
+            <span className="truncate font-display text-[15px] leading-none tracking-tight text-ink">{studioName}</span>
+          </span>
+        </button>
+        <AnimatePresence>
+          {accountOpen && (
+            <motion.div
+              role="menu"
+              initial={{ opacity: 0, y: 6, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 6, scale: 0.98 }}
+              transition={{ duration: 0.15 }}
+              className="absolute left-0 top-full z-40 mt-1.5 w-56 rounded-xl border p-3"
+              style={{ background: "var(--surface)", borderColor: "var(--hair)", boxShadow: "var(--shadow)" }}
+            >
+              <AccountMenuBody userName={userName} onNavigate={() => setAccountOpen(false)} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       <div className="flex-1" />
 
