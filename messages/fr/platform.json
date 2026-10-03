@@ -20,7 +20,21 @@
       "allTasks": "Toutes les tâches →",
       "noOpenTasks": "Aucune tâche ouverte.",
       "dueDate": "échéance {date}",
-      "unknownStudio": "Inconnu"
+      "unknownStudio": "Inconnu",
+      "subhead": "{count, plural, =0 {Tout tourne tranquillement.} one {Une chose a besoin de vous aujourd’hui.} other {# choses ont besoin de vous aujourd’hui.}}",
+      "attention": {
+        "title": "À traiter aujourd’hui",
+        "clear": "Rien ne vous attend pour l’instant.",
+        "open": "Ouvrir",
+        "support": "{count, plural, one {# conversation d’assistance ouverte} other {# conversations d’assistance ouvertes}}",
+        "supportHint": "Des gérants de studio attendent une réponse.",
+        "tasks": "{count, plural, one {# tâche prioritaire} other {# tâches prioritaires}}",
+        "tasksHint": "Travail ops urgent et prioritaire.",
+        "trials": "{count, plural, one {# studio en essai} other {# studios en essai}}",
+        "trialsHint": "Prolongez ou relancez avant la fin des essais.",
+        "suspended": "{count, plural, one {# studio suspendu} other {# studios suspendus}}",
+        "suspendedHint": "Vérifiez la facturation et réactivez une fois réglé."
+      }
     },
     "studios": {
       "title": "Studios",
@@ -57,7 +71,12 @@
           "canceled": "Résilié",
           "comped": "Offert"
         }
-      }
+      },
+      "vertical": "Secteur",
+      "stripeConnected": "Stripe connecté",
+      "stripeNotConnected": "Stripe non connecté",
+      "xeroConnected": "Xero connecté",
+      "xeroNotConnected": "Xero non connecté"
     },
     "owners": {
       "title": "Propriétaires",

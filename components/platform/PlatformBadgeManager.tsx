@@ -10,6 +10,9 @@ import { useTranslations } from "next-intl";
 import { updateGlobalBadge } from "@/app/platform/badges/actions";
 import { CATEGORY_ORDER, TIER_STYLES } from "@/lib/portal/badge-style";
 import type { BadgeTier, BadgeRecipientType } from "@/lib/portal/badges-data";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
+import { RippleButton } from "@/components/portal/admin/glass/RippleButton";
+import { GlassSwitch, PlatformPageHeader, SectionLabel, fieldClass } from "./glass/ui";
 
 export type GlobalBadge = {
   id: string;
@@ -73,83 +76,78 @@ export default function PlatformBadgeManager({ badges }: { badges: GlobalBadge[]
   const activeCount = items.filter((b) => b.isActive).length;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 p-6">
-      <header>
-        <h1 className="text-2xl font-black text-ink">{t("title")}</h1>
-        <p className="text-sm text-muted">
-          {t("subtitle", { active: activeCount, total: items.length })}
-        </p>
-      </header>
+    <div className="py-2">
+      <PlatformPageHeader title={t("title")} subtitle={t("subtitle", { active: activeCount, total: items.length })} />
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="mb-3.5 text-sm text-[--error]" role="alert">
+          {error}
+        </p>
+      )}
 
       <div className="space-y-6">
         {grouped.map(([cat, list]) => (
           <section key={cat}>
-            <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-muted">
-              {tCat(cat)}
-            </h2>
-            <ul className="space-y-2">
+            <SectionLabel className="mb-3">{tCat(cat)}</SectionLabel>
+            <ul className="grid gap-2.5 md:grid-cols-2">
               {list.map((b) => {
                 const tier = TIER_STYLES[b.tier];
                 const isDirty = dirty.has(b.id);
                 return (
-                  <li
-                    key={b.id}
-                    className="box flex flex-wrap items-center gap-3 rounded-2xl p-3"
-                  >
-                    <input
-                      value={b.icon ?? ""}
-                      onChange={(e) => patchLocal(b.id, { icon: e.target.value })}
-                      maxLength={4}
-                      className="h-10 w-12 shrink-0 rounded-full border-2 bg-base text-center text-lg outline-none"
-                      style={{ borderColor: tier.ring }}
-                      aria-label={t("iconLabel")}
-                    />
-                    <input
-                      value={b.name}
-                      onChange={(e) => patchLocal(b.id, { name: e.target.value })}
-                      className="min-w-[8rem] flex-1 rounded-lg border border-[--hair] bg-base px-2 py-1.5 text-sm font-semibold text-ink outline-none focus:border-brand"
-                    />
-                    <select
-                      value={b.tier}
-                      onChange={(e) => patchLocal(b.id, { tier: e.target.value as BadgeTier })}
-                      className="rounded-lg border border-[--hair] bg-base px-2 py-1.5 text-xs text-ink outline-none"
-                    >
-                      {TIERS.map((tr) => (
-                        <option key={tr} value={tr}>
-                          {tr}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="flex items-center gap-1">
-                      <input
-                        type="number"
-                        min={0}
-                        value={b.xp}
-                        onChange={(e) => patchLocal(b.id, { xp: Number(e.target.value) || 0 })}
-                        className="w-20 rounded-lg border border-[--hair] bg-base px-2 py-1.5 text-xs text-ink outline-none"
-                        aria-label={t("xpLabel")}
-                      />
-                      <span className="text-xs text-muted">XP</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => patchLocal(b.id, { isActive: !b.isActive })}
-                      className={`rounded-full px-3 py-1.5 text-xs font-bold uppercase ${
-                        b.isActive ? "bg-brand text-white" : "border border-[--hair] text-muted"
-                      }`}
-                    >
-                      {b.isActive ? t("active") : t("inactive")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => save(b)}
-                      disabled={!isDirty || pending}
-                      className="rounded-lg border border-[--hair] px-3 py-1.5 text-xs font-bold text-ink hover:border-brand disabled:opacity-40"
-                    >
-                      {t("save")}
-                    </button>
+                  <li key={b.id}>
+                    <GlassPanel className={b.isActive ? "" : "opacity-70"}>
+                      <div className="flex items-center gap-3">
+                        <input
+                          value={b.icon ?? ""}
+                          onChange={(e) => patchLocal(b.id, { icon: e.target.value })}
+                          maxLength={4}
+                          className="h-12 w-12 shrink-0 rounded-2xl border-2 bg-[--glass2] text-center text-xl outline-none"
+                          style={{ borderColor: tier.ring }}
+                          aria-label={t("iconLabel")}
+                        />
+                        <input
+                          value={b.name}
+                          onChange={(e) => patchLocal(b.id, { name: e.target.value })}
+                          aria-label={b.name}
+                          className={`${fieldClass} font-semibold`}
+                        />
+                      </div>
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <select
+                          value={b.tier}
+                          onChange={(e) => patchLocal(b.id, { tier: e.target.value as BadgeTier })}
+                          aria-label={b.tier}
+                          className={`${fieldClass} !w-auto !py-1.5 text-xs capitalize`}
+                        >
+                          {TIERS.map((tr) => (
+                            <option key={tr} value={tr}>
+                              {tr}
+                            </option>
+                          ))}
+                        </select>
+                        <span className="flex items-center gap-1.5">
+                          <input
+                            type="number"
+                            min={0}
+                            value={b.xp}
+                            onChange={(e) => patchLocal(b.id, { xp: Number(e.target.value) || 0 })}
+                            className={`${fieldClass} !w-20 !py-1.5 text-xs tabular-nums`}
+                            aria-label={t("xpLabel")}
+                          />
+                          <span className="text-xs text-muted">XP</span>
+                        </span>
+                        <span className="flex-1" />
+                        <GlassSwitch
+                          checked={b.isActive}
+                          onChange={(next) => patchLocal(b.id, { isActive: next })}
+                          label={`${b.name}: ${b.isActive ? t("active") : t("inactive")}`}
+                        />
+                        <span className="w-12 text-xs text-muted">{b.isActive ? t("active") : t("inactive")}</span>
+                        <RippleButton variant={isDirty ? "solid" : "glass"} onClick={() => save(b)} disabled={!isDirty || pending}>
+                          {t("save")}
+                        </RippleButton>
+                      </div>
+                    </GlassPanel>
                   </li>
                 );
               })}

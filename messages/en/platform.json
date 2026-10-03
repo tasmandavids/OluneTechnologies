@@ -20,7 +20,21 @@
       "allTasks": "All tasks →",
       "noOpenTasks": "No open tasks.",
       "dueDate": "due {date}",
-      "unknownStudio": "Unknown"
+      "unknownStudio": "Unknown",
+      "subhead": "{count, plural, =0 {Everything is running quietly.} one {One thing needs you today.} other {# things need you today.}}",
+      "attention": {
+        "title": "Needs you today",
+        "clear": "Nothing needs you right now.",
+        "open": "Open",
+        "support": "{count, plural, one {# open support thread} other {# open support threads}}",
+        "supportHint": "Studio owners are waiting on a reply.",
+        "tasks": "{count, plural, one {# high-priority task} other {# high-priority tasks}}",
+        "tasksHint": "Urgent and high-priority ops work.",
+        "trials": "{count, plural, one {# studio on trial} other {# studios on trial}}",
+        "trialsHint": "Extend or follow up before trials lapse.",
+        "suspended": "{count, plural, one {# suspended studio} other {# suspended studios}}",
+        "suspendedHint": "Check billing and reinstate once it's sorted."
+      }
     },
     "studios": {
       "title": "Studios",
@@ -57,7 +71,12 @@
           "canceled": "Cancelled",
           "comped": "Complimentary"
         }
-      }
+      },
+      "vertical": "Vertical",
+      "stripeConnected": "Stripe connected",
+      "stripeNotConnected": "Stripe not connected",
+      "xeroConnected": "Xero connected",
+      "xeroNotConnected": "Xero not connected"
     },
     "owners": {
       "title": "Business owners",

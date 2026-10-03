@@ -20,7 +20,21 @@
       "allTasks": "所有任务 →",
       "noOpenTasks": "没有待办任务。",
       "dueDate": "截止 {date}",
-      "unknownStudio": "未知"
+      "unknownStudio": "未知",
+      "subhead": "{count, plural, =0 {一切运行平稳。} other {今天有 # 件事需要你处理。}}",
+      "attention": {
+        "title": "今日待处理",
+        "clear": "目前没有需要处理的事项。",
+        "open": "打开",
+        "support": "{count, plural, other {# 个未结支持会话}}",
+        "supportHint": "工作室负责人正在等待回复。",
+        "tasks": "{count, plural, other {# 个高优先级任务}}",
+        "tasksHint": "紧急和高优先级的运营工作。",
+        "trials": "{count, plural, other {# 个试用中的工作室}}",
+        "trialsHint": "在试用到期前延长或跟进。",
+        "suspended": "{count, plural, other {# 个已暂停的工作室}}",
+        "suspendedHint": "检查账单，问题解决后恢复。"
+      }
     },
     "studios": {
       "title": "工作室",
@@ -57,7 +71,12 @@
           "canceled": "已取消",
           "comped": "免费赠送"
         }
-      }
+      },
+      "vertical": "行业",
+      "stripeConnected": "Stripe 已连接",
+      "stripeNotConnected": "Stripe 未连接",
+      "xeroConnected": "Xero 已连接",
+      "xeroNotConnected": "Xero 未连接"
     },
     "owners": {
       "title": "企业所有者",

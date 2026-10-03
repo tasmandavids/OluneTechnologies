@@ -4,6 +4,9 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import type { PlatformSettings } from "@/lib/platform/types";
 import { updatePlatformSettings } from "@/app/platform/settings/actions";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
+import { RippleButton } from "@/components/portal/admin/glass/RippleButton";
+import { GlassSwitch, PlatformPageHeader, fieldClass } from "./glass/ui";
 
 export function PlatformSettingsForm({ settings }: { settings: PlatformSettings }) {
   const t = useTranslations("platform.settings");
@@ -19,88 +22,94 @@ export function PlatformSettingsForm({ settings }: { settings: PlatformSettings 
     });
   }
 
+  const labelCls = "mb-2 block text-[9.5px] font-semibold uppercase tracking-[0.16em] text-muted";
+
   return (
-    <div className="mx-auto max-w-2xl space-y-6 p-6">
-      <header>
-        <h1 className="text-2xl font-black text-ink">{t("title")}</h1>
-        <p className="text-sm text-muted">{t("subtitle")}</p>
-      </header>
+    <div className="py-2">
+      <PlatformPageHeader title={t("title")} subtitle={t("subtitle")} />
 
-      <div className="box space-y-4 rounded-2xl p-5">
-        <label className="flex items-center justify-between gap-4 text-sm">
-          <span>{t("maintenanceMode")}</span>
-          <input
-            type="checkbox"
-            checked={form.maintenanceMode ?? false}
-            onChange={(e) => setForm({ ...form, maintenanceMode: e.target.checked })}
-          />
-        </label>
-
-        <label className="flex items-center justify-between gap-4 text-sm">
-          <span>{t("signupEnabled")}</span>
-          <input
-            type="checkbox"
-            checked={form.signupEnabled ?? true}
-            onChange={(e) => setForm({ ...form, signupEnabled: e.target.checked })}
-          />
-        </label>
-
-        <label className="block text-sm">
-          <span className="text-xs uppercase tracking-widest text-muted">{t("defaultTrialDays")}</span>
-          <input
-            type="number"
-            min={0}
-            value={form.defaultTrialDays ?? 14}
-            onChange={(e) => setForm({ ...form, defaultTrialDays: Number(e.target.value) })}
-            className="mt-1 w-full rounded-xl border border-[--hair] bg-base px-3 py-2"
-          />
-        </label>
-
-        <label className="block text-sm">
-          <span className="text-xs uppercase tracking-widest text-muted">{t("supportEmail")}</span>
-          <input
-            type="email"
-            value={form.supportEmail ?? ""}
-            onChange={(e) => setForm({ ...form, supportEmail: e.target.value })}
-            className="mt-1 w-full rounded-xl border border-[--hair] bg-base px-3 py-2"
-          />
-        </label>
-
-        <label className="block text-sm">
-          <span className="text-xs uppercase tracking-widest text-muted">{t("welcomeMessage")}</span>
-          <textarea
-            value={form.welcomeMessage ?? ""}
-            onChange={(e) => setForm({ ...form, welcomeMessage: e.target.value })}
-            rows={3}
-            className="mt-1 w-full rounded-xl border border-[--hair] bg-base px-3 py-2"
-          />
-        </label>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={save}
-            disabled={pending}
-            className="rounded-full bg-brand px-5 py-2 text-xs font-bold uppercase text-white"
-          >
-            {t("saveSettings")}
-          </button>
-          {status && <span className="text-xs text-muted">{status}</span>}
+      <div className="flex flex-col gap-3.5 lg:flex-row lg:items-start">
+        <div className="min-w-0 flex-1 lg:max-w-[680px]">
+          <GlassPanel className="!p-0">
+            <div className="flex items-center justify-between gap-4 border-b border-[--hair] px-5 py-[18px]">
+              <span className="text-[15px] font-semibold text-ink">{t("maintenanceMode")}</span>
+              <GlassSwitch
+                checked={form.maintenanceMode ?? false}
+                onChange={(next) => setForm({ ...form, maintenanceMode: next })}
+                label={t("maintenanceMode")}
+              />
+            </div>
+            <div className="flex items-center justify-between gap-4 border-b border-[--hair] px-5 py-[18px]">
+              <span className="text-[15px] font-semibold text-ink">{t("signupEnabled")}</span>
+              <GlassSwitch
+                checked={form.signupEnabled ?? true}
+                onChange={(next) => setForm({ ...form, signupEnabled: next })}
+                label={t("signupEnabled")}
+              />
+            </div>
+            <div className="grid gap-3.5 border-b border-[--hair] px-5 py-[18px] sm:grid-cols-2">
+              <label className="block">
+                <span className={labelCls}>{t("defaultTrialDays")}</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={form.defaultTrialDays ?? 14}
+                  onChange={(e) => setForm({ ...form, defaultTrialDays: Number(e.target.value) })}
+                  className={fieldClass}
+                />
+              </label>
+              <label className="block">
+                <span className={labelCls}>{t("supportEmail")}</span>
+                <input
+                  type="email"
+                  value={form.supportEmail ?? ""}
+                  onChange={(e) => setForm({ ...form, supportEmail: e.target.value })}
+                  className={fieldClass}
+                />
+              </label>
+            </div>
+            <label className="block px-5 py-[18px]">
+              <span className={labelCls}>{t("welcomeMessage")}</span>
+              <textarea
+                value={form.welcomeMessage ?? ""}
+                onChange={(e) => setForm({ ...form, welcomeMessage: e.target.value })}
+                rows={3}
+                className={fieldClass}
+              />
+            </label>
+            <div className="flex items-center gap-3 px-5 pb-5">
+              <RippleButton variant="solid" size="lg" onClick={save} disabled={pending}>
+                {t("saveSettings")}
+              </RippleButton>
+              {status && (
+                <span className="text-xs text-muted" role="status">
+                  {status}
+                </span>
+              )}
+            </div>
+          </GlassPanel>
         </div>
-      </div>
 
-      <section className="box rounded-2xl p-5 text-sm text-muted">
-        <h2 className="mb-2 font-bold text-ink">{t("operatorAccessTitle")}</h2>
-        <p>
-          {t.rich("operatorAccessBody", {
-            envVar: () => (
-              <code className="rounded bg-base px-1">PLATFORM_OPERATOR_EMAILS</code>
-            ),
-            table: () => (
-              <code className="rounded bg-base px-1">platform_operators</code>
-            ),
-          })}
-        </p>
-      </section>
+        <aside className="w-full shrink-0 lg:w-[380px]">
+          <GlassPanel>
+            <h2 className="mb-2 font-display text-base font-medium tracking-tight text-ink">{t("operatorAccessTitle")}</h2>
+            <p className="text-[13.5px] leading-relaxed text-muted">
+              {t.rich("operatorAccessBody", {
+                envVar: () => (
+                  <code className="rounded-md px-1.5 py-px font-mono text-xs text-ink" style={{ background: "var(--t1)" }}>
+                    PLATFORM_OPERATOR_EMAILS
+                  </code>
+                ),
+                table: () => (
+                  <code className="rounded-md px-1.5 py-px font-mono text-xs text-ink" style={{ background: "var(--t1)" }}>
+                    platform_operators
+                  </code>
+                ),
+              })}
+            </p>
+          </GlassPanel>
+        </aside>
+      </div>
     </div>
   );
 }

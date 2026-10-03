@@ -11,6 +11,12 @@ import {
   setStudioComped,
   extendStudioTrial,
 } from "@/app/platform/studios/actions";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
+import { RippleButton } from "@/components/portal/admin/glass/RippleButton";
+import { InitialTile, PlatformPageHeader, Segmented, StatusPill, fieldClass, initialsOf, type PillTone } from "./glass/ui";
+
+const STATUS_TONE: Record<string, PillTone> = { trial: "brand", active: "success", suspended: "danger" };
+const PLAN_TONE: Record<string, PillTone> = { trialing: "brand", active: "success", past_due: "danger", canceled: "neutral", comped: "warm" };
 
 const ROOT = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "olune.app";
 
@@ -116,172 +122,168 @@ export function StudiosManager({
     });
   }
 
+  const counts = {
+    all: items.length,
+    trial: items.filter((s) => s.status === "trial").length,
+    active: items.filter((s) => s.status === "active").length,
+    suspended: items.filter((s) => s.status === "suspended").length,
+  };
+  const th = "px-3 pb-3 pt-4 text-[9.5px] font-semibold uppercase tracking-[0.16em] text-muted";
+
   return (
-    <div className="mx-auto max-w-6xl space-y-6 p-6">
-      <header>
-        <h1 className="text-2xl font-black text-ink">{t("title")}</h1>
-        <p className="text-sm text-muted">{t("subtitle")}</p>
-      </header>
+    <div className="py-2">
+      <PlatformPageHeader
+        eyebrow={t("subtitle")}
+        title={t("title")}
+        actions={
+          <>
+            {statusMsg && <span className="text-xs text-muted" role="status">{statusMsg}</span>}
+            <Segmented
+              label={t("title")}
+              value={filter}
+              onChange={setFilter}
+              options={filterKeys.map((f) => ({
+                value: f,
+                label: (
+                  <>
+                    {t(`filters.${f}`)} <span className="ml-1 font-medium text-muted">{counts[f]}</span>
+                  </>
+                ),
+              }))}
+            />
+          </>
+        }
+      />
 
-      <div className="flex flex-wrap gap-2">
-        {filterKeys.map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wide transition-colors ${
-              filter === f ? "bg-brand text-white" : "border border-[--hair] text-muted hover:text-ink"
-            }`}
-          >
-            {t(`filters.${f}`)}
-          </button>
-        ))}
-        {statusMsg && <span className="self-center text-xs text-muted">{statusMsg}</span>}
-      </div>
-
-      <motion.div layout className="box overflow-x-auto rounded-2xl">
-        <table className="w-full min-w-[720px] text-left text-sm">
-          <thead>
-            <tr className="border-b border-[--hair] text-xs uppercase tracking-widest text-muted">
-              <th className="p-4">{t("tableStudio")}</th>
-              <th className="p-4">{t("tableOwner")}</th>
-              <th className="p-4">{t("tableStudents")}</th>
-              <th className="p-4">Vertical</th>
-              <th className="p-4">{t("plan.column")}</th>
-              <th className="p-4">{t("tableStatus")}</th>
-              <th className="p-4">{t("tableJoined")}</th>
-              <th className="p-4">{t("tableActions")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((s) => (
-              <tr key={s.id} className="border-b border-[--hair]/60 last:border-0">
-                <td className="p-4">
-                  <p className="font-semibold text-ink">{s.name}</p>
-                  <p className="text-xs text-muted">
-                    {s.slug}.{ROOT}
-                    {s.customDomain && ` · ${s.customDomain}`}
-                  </p>
-                  <div className="mt-1 flex gap-1.5">
-                    <span
-                      className={`rounded-full px-1.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide ${
-                        s.stripeConnected
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-base text-muted"
-                      }`}
-                    >
-                      Stripe {s.stripeConnected ? "connected" : "not connected"}
-                    </span>
-                    <span
-                      className={`rounded-full px-1.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide ${
-                        s.xeroConnected ? "bg-emerald-100 text-emerald-700" : "bg-base text-muted"
-                      }`}
-                    >
-                      Xero {s.xeroConnected ? "connected" : "not connected"}
-                    </span>
-                  </div>
-                </td>
-                <td className="p-4">
-                  <p className="text-ink">{s.ownerName ?? "—"}</p>
-                  <p className="text-xs text-muted">{s.ownerEmail ?? ""}</p>
-                </td>
-                <td className="p-4 text-ink">{s.studentCount}</td>
-                <td className="p-4">
-                  {verticals.length > 0 ? (
-                    <select
-                      disabled={pending}
-                      value={s.vertical}
-                      onChange={(e) => setVertical(s.id, e.target.value)}
-                      className="rounded-lg border border-[--hair] bg-base px-2 py-1 text-xs"
-                    >
-                      {/* A studio may sit on a vertical that has since been
-                          hidden; keep it selectable so the value is not
-                          silently rewritten by the picker. */}
-                      {!verticals.some((v) => v.key === s.vertical) && (
-                        <option value={s.vertical}>{s.vertical}</option>
-                      )}
-                      {verticals.map((v) => (
-                        <option key={v.key} value={v.key}>
-                          {v.label}
-                          {v.status === "beta" ? " (beta)" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <span className="text-xs text-muted">{s.vertical}</span>
-                  )}
-                </td>
-                <td className="p-4">
-                  {s.plan ? (
-                    <>
-                      <p className="font-semibold text-ink">{s.plan.key}</p>
-                      <p className="text-xs text-muted">
-                        {t(`plan.status.${s.plan.status}`)}
-                        {s.plan.status === "trialing" && s.plan.trialEndsAt
-                          ? ` · ${new Date(s.plan.trialEndsAt).toLocaleDateString(locale)}`
-                          : ""}
-                      </p>
-                      <div className="mt-1.5 flex flex-wrap gap-1.5">
-                        <button
-                          onClick={() => toggleComp(s)}
-                          disabled={pending}
-                          className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide hover:border-brand"
-                        >
-                          {s.plan.comped ? t("plan.uncomp") : t("plan.comp")}
-                        </button>
-                        {s.plan.status !== "active" && !s.plan.comped && (
-                          <button
-                            onClick={() => extendTrial(s)}
-                            disabled={pending}
-                            className="rounded-full border border-[--hair] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide hover:border-brand"
-                          >
-                            {t("plan.extend")}
-                          </button>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    // After the 0119 backfill every studio has a row, so a gap
-                    // here is a real anomaly rather than an empty state.
-                    <span className="text-xs font-semibold text-red-600">{t("plan.missing")}</span>
-                  )}
-                </td>
-                <td className="p-4">
-                  <span className="rounded-full bg-base px-2 py-0.5 text-[0.65rem] uppercase tracking-wide">
-                    {s.status}
-                  </span>
-                </td>
-                <td className="p-4 text-muted">
-                  {new Date(s.createdAt).toLocaleDateString(locale)}
-                </td>
-                <td className="p-4">
-                  <div className="flex items-center gap-2">
-                    <select
-                      disabled={pending}
-                      value={s.status}
-                      onChange={(e) => setStatus(s.id, e.target.value)}
-                      className="rounded-lg border border-[--hair] bg-base px-2 py-1 text-xs"
-                    >
-                      <option value="trial">{t("filters.trial")}</option>
-                      <option value="active">{t("filters.active")}</option>
-                      <option value="suspended">{t("filters.suspended")}</option>
-                    </select>
-                    <button
-                      onClick={() => remove(s)}
-                      disabled={pending}
-                      className="rounded-full border border-[--hair] px-3 py-1 text-xs font-bold uppercase text-red-600 hover:border-red-500"
-                    >
-                      {t("delete")}
-                    </button>
-                  </div>
-                </td>
+      <GlassPanel className="!p-0">
+        <motion.div layout className="overflow-x-auto">
+          <table className="w-full min-w-[980px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-[--hair]">
+                <th className={`${th} pl-5`}>{t("tableStudio")}</th>
+                <th className={th}>{t("tableOwner")}</th>
+                <th className={`${th} text-right`}>{t("tableStudents")}</th>
+                <th className={th}>{t("vertical")}</th>
+                <th className={th}>{t("plan.column")}</th>
+                <th className={th}>{t("tableStatus")}</th>
+                <th className={th}>{t("tableJoined")}</th>
+                <th className={`${th} pr-5 text-right`}>{t("tableActions")}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        {filtered.length === 0 && (
-          <p className="p-8 text-center text-sm text-muted">{t("noMatch")}</p>
-        )}
-      </motion.div>
+            </thead>
+            <tbody>
+              {filtered.map((s) => (
+                <tr key={s.id} className="border-b border-[--hair] align-top transition-colors last:border-0 hover:bg-[--t1]">
+                  <td className="py-3 pl-5 pr-3">
+                    <div className="flex items-start gap-3">
+                      <InitialTile text={initialsOf(s.name).slice(0, 1)} />
+                      <div className="min-w-0">
+                        <p className="font-semibold text-ink">{s.name}</p>
+                        <p className="text-xs text-muted">
+                          {s.slug}.{ROOT}
+                          {s.customDomain && ` · ${s.customDomain}`}
+                        </p>
+                        <div className="mt-1.5 flex flex-wrap gap-1.5">
+                          <StatusPill tone={s.stripeConnected ? "success" : "neutral"}>
+                            {s.stripeConnected ? t("stripeConnected") : t("stripeNotConnected")}
+                          </StatusPill>
+                          <StatusPill tone={s.xeroConnected ? "success" : "neutral"}>
+                            {s.xeroConnected ? t("xeroConnected") : t("xeroNotConnected")}
+                          </StatusPill>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    <p className="text-ink">{s.ownerName ?? "—"}</p>
+                    <p className="text-xs text-muted">{s.ownerEmail ?? ""}</p>
+                  </td>
+                  <td className="p-3 text-right tabular-nums text-ink">{s.studentCount}</td>
+                  <td className="p-3">
+                    {verticals.length > 0 ? (
+                      <select
+                        disabled={pending}
+                        value={s.vertical}
+                        onChange={(e) => setVertical(s.id, e.target.value)}
+                        aria-label={t("vertical")}
+                        className={`${fieldClass} !w-auto !py-1.5 text-xs`}
+                      >
+                        {/* A studio may sit on a vertical that has since been
+                            hidden; keep it selectable so the value is not
+                            silently rewritten by the picker. */}
+                        {!verticals.some((v) => v.key === s.vertical) && (
+                          <option value={s.vertical}>{s.vertical}</option>
+                        )}
+                        {verticals.map((v) => (
+                          <option key={v.key} value={v.key}>
+                            {v.label}
+                            {v.status === "beta" ? " (beta)" : ""}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="text-xs text-muted">{s.vertical}</span>
+                    )}
+                  </td>
+                  <td className="p-3">
+                    {s.plan ? (
+                      <>
+                        <p className="font-semibold capitalize text-ink">{s.plan.key}</p>
+                        <div className="mt-1">
+                          <StatusPill tone={PLAN_TONE[s.plan.status] ?? "neutral"}>
+                            {t(`plan.status.${s.plan.status}`)}
+                            {s.plan.status === "trialing" && s.plan.trialEndsAt
+                              ? ` · ${new Date(s.plan.trialEndsAt).toLocaleDateString(locale)}`
+                              : ""}
+                          </StatusPill>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          <RippleButton size="sm" onClick={() => toggleComp(s)} disabled={pending}>
+                            {s.plan.comped ? t("plan.uncomp") : t("plan.comp")}
+                          </RippleButton>
+                          {s.plan.status !== "active" && !s.plan.comped && (
+                            <RippleButton size="sm" onClick={() => extendTrial(s)} disabled={pending}>
+                              {t("plan.extend")}
+                            </RippleButton>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      // After the 0119 backfill every studio has a row, so a gap
+                      // here is a real anomaly rather than an empty state.
+                      <StatusPill tone="danger">{t("plan.missing")}</StatusPill>
+                    )}
+                  </td>
+                  <td className="p-3">
+                    <StatusPill tone={STATUS_TONE[s.status] ?? "neutral"}>
+                      <span className="capitalize">{t.has(`filters.${s.status}`) ? t(`filters.${s.status}`) : s.status}</span>
+                    </StatusPill>
+                  </td>
+                  <td className="whitespace-nowrap p-3 text-muted">{new Date(s.createdAt).toLocaleDateString(locale)}</td>
+                  <td className="py-3 pl-3 pr-5">
+                    <div className="flex items-center justify-end gap-2">
+                      <select
+                        disabled={pending}
+                        value={s.status}
+                        onChange={(e) => setStatus(s.id, e.target.value)}
+                        aria-label={t("tableStatus")}
+                        className={`${fieldClass} !w-auto !py-1.5 text-xs capitalize`}
+                      >
+                        <option value="trial">{t("filters.trial")}</option>
+                        <option value="active">{t("filters.active")}</option>
+                        <option value="suspended">{t("filters.suspended")}</option>
+                      </select>
+                      <RippleButton size="sm" onClick={() => remove(s)} disabled={pending} style={{ color: "var(--error, #dc2626)" }}>
+                        {t("delete")}
+                      </RippleButton>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {filtered.length === 0 && <p className="p-8 text-center text-sm text-muted">{t("noMatch")}</p>}
+        </motion.div>
+      </GlassPanel>
     </div>
   );
 }

@@ -20,7 +20,21 @@
       "allTasks": "Todas las tareas →",
       "noOpenTasks": "No hay tareas abiertas.",
       "dueDate": "vence el {date}",
-      "unknownStudio": "Desconocido"
+      "unknownStudio": "Desconocido",
+      "subhead": "{count, plural, =0 {Todo funciona con calma.} one {Hoy hay una cosa que te necesita.} other {Hoy hay # cosas que te necesitan.}}",
+      "attention": {
+        "title": "Te necesita hoy",
+        "clear": "Nada te necesita ahora mismo.",
+        "open": "Abrir",
+        "support": "{count, plural, one {# conversación de soporte abierta} other {# conversaciones de soporte abiertas}}",
+        "supportHint": "Los dueños de estudios esperan respuesta.",
+        "tasks": "{count, plural, one {# tarea de alta prioridad} other {# tareas de alta prioridad}}",
+        "tasksHint": "Trabajo de operaciones urgente y de alta prioridad.",
+        "trials": "{count, plural, one {# estudio en prueba} other {# estudios en prueba}}",
+        "trialsHint": "Amplía o haz seguimiento antes de que venzan las pruebas.",
+        "suspended": "{count, plural, one {# estudio suspendido} other {# estudios suspendidos}}",
+        "suspendedHint": "Revisa la facturación y reactívalo cuando esté resuelto."
+      }
     },
     "studios": {
       "title": "Estudios",
@@ -57,7 +71,12 @@
           "canceled": "Cancelado",
           "comped": "Cortesía"
         }
-      }
+      },
+      "vertical": "Sector",
+      "stripeConnected": "Stripe conectado",
+      "stripeNotConnected": "Stripe sin conectar",
+      "xeroConnected": "Xero conectado",
+      "xeroNotConnected": "Xero sin conectar"
     },
     "owners": {
       "title": "Propietarios de negocio",

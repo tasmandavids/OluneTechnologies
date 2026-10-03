@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import { PlatformShell } from "@/components/platform/PlatformShell";
 import { PlatformMfaGate } from "@/components/platform/PlatformMfaGate";
 import { requirePlatformOperator } from "@/lib/platform/auth";
+import { resolvePortalTheme } from "@/lib/portal/resolve-portal-theme";
 
 // Privileged operator data must be loaded only for authenticated requests,
 // never during static generation with build-time service-role credentials;
@@ -32,9 +33,13 @@ export default async function PlatformLayout({
     );
   }
 
+  const portalTheme = await resolvePortalTheme();
+
   return (
     <MessageScope messages={{ platform: messages.platform, admin: messages.admin }}>
-      <PlatformShell operatorName={auth.name}>{children}</PlatformShell>
+      <PlatformShell operatorName={auth.name} portalTheme={portalTheme}>
+        {children}
+      </PlatformShell>
     </MessageScope>
   );
 }

@@ -20,7 +20,21 @@
       "allTasks": "すべてのタスク →",
       "noOpenTasks": "未対応のタスクはありません。",
       "dueDate": "期限 {date}",
-      "unknownStudio": "不明"
+      "unknownStudio": "不明",
+      "subhead": "{count, plural, =0 {すべて順調です。} other {今日対応が必要なことが # 件あります。}}",
+      "attention": {
+        "title": "今日の対応事項",
+        "clear": "今は対応が必要なことはありません。",
+        "open": "開く",
+        "support": "{count, plural, other {未対応のサポートスレッド # 件}}",
+        "supportHint": "スタジオオーナーが返信を待っています。",
+        "tasks": "{count, plural, other {優先度の高いタスク # 件}}",
+        "tasksHint": "緊急・高優先度の運用作業です。",
+        "trials": "{count, plural, other {トライアル中のスタジオ # 件}}",
+        "trialsHint": "トライアル終了前に延長またはフォローアップしましょう。",
+        "suspended": "{count, plural, other {停止中のスタジオ # 件}}",
+        "suspendedHint": "請求状況を確認し、解決したら再開しましょう。"
+      }
     },
     "studios": {
       "title": "スタジオ",
@@ -57,7 +71,12 @@
           "canceled": "解約済み",
           "comped": "無料提供"
         }
-      }
+      },
+      "vertical": "業種",
+      "stripeConnected": "Stripe 接続済み",
+      "stripeNotConnected": "Stripe 未接続",
+      "xeroConnected": "Xero 接続済み",
+      "xeroNotConnected": "Xero 未接続"
     },
     "owners": {
       "title": "事業者",

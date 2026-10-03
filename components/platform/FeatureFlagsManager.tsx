@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import type { FeatureFlag } from "@/lib/platform/types";
 import { toggleFeatureFlag } from "@/app/platform/features/actions";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
+import { GlassSwitch, PlatformPageHeader, SectionLabel } from "./glass/ui";
 
 export function FeatureFlagsManager({ flags }: { flags: FeatureFlag[] }) {
   const t = useTranslations("platform.features");
@@ -23,36 +25,29 @@ export function FeatureFlagsManager({ flags }: { flags: FeatureFlag[] }) {
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 p-6">
-      <header>
-        <h1 className="text-2xl font-black text-ink">{t("title")}</h1>
-        <p className="text-sm text-muted">{t("subtitle")}</p>
-      </header>
+    <div className="py-2">
+      <PlatformPageHeader title={t("title")} subtitle={t("subtitle")} />
 
-      <section>
-        <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-muted">
-          {t("globalDefaults")}
-        </h2>
-        <ul className="grid gap-3 sm:grid-cols-2">
+      <section className="mb-6">
+        <SectionLabel className="mb-3">{t("globalDefaults")}</SectionLabel>
+        <ul className="grid gap-2.5 sm:grid-cols-2">
           {globalFlags.map((f) => (
-            <li
-              key={f.id}
-              className="box flex items-start justify-between gap-4 rounded-2xl p-4"
-            >
-              <div>
-                <p className="font-semibold text-ink">{f.label}</p>
-                <p className="text-xs text-muted">{f.description}</p>
-                <p className="mt-1 font-mono text-[0.65rem] text-muted">{f.featureKey}</p>
-              </div>
-              <button
-                disabled={pending}
-                onClick={() => toggle(f.id, !f.enabled)}
-                className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-bold uppercase ${
-                  f.enabled ? "bg-brand text-white" : "border border-[--hair] text-muted"
-                }`}
-              >
-                {f.enabled ? t("on") : t("off")}
-              </button>
+            <li key={f.id}>
+              <GlassPanel className="h-full">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-ink">{f.label}</p>
+                    <p className="mt-0.5 text-[13px] leading-snug text-muted">{f.description}</p>
+                    <code className="mt-2 inline-block font-mono text-[11px] tracking-wide text-muted">{f.featureKey}</code>
+                  </div>
+                  <GlassSwitch
+                    checked={f.enabled}
+                    onChange={(next) => toggle(f.id, next)}
+                    label={`${f.label}: ${f.enabled ? t("on") : t("off")}`}
+                    disabled={pending}
+                  />
+                </div>
+              </GlassPanel>
             </li>
           ))}
         </ul>
@@ -60,30 +55,24 @@ export function FeatureFlagsManager({ flags }: { flags: FeatureFlag[] }) {
 
       {studioFlags.length > 0 && (
         <section>
-          <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-muted">
-            {t("studioOverrides")}
-          </h2>
-          <ul className="space-y-2">
-            {studioFlags.map((f) => (
-              <li
-                key={f.id}
-                className="box flex items-center justify-between rounded-xl px-4 py-3 text-sm"
-              >
-                <span>
-                  {f.label} · <strong>{f.studioName}</strong>
-                </span>
-                <button
-                  disabled={pending}
-                  onClick={() => toggle(f.id, !f.enabled)}
-                  className={`rounded-full px-3 py-1 text-[0.65rem] uppercase ${
-                    f.enabled ? "bg-brand text-white" : "border border-[--hair]"
-                  }`}
-                >
-                  {f.enabled ? t("on") : t("off")}
-                </button>
-              </li>
-            ))}
-          </ul>
+          <SectionLabel className="mb-3">{t("studioOverrides")}</SectionLabel>
+          <GlassPanel className="!p-2">
+            <ul>
+              {studioFlags.map((f) => (
+                <li key={f.id} className="flex items-center justify-between gap-3 border-b border-[--hair] p-3 text-sm last:border-0">
+                  <span className="text-ink">
+                    {f.label} · <strong>{f.studioName}</strong>
+                  </span>
+                  <GlassSwitch
+                    checked={f.enabled}
+                    onChange={(next) => toggle(f.id, next)}
+                    label={`${f.label} · ${f.studioName}: ${f.enabled ? t("on") : t("off")}`}
+                    disabled={pending}
+                  />
+                </li>
+              ))}
+            </ul>
+          </GlassPanel>
         </section>
       )}
     </div>

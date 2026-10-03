@@ -6,21 +6,26 @@ export default async function PlatformHomePage() {
   const admin = createAdminClient();
   const t = await getTranslations("platform.dashboard");
 
-  const [studiosRes, tasksRes, threadsRes, studentsRes] = await Promise.all([
+  const [studiosRes, tasksRes, threadsRes, studentsRes, urgentTasksRes] = await Promise.all([
     admin.from("studios").select("id, name, slug, status, created_at").order("created_at", { ascending: false }),
     admin
       .from("platform_tasks")
-      .select("id, title, priority, due_at")
+      .select("id, title, priority, status, due_at, studios(name)")
       .neq("status", "done")
       .order("priority")
-      .limit(6),
+      .limit(9),
     admin
       .from("platform_support_threads")
-      .select("id, subject, priority, studios(name)")
+      .select("id, subject, priority, status, updated_at, studios(name)", { count: "exact" })
       .neq("status", "resolved")
       .order("updated_at", { ascending: false })
       .limit(5),
     admin.from("profiles").select("id", { count: "exact", head: true }).eq("role", "student"),
+    admin
+      .from("platform_tasks")
+      .select("id", { count: "exact", head: true })
+      .neq("status", "done")
+      .in("priority", ["urgent", "high"]),
   ]);
 
   const studios = studiosRes.data ?? [];
@@ -59,15 +64,29 @@ export default async function PlatformHomePage() {
       subject: thread.subject,
       studioName: studio?.name ?? t("unknownStudio"),
       priority: thread.priority,
+      status: thread.status,
+      updatedAt: thread.updated_at,
     };
   });
 
-  const openTasks = (tasksRes.data ?? []).map((task) => ({
-    id: task.id,
-    title: task.title,
-    priority: task.priority,
-    dueAt: task.due_at,
-  }));
+  const openTasks = (tasksRes.data ?? []).map((task) => {
+    const studio = task.studios as unknown as { name: string } | null;
+    return {
+      id: task.id,
+      title: task.title,
+      priority: task.priority,
+      status: task.status,
+      dueAt: task.due_at,
+      studioName: studio?.name ?? null,
+    };
+  });
+
+  const attention = {
+    openThreads: threadsRes.count ?? openThreads.length,
+    urgentTasks: urgentTasksRes.count ?? 0,
+    trials: trialCount,
+    suspended: suspendedCount,
+  };
 
   return (
     <PlatformDashboard
@@ -75,6 +94,7 @@ export default async function PlatformHomePage() {
       recentStudios={recentStudios}
       openTasks={openTasks}
       openThreads={openThreads}
+      attention={attention}
     />
   );
 }

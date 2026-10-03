@@ -8,6 +8,11 @@ import {
   updateThreadStatus,
   loadThreadMessages,
 } from "@/app/platform/messages/actions";
+import { GlassPanel } from "@/components/portal/admin/glass/GlassPanel";
+import { RippleButton } from "@/components/portal/admin/glass/RippleButton";
+import { PlatformPageHeader, Segmented, fieldClass } from "./glass/ui";
+
+const THREAD_DOT: Record<string, string> = { open: "var(--brand)", pending: "#f2b788", resolved: "var(--success, #16a34a)" };
 
 export function SupportInbox({ threads: initialThreads }: { threads: SupportThread[] }) {
   const t = useTranslations("platform.support");
@@ -52,94 +57,103 @@ export function SupportInbox({ threads: initialThreads }: { threads: SupportThre
   const statusKeys = ["open", "pending", "resolved"] as const;
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-53px)] max-w-6xl flex-col gap-0 p-6 md:h-screen md:flex-row md:p-6">
-      <div className="mb-4 w-full shrink-0 md:mb-0 md:w-80 md:pr-4">
-        <h1 className="mb-4 text-2xl font-black text-ink">{t("title")}</h1>
-        <ul className="max-h-96 space-y-2 overflow-y-auto md:max-h-[calc(100vh-8rem)]">
-          {threads.map((thread) => (
-            <li key={thread.id}>
-              <button
-                onClick={() => selectThread(thread.id)}
-                className={`w-full rounded-xl border p-3 text-left text-sm ${
-                  selectedId === thread.id ? "border-brand bg-surface" : "border-[--hair] bg-surface"
-                }`}
-              >
-                <p className="font-semibold text-ink">{thread.subject}</p>
-                <p className="text-xs text-muted">
-                  {thread.studioName} · {t(`status.${thread.status}`)} · {thread.priority}
-                </p>
-              </button>
-            </li>
-          ))}
-          {threads.length === 0 && <li className="text-sm text-muted">{t("noThreads")}</li>}
-        </ul>
-      </div>
+    <div className="py-2">
+      <PlatformPageHeader title={t("title")} />
 
-      <div className="box flex flex-1 flex-col rounded-2xl">
-        {selected ? (
-          <>
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[--hair] p-4">
-              <div>
-                <h2 className="font-bold text-ink">{selected.subject}</h2>
-                <p className="text-xs text-muted">{selected.studioName}</p>
-              </div>
-              <div className="flex gap-2">
-                {statusKeys.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setStatus(s)}
+      <div className="flex flex-col gap-3.5 md:flex-row md:items-stretch">
+        <div className="w-full shrink-0 md:w-[340px]">
+          <GlassPanel className="!p-2">
+            <ul className="flex max-h-96 flex-col gap-0.5 overflow-y-auto md:max-h-[calc(100vh-15rem)]">
+              {threads.map((thread) => {
+                const on = selectedId === thread.id;
+                return (
+                  <li key={thread.id}>
+                    <button
+                      type="button"
+                      onClick={() => selectThread(thread.id)}
+                      aria-pressed={on}
+                      className="flex w-full flex-col gap-1 rounded-[14px] border p-3 text-left transition-colors hover:bg-[--t1]"
+                      style={{ borderColor: on ? "var(--tb)" : "transparent", background: on ? "var(--t2)" : undefined }}
+                    >
+                      <span className="text-[13.5px] font-semibold leading-snug text-ink">{thread.subject}</span>
+                      <span className="flex items-center gap-1.5 text-xs text-muted">
+                        <span className="h-[7px] w-[7px] shrink-0 rounded-full" style={{ background: THREAD_DOT[thread.status] }} />
+                        {thread.studioName} · {t(`status.${thread.status}`)} · {thread.priority}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+              {threads.length === 0 && <li className="p-3 text-sm text-muted">{t("noThreads")}</li>}
+            </ul>
+          </GlassPanel>
+        </div>
+
+        <div className="flex min-h-[520px] min-w-0 flex-1 flex-col">
+          <GlassPanel className="flex flex-1 flex-col !p-0">
+            {selected ? (
+              <>
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[--hair] px-5 py-4">
+                  <div className="min-w-0">
+                    <h2 className="font-display text-lg font-medium tracking-tight text-ink">{selected.subject}</h2>
+                    <p className="text-xs text-muted">{selected.studioName}</p>
+                  </div>
+                  <Segmented
+                    label={t("title")}
+                    value={selected.status}
+                    onChange={setStatus}
                     disabled={pending}
-                    className={`rounded-full px-3 py-1 text-[0.65rem] uppercase tracking-wide ${
-                      selected.status === s ? "bg-brand text-white" : "border border-[--hair]"
-                    }`}
-                  >
-                    {t(`status.${s}`)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex-1 space-y-3 overflow-y-auto p-4">
-              {messages.map((m) => (
-                <div
-                  key={m.id}
-                  className={`max-w-[85%] rounded-xl px-4 py-3 text-sm ${
-                    m.isOperator
-                      ? "ml-auto bg-brand text-white"
-                      : "mr-auto box text-ink"
-                  }`}
-                >
-                  <p className="mb-1 text-[0.65rem] opacity-70">
-                    {m.senderName ?? (m.isOperator ? t("senderOperator") : t("senderOwner"))}
-                  </p>
-                  <p className="whitespace-pre-wrap">{m.body}</p>
-                  <p className="mt-1 text-[0.6rem] opacity-60">
-                    {new Date(m.createdAt).toLocaleString(locale)}
-                  </p>
+                    options={statusKeys.map((s) => ({ value: s, label: t(`status.${s}`) }))}
+                  />
                 </div>
-              ))}
-            </div>
 
-            <div className="border-t border-[--hair] p-4">
-              <textarea
-                value={reply}
-                onChange={(e) => setReply(e.target.value)}
-                rows={2}
-                placeholder={t("replyPlaceholder")}
-                className="mb-2 w-full rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm"
-              />
-              <button
-                onClick={sendReply}
-                disabled={pending || !reply.trim()}
-                className="rounded-full bg-brand px-5 py-2 text-xs font-bold uppercase text-white disabled:opacity-50"
-              >
-                {t("sendReply")}
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="grid flex-1 place-items-center text-sm text-muted">{t("selectThread")}</div>
-        )}
+                <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-5">
+                  {messages.map((m) => (
+                    <div
+                      key={m.id}
+                      className={`max-w-[80%] px-3.5 py-3 text-sm ${
+                        m.isOperator ? "ml-auto rounded-[16px_16px_6px_16px] text-white" : "mr-auto rounded-[16px_16px_16px_6px] border text-ink"
+                      }`}
+                      style={
+                        m.isOperator
+                          ? { background: "var(--brand)" }
+                          : { borderColor: "var(--edge)", background: "var(--glass2)" }
+                      }
+                    >
+                      <p className={`mb-1 text-[11px] font-semibold ${m.isOperator ? "opacity-85" : "text-muted"}`}>
+                        {m.senderName ?? (m.isOperator ? t("senderOperator") : t("senderOwner"))}
+                      </p>
+                      <p className="whitespace-pre-wrap leading-relaxed">{m.body}</p>
+                      <p className={`mt-1.5 text-[11px] ${m.isOperator ? "opacity-80" : "text-muted"}`}>
+                        {new Date(m.createdAt).toLocaleString(locale)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="border-t border-[--hair] px-5 py-4">
+                  <label className="block">
+                    <span className="sr-only">{t("replyPlaceholder")}</span>
+                    <textarea
+                      value={reply}
+                      onChange={(e) => setReply(e.target.value)}
+                      rows={3}
+                      placeholder={t("replyPlaceholder")}
+                      className={fieldClass}
+                    />
+                  </label>
+                  <div className="mt-2.5 flex justify-end">
+                    <RippleButton variant="solid" size="lg" onClick={sendReply} disabled={pending || !reply.trim()}>
+                      {t("sendReply")}
+                    </RippleButton>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="grid flex-1 place-items-center p-8 text-sm text-muted">{t("selectThread")}</div>
+            )}
+          </GlassPanel>
+        </div>
       </div>
     </div>
   );

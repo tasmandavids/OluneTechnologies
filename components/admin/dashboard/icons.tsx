@@ -248,3 +248,21 @@ export function IconCheck(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function IconBuilding(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <rect x="4.5" y="3.5" width="15" height="17" rx="2" />
+      <path d="M9.5 20.5v-4h5v4M9 7.5h1M14 7.5h1M9 11.5h1M14 11.5h1" />
+    </svg>
+  );
+}
+
+export function IconKanban(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="3" />
+      <path d="M8.5 7.5v7M12 7.5v4M15.5 7.5v9" />
+    </svg>
+  );
+}

@@ -20,7 +20,21 @@
       "allTasks": "Tutte le attività →",
       "noOpenTasks": "Nessuna attività aperta.",
       "dueDate": "scadenza {date}",
-      "unknownStudio": "Sconosciuto"
+      "unknownStudio": "Sconosciuto",
+      "subhead": "{count, plural, =0 {Tutto procede con calma.} one {Oggi c’è una cosa che ha bisogno di te.} other {Oggi ci sono # cose che hanno bisogno di te.}}",
+      "attention": {
+        "title": "Da gestire oggi",
+        "clear": "Al momento non c’è nulla da gestire.",
+        "open": "Apri",
+        "support": "{count, plural, one {# conversazione di assistenza aperta} other {# conversazioni di assistenza aperte}}",
+        "supportHint": "I titolari degli studi aspettano una risposta.",
+        "tasks": "{count, plural, one {# attività ad alta priorità} other {# attività ad alta priorità}}",
+        "tasksHint": "Lavoro operativo urgente e ad alta priorità.",
+        "trials": "{count, plural, one {# studio in prova} other {# studi in prova}}",
+        "trialsHint": "Estendi o ricontatta prima che le prove scadano.",
+        "suspended": "{count, plural, one {# studio sospeso} other {# studi sospesi}}",
+        "suspendedHint": "Controlla la fatturazione e riattiva quando è risolto."
+      }
     },
     "studios": {
       "title": "Studi",
@@ -57,7 +71,12 @@
           "canceled": "Disdetto",
           "comped": "In omaggio"
         }
-      }
+      },
+      "vertical": "Settore",
+      "stripeConnected": "Stripe collegato",
+      "stripeNotConnected": "Stripe non collegato",
+      "xeroConnected": "Xero collegato",
+      "xeroNotConnected": "Xero non collegato"
     },
     "owners": {
       "title": "Proprietari",
