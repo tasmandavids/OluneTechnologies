@@ -40,3 +40,8 @@ playwright-report/
 test-results/
 supabase_*.tar.gz
 *.tar.gz
+
+# iCloud: keep heavy dirs out of sync (symlinks need non-slash patterns)
+node_modules
+.next
+*.nosync
