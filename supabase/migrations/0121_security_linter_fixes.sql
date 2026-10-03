@@ -121,7 +121,14 @@ revoke all on function private.assign_contractor_invoice_number() from public;
 revoke all on function private.guard_event_ticket_capacity() from public;
 revoke all on function private.guard_order_fulfilment() from public;
 revoke all on function private.network_message_after_insert() from public;
-revoke all on function private.handle_deleted_user() from public;
+-- This dashboard-created function is absent on a fresh database.
+do $$
+begin
+  if to_regprocedure('private.handle_deleted_user()') is not null then
+    revoke all on function private.handle_deleted_user() from public;
+  end if;
+end
+$$;
 
 
 -- ─── 3. Drop the orphaned public.decrement_stock_on_order() ─────────────────

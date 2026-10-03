@@ -10,8 +10,16 @@
 -- 1. Fix mutable search_path on functions that were missing it
 -- ---------------------------------------------------------------------------
 
--- handle_deleted_user: created outside migrations, fix in-place
-alter function public.handle_deleted_user() set search_path = public;
+-- handle_deleted_user was created outside migrations in some hosted projects.
+-- A fresh database has no such function, so only harden it when present.
+do $$
+begin
+  if to_regprocedure('public.handle_deleted_user()') is not null then
+    alter function public.handle_deleted_user() set search_path = public;
+    revoke execute on function public.handle_deleted_user() from anon, authenticated;
+  end if;
+end
+$$;
 
 -- admin_record_installment_payment: recreate with search_path + internal
 --   permission guard (only admin/office may call this)
@@ -73,7 +81,6 @@ $$;
 --    (anon should never call these directly)
 -- ---------------------------------------------------------------------------
 
-revoke execute on function public.handle_deleted_user() from anon;
 revoke execute on function public.admin_record_installment_payment(uuid, int) from anon;
 revoke execute on function public.assign_invoice_number() from anon;
 revoke execute on function public.create_instructor_workspace_for_user(text, text) from anon;
@@ -88,7 +95,6 @@ revoke execute on function public.assign_contractor_invoice_number() from anon;
 -- ---------------------------------------------------------------------------
 
 -- Trigger functions: only the trigger mechanism needs to call these
-revoke execute on function public.handle_deleted_user() from authenticated;
 revoke execute on function public.assign_invoice_number() from authenticated;
 revoke execute on function public.assign_contractor_invoice_number() from authenticated;
 
