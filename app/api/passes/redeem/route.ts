@@ -8,7 +8,7 @@
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminStudio } from "@/lib/portal/access";
 import { z } from "zod";
 import { rollbackRedeemedClassPassClaim } from "@/lib/passes/redemption";
 import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
@@ -21,13 +21,18 @@ const RedeemSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // Same access path as every admin action: the active workspace, an active
+  // membership and the plan lock — not the legacy profiles.role/studio_id,
+  // which ignored all three.
+  const { error: accessError, supabase, studioId, userId } = await getAdminStudio();
+  if (accessError || !studioId || !userId) {
+    return NextResponse.json(
+      { error: accessError ?? "Not authorized." },
+      { status: userId ? 403 : 401 },
+    );
+  }
 
-  if (!(await checkRateLimit(rateLimitKey("pass-redeem", user.id), { limit: 30, windowMs: 60_000 }))) {
+  if (!(await checkRateLimit(rateLimitKey("pass-redeem", userId), { limit: 30, windowMs: 60_000 }))) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
@@ -36,24 +41,13 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   const { passId, qrToken, classId, date } = parsed.data;
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, studio_id")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin") {
-    return NextResponse.json({ error: "Only admins can redeem passes." }, { status: 403 });
-  }
-  if (!profile.studio_id) return NextResponse.json({ error: "No studio found." }, { status: 400 });
-
   const { data: cls } = await supabase
     .from("classes")
     .select("id, studio_id, name")
     .eq("id", classId)
     .single();
 
-  if (!cls || cls.studio_id !== profile.studio_id) {
+  if (!cls || cls.studio_id !== studioId) {
     return NextResponse.json({ error: "Class not found in your studio." }, { status: 404 });
   }
 
@@ -65,12 +59,12 @@ export async function POST(req: NextRequest) {
       redeemed_at: new Date().toISOString(),
       redeemed_class_id: classId,
       redeemed_date: date,
-      redeemed_by: user.id,
+      redeemed_by: userId,
     })
     .eq("id", passId)
     .eq("qr_token", qrToken)
     .eq("status", "paid")
-    .eq("studio_id", profile.studio_id)
+    .eq("studio_id", studioId)
     .select("id, student_id, studio_id")
     .maybeSingle();
 
@@ -81,7 +75,7 @@ export async function POST(req: NextRequest) {
       .from("class_passes")
       .select("status")
       .eq("id", passId)
-      .eq("studio_id", profile.studio_id)
+      .eq("studio_id", studioId)
       .maybeSingle();
     if (existing?.status === "redeemed") {
       return NextResponse.json({ error: "This pass has already been redeemed." }, { status: 409 });
@@ -96,7 +90,7 @@ export async function POST(req: NextRequest) {
       student_id: claimed.student_id,
       date,
       status: "present",
-      noted_by: user.id,
+      noted_by: userId,
     },
     { onConflict: "class_id,student_id,date" },
   );
@@ -108,7 +102,7 @@ export async function POST(req: NextRequest) {
       studioId: claimed.studio_id,
       classId,
       date,
-      redeemedBy: user.id,
+      redeemedBy: userId,
     });
     if (rollbackErr) {
       console.error(`[passes/redeem] failed to roll back pass ${passId} after attendance error:`, rollbackErr);

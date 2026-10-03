@@ -69,28 +69,27 @@ export async function POST(req: NextRequest) {
 
   // ── Idempotency ledger (migration 0020) ──────────────────────────────────
   // Stripe retries on non-2xx and can deliver the same event more than once.
-  // Record the event.id first; if it's already present, this is a replay — ack
-  // with 200 and do no further work. A failed insert (e.g. table missing in a
-  // not-yet-migrated env) is non-fatal: we fall through and process the event.
+  // Record the event.id first as a processing claim; if it's already present,
+  // this is a replay — ack with 200 and do no further work.
   const { error: ledgerError } = await supabase
     .from("stripe_events")
     .insert({ id: event.id, type: event.type, account: event.account ?? null });
 
   if (ledgerError) {
-    // Unique-violation → we've already handled this event. Anything else
-    // (table absent, transient) is logged and we continue processing.
     if (ledgerError.code === "23505") {
       console.log(`[stripe-webhook] duplicate event ${event.id} ignored`);
       return NextResponse.json({ received: true, duplicate: true });
     }
-    // Not fatal, but it means replay protection is off: a Stripe retry will be
-    // processed twice. Worth knowing about the moment it starts happening.
-    console.warn(`[stripe-webhook] ledger insert failed (continuing):`, ledgerError.message);
+    // Processing without a claim lets concurrent deliveries race and a later
+    // retry apply the same payment twice. Return 500 so Stripe retries once
+    // the ledger is healthy again — same rule as /api/webhooks/stripe-v2.
+    console.error(`[stripe-webhook] ledger insert failed:`, ledgerError.message);
     await reportHandledMessage("Stripe idempotency ledger insert failed", {
       route: "webhook.stripe",
       tags: { reason: "ledger" },
       extra: { eventType: event.type, code: ledgerError.code, message: ledgerError.message },
     });
+    return NextResponse.json({ error: "Event ledger unavailable" }, { status: 500 });
   }
 
   try {
@@ -98,10 +97,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (err) {
     console.error("[stripe-webhook] handler error:", err);
+    // The insert above is a processing claim, not proof of success. Without
+    // releasing it, Stripe's retry is acked as a duplicate and the event is
+    // lost — e.g. a charged order that never gets marked paid.
+    const { error: releaseError } = await supabase
+      .from("stripe_events")
+      .delete()
+      .eq("id", event.id);
     await reportHandledError(err, {
       route: "webhook.stripe",
       tags: { reason: "handler", eventType: event.type },
-      extra: { eventId: event.id, account: event.account ?? null },
+      extra: {
+        eventId: event.id,
+        account: event.account ?? null,
+        claimReleased: !releaseError,
+        releaseError: releaseError?.message,
+      },
     });
     return NextResponse.json({ error: "Handler failed" }, { status: 500 });
   }

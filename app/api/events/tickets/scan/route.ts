@@ -19,7 +19,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { getAdminStudio } from "@/lib/portal/access";
 import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 const ScanSchema = z
@@ -39,15 +40,20 @@ const ScanSchema = z
   });
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // Same access path as every admin action: the active workspace, an active
+  // membership and the plan lock — not the legacy profiles.role/studio_id,
+  // which ignored all three.
+  const { error: accessError, supabase, studioId, userId: staffId } = await getAdminStudio();
+  if (accessError || !studioId || !staffId) {
+    return NextResponse.json(
+      { error: accessError ?? "Not authorized." },
+      { status: staffId ? 403 : 401 },
+    );
+  }
 
   // A door queue is bursty but human-paced; this only catches a stuck scanner
   // re-submitting in a loop.
-  if (!(await checkRateLimit(rateLimitKey("ticket-scan", user.id), { limit: 120, windowMs: 60_000 }))) {
+  if (!(await checkRateLimit(rateLimitKey("ticket-scan", staffId), { limit: 120, windowMs: 60_000 }))) {
     return NextResponse.json({ error: "Too many scans — slow down a moment." }, { status: 429 });
   }
 
@@ -60,17 +66,6 @@ export async function POST(req: NextRequest) {
   }
   const { eventId, qrToken, userId } = parsed.data;
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, studio_id")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin") {
-    return NextResponse.json({ error: "Only admins can scan tickets." }, { status: 403 });
-  }
-  if (!profile.studio_id) return NextResponse.json({ error: "No studio found." }, { status: 400 });
-
   // Confirm the event is ours before touching tickets. Without this an admin
   // could admit against another studio's event id.
   const { data: event } = await supabase
@@ -79,7 +74,7 @@ export async function POST(req: NextRequest) {
     .eq("id", eventId)
     .maybeSingle();
 
-  if (!event || event.studio_id !== profile.studio_id) {
+  if (!event || event.studio_id !== studioId) {
     return NextResponse.json({ error: "Event not found in your studio." }, { status: 404 });
   }
 
@@ -92,7 +87,7 @@ export async function POST(req: NextRequest) {
   // rows and falls through to the diagnosis below.
   const { data: admitted, error: claimErr } = await supabase
     .from("event_tickets")
-    .update({ checked_in_at: new Date().toISOString(), checked_in_by: user.id })
+    .update({ checked_in_at: new Date().toISOString(), checked_in_by: staffId })
     .eq("event_id", eventId)
     .eq(idColumn, idValue)
     .eq("status", "paid")
@@ -156,7 +151,7 @@ export async function POST(req: NextRequest) {
 
 /** Best-effort display name for the door. A missing profile must not fail a scan. */
 async function holderName(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: SupabaseClient,
   userId: string | null,
 ): Promise<string | null> {
   if (!userId) return null;

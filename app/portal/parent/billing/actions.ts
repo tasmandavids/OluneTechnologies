@@ -6,6 +6,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { CURRENCY } from "@/lib/currency";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveDestinationCharge } from "@/lib/stripe/connect";
@@ -113,9 +114,14 @@ export async function createTermInstallmentIntent(
     ...new Set([...eligible.map((e) => e.id), ...(invoiceIds ?? [])]),
   ];
 
+  // Plan writes use the service role — payers can only read plans (migration
+  // 20261003120000). Safe because the plan was loaded for this payer above and
+  // the plan service rejects any invoice whose payer is not the plan's payer.
+  const admin = createAdminClient();
+
   if (plan) {
     if (allIds.length) {
-      plan = await addInvoicesToActivePlan(supabase, plan.id, allIds);
+      plan = await addInvoicesToActivePlan(admin, plan.id, allIds);
     }
   } else {
     if (!allIds.length) {
@@ -130,7 +136,7 @@ export async function createTermInstallmentIntent(
 
     if (!firstInv) return { ok: false, error: t("noOutstandingInvoices") };
 
-    plan = await createTermPaymentPlan(supabase, {
+    plan = await createTermPaymentPlan(admin, {
       studioId: firstInv.studio_id as string,
       payerId: user.id,
       invoiceIds: allIds,

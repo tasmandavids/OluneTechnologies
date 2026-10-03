@@ -87,7 +87,14 @@ export async function POST(req: NextRequest) {
       console.log(`[stripe-connect-webhook] duplicate event ${event.id} ignored`);
       return NextResponse.json({ received: true, duplicate: true });
     }
-    console.warn(`[stripe-connect-webhook] ledger insert failed (continuing):`, ledgerError.message);
+    // No claim, no processing — see the platform endpoint.
+    console.error(`[stripe-connect-webhook] ledger insert failed:`, ledgerError.message);
+    await reportHandledMessage("Stripe Connect idempotency ledger insert failed", {
+      route: "webhook.stripe-connect",
+      tags: { reason: "ledger" },
+      extra: { eventType: event.type, code: ledgerError.code, message: ledgerError.message },
+    });
+    return NextResponse.json({ error: "Event ledger unavailable" }, { status: 500 });
   }
 
   try {
@@ -95,9 +102,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (err) {
     console.error("[stripe-connect-webhook] handler error:", err);
+    // Release the claim so Stripe's retry runs the handler again.
+    const { error: releaseError } = await supabase
+      .from("stripe_events")
+      .delete()
+      .eq("id", event.id);
     await reportHandledError(err, {
       route: "webhook.stripe-connect",
       tags: { reason: "handler" },
+      extra: { eventId: event.id, claimReleased: !releaseError, releaseError: releaseError?.message },
     });
     return NextResponse.json({ error: "Handler failed" }, { status: 500 });
   }

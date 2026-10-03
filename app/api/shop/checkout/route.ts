@@ -5,14 +5,22 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { z } from "zod";
 import { CURRENCY } from "@/lib/currency";
 import { familyDiscountInfo } from "@/lib/discounts";
-import { isUuid } from "@/lib/validation/uuid";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
-interface OrderItem { productId: string; qty: number }
+// qty must be a positive integer: a negative line used to lower the total of
+// the rest of the cart, and the paid-order trigger then RESTOCKED that line.
+const CheckoutSchema = z.object({
+  items: z
+    .array(z.object({ productId: z.string().uuid(), qty: z.number().int().min(1).max(99) }))
+    .min(1)
+    .max(50),
+});
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -25,25 +33,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
-  const body = await req.json();
-  const { items } = body as { items: OrderItem[] };
+  const parsed = CheckoutSchema.safeParse(await req.json().catch(() => null));
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid cart" }, { status: 400 });
+  }
+  // Merge repeated products so the stock check sees the real quantity.
+  const qtyByProduct = new Map<string, number>();
+  for (const i of parsed.data.items) {
+    qtyByProduct.set(i.productId, (qtyByProduct.get(i.productId) ?? 0) + i.qty);
+  }
+  const items = [...qtyByProduct].map(([productId, qty]) => ({ productId, qty }));
 
-  if (!items?.length) return NextResponse.json({ error: "No items" }, { status: 400 });
-
-  // Resolve user's studio_id
-  const { data: profile } = await supabase
+  // Resolve the buyer's current workspace — the scope the old orders RLS
+  // check enforced before writes moved to the service role.
+  const { data: buyer } = await supabase
     .from("profiles")
-    .select("studio_id")
+    .select("studio_id, active_studio_id")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.studio_id) return NextResponse.json({ error: "Profile not found" }, { status: 400 });
+  const studioId = (buyer?.active_studio_id ?? buyer?.studio_id) as string | null;
+  if (!studioId) return NextResponse.json({ error: "Profile not found" }, { status: 400 });
+  const profile = { studio_id: studioId };
 
   // Fetch products and validate stock
   const productIds = items.map((i) => i.productId);
-  if (productIds.some((id) => !isUuid(id))) {
-    return NextResponse.json({ error: "Invalid product id" }, { status: 400 });
-  }
   const { data: products, error: pErr } = await supabase
     .from("products")
     .select("id, name, price_cents, stock_qty, active")
@@ -72,8 +86,13 @@ export async function POST(req: NextRequest) {
 
   const orderStatus = totalCents === 0 ? "paid" : "pending";
 
+  // Orders and line items are written with the service role: buyers can only
+  // read them (migration 20261003120000), so nothing the client sends reaches
+  // these rows except through the server-side pricing above.
+  const admin = createAdminClient();
+
   // Create order
-  const { data: order, error: oErr } = await supabase
+  const { data: order, error: oErr } = await admin
     .from("orders")
     .insert({
       studio_id:   profile.studio_id,
@@ -87,11 +106,14 @@ export async function POST(req: NextRequest) {
   if (oErr || !order) return NextResponse.json({ error: oErr?.message ?? "Order creation failed" }, { status: 500 });
 
   // Insert line items
-  const { error: liErr } = await supabase.from("order_items").insert(
+  const { error: liErr } = await admin.from("order_items").insert(
     lineItems.map((li) => ({ ...li, order_id: order.id }))
   );
 
-  if (liErr) return NextResponse.json({ error: liErr.message }, { status: 500 });
+  if (liErr) {
+    await admin.from("orders").delete().eq("id", order.id);
+    return NextResponse.json({ error: liErr.message }, { status: 500 });
+  }
 
   if (totalCents === 0) {
     return NextResponse.json({ orderId: order.id, free: true }, { status: 201 });
@@ -112,11 +134,15 @@ export async function POST(req: NextRequest) {
     ...(await resolveDestinationCharge(supabase, profile.studio_id as string)),
   });
 
-  // Store payment intent reference on order
-  await supabase
+  // Store payment intent reference on order — the webhook matches on it.
+  const { error: piErr } = await admin
     .from("orders")
     .update({ stripe_payment_intent_id: intent.id })
     .eq("id", order.id);
+  if (piErr) {
+    await stripe.paymentIntents.cancel(intent.id).catch(() => undefined);
+    return NextResponse.json({ error: "Could not start payment. Please try again." }, { status: 500 });
+  }
 
   return NextResponse.json({
     orderId:      order.id,
