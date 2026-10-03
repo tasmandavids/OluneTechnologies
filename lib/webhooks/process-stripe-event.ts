@@ -145,14 +145,21 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           .eq("stripe_payment_intent_id", intent.id)
           .select("id");
 
-        if (invUpdateErr || !updatedInvoices?.length) {
+        // A database error is not the same as "no matching invoice": Stripe has
+        // taken the money, so surface it and let Stripe retry.
+        if (invUpdateErr) {
+          throw new Error(
+            `invoice ${target.invoiceId} paid but not updated: ${invUpdateErr.message}`,
+          );
+        }
+        if (!updatedInvoices?.length) {
           console.warn(
             `[stripe-webhook] payment_intent.succeeded — invoice ${target.invoiceId} PI mismatch or not found`,
           );
           break;
         }
 
-        await supabase.from("payments").insert({
+        const { error: paymentInsertErr } = await supabase.from("payments").insert({
           studio_id: target.studioId,
           payer_id: target.payerId,
           invoice_id: target.invoiceId,
@@ -162,6 +169,12 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           status: "succeeded",
           description: intent.description,
         });
+        // The invoice update above is safe to repeat, so a retry re-runs both.
+        if (paymentInsertErr) {
+          throw new Error(
+            `invoice ${target.invoiceId} paid but payment not recorded: ${paymentInsertErr.message}`,
+          );
+        }
 
         await xeroSyncAfterPayment(supabase, "invoice", target.invoiceId);
 

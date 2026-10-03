@@ -6,13 +6,19 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import QRCode from "qrcode";
+import { z } from "zod";
 import { CURRENCY } from "@/lib/currency";
 import { familyDiscountInfo } from "@/lib/discounts";
-import { isUuid } from "@/lib/validation/uuid";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
+
+const PurchaseSchema = z.object({
+  eventId: z.string().uuid(),
+  quantity: z.number().int().min(1).max(10).default(1),
+});
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -25,12 +31,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
-  const body = await req.json();
-  const { eventId, quantity = 1 } = body as { eventId: string; quantity?: number };
-
-  if (!eventId) return NextResponse.json({ error: "Missing eventId" }, { status: 400 });
-  if (!isUuid(eventId)) return NextResponse.json({ error: "Invalid eventId" }, { status: 400 });
-  if (quantity < 1 || quantity > 10) return NextResponse.json({ error: "Quantity 1–10" }, { status: 400 });
+  const parsed = PurchaseSchema.safeParse(await req.json().catch(() => null));
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid request" }, { status: 400 });
+  }
+  const { eventId, quantity } = parsed.data;
 
   // Fetch event
   const { data: event, error: evErr } = await supabase
@@ -43,6 +48,37 @@ export async function POST(req: NextRequest) {
   if (event.status !== "published") return NextResponse.json({ error: "Event not available" }, { status: 400 });
   if (event.total_tickets - event.sold_tickets < quantity) {
     return NextResponse.json({ error: "Not enough tickets available" }, { status: 400 });
+  }
+
+  // Tickets are written with the service role below (holders can only read
+  // their rows — see migration 20261003120000), so the studio scope the old
+  // RLS check enforced is checked here instead.
+  const { data: buyer } = await supabase
+    .from("profiles")
+    .select("studio_id, active_studio_id")
+    .eq("id", user.id)
+    .single();
+  const buyerStudioId = (buyer?.active_studio_id ?? buyer?.studio_id) as string | null;
+  if (!buyerStudioId || buyerStudioId !== event.studio_id) {
+    return NextResponse.json({ error: "Event not found" }, { status: 404 });
+  }
+
+  const admin = createAdminClient();
+
+  // One ticket row per (event, buyer). Re-purchasing used to overwrite a PAID
+  // row back to 'reserved' with a new intent, so abandoning the second
+  // checkout left the buyer locked out at the door despite having paid.
+  const { data: existingTicket } = await admin
+    .from("event_tickets")
+    .select("status")
+    .eq("event_id", event.id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (existingTicket?.status === "paid") {
+    return NextResponse.json(
+      { error: "You already have tickets for this event." },
+      { status: 409 },
+    );
   }
 
   // Family discount (opt-in per studio) — applied to tickets when the buyer
@@ -76,7 +112,7 @@ export async function POST(req: NextRequest) {
 
   if (totalCents === 0) {
     // Free event — reserve immediately
-    const { data: ticket, error: tickErr } = await supabase
+    const { data: ticket, error: tickErr } = await admin
       .from("event_tickets")
       .upsert(
         {
@@ -141,7 +177,7 @@ export async function POST(req: NextRequest) {
   });
 
   // Reserve ticket row (pending payment)
-  await supabase.from("event_tickets").upsert(
+  const { error: reserveErr } = await admin.from("event_tickets").upsert(
     {
       event_id:                 event.id,
       user_id:                  user.id,
@@ -156,6 +192,12 @@ export async function POST(req: NextRequest) {
     },
     { onConflict: "event_id,user_id" }
   );
+  if (reserveErr) {
+    // Without the row the webhook has nothing to mark paid, so the buyer must
+    // not be handed a secret they could pay with.
+    await stripe.paymentIntents.cancel(intent.id).catch(() => undefined);
+    return NextResponse.json({ error: reserveErr.message }, { status: 500 });
+  }
 
   return NextResponse.json({
     clientSecret: intent.client_secret,

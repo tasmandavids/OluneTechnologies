@@ -428,3 +428,41 @@ describe("processStripeEvent order and ticket dispatch", () => {
     expect(payload).not.toContain("u_secret");
   });
 });
+
+describe("processStripeEvent invoice payments", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("throws when the invoice update errors, so Stripe retries instead of dropping the payment", async () => {
+    const supabase = new SupabaseFake();
+    supabase.queue("invoices", "update", { error: { message: "deadlock detected" } });
+
+    await expect(
+      processStripeEvent(paymentIntentSucceeded({ invoice_id: "inv_1", studio_id: "studio_1" }), supabase as never),
+    ).rejects.toThrow(/inv_1 paid but not updated/);
+    expect(supabase.operations.some((op) => op.table === "payments")).toBe(false);
+  });
+
+  it("acknowledges a genuine PI mismatch without recording a payment", async () => {
+    const supabase = new SupabaseFake();
+    supabase.queue("invoices", "update", { data: [] });
+
+    await processStripeEvent(
+      paymentIntentSucceeded({ invoice_id: "inv_1", studio_id: "studio_1" }),
+      supabase as never,
+    );
+    expect(supabase.operations.some((op) => op.table === "payments")).toBe(false);
+  });
+
+  it("throws when the payment row cannot be recorded", async () => {
+    const supabase = new SupabaseFake();
+    supabase.queue("invoices", "update", { data: [{ id: "inv_1" }] });
+    supabase.queue("payments", "insert", { error: { message: "connection reset" } });
+
+    await expect(
+      processStripeEvent(paymentIntentSucceeded({ invoice_id: "inv_1", studio_id: "studio_1" }), supabase as never),
+    ).rejects.toThrow(/payment not recorded/);
+    expect(xeroSyncAfterPayment).not.toHaveBeenCalled();
+  });
+});

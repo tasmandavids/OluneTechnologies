@@ -17,6 +17,7 @@ import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveDestinationCharge } from "@/lib/stripe/connect";
 import { loadStudioClassPrice } from "@/lib/enrollment-class-price";
 import { getParentStudio } from "@/lib/portal/access";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, rateLimitKey } from "@/lib/rate-limit";
 import type Stripe from "stripe";
 import { getTranslations } from "@/lib/i18n/server";
@@ -203,7 +204,9 @@ export async function createEnrollmentSubscription(
   }
 
   // Mirror into our subscriptions table (status synced later by webhook).
-  await supabase.from("subscriptions").insert({
+  // Service role: payers can only read these rows, so every value here comes
+  // from the Stripe subscription just created rather than from the client.
+  const { error: mirrorErr } = await createAdminClient().from("subscriptions").insert({
     studio_id:              studioId,
     payer_id:               userId,
     student_id:             studentId,
@@ -220,6 +223,12 @@ export async function createEnrollmentSubscription(
     current_period_end:     periodEndFromSubscription(sub),
     cancel_at_period_end:   sub.cancel_at_period_end ?? false,
   });
+  if (mirrorErr) {
+    // The webhook syncs status onto an existing row; without one, auto-pay
+    // would charge the family while the studio never sees the subscription.
+    await stripe.subscriptions.cancel(sub.id).catch(() => undefined);
+    return { ok: false, error: mirrorErr.message };
+  }
 
   revalidatePath("/portal/parent");
   return { ok: true, data: { clientSecret, subscriptionId: sub.id } };
@@ -248,10 +257,10 @@ export async function cancelSubscription(subscriptionId: string): Promise<Action
     return { ok: false, error: e instanceof Error ? e.message : "Stripe error" };
   }
 
-  await supabase
+  await createAdminClient()
     .from("subscriptions")
     .update({ cancel_at_period_end: true })
-    .eq("stripe_subscription_id", subscriptionId);
+    .eq("id", row.id);
 
   revalidatePath("/portal/parent");
   return { ok: true, data: null };
