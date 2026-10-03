@@ -167,14 +167,14 @@ export function PlatformDashboard({
         <GlassPanel>
           <div className="mb-2 flex items-baseline justify-between">
             <h2 className="font-display text-lg font-medium tracking-tight text-ink">{t("recentSignups")}</h2>
-            <Link href="/platform/studios" prefetch={false} className="text-xs font-semibold text-ink hover:text-[--brand]">
+            <Link href="/platform/studios" prefetch={false} className="text-xs font-semibold text-ink hover:text-(--brand)">
               {t("allStudios")}
             </Link>
           </div>
           {recentStudios.length === 0 && <p className="text-sm text-muted">{t("noStudios")}</p>}
           <ul>
             {recentStudios.map((s) => (
-              <li key={s.id} className="flex items-center gap-3 border-b border-[--hair] py-2.5 last:border-0">
+              <li key={s.id} className="flex items-center gap-3 border-b border-(--hair) py-2.5 last:border-0">
                 <InitialTile text={initialsOf(s.name).slice(0, 1)} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-ink">{s.name}</p>
@@ -195,7 +195,7 @@ export function PlatformDashboard({
         <GlassPanel>
           <div className="mb-3 flex items-baseline justify-between">
             <h2 className="font-display text-lg font-medium tracking-tight text-ink">{t("opsQueue")}</h2>
-            <Link href="/platform/tasks" prefetch={false} className="text-xs font-semibold text-ink hover:text-[--brand]">
+            <Link href="/platform/tasks" prefetch={false} className="text-xs font-semibold text-ink hover:text-(--brand)">
               {t("allTasks")}
             </Link>
           </div>
@@ -235,14 +235,14 @@ export function PlatformDashboard({
         <GlassPanel>
           <div className="mb-2 flex items-baseline justify-between">
             <h2 className="font-display text-lg font-medium tracking-tight text-ink">{t("openSupport")}</h2>
-            <Link href="/platform/messages" prefetch={false} className="text-xs font-semibold text-ink hover:text-[--brand]">
+            <Link href="/platform/messages" prefetch={false} className="text-xs font-semibold text-ink hover:text-(--brand)">
               {t("inbox")}
             </Link>
           </div>
           {openThreads.length === 0 && <p className="text-sm text-muted">{t("inboxClear")}</p>}
           <ul>
             {openThreads.map((thread) => (
-              <li key={thread.id} className="border-b border-[--hair] py-2.5 last:border-0">
+              <li key={thread.id} className="border-b border-(--hair) py-2.5 last:border-0">
                 <Link href="/platform/messages" prefetch={false} className="flex items-start gap-2.5">
                   <span className="mt-1.5 h-[7px] w-[7px] shrink-0 rounded-full" style={{ background: thread.status === "pending" ? "#f2b788" : "var(--brand)" }} />
                   <span className="min-w-0 flex-1">

@@ -59,18 +59,18 @@ function ClassCard({
       disabled={isFull}
       className={`w-full rounded-xl border p-4 text-left transition-all ${
         selected
-          ? "border-[--brand] bg-[color-mix(in_srgb,var(--brand)_8%,transparent)]"
+          ? "border-(--brand) bg-[color-mix(in_srgb,var(--brand)_8%,transparent)]"
           : isFull
-          ? "border-[--hair] bg-surface opacity-60 cursor-not-allowed"
-          : "border-[--hair] bg-surface hover:border-[--brand]"
+          ? "border-(--hair) bg-surface opacity-60 cursor-not-allowed"
+          : "border-(--hair) bg-surface hover:border-(--brand)"
       }`}
     >
       <div className="flex items-start gap-3">
         <div
           className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
             selected
-              ? "border-[--brand] bg-[--brand] text-white"
-              : "border-[--hair] bg-base"
+              ? "border-(--brand) bg-(--brand) text-white"
+              : "border-(--hair) bg-base"
           }`}
         >
           {selected && (
@@ -140,7 +140,7 @@ function SuggestedClassesPanel({
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: 336, opacity: 0 }}
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed inset-y-0 right-0 z-[60] hidden w-80 flex-col gap-3 overflow-y-auto border-l border-[--hair] bg-base p-5 shadow-2xl lg:flex"
+        className="fixed inset-y-0 right-0 z-[60] hidden w-80 flex-col gap-3 overflow-y-auto border-l border-(--hair) bg-base p-5 shadow-2xl lg:flex"
       >
         <div>
           <p className="text-[0.62rem] font-semibold uppercase tracking-wider text-muted">
@@ -318,7 +318,7 @@ export function Step1SelectClass({
           <select
             value={childId}
             onChange={(e) => { setChildId(e.target.value); setSelectedIds(new Set()); }}
-            className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-[--brand]"
+            className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-(--brand)"
           >
             {familyChildren.map((c) => (
               <option key={c.studentId} value={c.studentId}>
@@ -335,7 +335,7 @@ export function Step1SelectClass({
         placeholder={t("searchClasses")}
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-        className="w-full rounded-lg border border-[--hair] bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-[--brand]"
+        className="w-full rounded-lg border border-(--hair) bg-base px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-(--brand)"
       />
 
       {/* Class list */}

@@ -19,7 +19,7 @@ export function AuditLogTable({ entries }: { entries: AuditEntry[] }) {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead>
-              <tr className="border-b border-[--hair]">
+              <tr className="border-b border-(--hair)">
                 <th className={`${th} pl-5`}>{t("when")}</th>
                 <th className={th}>{t("operator")}</th>
                 <th className={th}>{t("action")}</th>
@@ -28,7 +28,7 @@ export function AuditLogTable({ entries }: { entries: AuditEntry[] }) {
             </thead>
             <tbody>
               {entries.map((e) => (
-                <tr key={e.id} className="border-b border-[--hair] transition-colors last:border-0 hover:bg-[--t1]">
+                <tr key={e.id} className="border-b border-(--hair) transition-colors last:border-0 hover:bg-(--t1)">
                   <td className="whitespace-nowrap py-3 pl-5 pr-3 tabular-nums text-muted">
                     {new Date(e.createdAt).toLocaleString(locale)}
                   </td>

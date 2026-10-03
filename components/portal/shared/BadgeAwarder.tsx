@@ -80,7 +80,7 @@ export default function BadgeAwarder({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t("search")}
-          className="flex-1 rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink outline-none focus:border-[--brand]"
+          className="flex-1 rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink outline-none focus:border-(--brand)"
         />
         <input
           type="text"
@@ -88,7 +88,7 @@ export default function BadgeAwarder({
           onChange={(e) => setNote(e.target.value)}
           placeholder={t("note")}
           maxLength={500}
-          className="flex-1 rounded-xl border border-[--hair] bg-base px-3 py-2 text-sm text-ink outline-none focus:border-[--brand]"
+          className="flex-1 rounded-xl border border-(--hair) bg-base px-3 py-2 text-sm text-ink outline-none focus:border-(--brand)"
         />
       </div>
 

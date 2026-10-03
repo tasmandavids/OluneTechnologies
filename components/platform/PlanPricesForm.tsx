@@ -72,7 +72,7 @@ export function PlanPricesForm({ rows, plans }: { rows: Row[]; plans: PlanRow[] 
                 /mo · {formatMoney(plan.annualCents, { maximumFractionDigits: 0 })}/yr
               </span>
             </p>
-            <div className="my-[18px] h-px bg-[--hair]" />
+            <div className="my-[18px] h-px bg-(--hair)" />
             {INTERVALS.map((interval) => {
               const id = `${plan.key}:${interval}`;
               const cents = interval === "month" ? plan.monthlyCents : plan.annualCents;

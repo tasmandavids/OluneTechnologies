@@ -159,7 +159,7 @@ export function StudiosManager({
         <motion.div layout className="overflow-x-auto">
           <table className="w-full min-w-[980px] text-left text-sm">
             <thead>
-              <tr className="border-b border-[--hair]">
+              <tr className="border-b border-(--hair)">
                 <th className={`${th} pl-5`}>{t("tableStudio")}</th>
                 <th className={th}>{t("tableOwner")}</th>
                 <th className={`${th} text-right`}>{t("tableStudents")}</th>
@@ -172,7 +172,7 @@ export function StudiosManager({
             </thead>
             <tbody>
               {filtered.map((s) => (
-                <tr key={s.id} className="border-b border-[--hair] align-top transition-colors last:border-0 hover:bg-[--t1]">
+                <tr key={s.id} className="border-b border-(--hair) align-top transition-colors last:border-0 hover:bg-(--t1)">
                   <td className="py-3 pl-5 pr-3">
                     <div className="flex items-start gap-3">
                       <InitialTile text={initialsOf(s.name).slice(0, 1)} />

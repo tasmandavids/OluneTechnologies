@@ -63,7 +63,26 @@
         "void": "Anulada"
       },
       "viewSchedule": "Ver horario semanal",
-      "noClassesThisWeek": "No hay clases esta semana."
+      "noClassesThisWeek": "No hay clases esta semana.",
+      "week": {
+        "subhead": "{count, plural, =0 {Todo está listo esta semana.} one {Esta semana hay una cosa que te necesita.} other {Esta semana hay # cosas que te necesitan.}}",
+        "title": "Esta semana",
+        "needsYou": "Te necesita esta semana",
+        "allClear": "Nada te necesita esta semana.",
+        "fullSchedule": "Horario completo",
+        "today": "Hoy",
+        "tomorrow": "Mañana",
+        "classesThisWeek": "Clases esta semana",
+        "unreadMessages": "Mensajes sin leer",
+        "notifications": "Notificaciones",
+        "pay": "Pagar",
+        "open": "Abrir",
+        "read": "Leer",
+        "outstandingAction": "{amount} por pagar",
+        "formsAction": "{count, plural, one {# formulario por completar} other {# formularios por completar}}",
+        "costumesAction": "{count, plural, one {Falta # talla de vestuario} other {Faltan # tallas de vestuario}}",
+        "messagesAction": "{count, plural, one {# mensaje nuevo del estudio} other {# mensajes nuevos del estudio}}"
+      }
     },
     "shop": {
       "title": "Tienda del estudio",

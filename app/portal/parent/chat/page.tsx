@@ -88,7 +88,7 @@ export default async function ParentChatPage({
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex shrink-0 items-center gap-1 border-b border-[--hair] bg-surface px-4 py-2">
+      <div className="flex shrink-0 items-center gap-1 border-b border-(--hair) bg-surface px-4 py-2">
         {(
           [
             { id: "chat", href: "/portal/parent/chat", label: t("tabs.chat") },

@@ -64,12 +64,12 @@ function MessageBody({
         title={contentTitle}
         sandbox=""
         srcDoc={wrappedHtml}
-        className="min-h-[24rem] w-full rounded-2xl border border-[--hair] bg-white shadow-sm"
+        className="min-h-[24rem] w-full rounded-2xl border border-(--hair) bg-white shadow-sm"
       />
     );
   }
   return (
-    <div className="min-h-[10rem] whitespace-pre-wrap rounded-2xl border border-[--hair] bg-base px-6 py-5 text-[15px] leading-relaxed text-ink">
+    <div className="min-h-[10rem] whitespace-pre-wrap rounded-2xl border border-(--hair) bg-base px-6 py-5 text-[15px] leading-relaxed text-ink">
       {message.body_text ?? noContentLabel}
     </div>
   );
@@ -123,20 +123,20 @@ export function ParentEmailInbox({
 
   return (
     <div className="flex h-full min-h-[32rem] flex-col">
-      <div className="border-b border-[--hair] px-6 py-5">
+      <div className="border-b border-(--hair) px-6 py-5">
         <h1 className="text-2xl font-black text-ink">{t("title")}</h1>
         <p className="mt-1 text-sm text-muted">{t("subtitle", { studioName })}</p>
       </div>
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
-        <aside className="flex w-72 shrink-0 flex-col border-r border-[--hair] bg-surface/60 lg:w-80">
-          <div className="border-b border-[--hair] p-4">
+        <aside className="flex w-72 shrink-0 flex-col border-r border-(--hair) bg-surface/60 lg:w-80">
+          <div className="border-b border-(--hair) p-4">
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("searchPlaceholder")}
-              className="w-full rounded-xl border border-[--hair] bg-base px-4 py-2.5 text-sm"
+              className="w-full rounded-xl border border-(--hair) bg-base px-4 py-2.5 text-sm"
             />
           </div>
           <div className="flex-1 overflow-y-auto">
@@ -150,7 +150,7 @@ export function ParentEmailInbox({
                   key={thread.id}
                   type="button"
                   onClick={() => openThread(thread.id)}
-                  className={`w-full border-b border-[--hair]/60 px-4 py-4 text-left transition ${
+                  className={`w-full border-b border-(--hair)/60 px-4 py-4 text-left transition ${
                     selectedThreadId === thread.id ? "bg-brand/10" : "hover:bg-base"
                   }`}
                 >
@@ -182,7 +182,7 @@ export function ParentEmailInbox({
             <div className="grid flex-1 place-items-center text-sm text-muted">{t("loading")}</div>
           ) : (
             <>
-              <div className="shrink-0 border-b border-[--hair] bg-surface px-6 py-5 lg:px-8">
+              <div className="shrink-0 border-b border-(--hair) bg-surface px-6 py-5 lg:px-8">
                 <h2 className="text-2xl font-black tracking-tight text-ink">
                   {activeThread?.subject ?? t("conversation")}
                 </h2>
@@ -195,11 +195,11 @@ export function ParentEmailInbox({
                       key={msg.id}
                       className={`rounded-2xl border shadow-sm ${
                         msg.is_outbound
-                          ? "border-[--hair] bg-surface"
+                          ? "border-(--hair) bg-surface"
                           : "border-brand/25 bg-brand/[0.04]"
                       }`}
                     >
-                      <header className="flex flex-wrap items-start justify-between gap-3 border-b border-[--hair]/70 px-6 py-4">
+                      <header className="flex flex-wrap items-start justify-between gap-3 border-b border-(--hair)/70 px-6 py-4">
                         <div>
                           <p className="text-base font-semibold text-ink">
                             {msg.is_outbound

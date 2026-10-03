@@ -116,7 +116,7 @@ export function AbsenceManager({
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wide text-muted border border-[--hair]">
+                  <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wide text-muted border border-(--hair)">
                     {t("statusReported")}
                   </span>
                 </div>
@@ -155,7 +155,7 @@ export function AbsenceManager({
                     <select
                       value={selectedChild}
                       onChange={(e) => { setSelectedChild(e.target.value); setSelectedClass(""); }}
-                      className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
+                      className="w-full rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm text-ink"
                     >
                       {dancers.map((c) => (
                         <option key={c.studentId} value={c.studentId}>{c.name ?? t("unnamedDancer")}</option>
@@ -170,7 +170,7 @@ export function AbsenceManager({
                     value={selectedClass}
                     onChange={(e) => setSelectedClass(e.target.value)}
                     required
-                    className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
+                    className="w-full rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm text-ink"
                   >
                     <option value="">{t("form.selectClass")}</option>
                     {(child?.classes ?? []).map((c) => (
@@ -188,7 +188,7 @@ export function AbsenceManager({
                     value={absenceDate}
                     onChange={(e) => setAbsenceDate(e.target.value)}
                     required
-                    className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
+                    className="w-full rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm text-ink"
                   />
                 </div>
 
@@ -202,8 +202,8 @@ export function AbsenceManager({
                         onClick={() => setReason(r)}
                         className={`flex-1 rounded-xl border px-3 py-2 text-xs font-semibold transition ${
                           reason === r
-                            ? "border-[--brand] bg-[color-mix(in_srgb,var(--brand)_10%,transparent)] text-ink"
-                            : "border-[--hair] text-muted"
+                            ? "border-(--brand) bg-[color-mix(in_srgb,var(--brand)_10%,transparent)] text-ink"
+                            : "border-(--hair) text-muted"
                         }`}
                       >
                         {t(`reasons.${r}`)}
@@ -219,7 +219,7 @@ export function AbsenceManager({
                     onChange={(e) => setNotes(e.target.value)}
                     rows={2}
                     placeholder={t("form.notesPlaceholder")}
-                    className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink resize-none"
+                    className="w-full rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm text-ink resize-none"
                   />
                 </div>
 
@@ -227,7 +227,7 @@ export function AbsenceManager({
                   <button
                     type="button"
                     onClick={() => setShowForm(false)}
-                    className="flex-1 rounded-xl border border-[--hair] py-2.5 text-sm font-semibold text-ink"
+                    className="flex-1 rounded-xl border border-(--hair) py-2.5 text-sm font-semibold text-ink"
                   >
                     {t("form.cancel")}
                   </button>

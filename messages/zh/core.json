@@ -141,6 +141,16 @@
           "hint": "工作区背后的流动光晕。"
         }
       }
+    },
+    "parentBar": {
+      "yourStudio": "你的工作室",
+      "tabs": "家庭门户",
+      "more": "更多",
+      "new": {
+        "absence": "报告缺勤",
+        "lesson": "申请私教课",
+        "message": "给工作室发消息"
+      }
     }
   },
   "nav": {

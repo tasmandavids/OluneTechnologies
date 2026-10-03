@@ -161,7 +161,7 @@ export default function EventsTickets({ events }: Props) {
       <AnimatePresence>
         {active && (
           <PaymentModalShell onClose={close}>
-            <div className="shrink-0 border-b border-[--hair] px-6 py-5">
+            <div className="shrink-0 border-b border-(--hair) px-6 py-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-black text-ink">{active.name}</h3>
@@ -187,7 +187,7 @@ export default function EventsTickets({ events }: Props) {
                   <img
                     src={qrCode}
                     alt={t("qrAlt")}
-                    className="h-48 w-48 rounded-xl border border-[--hair] bg-white p-2"
+                    className="h-48 w-48 rounded-xl border border-(--hair) bg-white p-2"
                   />
                   <p className="mt-3 text-xs text-muted">{t("qrHint")}</p>
                   <button
@@ -224,12 +224,12 @@ export default function EventsTickets({ events }: Props) {
                     <p className="mb-4 text-sm text-muted">{active.description}</p>
                   )}
 
-                  <div className="mb-4 flex items-center justify-between rounded-xl border border-[--hair] bg-base px-4 py-3">
+                  <div className="mb-4 flex items-center justify-between rounded-xl border border-(--hair) bg-base px-4 py-3">
                     <span className="text-sm font-medium text-ink">{t("ticketsLabel")}</span>
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => setQty((q) => Math.max(1, q - 1))}
-                        className="h-7 w-7 rounded-md border border-[--hair] text-muted hover:text-ink"
+                        className="h-7 w-7 rounded-md border border-(--hair) text-muted hover:text-ink"
                       >
                         −
                       </button>
@@ -238,7 +238,7 @@ export default function EventsTickets({ events }: Props) {
                         onClick={() =>
                           setQty((q) => Math.min(10, active.ticketsRemaining, q + 1))
                         }
-                        className="h-7 w-7 rounded-md border border-[--hair] text-muted hover:text-ink disabled:opacity-30"
+                        className="h-7 w-7 rounded-md border border-(--hair) text-muted hover:text-ink disabled:opacity-30"
                         disabled={qty >= Math.min(10, active.ticketsRemaining)}
                       >
                         +

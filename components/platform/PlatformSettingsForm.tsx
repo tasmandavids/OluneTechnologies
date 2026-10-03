@@ -31,7 +31,7 @@ export function PlatformSettingsForm({ settings }: { settings: PlatformSettings 
       <div className="flex flex-col gap-3.5 lg:flex-row lg:items-start">
         <div className="min-w-0 flex-1 lg:max-w-[680px]">
           <GlassPanel className="!p-0">
-            <div className="flex items-center justify-between gap-4 border-b border-[--hair] px-5 py-[18px]">
+            <div className="flex items-center justify-between gap-4 border-b border-(--hair) px-5 py-[18px]">
               <span className="text-[15px] font-semibold text-ink">{t("maintenanceMode")}</span>
               <GlassSwitch
                 checked={form.maintenanceMode ?? false}
@@ -39,7 +39,7 @@ export function PlatformSettingsForm({ settings }: { settings: PlatformSettings 
                 label={t("maintenanceMode")}
               />
             </div>
-            <div className="flex items-center justify-between gap-4 border-b border-[--hair] px-5 py-[18px]">
+            <div className="flex items-center justify-between gap-4 border-b border-(--hair) px-5 py-[18px]">
               <span className="text-[15px] font-semibold text-ink">{t("signupEnabled")}</span>
               <GlassSwitch
                 checked={form.signupEnabled ?? true}
@@ -47,7 +47,7 @@ export function PlatformSettingsForm({ settings }: { settings: PlatformSettings 
                 label={t("signupEnabled")}
               />
             </div>
-            <div className="grid gap-3.5 border-b border-[--hair] px-5 py-[18px] sm:grid-cols-2">
+            <div className="grid gap-3.5 border-b border-(--hair) px-5 py-[18px] sm:grid-cols-2">
               <label className="block">
                 <span className={labelCls}>{t("defaultTrialDays")}</span>
                 <input

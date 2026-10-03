@@ -90,7 +90,7 @@ export function Step2SignWaivers({
                       return next;
                     });
                   }}
-                  className="mt-0.5 shrink-0 accent-[--brand]"
+                  className="mt-0.5 shrink-0 accent-(--brand)"
                 />
                 <span className="text-xs text-ink">
                   {t.rich("agreeWaiver", {
@@ -108,7 +108,7 @@ export function Step2SignWaivers({
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 rounded-xl border border-[--hair] py-3 text-sm font-semibold text-muted transition-colors hover:border-[--brand] hover:text-ink"
+          className="flex-1 rounded-xl border border-(--hair) py-3 text-sm font-semibold text-muted transition-colors hover:border-(--brand) hover:text-ink"
         >
           {t("back")}
         </button>

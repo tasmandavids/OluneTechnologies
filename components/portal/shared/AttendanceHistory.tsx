@@ -36,7 +36,7 @@ export default function AttendanceHistory({ records }: { records: AttendanceReco
         <div className="box overflow-hidden rounded-xl">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[--hair] bg-base">
+              <tr className="border-b border-(--hair) bg-base">
                 <th className="px-4 py-2.5 text-left text-[0.62rem] font-semibold uppercase tracking-wider text-muted">
                   {t("date")}
                 </th>
@@ -50,7 +50,7 @@ export default function AttendanceHistory({ records }: { records: AttendanceReco
             </thead>
             <tbody>
               {records.map((row) => (
-                <tr key={row.id} className="border-b border-[--hair] last:border-0">
+                <tr key={row.id} className="border-b border-(--hair) last:border-0">
                   <td className="px-4 py-3 text-ink">
                     {new Date(row.date).toLocaleDateString(locale, {
                       weekday: "short",

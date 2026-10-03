@@ -65,7 +65,7 @@ export function StatusPill({ tone = "neutral", children }: { tone?: PillTone; ch
 
 /** Tailwind classes for inputs, selects and textareas on glass. */
 export const fieldClass =
-  "w-full rounded-xl border border-[--hair] bg-[--glass2] px-3 py-2 text-sm text-ink outline-none transition focus:border-[--tb] focus:bg-surface";
+  "w-full rounded-xl border border-(--hair) bg-(--glass2) px-3 py-2 text-sm text-ink outline-none transition focus:border-(--tb) focus:bg-surface";
 
 /** Pill-shaped segmented control (filters, thread status). */
 export function Segmented<T extends string>({

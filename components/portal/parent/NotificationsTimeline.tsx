@@ -106,7 +106,7 @@ export function NotificationsTimeline({
             type="button"
             onClick={() => run(() => onMarkAllRead())}
             disabled={isPending}
-            className="text-xs font-semibold text-[--brand] hover:underline disabled:opacity-50"
+            className="text-xs font-semibold text-(--brand) hover:underline disabled:opacity-50"
           >
             Mark all read
           </button>
@@ -114,7 +114,7 @@ export function NotificationsTimeline({
       </div>
 
       {/* Filter tabs */}
-      <div className="flex gap-1 rounded-xl border border-[--hair] bg-surface p-1 w-fit">
+      <div className="flex gap-1 rounded-xl border border-(--hair) bg-surface p-1 w-fit">
         {(["all", "unread"] as const).map((f) => (
           <button
             key={f}

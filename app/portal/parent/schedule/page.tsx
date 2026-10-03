@@ -193,7 +193,7 @@ export default async function ParentSchedulePage({
   return (
     <div>
       <div className="px-6 pt-6 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex w-fit gap-1 rounded-xl border border-[--hair] bg-surface p-1">
+        <div className="flex w-fit gap-1 rounded-xl border border-(--hair) bg-surface p-1">
           {(
             [
               { id: "family", href: "/portal/parent/schedule", label: t("family") },

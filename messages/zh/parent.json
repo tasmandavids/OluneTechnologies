@@ -63,7 +63,26 @@
         "void": "已作废"
       },
       "viewSchedule": "查看每周日程",
-      "noClassesThisWeek": "本周没有课程。"
+      "noClassesThisWeek": "本周没有课程。",
+      "week": {
+        "subhead": "{count, plural, =0 {本周一切就绪。} other {本周有 # 件事需要你处理。}}",
+        "title": "本周",
+        "needsYou": "本周待处理",
+        "allClear": "本周没有待处理事项。",
+        "fullSchedule": "完整课表",
+        "today": "今天",
+        "tomorrow": "明天",
+        "classesThisWeek": "本周课程",
+        "unreadMessages": "未读消息",
+        "notifications": "通知",
+        "pay": "付款",
+        "open": "打开",
+        "read": "查看",
+        "outstandingAction": "待付 {amount}",
+        "formsAction": "{count, plural, other {# 份表格待填写}}",
+        "costumesAction": "{count, plural, other {# 个服装尺码待确认}}",
+        "messagesAction": "{count, plural, other {工作室的 # 条新消息}}"
+      }
     },
     "shop": {
       "title": "工作室商店",

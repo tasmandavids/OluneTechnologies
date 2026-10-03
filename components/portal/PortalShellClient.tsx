@@ -20,6 +20,7 @@ import { StudioRail } from "@/components/portal/admin/glass/StudioRail";
 import { StudioTopBar } from "@/components/portal/admin/glass/StudioTopBar";
 import { AmbientBackground } from "@/components/portal/admin/glass/AmbientBackground";
 import { CommandPalette } from "@/components/portal/admin/CommandPalette";
+import { ParentRail, ParentTabBar, ParentTopBar } from "@/components/portal/parent/glass/ParentShell";
 
 function StudioAvatar({
   studioName,
@@ -35,7 +36,7 @@ function StudioAvatar({
         alt=""
         width={32}
         height={32}
-        className="h-8 w-8 shrink-0 rounded-lg border border-[--hair] bg-surface object-contain p-0.5"
+        className="h-8 w-8 shrink-0 rounded-lg border border-(--hair) bg-surface object-contain p-0.5"
       />
     );
   }
@@ -143,7 +144,7 @@ function SidebarContent({
                 transition={{ duration: 0.15 }}
                 className="overflow-hidden"
               >
-                <div className="ml-3 mt-0.5 space-y-0.5 border-l border-[--hair] pl-3">
+                <div className="ml-3 mt-0.5 space-y-0.5 border-l border-(--hair) pl-3">
                   {item.children.map((child) => {
                     const childActive = isActive(child);
                     return (
@@ -192,7 +193,7 @@ function SidebarContent({
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="shrink-0 border-b border-[--hair] p-5">
+      <div className="shrink-0 border-b border-(--hair) p-5">
         <div className="mb-1 flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2.5">
             <StudioAvatar studioName={studioName} logoUrl={logoUrl} />
@@ -204,7 +205,7 @@ function SidebarContent({
               onClick={onToggleCollapse}
               title={collapsed ? tShell("keepSidebarOpen") : tShell("hideSidebar")}
               aria-label={collapsed ? tShell("keepSidebarOpen") : tShell("hideSidebar")}
-              className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-[--hair] text-xs text-muted transition hover:bg-base hover:text-ink"
+              className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-(--hair) text-xs text-muted transition hover:bg-base hover:text-ink"
             >
               {collapsed ? "›" : "‹"}
             </button>
@@ -256,7 +257,7 @@ function SidebarContent({
         )}
       </nav>
 
-      <div className="shrink-0 border-t border-[--hair] p-4">
+      <div className="shrink-0 border-t border-(--hair) p-4">
         <PoweredByOlune className="mb-4" />
         <ThemeSwitcher value={portalTheme} className="mb-3 w-full justify-between" />
         <LanguageSwitcher className="mb-4 w-full justify-between" />
@@ -307,6 +308,11 @@ export function PortalShellClient({
   const peekTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const showBell = role === "admin" || role === "office" || role === "parent" || (role === "student" && selfManagedStudent);
   const isAdminRail = role === "admin";
+  // Parents get the same Aurora Glass shell as studio owners, in the studio's
+  // own colour. Self-managed adult students keep the classic sidebar for now.
+  const isParentRail = role === "parent" && !selfManagedStudent;
+  const isGlass = isAdminRail || isParentRail;
+  const parentNav = roleNav ?? PORTAL_NAV.parent;
 
   useEffect(() => {
     if (!isAdminRail) return;
@@ -370,11 +376,15 @@ export function PortalShellClient({
   const sidebarOpen = !collapsed || hoverPeek;
 
   return (
-    <div className={`flex h-screen overflow-hidden bg-base ${isAdminRail ? "admin-glass relative isolate" : ""}`}>
+    <div
+      className={`flex h-screen overflow-hidden bg-base ${isGlass ? "admin-glass relative isolate" : ""} ${isParentRail ? "parent-glass" : ""}`}
+    >
       <PortalThemeSync theme={portalTheme} />
-      {isAdminRail && <AmbientBackground />}
+      {isGlass && <AmbientBackground />}
       {isAdminRail ? (
         <StudioRail studioName={studioName} userName={userName} portalTheme={portalTheme} nav={adminNav} />
+      ) : isParentRail ? (
+        <ParentRail studioName={studioName} logoUrl={logoUrl} userName={userName} portalTheme={portalTheme} nav={parentNav} />
       ) : (
       <div
         className="relative hidden shrink-0 md:block"
@@ -382,7 +392,7 @@ export function PortalShellClient({
       >
         {collapsed && !hoverPeek && (
           <div
-            className="absolute inset-y-0 left-0 z-30 w-3 cursor-pointer border-r border-[--hair] bg-surface/80"
+            className="absolute inset-y-0 left-0 z-30 w-3 cursor-pointer border-r border-(--hair) bg-surface/80"
             onMouseEnter={openPeek}
           >
             {/* Visible re-open affordance — the bare 12px strip alone is easy
@@ -392,7 +402,7 @@ export function PortalShellClient({
               onClick={pinSidebarOpen}
               aria-label={tShell("showSidebar")}
               title={tShell("showSidebar")}
-              className="absolute left-0 top-1/2 grid h-10 w-5 -translate-y-1/2 place-items-center rounded-r-lg border border-l-0 border-[--hair] bg-surface text-xs text-muted shadow-sm transition hover:text-ink"
+              className="absolute left-0 top-1/2 grid h-10 w-5 -translate-y-1/2 place-items-center rounded-r-lg border border-l-0 border-(--hair) bg-surface text-xs text-muted shadow-sm transition hover:text-ink"
             >
               ›
             </button>
@@ -402,7 +412,7 @@ export function PortalShellClient({
         <aside
           onMouseEnter={openPeek}
           onMouseLeave={closePeek}
-          className={`h-full w-56 border-r border-[--hair] bg-surface transition-transform duration-200 ease-out ${
+          className={`h-full w-56 border-r border-(--hair) bg-surface transition-transform duration-200 ease-out ${
             collapsed && hoverPeek ? "fixed left-0 top-0 z-40 shadow-2xl" : "relative"
           } ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
@@ -426,7 +436,7 @@ export function PortalShellClient({
       )}
 
       <div className="fixed inset-x-0 top-0 z-50 md:hidden">
-        <div className="flex items-center justify-between border-b border-[--hair] bg-surface/95 px-4 py-3 backdrop-blur">
+        <div className="flex items-center justify-between border-b border-(--hair) bg-surface/95 px-4 py-3 backdrop-blur">
           <div className="flex items-center gap-2">
             <StudioAvatar studioName={studioName} logoUrl={logoUrl} />
             <span className="text-sm font-black text-ink">{studioName}</span>
@@ -441,7 +451,7 @@ export function PortalShellClient({
         </div>
 
         <div
-          className={`border-b border-[--hair] bg-surface shadow-2xl transition-[max-height,opacity] duration-200 ease-out ${
+          className={`border-b border-(--hair) bg-surface shadow-2xl transition-[max-height,opacity] duration-200 ease-out ${
             mobileOpen
               ? "max-h-[min(80vh,calc(100dvh-3.5rem))] overflow-y-auto overscroll-contain opacity-100"
               : "max-h-0 overflow-hidden opacity-0"
@@ -464,14 +474,18 @@ export function PortalShellClient({
         </div>
       </div>
 
-      <div className={`flex flex-1 flex-col overflow-hidden ${isAdminRail ? "md:pl-[98px]" : ""}`}>
+      <div className={`flex flex-1 flex-col overflow-hidden ${isGlass ? "md:pl-[98px]" : ""}`}>
         {isAdminRail ? (
           <div className="hidden px-[26px] md:block">
             <StudioTopBar studioName={studioName} userName={userName} onOpenPalette={() => setPaletteOpen(true)} />
           </div>
+        ) : isParentRail ? (
+          <div className="hidden px-[26px] pt-3.5 md:block">
+            <ParentTopBar studioName={studioName} logoUrl={logoUrl} nav={parentNav} />
+          </div>
         ) : (
           showBell && (
-            <div className="flex items-center justify-between border-b border-[--hair] bg-surface px-5 py-2">
+            <div className="flex items-center justify-between border-b border-(--hair) bg-surface px-5 py-2">
               <OluneLogo size="xs" className="hidden sm:inline-flex" />
               <NotificationBell />
             </div>
@@ -479,12 +493,13 @@ export function PortalShellClient({
         )}
         <main
           className={`flex-1 overflow-auto ${isAdminRail ? "px-[18px] pb-[70px] md:px-[26px]" : ""} ${
-            showBell && !isAdminRail ? "" : "md:pt-0 pt-[53px]"
-          }`}
+            isParentRail ? "px-[14px] pb-[110px] md:px-[26px] md:pb-[70px]" : ""
+          } ${showBell && !isGlass ? "" : "md:pt-0 pt-[53px]"}`}
         >
           {children}
         </main>
       </div>
+      {isParentRail && <ParentTabBar nav={parentNav} onMore={() => setMobileOpen(true)} />}
       {isAdminRail && (
         <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} nav={adminNav} />
       )}

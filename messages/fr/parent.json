@@ -63,7 +63,26 @@
       "tableActions": "Actions",
       "viewBilling": "Facturation et paiements",
       "viewSchedule": "Voir le planning hebdomadaire",
-      "noClassesThisWeek": "Aucun cours cette semaine."
+      "noClassesThisWeek": "Aucun cours cette semaine.",
+      "week": {
+        "subhead": "{count, plural, =0 {Tout est réglé cette semaine.} one {Une chose vous attend cette semaine.} other {# choses vous attendent cette semaine.}}",
+        "title": "Cette semaine",
+        "needsYou": "À faire cette semaine",
+        "allClear": "Rien à faire cette semaine.",
+        "fullSchedule": "Planning complet",
+        "today": "Aujourd’hui",
+        "tomorrow": "Demain",
+        "classesThisWeek": "Cours cette semaine",
+        "unreadMessages": "Messages non lus",
+        "notifications": "Notifications",
+        "pay": "Payer",
+        "open": "Ouvrir",
+        "read": "Lire",
+        "outstandingAction": "{amount} à régler",
+        "formsAction": "{count, plural, one {# formulaire à remplir} other {# formulaires à remplir}}",
+        "costumesAction": "{count, plural, one {# taille de costume à indiquer} other {# tailles de costume à indiquer}}",
+        "messagesAction": "{count, plural, one {# nouveau message du studio} other {# nouveaux messages du studio}}"
+      }
     },
     "shop": {
       "title": "Boutique du studio",

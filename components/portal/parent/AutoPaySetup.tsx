@@ -142,7 +142,7 @@ export default function AutoPaySetup({ items }: { items: AutoPayItem[] }) {
               setClientSecret(null);
             }}
           >
-              <div className="shrink-0 border-b border-[--hair] px-6 py-5">
+              <div className="shrink-0 border-b border-(--hair) px-6 py-5">
                 <h3 className="font-black text-ink">{t("confirmTitle")}</h3>
                 <p className="mt-1 text-sm text-muted">{t("confirmHint")}</p>
               </div>

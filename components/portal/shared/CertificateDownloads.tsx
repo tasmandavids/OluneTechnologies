@@ -38,7 +38,7 @@ export default function CertificateDownloads({ certificates }: { certificates: C
             <a
               href={downloadHref(cert.progressId, cert.title)}
               download
-              className="box-pill shrink-0 px-4 py-2 text-xs font-bold text-ink transition-colors hover:text-[--brand]"
+              className="box-pill shrink-0 px-4 py-2 text-xs font-bold text-ink transition-colors hover:text-(--brand)"
               aria-label={t("downloadAria", { title: cert.title })}
             >
               {t("downloadPdf")}

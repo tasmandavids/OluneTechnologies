@@ -169,7 +169,7 @@ export function ParentShop({ products }: Props) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("searchPlaceholder")}
-          className="w-48 rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
+          className="w-48 rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
         />
         <div className="flex flex-wrap gap-1.5">
           {categories.map((c) => (
@@ -177,7 +177,7 @@ export function ParentShop({ products }: Props) {
               key={c}
               onClick={() => setCatFilter(c)}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
-                catFilter === c ? "bg-brand text-white" : "border border-[--hair] text-muted hover:text-ink"
+                catFilter === c ? "bg-brand text-white" : "border border-(--hair) text-muted hover:text-ink"
               }`}
             >
               {c === "all" ? t("categoryAll") : c}
@@ -221,7 +221,7 @@ export function ParentShop({ products }: Props) {
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => updateQty(p.id, inCart.qty - 1)}
-                        className="h-6 w-6 rounded-md border border-[--hair] text-xs text-muted hover:text-ink"
+                        className="h-6 w-6 rounded-md border border-(--hair) text-xs text-muted hover:text-ink"
                       >
                         −
                       </button>
@@ -229,7 +229,7 @@ export function ParentShop({ products }: Props) {
                       <button
                         onClick={() => addToCart(p)}
                         disabled={inCart.qty >= p.stock_qty}
-                        className="h-6 w-6 rounded-md border border-[--hair] text-xs text-muted hover:text-ink disabled:opacity-30"
+                        className="h-6 w-6 rounded-md border border-(--hair) text-xs text-muted hover:text-ink disabled:opacity-30"
                       >
                         +
                       </button>
@@ -263,7 +263,7 @@ export function ParentShop({ products }: Props) {
               {...panelSlide}
               className="fixed right-0 top-0 z-50 flex h-full w-full max-w-sm flex-col bg-surface shadow-2xl"
             >
-              <div className="flex items-center justify-between border-b border-[--hair] px-6 py-4">
+              <div className="flex items-center justify-between border-b border-(--hair) px-6 py-4">
                 <h2 className="font-semibold text-ink">{t("yourCart", { count: cartCount })}</h2>
                 <button onClick={() => setCartOpen(false)} className="text-muted hover:text-ink text-lg">
                   ✕
@@ -303,7 +303,7 @@ export function ParentShop({ products }: Props) {
                           <div className="mt-1 flex items-center gap-1.5">
                             <button
                               onClick={() => updateQty(item.product.id, item.qty - 1)}
-                              className="h-5 w-5 rounded border border-[--hair] text-[0.6rem] text-muted hover:text-ink"
+                              className="h-5 w-5 rounded border border-(--hair) text-[0.6rem] text-muted hover:text-ink"
                             >
                               −
                             </button>
@@ -311,7 +311,7 @@ export function ParentShop({ products }: Props) {
                             <button
                               onClick={() => addToCart(item.product)}
                               disabled={item.qty >= item.product.stock_qty}
-                              className="h-5 w-5 rounded border border-[--hair] text-[0.6rem] text-muted hover:text-ink disabled:opacity-30"
+                              className="h-5 w-5 rounded border border-(--hair) text-[0.6rem] text-muted hover:text-ink disabled:opacity-30"
                             >
                               +
                             </button>
@@ -336,7 +336,7 @@ export function ParentShop({ products }: Props) {
 
               {cart.length > 0 && (
                 <div
-                  className={`border-t border-[--hair] px-6 py-4 space-y-3 ${
+                  className={`border-t border-(--hair) px-6 py-4 space-y-3 ${
                     clientSecret
                       ? "min-h-0 max-h-[min(60dvh,28rem)] shrink-0 overflow-y-auto overscroll-contain"
                       : "shrink-0"

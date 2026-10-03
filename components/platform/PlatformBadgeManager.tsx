@@ -80,7 +80,7 @@ export default function PlatformBadgeManager({ badges }: { badges: GlobalBadge[]
       <PlatformPageHeader title={t("title")} subtitle={t("subtitle", { active: activeCount, total: items.length })} />
 
       {error && (
-        <p className="mb-3.5 text-sm text-[--error]" role="alert">
+        <p className="mb-3.5 text-sm text-(--error)" role="alert">
           {error}
         </p>
       )}
@@ -101,7 +101,7 @@ export default function PlatformBadgeManager({ badges }: { badges: GlobalBadge[]
                           value={b.icon ?? ""}
                           onChange={(e) => patchLocal(b.id, { icon: e.target.value })}
                           maxLength={4}
-                          className="h-12 w-12 shrink-0 rounded-2xl border-2 bg-[--glass2] text-center text-xl outline-none"
+                          className="h-12 w-12 shrink-0 rounded-2xl border-2 bg-(--glass2) text-center text-xl outline-none"
                           style={{ borderColor: tier.ring }}
                           aria-label={t("iconLabel")}
                         />

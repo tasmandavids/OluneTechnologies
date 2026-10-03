@@ -385,7 +385,7 @@ export function Step3Review({
                 type="button"
                 disabled={busy}
                 onClick={handlePayMonthly}
-                className="w-full rounded-xl border border-[--brand] bg-[color-mix(in_srgb,var(--brand)_8%,transparent)] py-3 text-sm font-semibold text-ink transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_14%,transparent)] disabled:opacity-40"
+                className="w-full rounded-xl border border-(--brand) bg-[color-mix(in_srgb,var(--brand)_8%,transparent)] py-3 text-sm font-semibold text-ink transition-colors hover:bg-[color-mix(in_srgb,var(--brand)_14%,transparent)] disabled:opacity-40"
               >
                 {busy
                   ? t("processing")
@@ -410,7 +410,7 @@ export function Step3Review({
                   type="button"
                   disabled={busy}
                   onClick={handlePayLater}
-                  className="w-full rounded-xl border border-[--hair] bg-surface py-3 text-sm font-semibold text-ink transition-colors hover:bg-base disabled:opacity-40"
+                  className="w-full rounded-xl border border-(--hair) bg-surface py-3 text-sm font-semibold text-ink transition-colors hover:bg-base disabled:opacity-40"
                 >
                   {busy ? t("processing") : t("payLater")}
                 </button>
@@ -433,7 +433,7 @@ export function Step3Review({
           type="button"
           onClick={onBack}
           disabled={busy}
-          className="w-full rounded-xl border border-[--hair] py-3 text-sm font-semibold text-muted transition-colors hover:text-ink disabled:opacity-40"
+          className="w-full rounded-xl border border-(--hair) py-3 text-sm font-semibold text-muted transition-colors hover:text-ink disabled:opacity-40"
         >
           {t("back")}
         </button>

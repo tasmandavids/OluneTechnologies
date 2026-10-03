@@ -60,7 +60,7 @@ function ClassDetailModal({
         initial={{ scale: 0.96, opacity: 0, y: 8 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.96, opacity: 0, y: 8 }}
-        className="w-full max-w-sm rounded-2xl border border-[--hair] bg-surface p-6 shadow-2xl"
+        className="w-full max-w-sm rounded-2xl border border-(--hair) bg-surface p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* colour accent strip */}
@@ -78,7 +78,7 @@ function ClassDetailModal({
           <p className="mt-0.5 text-xs text-muted">Room: {cls.room}</p>
         )}
 
-        <dl className="mt-5 space-y-3 border-t border-[--hair] pt-5 text-sm">
+        <dl className="mt-5 space-y-3 border-t border-(--hair) pt-5 text-sm">
           <div>
             <dt className="text-[0.65rem] font-semibold uppercase tracking-wider text-muted">
               {t("teacher")}
@@ -100,7 +100,7 @@ function ClassDetailModal({
         <button
           type="button"
           onClick={onClose}
-          className="mt-6 w-full rounded-xl border border-[--hair] py-2.5 text-sm font-semibold text-muted hover:text-ink transition-colors"
+          className="mt-6 w-full rounded-xl border border-(--hair) py-2.5 text-sm font-semibold text-muted hover:text-ink transition-colors"
         >
           {t("close")}
         </button>
@@ -264,11 +264,11 @@ export default function ParentStudioScheduleGrid({
           {/* Desktop grid (md+) */}
           <div className="box hidden md:block overflow-x-auto rounded-2xl">
             {/* Day headers */}
-            <div className="grid grid-cols-7 border-b border-[--hair]">
+            <div className="grid grid-cols-7 border-b border-(--hair)">
               {STUDIO_SCHEDULE_DAYS.map(({ key }) => (
                 <div
                   key={key}
-                  className="border-r border-[--hair] px-3 py-3 text-center last:border-r-0"
+                  className="border-r border-(--hair) px-3 py-3 text-center last:border-r-0"
                 >
                   <p className="text-xs font-bold uppercase tracking-wider text-muted">
                     {t(`days.${key}`)}
@@ -277,7 +277,7 @@ export default function ParentStudioScheduleGrid({
               ))}
             </div>
             {/* Day columns */}
-            <div className="grid grid-cols-7 divide-x divide-[--hair]">
+            <div className="grid grid-cols-7 divide-x divide-(--hair)">
               {STUDIO_SCHEDULE_DAYS.map(({ dow, key }) => {
                 const dayClasses = byDay.get(dow) ?? [];
                 return (

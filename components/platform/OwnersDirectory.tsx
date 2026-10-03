@@ -97,7 +97,7 @@ export function OwnersDirectory({ owners }: { owners: PlatformOwner[] }) {
                       type="button"
                       onClick={() => openOwner(o)}
                       aria-pressed={on}
-                      className="flex w-full items-center gap-3 rounded-[14px] border p-3 text-left transition-colors hover:bg-[--t1]"
+                      className="flex w-full items-center gap-3 rounded-[14px] border p-3 text-left transition-colors hover:bg-(--t1)"
                       style={{ borderColor: on ? "var(--tb)" : "transparent", background: on ? "var(--t2)" : undefined }}
                     >
                       <InitialTile text={initialsOf(o.fullName ?? o.studioName)} size={38} />
@@ -135,7 +135,7 @@ export function OwnersDirectory({ owners }: { owners: PlatformOwner[] }) {
               <div className="mt-4 space-y-1 text-sm">
                 {selected.email && (
                   <p>
-                    <a href={`mailto:${selected.email}`} className="font-semibold text-ink hover:text-[--brand]">
+                    <a href={`mailto:${selected.email}`} className="font-semibold text-ink hover:text-(--brand)">
                       {selected.email}
                     </a>
                   </p>
@@ -146,7 +146,7 @@ export function OwnersDirectory({ owners }: { owners: PlatformOwner[] }) {
                 </p>
               </div>
 
-              <div className="my-[18px] h-px bg-[--hair]" />
+              <div className="my-[18px] h-px bg-(--hair)" />
 
               <label className="block">
                 <span className={labelCls}>{t("privateNotes")}</span>
@@ -162,7 +162,7 @@ export function OwnersDirectory({ owners }: { owners: PlatformOwner[] }) {
                 {t("saveNotes")}
               </RippleButton>
 
-              <div className="my-[18px] h-px bg-[--hair]" />
+              <div className="my-[18px] h-px bg-(--hair)" />
 
               <span className={labelCls}>{t("messageOwner")}</span>
               <input

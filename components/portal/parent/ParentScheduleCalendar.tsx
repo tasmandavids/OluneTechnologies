@@ -93,7 +93,7 @@ export default function ParentScheduleCalendar({
           <button
             type="button"
             onClick={() => goToWeek(addWeeks(initialWeekStart, -1))}
-            className="rounded-lg border border-[--hair] px-3 py-1.5 text-sm text-muted hover:text-ink"
+            className="rounded-lg border border-(--hair) px-3 py-1.5 text-sm text-muted hover:text-ink"
             aria-label={t("prevWeek")}
           >
             ←
@@ -102,7 +102,7 @@ export default function ParentScheduleCalendar({
           <button
             type="button"
             onClick={() => goToWeek(addWeeks(initialWeekStart, 1))}
-            className="rounded-lg border border-[--hair] px-3 py-1.5 text-sm text-muted hover:text-ink"
+            className="rounded-lg border border-(--hair) px-3 py-1.5 text-sm text-muted hover:text-ink"
             aria-label={t("nextWeek")}
           >
             →
@@ -116,7 +116,7 @@ export default function ParentScheduleCalendar({
             type="button"
             onClick={() => setChildFilter("all")}
             className={`rounded-full px-3 py-1 text-xs font-semibold ${
-              childFilter === "all" ? "bg-brand text-white" : "border border-[--hair] text-muted"
+              childFilter === "all" ? "bg-brand text-white" : "border border-(--hair) text-muted"
             }`}
           >
             {t("allChildren")}
@@ -129,7 +129,7 @@ export default function ParentScheduleCalendar({
               className={`rounded-full px-3 py-1 text-xs font-semibold ${
                 childFilter === child.studentId
                   ? "bg-brand text-white"
-                  : "border border-[--hair] text-muted"
+                  : "border border-(--hair) text-muted"
               }`}
             >
               {child.name ?? t("unnamedDancer")}
@@ -140,11 +140,11 @@ export default function ParentScheduleCalendar({
 
       <div className="box overflow-x-auto rounded-2xl">
         <div className="min-w-[720px]">
-          <div className="grid grid-cols-7 border-b border-[--hair]">
+          <div className="grid grid-cols-7 border-b border-(--hair)">
             {weekDates.map((date, i) => (
               <div
                 key={date}
-                className={`border-r border-[--hair] px-2 py-2 text-center last:border-r-0 ${
+                className={`border-r border-(--hair) px-2 py-2 text-center last:border-r-0 ${
                   date === todayIso ? "bg-brand/5" : ""
                 }`}
               >
@@ -165,7 +165,7 @@ export default function ParentScheduleCalendar({
               return (
                 <div
                   key={date}
-                  className={`min-h-[140px] border-r border-[--hair] p-2 last:border-r-0 ${
+                  className={`min-h-[140px] border-r border-(--hair) p-2 last:border-r-0 ${
                     date === todayIso ? "bg-brand/[0.03]" : ""
                   }`}
                 >

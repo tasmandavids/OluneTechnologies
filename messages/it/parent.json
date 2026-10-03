@@ -63,7 +63,26 @@
       "tableActions": "Azioni",
       "viewBilling": "Fatturazione e pagamenti",
       "viewSchedule": "Vedi l'orario settimanale",
-      "noClassesThisWeek": "Nessuna lezione questa settimana."
+      "noClassesThisWeek": "Nessuna lezione questa settimana.",
+      "week": {
+        "subhead": "{count, plural, =0 {Questa settimana è tutto a posto.} one {Questa settimana c’è una cosa da fare.} other {Questa settimana ci sono # cose da fare.}}",
+        "title": "Questa settimana",
+        "needsYou": "Da fare questa settimana",
+        "allClear": "Niente da fare questa settimana.",
+        "fullSchedule": "Orario completo",
+        "today": "Oggi",
+        "tomorrow": "Domani",
+        "classesThisWeek": "Lezioni questa settimana",
+        "unreadMessages": "Messaggi non letti",
+        "notifications": "Notifiche",
+        "pay": "Paga",
+        "open": "Apri",
+        "read": "Leggi",
+        "outstandingAction": "{amount} da pagare",
+        "formsAction": "{count, plural, one {# modulo da compilare} other {# moduli da compilare}}",
+        "costumesAction": "{count, plural, one {Manca # taglia del costume} other {Mancano # taglie dei costumi}}",
+        "messagesAction": "{count, plural, one {# nuovo messaggio dalla scuola} other {# nuovi messaggi dalla scuola}}"
+      }
     },
     "shop": {
       "title": "Negozio dello studio",

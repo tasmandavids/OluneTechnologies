@@ -212,8 +212,8 @@ function ParentChatPanelContent({
 
   return (
     <div className="flex h-full overflow-hidden bg-base">
-      <aside className="flex w-80 shrink-0 flex-col border-r border-[--hair] bg-surface">
-        <div className="border-b border-[--hair] px-5 py-4">
+      <aside className="flex w-80 shrink-0 flex-col border-r border-(--hair) bg-surface">
+        <div className="border-b border-(--hair) px-5 py-4">
           <h1 className="text-lg font-black text-ink">{t("title")}</h1>
           <p className="text-xs text-muted">{t("subtitle")}</p>
         </div>
@@ -224,7 +224,7 @@ function ParentChatPanelContent({
           ) : (
             <>
               {admin && (
-                <div className="border-b border-[--hair] py-2">
+                <div className="border-b border-(--hair) py-2">
                   <p className="px-4 py-2 text-[0.65rem] font-bold uppercase tracking-wider text-muted">
                     {t("studioSection")}
                   </p>
@@ -304,7 +304,7 @@ function ParentChatPanelContent({
                         key={teacher.id}
                         type="button"
                         onClick={() => selectTeacher(teacher.id)}
-                        className={`flex w-full items-start gap-3 border-b border-[--hair] px-4 py-3 text-left transition-colors ${
+                        className={`flex w-full items-start gap-3 border-b border-(--hair) px-4 py-3 text-left transition-colors ${
                           selected ? "bg-brand/10" : "hover:bg-surface/60"
                         }`}
                       >

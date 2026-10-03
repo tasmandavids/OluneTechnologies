@@ -119,7 +119,7 @@ export function CostumeHub({
           animate={{ opacity: 1, y: 0 }}
           className="rounded-2xl border border-[color-mix(in_srgb,var(--brand-hot)_40%,transparent)] bg-[color-mix(in_srgb,var(--brand-hot)_5%,transparent)] p-4"
         >
-          <p className="text-sm font-bold text-[--brand-hot]">
+          <p className="text-sm font-bold text-(--brand-hot)">
             Action needed: {pendingSize.length} costume size{pendingSize.length > 1 ? "s" : ""} required
           </p>
           <p className="mt-0.5 text-xs text-muted">
@@ -160,7 +160,7 @@ export function CostumeHub({
                       href={r.ticketLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs font-semibold text-[--brand] hover:underline"
+                      className="text-xs font-semibold text-(--brand) hover:underline"
                     >
                       Get tickets →
                     </a>
@@ -170,7 +170,7 @@ export function CostumeHub({
                       href={r.infoPack}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs font-semibold text-[--brand] hover:underline"
+                      className="text-xs font-semibold text-(--brand) hover:underline"
                     >
                       Info pack →
                     </a>
@@ -203,7 +203,7 @@ export function CostumeHub({
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-bold text-ink">{c.costumeName}</p>
                       {c.colour && (
-                        <span className="text-xs text-muted border border-[--hair] rounded-full px-2 py-0.5">
+                        <span className="text-xs text-muted border border-(--hair) rounded-full px-2 py-0.5">
                           {c.colour}
                         </span>
                       )}
@@ -231,7 +231,7 @@ export function CostumeHub({
                       </p>
                     )}
                     {c.returnRequired && (
-                      <p className="text-xs text-[--brand-hot] font-semibold">{t("returnRequired")}</p>
+                      <p className="text-xs text-(--brand-hot) font-semibold">{t("returnRequired")}</p>
                     )}
                   </div>
                 </div>
@@ -249,8 +249,8 @@ export function CostumeHub({
                             onClick={() => setSizeLabel(s)}
                             className={`rounded-lg border px-2.5 py-1 text-xs font-medium transition ${
                               sizeLabel === s
-                                ? "border-[--brand] bg-[color-mix(in_srgb,var(--brand)_12%,transparent)] text-ink"
-                                : "border-[--hair] text-muted hover:border-[--brand]"
+                                ? "border-(--brand) bg-[color-mix(in_srgb,var(--brand)_12%,transparent)] text-ink"
+                                : "border-(--hair) text-muted hover:border-(--brand)"
                             }`}
                           >
                             {s}
@@ -262,7 +262,7 @@ export function CostumeHub({
                         value={sizeLabel}
                         onChange={(e) => setSizeLabel(e.target.value)}
                         placeholder={t("customSize")}
-                        className="mt-2 w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
+                        className="mt-2 w-full rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm text-ink"
                       />
                     </div>
                     <div>
@@ -272,14 +272,14 @@ export function CostumeHub({
                         value={sizeNotes}
                         onChange={(e) => setSizeNotes(e.target.value)}
                         placeholder={t("notesPlaceholder")}
-                        className="w-full rounded-xl border border-[--hair] bg-surface px-3 py-2 text-sm text-ink"
+                        className="w-full rounded-xl border border-(--hair) bg-surface px-3 py-2 text-sm text-ink"
                       />
                     </div>
                     <div className="flex gap-2">
                       <button
                         type="button"
                         onClick={() => setEditingId(null)}
-                        className="flex-1 rounded-xl border border-[--hair] py-2 text-sm font-semibold text-ink"
+                        className="flex-1 rounded-xl border border-(--hair) py-2 text-sm font-semibold text-ink"
                       >
                         Cancel
                       </button>
@@ -297,7 +297,7 @@ export function CostumeHub({
                   <div className="mt-3 flex items-center justify-between pt-3">
                     <p className="text-xs text-muted">
                       Size:{" "}
-                      <span className={c.sizeLabel ? "font-semibold text-ink" : "text-[--brand-hot]"}>
+                      <span className={c.sizeLabel ? "font-semibold text-ink" : "text-(--brand-hot)"}>
                         {c.sizeLabel ?? "Not yet confirmed"}
                       </span>
                       {c.sizeNotes && <span className="ml-1">({c.sizeNotes})</span>}
@@ -306,7 +306,7 @@ export function CostumeHub({
                       <button
                         type="button"
                         onClick={() => startEdit(c)}
-                        className="text-xs font-semibold text-[--brand] hover:underline"
+                        className="text-xs font-semibold text-(--brand) hover:underline"
                       >
                         {c.sizeLabel ? "Edit size" : "Confirm size →"}
                       </button>

@@ -76,7 +76,7 @@ function OneCard({ card, appleWalletEnabled }: { card: PortalCheckinCard; appleW
             type="button"
             onClick={() => setEnlarged((v) => !v)}
             aria-expanded={enlarged}
-            className="shrink-0 rounded-xl border border-[--hair] bg-white p-2 transition hover:opacity-90"
+            className="shrink-0 rounded-xl border border-(--hair) bg-white p-2 transition hover:opacity-90"
             title={enlarged ? t("shrink") : t("enlarge")}
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- data: URL, nothing for the image optimiser to do */}

@@ -76,11 +76,11 @@ export function EnrollModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 8 }}
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="relative flex w-full max-w-md max-h-[calc(100dvh-2rem)] flex-col overflow-hidden rounded-2xl border border-[--hair] bg-base shadow-2xl"
+          className="relative flex w-full max-w-md max-h-[calc(100dvh-2rem)] flex-col overflow-hidden rounded-2xl border border-(--hair) bg-base shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex shrink-0 items-center justify-between border-b border-[--hair] px-6 py-4">
+          <div className="flex shrink-0 items-center justify-between border-b border-(--hair) px-6 py-4">
           <div>
             <p className="text-[0.62rem] font-semibold uppercase tracking-wider text-muted">
               {t("title")}

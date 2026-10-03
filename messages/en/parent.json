@@ -63,7 +63,26 @@
         "void": "Void"
       },
       "viewSchedule": "View weekly schedule",
-      "noClassesThisWeek": "No classes this week."
+      "noClassesThisWeek": "No classes this week.",
+      "week": {
+        "subhead": "{count, plural, =0 {Everything is sorted for this week.} one {One thing needs you this week.} other {# things need you this week.}}",
+        "title": "This week",
+        "needsYou": "Needs you this week",
+        "allClear": "Nothing needs you this week.",
+        "fullSchedule": "Full schedule",
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "classesThisWeek": "Classes this week",
+        "unreadMessages": "Unread messages",
+        "notifications": "Notifications",
+        "pay": "Pay",
+        "open": "Open",
+        "read": "Read",
+        "outstandingAction": "{amount} to pay",
+        "formsAction": "{count, plural, one {# form to complete} other {# forms to complete}}",
+        "costumesAction": "{count, plural, one {# costume size needed} other {# costume sizes needed}}",
+        "messagesAction": "{count, plural, one {# new message from the studio} other {# new messages from the studio}}"
+      }
     },
     "shop": {
       "title": "Studio Shop",

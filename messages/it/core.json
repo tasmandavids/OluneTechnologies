@@ -141,6 +141,16 @@
           "hint": "Luce fluttuante dietro l'area di lavoro."
         }
       }
+    },
+    "parentBar": {
+      "yourStudio": "La tua scuola",
+      "tabs": "Area famiglia",
+      "more": "Altro",
+      "new": {
+        "absence": "Segnala un’assenza",
+        "lesson": "Richiedi una lezione privata",
+        "message": "Scrivi alla scuola"
+      }
     }
   },
   "nav": {

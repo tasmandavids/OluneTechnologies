@@ -141,6 +141,16 @@
           "hint": "Lumière flottante derrière l'espace de travail."
         }
       }
+    },
+    "parentBar": {
+      "yourStudio": "Votre studio",
+      "tabs": "Espace famille",
+      "more": "Plus",
+      "new": {
+        "absence": "Signaler une absence",
+        "lesson": "Demander un cours particulier",
+        "message": "Écrire au studio"
+      }
     }
   },
   "nav": {

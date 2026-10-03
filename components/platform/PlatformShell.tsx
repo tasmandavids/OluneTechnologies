@@ -57,7 +57,7 @@ function MobileMenu({
           })}
         </div>
       ))}
-      <div className="border-t border-[--hair] pt-4">
+      <div className="border-t border-(--hair) pt-4">
         <LanguageSwitcher className="mb-3 w-full justify-between" />
         <p className="mb-2 truncate text-xs font-medium text-ink">{operatorName ?? tCommon("operator")}</p>
         <form action={signOut}>

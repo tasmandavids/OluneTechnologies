@@ -59,7 +59,7 @@ export function FeatureFlagsManager({ flags }: { flags: FeatureFlag[] }) {
           <GlassPanel className="!p-2">
             <ul>
               {studioFlags.map((f) => (
-                <li key={f.id} className="flex items-center justify-between gap-3 border-b border-[--hair] p-3 text-sm last:border-0">
+                <li key={f.id} className="flex items-center justify-between gap-3 border-b border-(--hair) p-3 text-sm last:border-0">
                   <span className="text-ink">
                     {f.label} · <strong>{f.studioName}</strong>
                   </span>

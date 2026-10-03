@@ -12,15 +12,15 @@ import { EnrollModal } from "./EnrollModal";
 import { AddChildModal } from "./AddChildModal";
 import { InviteCoParentModal } from "./InviteCoParentModal";
 import { PayInvoiceModal } from "./PayInvoiceModal";
-import { CommandCentre, type CommandCentreProps } from "./CommandCentre";
+import { CommandCentre, countParentActions, type CommandCentreProps } from "./CommandCentre";
 
 
-const STATUS_COLORS: Record<string, string> = {
-  paid: "color-mix(in srgb, #22c55e 70%, transparent)",
-  sent: "color-mix(in srgb, var(--brand-hot) 70%, transparent)",
-  overdue: "color-mix(in srgb, #ef4444 70%, transparent)",
-  draft: "color-mix(in srgb, var(--muted) 70%, transparent)",
-  void: "color-mix(in srgb, var(--muted) 40%, transparent)",
+const STATUS_DOTS: Record<string, string> = {
+  paid: "var(--success, #16a34a)",
+  sent: "var(--brand)",
+  overdue: "var(--error, #dc2626)",
+  draft: "var(--muted)",
+  void: "var(--muted)",
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -28,13 +28,10 @@ function StatusBadge({ status }: { status: string }) {
   const label = ["paid", "sent", "overdue", "draft", "void"].includes(status)
     ? t(status as "paid" | "sent" | "overdue" | "draft" | "void")
     : status;
-  const color = STATUS_COLORS[status] ?? "var(--muted)";
 
   return (
-    <span
-      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-white"
-      style={{ background: color }}
-    >
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-(--hair) bg-(--t1) px-2.5 py-1 text-[11.5px] font-semibold text-ink">
+      <span className="h-[7px] w-[7px] rounded-full" style={{ background: STATUS_DOTS[status] ?? "var(--muted)" }} />
       {label}
     </span>
   );
@@ -72,82 +69,61 @@ export default function ParentHub({
     ? t("greetingWithName", { greeting, name: firstName })
     : t("greetingOnly", { greeting });
 
-  const outstanding = invoices
-    .filter((i) => i.status === "sent" || i.status === "overdue")
-    .reduce((sum, i) => sum + i.amountCents, 0);
 
   const tableHeaders = [t("tableDancer"), t("tableAmount"), t("tableStatus"), t("tableDue")];
   const progressHref = (studentId: string) =>
     childProgressPath ?? `/portal/parent/children/${studentId}`;
 
+  const actionCount = commandCentre ? countParentActions(commandCentre) : 0;
+  const dateLabel = new Date().toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" });
+  const rise = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
+  const ghostBtn =
+    "inline-flex h-[38px] items-center rounded-[11px] border border-(--edge) bg-(--glass2) px-3.5 text-[13px] font-semibold text-ink transition hover:-translate-y-px";
+
   return (
     <motion.div
       initial="hidden"
       animate="show"
-      variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
-      className="mx-auto max-w-5xl space-y-10 p-6"
+      variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+      className="mx-auto max-w-[1180px] space-y-3.5 py-2"
     >
-      {commandCentre && <CommandCentre {...commandCentre} />}
-
-      <motion.header
-        variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
-        className="flex flex-wrap items-end justify-between gap-3"
-      >
+      <motion.header variants={rise} className="mb-[22px] mt-3.5 flex flex-wrap items-end justify-between gap-5">
         <div>
-          <p className="text-sm text-muted">{greetingLine}</p>
-          <h1 className="text-2xl font-black tracking-tight text-ink">
-            {selfManaged ? t("adultTitle") : t("title")}
-          </h1>
+          <div className="mb-2.5 text-[9.5px] font-semibold uppercase tracking-[0.2em] text-muted">
+            {selfManaged ? t("adultTitle") : dateLabel}
+          </div>
+          <h1>{greetingLine}</h1>
+          {commandCentre && (
+            <p className="mt-2 max-w-[46ch] text-[14.5px] leading-[1.5] text-muted">{t("week.subhead", { count: actionCount })}</p>
+          )}
         </div>
-        <div className="flex items-center gap-3">
-          {outstanding > 0 && (
-            <div className="box rounded-xl px-4 py-2 text-right">
-              <p className="text-xs text-muted">{t("outstanding")}</p>
-              <p className="text-lg font-black" style={{ color: "var(--brand-hot)" }}>
-                {NZD.format(outstanding / 100)}
-              </p>
-            </div>
+        <div className="flex flex-wrap items-center gap-2.5">
+          {!selfManaged && (
+            <button type="button" onClick={() => setShowAddChild(true)} className={ghostBtn}>
+              {t("addChild")}
+            </button>
           )}
           {!selfManaged && familyChildren.length > 0 && (
-            <Link
-              href="/portal/parent/schedule"
-              className="rounded-xl border border-[--hair] px-5 py-2.5 text-sm font-semibold text-ink hover:bg-surface"
-            >
-              {t("viewSchedule")}
-            </Link>
+            <button type="button" onClick={() => setShowInviteCoParent(true)} className={ghostBtn}>
+              {t("inviteCoParent")}
+            </button>
           )}
           {(familyChildren.length > 0 || selfManaged) && (
             <button
               type="button"
               onClick={() => setShowEnroll(true)}
-              className="rounded-xl border border-[--brand] bg-[color-mix(in_srgb,var(--brand)_10%,var(--surface))] px-5 py-2.5 text-sm font-bold text-ink shadow-sm transition hover:bg-[color-mix(in_srgb,var(--brand)_16%,var(--surface))]"
+              className="inline-flex h-[38px] items-center rounded-[11px] bg-brand px-4 text-[13px] font-semibold text-white"
             >
               {t("enroll")}
-            </button>
-          )}
-          {!selfManaged && (
-            <button
-              type="button"
-              onClick={() => setShowAddChild(true)}
-              className="rounded-xl border border-[--hair] px-5 py-2.5 text-sm font-semibold text-ink hover:bg-surface"
-            >
-              {t("addChild")}
-            </button>
-          )}
-          {!selfManaged && familyChildren.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setShowInviteCoParent(true)}
-              className="rounded-xl border border-[--hair] px-5 py-2.5 text-sm font-semibold text-ink hover:bg-surface"
-            >
-              {t("inviteCoParent")}
             </button>
           )}
         </div>
       </motion.header>
 
-      <motion.section variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
-        <h2 className="mb-3 text-xs uppercase tracking-widest text-muted">
+      {commandCentre && <CommandCentre {...commandCentre} />}
+
+      <motion.section variants={rise} className="pt-4">
+        <h2 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">
           {t("yourDancers", { count: familyChildren.length })}
         </h2>
         {familyChildren.length === 0 ? (
@@ -165,68 +141,56 @@ export default function ParentHub({
             )}
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3.5 sm:grid-cols-2">
             {familyChildren.map((child) => (
-              <Link
-                key={child.studentId}
-                href={progressHref(child.studentId)}
-                className="group block"
-              >
-              <motion.div
-                whileHover={{ y: -2 }}
-                className="box rounded-2xl p-5"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <span
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-black text-white"
-                    style={{ background: "var(--brand)" }}
-                  >
-                    {child.name?.[0]?.toUpperCase() ?? "?"}
-                  </span>
-                  <div>
-                    <p className="font-bold text-ink">{child.name ?? t("unnamedDancer")}</p>
-                    <p className="text-xs text-muted">
-                      {t("classesEnrolled", { count: child.classes.length })}
-                    </p>
+              <Link key={child.studentId} href={progressHref(child.studentId)} className="group block">
+                <motion.div whileHover={{ y: -2 }} className="box h-full rounded-2xl p-5">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="grid h-[46px] w-[46px] shrink-0 place-items-center rounded-[15px] font-display text-lg font-semibold text-white"
+                      style={{ background: "linear-gradient(150deg, var(--tg, var(--brand-hot)), var(--brand) 55%, var(--brand-deep))" }}
+                    >
+                      {child.name?.[0]?.toUpperCase() ?? "?"}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate font-display text-xl font-medium tracking-tight text-ink">{child.name ?? t("unnamedDancer")}</p>
+                      <p className="text-[13px] text-muted">{t("classesEnrolled", { count: child.classes.length })}</p>
+                    </div>
                   </div>
-                </div>
 
-                {child.classes.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {child.classes.map((c) => (
-                      <span
-                        key={c.id}
-                        className="rounded-full border border-[--hair] px-2.5 py-1 text-[0.65rem] font-medium text-ink"
-                        title={`${dayShort[c.dayOfWeek]}${c.startTime ? ` · ${fmt(c.startTime)}` : ""}`}
-                      >
-                        {c.name}
-                        {c.level ? ` · ${c.level}` : ""}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted">{t("noEnrolments")}</p>
-                )}
+                  {child.classes.length > 0 ? (
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {child.classes.map((c) => (
+                        <span
+                          key={c.id}
+                          className="rounded-full border border-(--hair) bg-(--glass2) px-2.5 py-1 text-xs font-medium text-ink"
+                          title={`${dayShort[c.dayOfWeek]}${c.startTime ? ` · ${fmt(c.startTime)}` : ""}`}
+                        >
+                          {c.name}
+                          {c.level ? ` · ${c.level}` : ""}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-4 text-xs text-muted">{t("noEnrolments")}</p>
+                  )}
 
-                <p className="mt-4 text-xs font-semibold text-[--brand] opacity-0 transition-opacity group-hover:opacity-100">
-                  {t("viewProgress")} →
-                </p>
-              </motion.div>
+                  <p className="mt-4 border-t border-(--hair) pt-3.5 text-right text-[12.5px] font-semibold text-ink">
+                    {t("viewProgress")} →
+                  </p>
+                </motion.div>
               </Link>
             ))}
           </div>
         )}
       </motion.section>
 
-      <motion.section variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+      <motion.section variants={rise} className="pt-4">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-xs uppercase tracking-widest text-muted">
+          <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">
             {t("invoices", { count: invoices.length })}
           </h2>
-          <Link
-            href="/portal/parent/billing"
-            className="text-xs font-semibold text-[--brand] hover:underline"
-          >
+          <Link href="/portal/parent/billing" className="text-xs font-semibold text-ink hover:text-(--brand)">
             {t("viewBilling")} →
           </Link>
         </div>
@@ -235,37 +199,28 @@ export default function ParentHub({
             <p className="text-sm text-muted">{t("noInvoices")}</p>
           </div>
         ) : (
-          <div className="box overflow-hidden rounded-2xl">
-            <table className="w-full min-w-[400px] text-sm">
+          <div className="box overflow-x-auto rounded-2xl">
+            <table className="w-full min-w-[480px] text-sm">
               <thead>
-                <tr className="border-b border-[--hair]">
-                  {tableHeaders.map((h) => (
+                <tr className="border-b border-(--hair)">
+                  {tableHeaders.map((h, i) => (
                     <th
                       key={h}
-                      className="px-4 py-3 text-left text-[0.62rem] font-semibold uppercase tracking-wider text-muted"
+                      className={`px-4 pb-3 pt-4 text-left text-[9.5px] font-semibold uppercase tracking-[0.16em] text-muted ${i === 0 ? "pl-5" : ""}`}
                     >
                       {h}
                     </th>
                   ))}
-                  <th className="px-4 py-3 text-left text-[0.62rem] font-semibold uppercase tracking-wider text-muted">
+                  <th className="px-4 pb-3 pt-4 pr-5 text-right text-[9.5px] font-semibold uppercase tracking-[0.16em] text-muted">
                     {t("tableActions")}
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {invoices.map((inv) => (
-                  <tr
-                    key={inv.id}
-                    className={`border-b border-[--hair] last:border-0 ${
-                      inv.status === "overdue" ? "bg-[color-mix(in_srgb,#ef4444_4%,transparent)]" : ""
-                    }`}
-                  >
-                    <td className="px-4 py-3 text-ink">
-                      {inv.studentName ?? <span className="text-muted">—</span>}
-                    </td>
-                    <td className="px-4 py-3 font-semibold tabular-nums text-ink">
-                      {NZD.format(inv.amountCents / 100)}
-                    </td>
+                  <tr key={inv.id} className="border-b border-(--hair) transition-colors last:border-0 hover:bg-(--t1)">
+                    <td className="py-3 pl-5 pr-4 text-ink">{inv.studentName ?? <span className="text-muted">—</span>}</td>
+                    <td className="px-4 py-3 font-semibold tabular-nums text-ink">{NZD.format(inv.amountCents / 100)}</td>
                     <td className="px-4 py-3">
                       <StatusBadge status={inv.status} />
                     </td>
@@ -274,12 +229,12 @@ export default function ParentHub({
                         ? new Date(inv.dueDate).toLocaleDateString(locale, { day: "numeric", month: "short" })
                         : "—"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="py-3 pl-4 pr-5 text-right">
                       {(inv.status === "sent" || inv.status === "overdue") && (
                         <button
                           type="button"
                           onClick={() => setPayInvoice(inv)}
-                          className="rounded-lg border border-[--brand] px-3 py-1.5 text-xs font-bold text-[--brand] transition hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]"
+                          className="inline-flex h-8 items-center rounded-[10px] bg-brand px-3.5 text-[12.5px] font-semibold text-white"
                         >
                           {t("payNow")}
                         </button>
@@ -291,13 +246,13 @@ export default function ParentHub({
             </table>
           </div>
         )}
-        <p className="mt-2 text-xs text-muted">
+        <p className="mt-2.5 text-xs text-muted">
           {t("billingNote")}{" "}
-          <Link href="/portal/parent/chat?topic=billing" className="font-semibold text-brand hover:underline">
+          <Link href="/portal/parent/chat?topic=billing" className="font-semibold text-ink underline-offset-2 hover:underline">
             {t("contactBilling")}
           </Link>
           {" · "}
-          <Link href="/portal/parent/chat" className="font-semibold text-brand hover:underline">
+          <Link href="/portal/parent/chat" className="font-semibold text-ink underline-offset-2 hover:underline">
             {t("contactStudio")}
           </Link>
         </p>

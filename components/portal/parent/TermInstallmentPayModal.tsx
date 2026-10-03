@@ -58,7 +58,7 @@ export function TermInstallmentPayModal({
   return (
     <AnimatePresence>
       <PaymentModalShell onClose={onClose}>
-        <div className="shrink-0 border-b border-[--hair] px-6 py-5">
+        <div className="shrink-0 border-b border-(--hair) px-6 py-5">
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className="text-lg font-black tracking-tight text-ink">

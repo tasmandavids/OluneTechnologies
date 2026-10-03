@@ -41,7 +41,7 @@ export function AddChildModal({ onClose, onAdded }: { onClose: () => void; onAdd
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.96, opacity: 0 }}
           onSubmit={submit}
-          className="w-full max-w-md rounded-2xl border border-[--hair] bg-surface p-6 shadow-2xl"
+          className="w-full max-w-md rounded-2xl border border-(--hair) bg-surface p-6 shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
           <h2 className="text-lg font-black text-ink">{t("addChildTitle")}</h2>
@@ -76,7 +76,7 @@ export function AddChildModal({ onClose, onAdded }: { onClose: () => void; onAdd
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-xl border border-[--hair] px-4 py-2.5 text-sm font-semibold text-muted"
+              className="flex-1 rounded-xl border border-(--hair) px-4 py-2.5 text-sm font-semibold text-muted"
             >
               {t("cancelAddChild")}
             </button>

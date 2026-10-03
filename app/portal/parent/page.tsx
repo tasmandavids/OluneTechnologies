@@ -283,8 +283,6 @@ export default async function ParentPortal() {
 
   return (
     <>
-      <CheckinCardPanel cards={checkinCards} appleWalletEnabled={isAppleWalletConfigured()} />
-
       <ParentHub
         parentName={profileRes.data?.full_name ?? null}
         familyChildren={children}
@@ -299,14 +297,18 @@ export default async function ParentPortal() {
         }}
       />
 
+      <div className="mx-auto max-w-[1180px] pt-3.5">
+        <CheckinCardPanel cards={checkinCards} appleWalletEnabled={isAppleWalletConfigured()} />
+      </div>
+
       {familyShowcase.length > 0 && (
-        <div className="mx-auto max-w-5xl px-6 pb-4">
+        <div className="mx-auto max-w-[1180px] pb-4 pt-3.5">
           <FamilyBadges badges={familyShowcase} />
         </div>
       )}
 
       {(events.length > 0 || products.length > 0) && (
-        <div className="mx-auto max-w-5xl space-y-12 px-6 pb-16">
+        <div className="mx-auto max-w-[1180px] space-y-12 pb-16 pt-6">
           {events.length > 0 && <EventsTickets events={events} />}
           {products.length > 0 && <ParentShop products={products} />}
         </div>

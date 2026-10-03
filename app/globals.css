@@ -341,3 +341,87 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   border-radius: 6px !important;
   box-shadow: none !important;
 }
+
+/* ============================================================================
+   Parent portal on the Aurora Glass shell. The shell root carries both
+   .admin-glass (the glass tokens) and .parent-glass (this block). These rules
+   give every parent screen the same frosted surfaces, display headings and
+   studio-coloured primary buttons as the owner portal, without each screen
+   restyling itself. Everything stays scoped to .parent-glass so the owner,
+   teacher and student portals are untouched.
+   ============================================================================ */
+.parent-glass main h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(30px, 4vw, 42px);
+  line-height: 1.03;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+/* Content panels become glass. */
+.parent-glass main .box {
+  background: linear-gradient(148deg, var(--refract), transparent 42%), var(--glass);
+  border: 1px solid var(--edge);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.85);
+  backdrop-filter: blur(var(--blur)) saturate(1.85);
+  box-shadow: var(--shadow-s), inset 0 1px 0 var(--sheen), inset 0 -1px 0 var(--sheen2), inset 1px 0 0 var(--sheen2);
+}
+.parent-glass main .box.rounded-2xl {
+  border-radius: 22px;
+}
+/* A panel inside a panel is an inset well, not a second layer of glass. */
+.parent-glass main .box .box {
+  background: var(--glass2);
+  border-color: var(--hair);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+/* Dialogs: a solid card over a soft, blurred scrim keeps forms legible. */
+.parent-glass main .fixed.inset-0:is(.bg-black\/40, .bg-black\/50) {
+  background: rgba(21, 20, 26, 0.28);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.parent-glass main .fixed.inset-0 .box {
+  background: var(--surface);
+  border-color: var(--hair);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: var(--shadow);
+  border-radius: 24px;
+}
+
+/* Fields sit on the glass rather than on the page colour. */
+.parent-glass main :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea):is(.bg-base, .bg-surface) {
+  background: var(--glass2);
+  border-color: var(--hair);
+}
+.parent-glass main :is(input, select, textarea):focus-visible {
+  border-color: var(--tb);
+  background: var(--surface);
+}
+
+/* Primary actions in the studio's colour, sentence case like the rest of the product. */
+.parent-glass main :is(button, a).bg-brand {
+  background: linear-gradient(150deg, var(--tg), var(--brand) 46%, var(--brand-deep));
+  box-shadow: 0 10px 24px -14px var(--brand), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.28s;
+}
+.parent-glass main :is(button, a).bg-brand:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+.parent-glass main :is(button, a).uppercase:is(.font-bold, .font-black, .font-semibold) {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* The studio dark base pairs #6C6A7E secondary text with Midnight, which is
+   only 3.2:1. In the parent portal's dark theme, lift it to a moonlit grey
+   that clears 4.5:1 on both the page and its cards. */
+html[data-base="dark"] .parent-glass {
+  --muted: #a3a1b8;
+}

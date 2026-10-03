@@ -72,7 +72,7 @@ export function SupportInbox({ threads: initialThreads }: { threads: SupportThre
                       type="button"
                       onClick={() => selectThread(thread.id)}
                       aria-pressed={on}
-                      className="flex w-full flex-col gap-1 rounded-[14px] border p-3 text-left transition-colors hover:bg-[--t1]"
+                      className="flex w-full flex-col gap-1 rounded-[14px] border p-3 text-left transition-colors hover:bg-(--t1)"
                       style={{ borderColor: on ? "var(--tb)" : "transparent", background: on ? "var(--t2)" : undefined }}
                     >
                       <span className="text-[13.5px] font-semibold leading-snug text-ink">{thread.subject}</span>
@@ -93,7 +93,7 @@ export function SupportInbox({ threads: initialThreads }: { threads: SupportThre
           <GlassPanel className="flex flex-1 flex-col !p-0">
             {selected ? (
               <>
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[--hair] px-5 py-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-(--hair) px-5 py-4">
                   <div className="min-w-0">
                     <h2 className="font-display text-lg font-medium tracking-tight text-ink">{selected.subject}</h2>
                     <p className="text-xs text-muted">{selected.studioName}</p>
@@ -131,7 +131,7 @@ export function SupportInbox({ threads: initialThreads }: { threads: SupportThre
                   ))}
                 </div>
 
-                <div className="border-t border-[--hair] px-5 py-4">
+                <div className="border-t border-(--hair) px-5 py-4">
                   <label className="block">
                     <span className="sr-only">{t("replyPlaceholder")}</span>
                     <textarea

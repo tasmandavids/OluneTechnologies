@@ -63,7 +63,26 @@
         "void": "無効"
       },
       "viewSchedule": "週間スケジュールを見る",
-      "noClassesThisWeek": "今週のレッスンはありません。"
+      "noClassesThisWeek": "今週のレッスンはありません。",
+      "week": {
+        "subhead": "{count, plural, =0 {今週の対応はすべて完了しています。} other {今週対応が必要なことが # 件あります。}}",
+        "title": "今週",
+        "needsYou": "今週の対応事項",
+        "allClear": "今週の対応事項はありません。",
+        "fullSchedule": "スケジュール全体",
+        "today": "今日",
+        "tomorrow": "明日",
+        "classesThisWeek": "今週のクラス",
+        "unreadMessages": "未読メッセージ",
+        "notifications": "お知らせ",
+        "pay": "支払う",
+        "open": "開く",
+        "read": "読む",
+        "outstandingAction": "お支払い {amount}",
+        "formsAction": "{count, plural, other {記入が必要なフォーム # 件}}",
+        "costumesAction": "{count, plural, other {衣装サイズの入力 # 件}}",
+        "messagesAction": "{count, plural, other {スタジオからの新着メッセージ # 件}}"
+      }
     },
     "shop": {
       "title": "スタジオショップ",

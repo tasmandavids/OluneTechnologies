@@ -161,7 +161,7 @@ export function ParentBillingHub({
             type="button"
             onClick={openPaymentPortal}
             disabled={portalLoading}
-            className="rounded-xl border border-[--hair] bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-base disabled:opacity-50"
+            className="rounded-xl border border-(--hair) bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-base disabled:opacity-50"
           >
             {portalLoading ? t("openingPortal") : t("managePaymentMethods")}
           </button>
@@ -201,7 +201,7 @@ export function ParentBillingHub({
             <h2 className="text-sm font-bold text-ink">{t("summaryBand.title")}</h2>
             <span className="inline-flex items-center gap-2 text-xs font-semibold text-ink">
               <span
-                className={`h-2 w-2 rounded-full ${autopayActive ? "bg-[#22c55e]" : "bg-[--muted]"}`}
+                className={`h-2 w-2 rounded-full ${autopayActive ? "bg-[#22c55e]" : "bg-(--muted)"}`}
               />
               {t("summaryBand.autopay")}:{" "}
               {autopayActive ? t("summaryBand.autopayOn") : t("summaryBand.autopayOff")}
@@ -255,7 +255,7 @@ export function ParentBillingHub({
       </p>
 
       {stripeConfigured && outstanding > 0 && (
-        <section className="rounded-2xl border border-[--brand]/30 bg-[color-mix(in_srgb,var(--brand)_6%,transparent)] p-5">
+        <section className="rounded-2xl border border-(--brand)/30 bg-[color-mix(in_srgb,var(--brand)_6%,transparent)] p-5">
           <h2 className="text-sm font-bold text-ink">{t("termPlanTitle")}</h2>
           <p className="mt-1 text-sm text-muted">
             {activePlan
@@ -295,7 +295,7 @@ export function ParentBillingHub({
           <div className="box overflow-hidden rounded-2xl">
             <table className="w-full min-w-[520px] text-sm">
               <thead>
-                <tr className="border-b border-[--hair]">
+                <tr className="border-b border-(--hair)">
                   {[t("table.number"), t("table.issued"), t("table.student"), t("table.amount"), t("table.due"), t("table.status"), t("table.actions")].map(
                     (h) => (
                       <th
@@ -312,7 +312,7 @@ export function ParentBillingHub({
                 {invoices.map((inv) => (
                   <tr
                     key={inv.id}
-                    className={`border-b border-[--hair] last:border-0 ${
+                    className={`border-b border-(--hair) last:border-0 ${
                       inv.status === "overdue" ? "bg-[color-mix(in_srgb,#ef4444_4%,transparent)]" : ""
                     }`}
                   >
@@ -333,7 +333,7 @@ export function ParentBillingHub({
                         <button
                           type="button"
                           onClick={() => setPayInvoice(inv)}
-                          className="rounded-lg border border-[--brand] px-3 py-1.5 text-xs font-bold text-[--brand] transition hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]"
+                          className="rounded-lg border border-(--brand) px-3 py-1.5 text-xs font-bold text-(--brand) transition hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]"
                         >
                           {t("payNow")}
                         </button>
@@ -357,7 +357,7 @@ export function ParentBillingHub({
           <div className="box overflow-hidden rounded-2xl">
             <table className="w-full min-w-[400px] text-sm">
               <thead>
-                <tr className="border-b border-[--hair]">
+                <tr className="border-b border-(--hair)">
                   {[t("paymentsTable.date"), t("paymentsTable.amount"), t("paymentsTable.invoice")].map((h) => (
                     <th
                       key={h}
@@ -370,7 +370,7 @@ export function ParentBillingHub({
               </thead>
               <tbody>
                 {payments.map((p) => (
-                  <tr key={p.id} className="border-b border-[--hair] last:border-0">
+                  <tr key={p.id} className="border-b border-(--hair) last:border-0">
                     <td className="px-4 py-3 text-ink">{fmtDate(p.createdAt, locale)}</td>
                     <td className="px-4 py-3 font-semibold tabular-nums text-ink">
                       {formatMoney(p.amountCents)}
@@ -392,7 +392,7 @@ export function ParentBillingHub({
           <div className="box overflow-hidden rounded-2xl">
             <table className="w-full min-w-[360px] text-sm">
               <thead>
-                <tr className="border-b border-[--hair]">
+                <tr className="border-b border-(--hair)">
                   {[t("ordersTable.date"), t("ordersTable.amount"), t("ordersTable.status")].map((h) => (
                     <th
                       key={h}
@@ -405,7 +405,7 @@ export function ParentBillingHub({
               </thead>
               <tbody>
                 {orders.map((o) => (
-                  <tr key={o.id} className="border-b border-[--hair] last:border-0">
+                  <tr key={o.id} className="border-b border-(--hair) last:border-0">
                     <td className="px-4 py-3 text-ink">{fmtDate(o.createdAt, locale)}</td>
                     <td className="px-4 py-3 font-semibold tabular-nums text-ink">
                       {formatMoney(o.totalCents)}
@@ -420,7 +420,7 @@ export function ParentBillingHub({
       )}
 
       {autoPayItems.length > 0 && (
-        <section className="border-t border-[--hair] pt-8">
+        <section className="border-t border-(--hair) pt-8">
           <AutoPaySetup items={autoPayItems} />
         </section>
       )}
