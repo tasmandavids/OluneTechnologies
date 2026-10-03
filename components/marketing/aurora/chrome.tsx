@@ -17,7 +17,7 @@ import { landingFontVars } from "../landing/fonts";
 import { CONTACT_EMAIL, TRIAL_HREF, auroraCopy, localeShort } from "./copy";
 import { AuroraField, GlassPanel, GlowButton, OluneMark, RippleButton } from "./primitives";
 
-export type NavKey = "home" | "features" | "pricing" | "guides" | "mobile" | "card" | "faq" | "team" | "none";
+export type NavKey = "home" | "features" | "pricing" | "mobile" | "card" | "faq" | "team" | "none";
 
 // ── Nav ────────────────────────────────────────────────────────────────────
 
@@ -25,7 +25,6 @@ export type NavKey = "home" | "features" | "pricing" | "guides" | "mobile" | "ca
 function navKeyForPath(path: string | null): NavKey {
   if (!path) return "none";
   if (path.startsWith("/pricing")) return "pricing";
-  if (path.startsWith("/guides")) return "guides";
   return "none";
 }
 
@@ -85,7 +84,6 @@ export function AuroraNav({ active: activeProp = "none", dark = false }: { activ
   const links: { key: NavKey; label: string; href: string }[] = [
     { key: "features", label: t.features, href: "/#tour" },
     { key: "pricing", label: t.pricing, href: "/pricing" },
-    { key: "guides", label: t.guides, href: "/guides" },
     { key: "mobile", label: t.mobile, href: "/mobile" },
     { key: "card", label: t.card, href: "/card" },
     { key: "faq", label: t.faq, href: "/faq" },
@@ -280,7 +278,6 @@ export function AuroraFooter({ title, accent, body }: { title?: string; accent?:
             <span style={microHead}>{t.product}</span>
             <Link href="/#tour" style={footLink}>{t.features}</Link>
             <Link href="/pricing" style={footLink}>{t.pricing}</Link>
-            <Link href="/guides" style={footLink}>Guides</Link>
             <Link href="/compare" style={footLink}>Compare</Link>
             <Link href="/mobile" style={footLink}>Olune Mobile</Link>
             <Link href="/card" style={footLink}>{t.card}</Link>

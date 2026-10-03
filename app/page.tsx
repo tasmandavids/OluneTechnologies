@@ -36,11 +36,6 @@ const PRIMARY_NAV = [
     description: "Flat plans in NZD from $29/month, with unlimited students on every plan.",
   },
   {
-    name: "Guides",
-    path: "/guides",
-    description: "Practical guides to studio admin — enrolments, term fees, registers.",
-  },
-  {
     name: "Olune Mobile",
     path: "/mobile",
     description: "The studio in your pocket — offline registers and the whole day at a glance.",

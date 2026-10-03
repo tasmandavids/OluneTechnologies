@@ -10,7 +10,7 @@
 // ============================================================================
 
 type NavCopy = {
-  features: string; pricing: string; guides: string; mobile: string; card: string; faq: string; team: string;
+  features: string; pricing: string; mobile: string; card: string; faq: string; team: string;
   signIn: string; trial: string; language: string; menu: string;
 };
 
@@ -27,7 +27,7 @@ type HeroCopy = {
 export type AuroraCopy = { nav: NavCopy; footer: FooterCopy; hero: HeroCopy };
 
 const en: AuroraCopy = {
-  nav: { features: "Features", pricing: "Pricing", guides: "Guides", mobile: "Mobile", card: "Card", faq: "FAQ", team: "Team", signIn: "Sign in", trial: "Book a free trial", language: "Language", menu: "Menu" },
+  nav: { features: "Features", pricing: "Pricing", mobile: "Mobile", card: "Card", faq: "FAQ", team: "Team", signIn: "Sign in", trial: "Book a free trial", language: "Language", menu: "Menu" },
   footer: { trial: "Book a free trial", talk: "Talk to a person", note: "No card needed. Set up in minutes.", tag: "The calm way to run a studio.", product: "Product", features: "Features", pricing: "Pricing", card: "Check-in card", team: "Meet the team", legal: "Legal", privacy: "Privacy", deletion: "Data deletion", nz: "Built in New Zealand", release: "General release · December 2026" },
   hero: {
     eyebrow: "For dance studios and creative schools",
@@ -43,7 +43,7 @@ const en: AuroraCopy = {
 };
 
 const fr: AuroraCopy = {
-  nav: { features: "Fonctions", pricing: "Tarifs", guides: "Guides", mobile: "Mobile", card: "Carte", faq: "FAQ", team: "Équipe", signIn: "Se connecter", trial: "Essai gratuit", language: "Langue", menu: "Menu" },
+  nav: { features: "Fonctions", pricing: "Tarifs", mobile: "Mobile", card: "Carte", faq: "FAQ", team: "Équipe", signIn: "Se connecter", trial: "Essai gratuit", language: "Langue", menu: "Menu" },
   footer: { trial: "Réserver un essai gratuit", talk: "Parler à quelqu’un", note: "Sans carte bancaire. Prêt en quelques minutes.", tag: "La façon sereine de gérer un studio.", product: "Produit", features: "Fonctions", pricing: "Tarifs", card: "Carte d’accès", team: "L’équipe", legal: "Légal", privacy: "Confidentialité", deletion: "Suppression des données", nz: "Conçu en Nouvelle-Zélande", release: "Lancement · décembre 2026" },
   hero: {
     eyebrow: "Pour les studios de danse et les écoles créatives",
@@ -59,7 +59,7 @@ const fr: AuroraCopy = {
 };
 
 const it: AuroraCopy = {
-  nav: { features: "Funzioni", pricing: "Prezzi", guides: "Guide", mobile: "Mobile", card: "Tessera", faq: "FAQ", team: "Team", signIn: "Accedi", trial: "Prova gratuita", language: "Lingua", menu: "Menu" },
+  nav: { features: "Funzioni", pricing: "Prezzi", mobile: "Mobile", card: "Tessera", faq: "FAQ", team: "Team", signIn: "Accedi", trial: "Prova gratuita", language: "Lingua", menu: "Menu" },
   footer: { trial: "Prenota una prova gratuita", talk: "Parla con una persona", note: "Nessuna carta richiesta. Pronto in pochi minuti.", tag: "Il modo sereno di gestire uno studio.", product: "Prodotto", features: "Funzioni", pricing: "Prezzi", card: "Tessera d’ingresso", team: "Il team", legal: "Legale", privacy: "Privacy", deletion: "Cancellazione dati", nz: "Creato in Nuova Zelanda", release: "Lancio · dicembre 2026" },
   hero: {
     eyebrow: "Per scuole di danza e studi creativi",
@@ -75,7 +75,7 @@ const it: AuroraCopy = {
 };
 
 const ru: AuroraCopy = {
-  nav: { features: "Возможности", pricing: "Цены", guides: "Гайды", mobile: "Мобильное", card: "Карта", faq: "Вопросы", team: "Команда", signIn: "Войти", trial: "Попробовать", language: "Язык", menu: "Меню" },
+  nav: { features: "Возможности", pricing: "Цены", mobile: "Мобильное", card: "Карта", faq: "Вопросы", team: "Команда", signIn: "Войти", trial: "Попробовать", language: "Язык", menu: "Меню" },
   footer: { trial: "Попробовать бесплатно", talk: "Связаться с нами", note: "Без карты. Настройка за минуты.", tag: "Спокойный способ управлять студией.", product: "Продукт", features: "Возможности", pricing: "Цены", card: "Карта входа", team: "Команда", legal: "Правовое", privacy: "Конфиденциальность", deletion: "Удаление данных", nz: "Сделано в Новой Зеландии", release: "Релиз · декабрь 2026" },
   hero: {
     eyebrow: "Для танцевальных студий и творческих школ",
@@ -91,7 +91,7 @@ const ru: AuroraCopy = {
 };
 
 const zh: AuroraCopy = {
-  nav: { features: "功能", pricing: "价格", guides: "指南", mobile: "移动端", card: "会员卡", faq: "常见问题", team: "团队", signIn: "登录", trial: "免费试用", language: "语言", menu: "菜单" },
+  nav: { features: "功能", pricing: "价格", mobile: "移动端", card: "会员卡", faq: "常见问题", team: "团队", signIn: "登录", trial: "免费试用", language: "语言", menu: "菜单" },
   footer: { trial: "预约免费试用", talk: "联系顾问", note: "无需信用卡，几分钟即可开始。", tag: "从容经营工作室的方式。", product: "产品", features: "功能", pricing: "价格", card: "签到卡", team: "团队", legal: "法律", privacy: "隐私", deletion: "数据删除", nz: "新西兰制造", release: "正式发布 · 2026 年 12 月" },
   hero: {
     eyebrow: "为舞蹈工作室与创意学校而生",
