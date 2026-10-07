@@ -15,6 +15,7 @@ import {
   WORK_LOCATIONS,
 } from "@/lib/staff/types";
 import { studioLocalYmd } from "@/lib/date/studio-date";
+import { unlinkOrEraseMember } from "@/lib/studio/unlink-member";
 import { logAuditEvent } from "@/lib/audit/log";
 
 export type ActionResult = { ok: true; id?: string } | { ok: false; error: string };
@@ -281,10 +282,49 @@ export async function updateStaffProfile(
 }
 
 export async function setStaffActive(id: string, active: boolean): Promise<ActionResult> {
-  const { error, studioId } = await getAdminStudio();
+  const { error, studioId, userId } = await getAdminStudio();
   if (error || !studioId) return { ok: false, error: error ?? "No studio." };
+  if (!active && userId === id) {
+    return { ok: false, error: "You cannot deactivate your own account." };
+  }
 
   const admin = createAdminClient();
+
+  // Access is decided by the studio membership, not by staff_members.active.
+  // Without this, a deactivated teacher kept their session, roster and
+  // messages (audit A-03). The profile must belong to this studio.
+  const { data: person } = await admin
+    .from("profiles")
+    .select("role, studio_id")
+    .eq("id", id)
+    .maybeSingle();
+  const { data: membership } = await admin
+    .from("studio_memberships")
+    .select("id")
+    .eq("user_id", id)
+    .eq("studio_id", studioId)
+    .maybeSingle();
+  if (!membership && person?.studio_id !== studioId) {
+    return { ok: false, error: "Staff member not found." };
+  }
+  if (membership) {
+    const { error: statusErr } = await admin
+      .from("studio_memberships")
+      .update({ status: active ? "active" : "suspended" })
+      .eq("id", membership.id);
+    if (statusErr) return { ok: false, error: statusErr.message };
+  } else if (!active && person) {
+    // Legacy account with no membership row: a suspended row removes the
+    // home-studio fallback in private.user_studio_context().
+    const { error: insertErr } = await admin.from("studio_memberships").insert({
+      user_id: id,
+      studio_id: studioId,
+      role: person.role,
+      status: "suspended",
+      is_primary: false,
+    });
+    if (insertErr) return { ok: false, error: insertErr.message };
+  }
   const { error: memberErr } = await admin
     .from("staff_members")
     .update({ active, end_date: active ? null : studioLocalYmd() })
@@ -405,10 +445,8 @@ export async function deleteStaffMember(id: string): Promise<ActionResult> {
     };
   }
 
-  await admin.from("events").update({ created_by: null }).eq("created_by", id);
-
-  const { error: deleteErr } = await admin.auth.admin.deleteUser(id);
-  if (deleteErr) return { ok: false, error: deleteErr.message };
+  const removal = await unlinkOrEraseMember(admin, id, studioId);
+  if (!removal.ok) return { ok: false, error: removal.error };
 
   await logAuditEvent({
     studioId,
@@ -417,7 +455,11 @@ export async function deleteStaffMember(id: string): Promise<ActionResult> {
     action: "member.removed",
     targetType: "profile",
     targetId: id,
-    metadata: { removedRole: profile.role, fullName: profile.full_name ?? null },
+    metadata: {
+      removedRole: profile.role,
+      fullName: profile.full_name ?? null,
+      scope: removal.erased ? "account_deleted" : "unlinked_from_studio",
+    },
   });
 
   revalidateStaffPaths();

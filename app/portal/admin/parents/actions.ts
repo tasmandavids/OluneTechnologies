@@ -18,6 +18,7 @@ import {
 } from "@/lib/parents/mass-email";
 import type { GuardianRelationship } from "@/lib/parents/types";
 import { resolveStudioReplyTo } from "@/lib/notify/reply-to";
+import { unlinkOrEraseMember } from "@/lib/studio/unlink-member";
 import { logAuditEvent } from "@/lib/audit/log";
 
 /** Front-desk + owner — roster CRUD. */
@@ -580,33 +581,12 @@ export async function deleteParent(parentId: string): Promise<ActionResult> {
     };
   }
 
-  const isHomeStudio = profile.studio_id === studioId;
+  const removal = await unlinkOrEraseMember(admin, parentId, studioId);
+  if (!removal.ok) return { ok: false, error: removal.error };
 
-  if (isHomeStudio) {
-    await admin.from("events").update({ created_by: null }).eq("created_by", parentId);
-
-    const { error: deleteErr } = await admin.auth.admin.deleteUser(parentId);
-    if (deleteErr) return { ok: false, error: deleteErr.message };
-  } else {
-    const { error: guardianshipErr } = await admin
-      .from("guardianships")
-      .delete()
-      .eq("studio_id", studioId)
-      .eq("guardian_id", parentId);
-    if (guardianshipErr) return { ok: false, error: guardianshipErr.message };
-
-    const { error: membershipErr } = await admin
-      .from("studio_memberships")
-      .delete()
-      .eq("studio_id", studioId)
-      .eq("user_id", parentId);
-    if (membershipErr) return { ok: false, error: membershipErr.message };
-  }
-
-  // The two branches above are very different events wearing one button:
-  // at the home studio the person's account is destroyed, elsewhere they are
-  // only unlinked from this studio and keep their account. An entry that did
-  // not distinguish them would misreport an unlink as an erasure.
+  // At the person's only studio their account is erased; anywhere else they
+  // are only unlinked from this studio and keep their account. The entry must
+  // say which, or an unlink would be misreported as an erasure.
   await logAuditEvent({
     studioId,
     actorId,
@@ -614,7 +594,7 @@ export async function deleteParent(parentId: string): Promise<ActionResult> {
     action: "parent.deleted",
     targetType: "profile",
     targetId: parentId,
-    metadata: { scope: isHomeStudio ? "account_deleted" : "unlinked_from_studio" },
+    metadata: { scope: removal.erased ? "account_deleted" : "unlinked_from_studio" },
   });
 
   revalidateParentPaths();
