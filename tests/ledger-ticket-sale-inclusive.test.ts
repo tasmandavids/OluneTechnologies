@@ -20,6 +20,7 @@ describe("ticket cash sale is posted tax-inclusive", () => {
           { description: "Gala — ticket", lineTotalCents: 5000, accountCode: null, taxTreatment: "standard", taxRateBp: null },
         ],
       });
+      if (!journal) throw new Error("no journal drafted");
       const debit = journal.lines.reduce((n, l) => n + (l.debitCents ?? 0), 0);
       const credit = journal.lines.reduce((n, l) => n + (l.creditCents ?? 0), 0);
       expect(debit).toBe(5000);
