@@ -9,6 +9,7 @@ import type {
   ProductOption,
   SubscriptionRow,
 } from "@/app/portal/admin/subscriptions/page";
+import { ADMIN_SUBSCRIPTIONS_ENABLED } from "@/lib/subscriptions/flags";
 import { CreateSubscriptionModal } from "@/components/admin/subscriptions/CreateSubscriptionModal";
 import { SubscriptionCancelActions } from "@/components/admin/subscriptions/SubscriptionCancelActions";
 import { formatMoney } from "@/lib/currency";
@@ -121,14 +122,16 @@ export default function SubscriptionsManager({
           <h1 className="text-2xl font-black text-ink">{t("title")}</h1>
           <p className="text-sm text-muted">{t("subtitle")}</p>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowCreate(true)}
-          disabled={parents.length === 0}
-          className="rounded-xl bg-ink px-4 py-2 text-sm font-bold text-paper disabled:opacity-50"
-        >
-          {t("create")}
-        </button>
+        {ADMIN_SUBSCRIPTIONS_ENABLED && (
+          <button
+            type="button"
+            onClick={() => setShowCreate(true)}
+            disabled={parents.length === 0}
+            className="rounded-xl bg-ink px-4 py-2 text-sm font-bold text-paper disabled:opacity-50"
+          >
+            {t("create")}
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -177,7 +180,7 @@ export default function SubscriptionsManager({
         {filtered.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <p className="text-sm text-muted">{t("empty")}</p>
-            {parents.length > 0 && (
+            {ADMIN_SUBSCRIPTIONS_ENABLED && parents.length > 0 && (
               <button
                 type="button"
                 onClick={() => setShowCreate(true)}

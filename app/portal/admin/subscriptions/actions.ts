@@ -1,5 +1,6 @@
 "use server";
 
+import { ADMIN_SUBSCRIPTIONS_ENABLED } from "@/lib/subscriptions/flags";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
@@ -67,6 +68,7 @@ export async function createAdminSubscription(
   | { ok: false; error: string }
 > {
   const t = await getTranslations("errors.actions");
+  if (!ADMIN_SUBSCRIPTIONS_ENABLED) return { ok: false, error: t("unknown") };
   const parsed = CreateSubscriptionSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: t("invalidSubscriptionDetails") };
 

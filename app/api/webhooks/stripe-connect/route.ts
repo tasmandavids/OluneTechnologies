@@ -30,6 +30,7 @@
 //  `account.updated` for a studio, something is creating v1 accounts again.
 // ============================================================================
 
+import { claimStripeEvent, markStripeEventProcessed } from "@/lib/webhooks/claim-event";
 import { NextRequest, NextResponse } from "next/server";
 import { reportHandledError, reportHandledMessage } from "@/lib/observability/report";
 import { stripe } from "@/lib/stripe";
@@ -78,15 +79,15 @@ export async function POST(req: NextRequest) {
 
   // Same idempotency ledger as the platform endpoint — Stripe event ids are
   // globally unique across the platform account and all connected accounts.
-  const { error: ledgerError } = await supabase
-    .from("stripe_events")
-    .insert({ id: event.id, type: event.type, account: event.account ?? null });
+  const claim = await claimStripeEvent(supabase, { id: event.id, type: event.type, account: event.account ?? null });
+  const ledgerError = claim.status === "error" ? claim : null;
+
+  if (claim.status === "duplicate") {
+    console.log(`[stripe-connect-webhook] duplicate event ${event.id} ignored`);
+    return NextResponse.json({ received: true, duplicate: true });
+  }
 
   if (ledgerError) {
-    if (ledgerError.code === "23505") {
-      console.log(`[stripe-connect-webhook] duplicate event ${event.id} ignored`);
-      return NextResponse.json({ received: true, duplicate: true });
-    }
     // No claim, no processing — see the platform endpoint.
     console.error(`[stripe-connect-webhook] ledger insert failed:`, ledgerError.message);
     await reportHandledMessage("Stripe Connect idempotency ledger insert failed", {
@@ -99,6 +100,7 @@ export async function POST(req: NextRequest) {
 
   try {
     await processStripeEvent(event, supabase);
+    await markStripeEventProcessed(supabase, event.id);
     return NextResponse.json({ received: true });
   } catch (err) {
     console.error("[stripe-connect-webhook] handler error:", err);

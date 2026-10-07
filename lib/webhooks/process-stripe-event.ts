@@ -30,6 +30,7 @@ import {
 } from "@/lib/xero/webhook-sync";
 import { syncStripeAccountStatus } from "@/lib/stripe/connect";
 import { CLASS_PASS_XERO_ACCOUNT_CODE } from "@/lib/passes/constants";
+import { isFullyRefunded, listChargeRefunds } from "@/lib/webhooks/charge-refunds";
 import { refundPaidClassPassesForPaymentIntent } from "@/lib/passes/refunds";
 import { dispatchStudioEvent } from "@/lib/integrations/events";
 import {
@@ -597,38 +598,51 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
       // flip it to 'refunded' (fires restock / capacity-release triggers),
       // and record a negative ledger row. Idempotent on stripe_refund_id.
       const charge = event.data.object as Stripe.Charge;
-      const { paymentIntentId: piId, refundId, refundedCents } = refundDescriptor(charge);
+      const { paymentIntentId: piId, refundedCents } = refundDescriptor(charge);
 
       if (!piId) {
         console.log("[stripe-webhook] charge.refunded — no payment_intent, ignored");
         break;
       }
 
+      // `amount_refunded` is a running total, so work from the individual
+      // refunds: one ledger row each, and the sale only flips to 'refunded'
+      // (restock, capacity release, pass invalidation) once it is fully
+      // refunded. Partials leave it 'paid' (audit B-03).
+      const refunds = await listChargeRefunds(charge, event.account);
+      const fullyRefunded = isFullyRefunded(charge);
+
       const nowIso = new Date().toISOString();
       const refundPatch = {
-        status: "refunded" as const,
-        refunded_at: nowIso,
+        ...(fullyRefunded ? { status: "refunded" as const, refunded_at: nowIso } : {}),
         refund_amount_cents: refundedCents,
-        stripe_refund_id: refundId,
+        stripe_refund_id: refunds[0]?.id ?? charge.id,
       };
 
       // A class pass shares its stripe_payment_intent_id with the invoice
       // created for it. Invalidate paid passes before the idempotency gate so
       // admin-issued refunds that already wrote a ledger row cannot leave a
       // still-redeemable pass behind.
-      const passRefundErr = await refundPaidClassPassesForPaymentIntent(supabase, piId, refundPatch);
-      if (passRefundErr) {
-        console.warn(`[stripe-webhook] charge.refunded — class-pass refund update failed: ${passRefundErr}`);
+      if (fullyRefunded) {
+        const passRefundErr = await refundPaidClassPassesForPaymentIntent(supabase, piId, {
+          status: "refunded",
+          refunded_at: nowIso,
+          refund_amount_cents: refundedCents,
+          stripe_refund_id: refundPatch.stripe_refund_id,
+        });
+        if (passRefundErr) {
+          console.warn(`[stripe-webhook] charge.refunded — class-pass refund update failed: ${passRefundErr}`);
+        }
       }
 
-      // Already recorded by our admin action (or a previous delivery)?
-      const { data: ledgered } = await supabase
-        .from("payments")
-        .select("id")
-        .eq("stripe_refund_id", refundId)
-        .limit(1);
-      if (ledgered && ledgered.length) {
-        console.log(`[stripe-webhook] charge.refunded — ${refundId} already recorded`);
+      // Refunds our admin action (or a previous delivery) already recorded.
+      const { data: ledgered } = refunds.length
+        ? await supabase.from("payments").select("stripe_refund_id").in("stripe_refund_id", refunds.map((r) => r.id))
+        : { data: [] as { stripe_refund_id: string | null }[] };
+      const seen = new Set((ledgered ?? []).map((r) => r.stripe_refund_id));
+      const fresh = refunds.filter((r) => !seen.has(r.id));
+      if (refunds.length && !fresh.length) {
+        console.log(`[stripe-webhook] charge.refunded — ${refunds.map((r) => r.id).join(", ")} already recorded`);
         break;
       }
 
@@ -681,27 +695,35 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
       }
 
       if (refStudioId) {
-        await supabase.from("payments").insert({
-          studio_id: refStudioId,
-          payer_id: refPayerId,
-          invoice_id: refInvoiceId,
-          amount_cents: -refundedCents,
-          currency: charge.currency ?? CURRENCY,
-          stripe_payment_intent_id: piId,
-          stripe_refund_id: refundId,
-          status: "refunded",
-          description: "Refund (Stripe)",
-        });
-
-        if (refInvoiceId) {
-          await xeroSyncAfterRefund(supabase, "invoice", refInvoiceId, refundedCents);
-        } else if (refOrderId) {
-          await xeroSyncAfterRefund(supabase, "order", refOrderId, refundedCents);
-        } else if (refTicketId) {
-          await xeroSyncAfterRefund(supabase, "ticket", refTicketId, refundedCents);
+        // Stripe gave no per-refund detail: fall back to one row keyed by the
+        // charge, sized to what is not yet in the ledger.
+        const rows = fresh.length
+          ? fresh
+          : [{ id: charge.id, amountCents: refundedCents }];
+        for (const r of rows) {
+          await supabase.from("payments").insert({
+            studio_id: refStudioId,
+            payer_id: refPayerId,
+            invoice_id: refInvoiceId,
+            amount_cents: -r.amountCents,
+            currency: charge.currency ?? CURRENCY,
+            stripe_payment_intent_id: piId,
+            stripe_refund_id: r.id,
+            status: "refunded",
+            description: fullyRefunded ? "Refund (Stripe)" : "Partial refund (Stripe)",
+          });
         }
 
-        console.log(`[stripe-webhook] charge.refunded — reconciled ${refundId} (${piId})`);
+        const newCents = rows.reduce((sum, r) => sum + r.amountCents, 0);
+        if (refInvoiceId) {
+          await xeroSyncAfterRefund(supabase, "invoice", refInvoiceId, newCents);
+        } else if (refOrderId) {
+          await xeroSyncAfterRefund(supabase, "order", refOrderId, newCents);
+        } else if (refTicketId) {
+          await xeroSyncAfterRefund(supabase, "ticket", refTicketId, newCents);
+        }
+
+        console.log(`[stripe-webhook] charge.refunded — reconciled ${rows.map((r) => r.id).join(", ")} (${piId})`);
       } else {
         console.log(`[stripe-webhook] charge.refunded — no matching sale for ${piId}`);
       }

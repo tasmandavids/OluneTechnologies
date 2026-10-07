@@ -9,7 +9,8 @@ import AdultStudentHub from "@/components/portal/student/AdultStudentHub";
 import { ParentShop } from "@/components/portal/parent/ParentShop";
 import EventsTickets, { type ParentEvent } from "@/components/portal/parent/EventsTickets";
 import { type StudentPass } from "@/components/portal/student/BuyClassPass";
-import { CLASS_PASS_PRICE_CENTS } from "@/lib/passes/constants";
+import { CLASS_PASS_PRICE_CENTS, CLASS_PASS_PRODUCT_CODE } from "@/lib/passes/constants";
+import { loadProductByCode } from "@/lib/billing/catalog";
 import CheckinCardPanel from "@/components/portal/checkin/CheckinCardPanel";
 import { fetchPortalCheckinCards } from "@/lib/portal/checkin-card-data";
 import { isAppleWalletConfigured } from "@/lib/apple-wallet/config";
@@ -114,6 +115,9 @@ export default async function StudentPortal() {
   }
 
   const studioId = profile.studio_id as string;
+  // The button must show what the purchase route will charge: the studio's own
+  // pass product, not a constant (audit F2a-03).
+  const passProduct = await loadProductByCode(supabase, studioId, CLASS_PASS_PRODUCT_CODE);
   const selfChild: Child = {
     studentId: user!.id,
     name: profile.full_name,
@@ -210,7 +214,7 @@ export default async function StudentPortal() {
         invoices={invoices}
         todayDow={todayDow}
         passes={passes}
-        passPriceCents={CLASS_PASS_PRICE_CENTS}
+        passPriceCents={passProduct?.unitAmountCents ?? CLASS_PASS_PRICE_CENTS}
       />
       {(events.length > 0 || products.length > 0) && (
         <div className="mx-auto max-w-5xl space-y-12 px-6 pb-16">
