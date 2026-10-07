@@ -274,7 +274,8 @@
     "sendResetLink": "Send reset link",
     "sendingResetLink": "Sending…",
     "resetLinkSent": "Check your email — we've sent a password reset link.",
-    "resetLinkError": "Couldn't send reset email. Please try again."
+    "resetLinkError": "Couldn't send reset email. Please try again.",
+    "networkError": "Can't reach the server. Check your connection and try again."
   },
   "marketing": {
     "features": "Features",

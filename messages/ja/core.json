@@ -274,7 +274,8 @@
     "sendResetLink": "リセットリンクを送信",
     "sendingResetLink": "送信中…",
     "resetLinkSent": "メールをご確認ください — パスワード再設定用のリンクをお送りしました。",
-    "resetLinkError": "リセットメールを送信できませんでした。もう一度お試しください。"
+    "resetLinkError": "リセットメールを送信できませんでした。もう一度お試しください。",
+    "networkError": "サーバーに接続できません。接続を確認して、もう一度お試しください。"
   },
   "marketing": {
     "features": "機能",

@@ -53,7 +53,9 @@ function LoginForm() {
     });
     setBusy(false);
     if (signInError) {
-      setError(signInError.message);
+      // A dropped connection surfaces as the browser's raw "Failed to fetch".
+      const offline = signInError.status === 0 || /failed to fetch|network|load failed/i.test(signInError.message);
+      setError(offline ? t("networkError") : signInError.message);
       setLoginFailed(true);
       return;
     }

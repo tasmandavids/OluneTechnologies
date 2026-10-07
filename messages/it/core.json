@@ -273,6 +273,7 @@
     "sendingResetLink": "Invio…",
     "resetLinkSent": "Controlla la tua email — abbiamo inviato un link per reimpostare la password.",
     "resetLinkError": "Impossibile inviare l'email. Riprova.",
+    "networkError": "Impossibile raggiungere il server. Controlla la connessione e riprova.",
     "joinStudio": "Vuoi unirti a uno studio?",
     "joinLink": "Registrati qui"
   },
