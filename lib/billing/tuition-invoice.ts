@@ -22,6 +22,7 @@ import { quoteTuition, type QuoteClass, type TuitionQuote } from "./tuition-quot
 import { loadStudioClassPrices, type ClassPriceRow } from "@/lib/enrollment-class-price";
 import { siblingDiscountInfo } from "@/lib/discounts";
 import { studioLocalYmdOffset } from "@/lib/date/studio-date";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { xeroSyncOutstandingInvoice } from "@/lib/xero/webhook-sync";
 
 function toQuoteClass(row: ClassPriceRow): QuoteClass {
@@ -276,7 +277,10 @@ export async function insertTuitionInvoice(
 
   const invoiceId = invoice.id as string;
 
-  const { error: lineErr } = await supabase
+  // Written by the server after it priced the basket. A payer must not be able
+  // to write line items themselves: tuition_hours lines feed the next quote as
+  // "already invoiced" credit (audit B-07).
+  const { error: lineErr } = await createAdminClient()
     .from("invoice_line_items")
     .insert(lines.map((l) => ({ ...l, invoice_id: invoiceId })));
 
