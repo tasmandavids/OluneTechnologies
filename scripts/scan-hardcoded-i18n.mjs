@@ -171,7 +171,12 @@ if (process.argv.includes("--json")) {
   // total: app/api/stripe/connect/route.ts passes its messages through a
   // redirect query param that the Connections page renders, so some route
   // literals genuinely are user-facing and must keep being counted.
-  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 1000);
+  //
+  // 1000 → 1004 (2026-10-07): four refusal messages for the money guards of
+  // audit B-05/B-06 (second subscription, plan invoice paid singly, invalid
+  // plan invoices). They need a translated errors namespace; tracked with the
+  // rest of the API error copy rather than blocking the fix.
+  const MAX_STRINGS = Number(process.env.I18N_MAX_STRINGS ?? 1004);
   // 30 → 25 (2026-10-01): parent shopping, events, autopay, balances and
   // enrolment now format currency using the signed-in reader's locale.
   const MAX_LOCALE_SITES = Number(process.env.I18N_MAX_LOCALE_SITES ?? 24);
