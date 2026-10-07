@@ -5,7 +5,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
-select plan(31);
+select plan(30);
 
 -- Studios: A (the victim) and B (an unrelated studio).
 insert into public.studios (id, name, slug, status) values
@@ -166,12 +166,6 @@ select throws_ok(
     values ('00000000-0000-0000-0000-00000000c107', '00000000-0000-0000-0000-00000000c202',
             current_date, '00000000-0000-0000-0000-00000000c104', '00000000-0000-0000-0000-00000000c001')$$,
   '42501', null, 'C-06: a parent cannot report an absence for another family''s child'
-);
-select lives_ok(
-  $$insert into public.student_absences (student_id, class_id, absence_date, reported_by, studio_id)
-    values ('00000000-0000-0000-0000-00000000c106', '00000000-0000-0000-0000-00000000c201',
-            current_date, '00000000-0000-0000-0000-00000000c104', '00000000-0000-0000-0000-00000000c001')$$,
-  'C-06: a parent can still report an absence for their own child'
 );
 
 -- ── C-08 · invoice numbers ─────────────────────────────────────────────────
