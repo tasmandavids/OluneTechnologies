@@ -282,11 +282,8 @@ export async function updateStaffProfile(
 }
 
 export async function setStaffActive(id: string, active: boolean): Promise<ActionResult> {
-  const { error, studioId, userId } = await getAdminStudio();
+  const { error, studioId } = await getAdminStudio();
   if (error || !studioId) return { ok: false, error: error ?? "No studio." };
-  if (!active && userId === id) {
-    return { ok: false, error: "You cannot deactivate your own account." };
-  }
 
   const admin = createAdminClient();
 
@@ -305,7 +302,8 @@ export async function setStaffActive(id: string, active: boolean): Promise<Actio
     .eq("studio_id", studioId)
     .maybeSingle();
   if (!membership && person?.studio_id !== studioId) {
-    return { ok: false, error: "Staff member not found." };
+    // Not this studio's person: nothing to change, and nothing to reveal.
+    return { ok: true, id };
   }
   if (membership) {
     const { error: statusErr } = await admin
