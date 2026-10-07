@@ -175,9 +175,16 @@ export async function refundSale(
   // 1. Issue the Stripe refund.
   let refundId: string;
   try {
+    // A destination charge sent the studio's share to its Connect account. A
+    // plain refund is paid from Olune's own balance and leaves the studio with
+    // the money (audit B-02), so pull the funds back from the studio. Charges
+    // taken on the platform account before the studio connected have no
+    // transfer to reverse, and Stripe rejects reverse_transfer for them.
+    const intent = await stripe.paymentIntents.retrieve(sale.intentId);
     const refund = await stripe.refunds.create({
       payment_intent: sale.intentId,
       amount: refundCents,
+      ...(intent.transfer_data?.destination ? { reverse_transfer: true } : {}),
       metadata: { studio_id: studioId, kind, record_id: id },
     });
     refundId = refund.id;
