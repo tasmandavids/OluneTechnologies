@@ -1,8 +1,10 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AnnouncementsManager } from "@/components/platform/AnnouncementsManager";
 import type { PlatformAnnouncement } from "@/lib/platform/types";
+import { requirePlatformPage } from "@/lib/platform/page-guard";
 
 export default async function PlatformAnnouncementsPage() {
+  if (!(await requirePlatformPage())) return null;
   const admin = createAdminClient();
 
   const { data: rows } = await admin

@@ -2,8 +2,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getTranslations } from "@/lib/i18n/server";
 import { OwnersDirectory } from "@/components/platform/OwnersDirectory";
 import type { PlatformOwner } from "@/lib/platform/types";
+import { requirePlatformPage } from "@/lib/platform/page-guard";
 
 export default async function PlatformOwnersPage() {
+  if (!(await requirePlatformPage())) return null;
   const admin = createAdminClient();
   const t = await getTranslations("platform.dashboard");
 

@@ -1,8 +1,10 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { StudiosManager } from "@/components/platform/StudiosManager";
 import type { PlatformStudioPlan, PlatformStudioSummary } from "@/lib/platform/types";
+import { requirePlatformPage } from "@/lib/platform/page-guard";
 
 export default async function PlatformStudiosPage() {
+  if (!(await requirePlatformPage())) return null;
   const admin = createAdminClient();
 
   const { data: studios } = await admin

@@ -1,8 +1,10 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AuditLogTable } from "@/components/platform/AuditLogTable";
 import type { AuditEntry } from "@/lib/platform/types";
+import { requirePlatformPage } from "@/lib/platform/page-guard";
 
 export default async function PlatformAuditPage() {
+  if (!(await requirePlatformPage())) return null;
   const admin = createAdminClient();
 
   const { data: rows } = await admin

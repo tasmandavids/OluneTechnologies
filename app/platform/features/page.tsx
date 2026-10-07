@@ -1,8 +1,10 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { FeatureFlagsManager } from "@/components/platform/FeatureFlagsManager";
 import type { FeatureFlag } from "@/lib/platform/types";
+import { requirePlatformPage } from "@/lib/platform/page-guard";
 
 export default async function PlatformFeaturesPage() {
+  if (!(await requirePlatformPage())) return null;
   const admin = createAdminClient();
 
   const { data: rows } = await admin
