@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/notify/providers";
 import { fileContractorInvoice, mintAttachmentUpload } from "@/lib/ledger/server/inbox";
 import { checkAttachment, isStudioAttachmentPath } from "@/lib/ledger/attachments";
@@ -269,7 +270,7 @@ export async function sendContractorInvoice(id: string) {
   // In-app copy for studio admins. The type routes to no outbound channel, so
   // the delivery cron won't email this a second time.
   if (studioAdminIds.length > 0 && invoice.studio_id) {
-    await supabase.from("notifications").insert(
+    await createAdminClient().from("notifications").insert(
       studioAdminIds.map((adminId) => ({
         studio_id: invoice.studio_id as string,
         user_id: adminId,

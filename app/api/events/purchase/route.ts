@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (profile?.studio_id) {
-      await supabase.from("notifications").insert({
+      await admin.from("notifications").insert({
         studio_id: profile.studio_id,
         user_id:   user.id,
         type:      "event_ticket",

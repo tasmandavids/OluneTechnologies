@@ -18,7 +18,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "INTEGRATION_TEST=1 node --env-file=.env.local ./node_modules/vitest/vitest.mjs run --config vitest.integration.config.ts",
-    "test:rls": "supabase test db supabase/tests/tenant_isolation.sql --local",
+    "test:rls": "supabase test db --local",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:install": "playwright install chromium",
