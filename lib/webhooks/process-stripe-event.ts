@@ -9,6 +9,7 @@
 // ============================================================================
 
 import type Stripe from "stripe";
+import { reportHandledMessage } from "@/lib/observability/report";
 import type { ServiceSupabase } from "@/lib/webhooks/service-supabase";
 import { CURRENCY, gstComponentCents } from "@/lib/currency";
 import { loadStudioTaxSettings } from "@/lib/billing/catalog";
@@ -157,6 +158,13 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           console.warn(
             `[stripe-webhook] payment_intent.succeeded — invoice ${target.invoiceId} PI mismatch or not found`,
           );
+          // Money was taken for an intent the invoice does not hold (audit
+          // B-04): a superseded or duplicate intent. Never only a log line.
+          await reportHandledMessage("Unallocated payment: succeeded PaymentIntent does not match its invoice", {
+            route: "webhook.stripe.unallocated",
+            tags: { kind: "invoice" },
+            extra: { invoiceId: target.invoiceId, paymentIntentId: intent.id, amount: intent.amount_received },
+          });
           break;
         }
 
