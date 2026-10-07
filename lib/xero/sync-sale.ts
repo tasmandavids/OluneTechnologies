@@ -524,7 +524,9 @@ async function loadOrderSale(
     amountCents: order.total_cents,
     reference: `ORD-${order.id.slice(0, 8)}`,
     lineItems,
-    taxInclusive: posture.taxInclusive,
+    // Shop orders and tickets are charged at the listed price with no tax added
+    // at checkout, so the invoice total must equal the payment (audit D-01).
+    taxInclusive: true,
   };
 }
 
@@ -553,7 +555,9 @@ async function loadTicketSale(
     payerId: ticket.user_id,
     amountCents: ticket.total_cents,
     reference: `TKT-${ticket.id.slice(0, 8)}`,
-    taxInclusive: posture.taxInclusive,
+    // Shop orders and tickets are charged at the listed price with no tax added
+    // at checkout, so the invoice total must equal the payment (audit D-01).
+    taxInclusive: true,
     lineItems: [
       {
         description: `${event.name} — event ticket${ticket.quantity > 1 ? ` ×${ticket.quantity}` : ""}`,
