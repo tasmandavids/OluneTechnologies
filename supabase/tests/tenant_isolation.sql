@@ -84,7 +84,7 @@ select throws_ok(
 
 reset role;
 set local role anon;
-select throws_ok('select count(*) from public.profiles', '42501', null, 'anonymous caller cannot query private profiles');
+select throws_ok('select email, phone, birthday, stripe_customer_id from public.profiles', '42501', null, 'anonymous caller cannot read private profile columns (R-11)');
 select throws_ok('select count(*) from public.invoices', '42501', null, 'anonymous caller cannot query invoices');
 
 reset role;
