@@ -28,6 +28,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type Stripe from "stripe";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { stripe } from "@/lib/stripe";
 
 /** Structurally compatible with both PaymentIntent and Subscription transfer_data. */
@@ -88,6 +89,22 @@ export async function loadStudioStripeAccount(
     .eq("studio_id", studioId)
     .maybeSingle();
   return (data as StripeConnectAccountRow | null) ?? null;
+}
+
+/**
+ * The studio's Connect account for routing a family's payment.
+ *
+ * stripe_connect_accounts is admin-only under RLS, so a parent's own session
+ * reads null and every parent-initiated charge was created without
+ * transfer_data / on_behalf_of: the money settled in Olune's balance (audit
+ * B-01). The caller has already established the studio from server-trusted
+ * data (the invoice, class, event or product being paid), so the lookup uses
+ * the service role and returns only what routing needs.
+ */
+export async function loadStudioDestinationAccount(
+  studioId: string,
+): Promise<StripeConnectAccountRow | null> {
+  return loadStudioStripeAccount(createAdminClient(), studioId);
 }
 
 export type StripeBalanceSummary = {
@@ -157,10 +174,10 @@ export function isChargeable(row: StripeConnectAccountRow | null): boolean {
  *   ...(await resolveDestinationCharge(supabase, studioId)),
  */
 export async function resolveDestinationCharge(
-  supabase: SupabaseClient,
+  _supabase: SupabaseClient,
   studioId: string,
 ): Promise<DestinationCharge> {
-  const account = await loadStudioStripeAccount(supabase, studioId);
+  const account = await loadStudioDestinationAccount(studioId);
   if (!isChargeable(account)) return {};
   return {
     transfer_data: { destination: account!.stripe_account_id },

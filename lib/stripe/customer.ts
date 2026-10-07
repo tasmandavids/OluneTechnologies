@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { stripe } from "@/lib/stripe";
-import { loadStudioStripeAccount, isChargeable } from "./connect";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { loadStudioDestinationAccount, isChargeable } from "./connect";
 
 /**
  * Resolve (creating if needed) the Stripe Customer id to charge for a
@@ -19,7 +20,9 @@ export async function getOrCreateStripeCustomer(
   profileId: string,
   studioId: string,
 ): Promise<string> {
-  const account = await loadStudioStripeAccount(supabase, studioId);
+  // Service role: a payer's session cannot read the studio's Connect account or
+  // the per-studio customer link (audit B-01).
+  const account = await loadStudioDestinationAccount(studioId);
 
   if (!isChargeable(account)) {
     const { data: profile } = await supabase
@@ -40,7 +43,8 @@ export async function getOrCreateStripeCustomer(
     return customer.id;
   }
 
-  const { data: link } = await supabase
+  const admin = createAdminClient();
+  const { data: link } = await admin
     .from("profile_stripe_customers")
     .select("stripe_customer_id")
     .eq("profile_id", profileId)
@@ -61,7 +65,7 @@ export async function getOrCreateStripeCustomer(
     metadata: { supabase_user_id: profileId, studio_id: studioId },
   });
 
-  await supabase.from("profile_stripe_customers").insert({
+  await admin.from("profile_stripe_customers").insert({
     profile_id: profileId,
     studio_id: studioId,
     stripe_account_id: account!.stripe_account_id,
