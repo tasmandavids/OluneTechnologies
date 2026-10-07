@@ -165,11 +165,15 @@ export async function OverviewTab() {
   const dailyRevenue = [...dailyMap.entries()].map(([date, revenueCents]) => ({ date, revenueCents }));
 
   const chargeable = isChargeable(stripeAccount);
+  // A Stripe outage must not take the whole overview down; show the page without the live figures.
   const [balance, payouts] = chargeable
     ? await Promise.all([
         loadStripeBalance(stripeAccount!.stripe_account_id),
         listStripePayouts(stripeAccount!.stripe_account_id, 30),
-      ])
+      ]).catch((err): [null, []] => {
+        console.error("[money/overview] Stripe balance/payouts unavailable", err);
+        return [null, []];
+      })
     : [null, []];
 
   const classesCents = (monthPaidRes.data ?? []).reduce((s, r) => s + netCents(r), 0);
