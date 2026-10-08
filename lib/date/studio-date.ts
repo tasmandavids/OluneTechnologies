@@ -52,7 +52,7 @@ export function studioLocalYmdOffset(
 
 /** Offset (ms) of `timezone` from UTC at the given instant. */
 function tzOffsetMs(timezone: string, at: Date): number {
-  const parts = new Intl.DateTimeFormat("en-US", {
+  const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: timezone,
     hourCycle: "h23",
     year: "numeric",
