@@ -4,7 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { inviteRedirectUrl } from "@/lib/app-url";
+import { createInviteLink, sendInviteEmail } from "@/lib/auth/invite-link";
 import { getTranslations } from "@/lib/i18n/server";
 
 export type InviteCoParentResult = { ok: true; linked: boolean } | { ok: false; error: string };
@@ -93,14 +93,11 @@ export async function inviteCoParent(input: unknown): Promise<InviteCoParentResu
     return { ok: true, linked: true };
   }
 
-  const { data: inviteData, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(email, {
-    redirectTo: inviteRedirectUrl(),
-  });
-  if (inviteErr || !inviteData.user) {
-    return { ok: false, error: inviteErr?.message ?? "Could not send invite." };
-  }
+  const invite = await createInviteLink(admin, email);
+  if (!invite.ok) return { ok: false, error: invite.error };
+  await sendInviteEmail({ to: email, url: invite.link.url });
 
-  const newParentId = inviteData.user.id;
+  const newParentId = invite.link.userId;
 
   const { error: profileErr } = await admin.from("profiles").upsert({
     id: newParentId,

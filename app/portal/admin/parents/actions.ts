@@ -4,7 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { inviteRedirectUrl } from "@/lib/app-url";
+import { buildTokenHashUrl } from "@/lib/auth/invite-link";
 import {
   getAdminStudio as getOwnerStudio,
   getStudioOpsStudio,
@@ -638,7 +638,6 @@ export async function bulkInviteMembers(): Promise<BulkInviteResult> {
     return { ok: true, sent: 0, skipped: 0, failed: 0, details: ["No members with email found."] };
   }
 
-  const redirectTo = inviteRedirectUrl();
   // Resolved once, not per recipient — every invite in this run is from the
   // same studio, and a reply belongs to it rather than to Olune support.
   const replyTo = await resolveStudioReplyTo(admin, studioId);
@@ -672,16 +671,15 @@ export async function bulkInviteMembers(): Promise<BulkInviteResult> {
     const { data: linkData, error: linkErr } = await admin.auth.admin.generateLink({
       type: "invite",
       email: profile.email,
-      options: { redirectTo },
     });
 
-    if (linkErr || !linkData?.properties?.action_link) {
+    if (linkErr || !linkData?.properties?.hashed_token) {
       failed++;
       details.push(`${profile.email}: ${linkErr?.message ?? "no link generated"}`);
       continue;
     }
 
-    const inviteUrl = linkData.properties.action_link;
+    const inviteUrl = buildTokenHashUrl(linkData.properties.hashed_token, "invite");
     const name = profile.full_name ?? "there";
 
     const result = await sendEmail({
