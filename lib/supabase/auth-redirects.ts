@@ -94,6 +94,19 @@ export async function reconcileCustomDomainRedirects(opts: {
     return { ok: true, changed: false };
   }
 
+  // Audit A-02: the allow-list is project-wide, and a custom domain here is
+  // whatever a studio admin typed. Anyone can create a studio and so claim any
+  // hostname; once listed, OAuth, magic-link and reset sessions can be sent to
+  // it. Until domain ownership is proven (DNS TXT challenge) nothing may be
+  // added. Removals still run so stale entries get cleaned up.
+  if (add) {
+    return {
+      ok: false,
+      error:
+        "Sign-in redirects for custom domains are disabled until domain ownership verification is available.",
+    };
+  }
+
   const token = process.env.SUPABASE_ACCESS_TOKEN?.trim();
   const ref = projectRef();
   if (!token || !ref) {

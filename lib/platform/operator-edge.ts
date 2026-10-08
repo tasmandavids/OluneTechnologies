@@ -1,24 +1,16 @@
 // Edge-safe platform operator check for middleware (no service role).
+// Operator status comes only from the platform_operators table, read under the
+// caller's own token, so a forged or stale cookie cannot grant it. There is no
+// email allow-list: the middleware decodes the session cookie without verifying
+// it, so an email claim there is not evidence of anything.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-
-function emailAllowlist(): Set<string> {
-  const raw = process.env.PLATFORM_OPERATOR_EMAILS ?? "";
-  return new Set(
-    raw
-      .split(",")
-      .map((e) => e.trim().toLowerCase())
-      .filter(Boolean),
-  );
-}
 
 export async function checkPlatformOperator(
   supabase: SupabaseClient,
   userId: string,
-  email?: string | null,
+  _email?: string | null,
 ): Promise<boolean> {
-  if (email && emailAllowlist().has(email.toLowerCase())) return true;
-
   const { data } = await supabase
     .from("platform_operators")
     .select("user_id")

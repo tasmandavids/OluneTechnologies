@@ -15,8 +15,10 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PlanPricesForm } from "@/components/platform/PlanPricesForm";
 import { PLAN_ORDER, PLANS } from "@/lib/plans/catalog";
+import { requirePlatformPage } from "@/lib/platform/page-guard";
 
 export default async function PlatformPlansPage() {
+  if (!(await requirePlatformPage())) return null;
   const admin = createAdminClient();
   const { data } = await admin
     .from("platform_plan_prices")

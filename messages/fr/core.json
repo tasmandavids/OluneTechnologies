@@ -273,6 +273,7 @@
     "sendingResetLink": "Envoi…",
     "resetLinkSent": "Vérifiez vos e-mails — nous avons envoyé un lien de réinitialisation.",
     "resetLinkError": "Impossible d'envoyer l'e-mail. Veuillez réessayer.",
+    "networkError": "Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.",
     "joinStudio": "Rejoindre un studio ?",
     "joinLink": "Inscrivez-vous ici"
   },

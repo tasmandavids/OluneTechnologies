@@ -50,6 +50,9 @@ describe("loadStudioClassPrice", () => {
       itemCode: null,
       taxTreatment: "standard",
       taxRateBp: 1500,
+      pricingModel: null,
+      recurringInterval: null,
+      recurringIntervalCount: 1,
       hours: 0,
     });
   });

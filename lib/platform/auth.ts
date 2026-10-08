@@ -1,6 +1,6 @@
 "use server";
 
-// Platform operator authentication — env allowlist + platform_operators table.
+// Platform operator authentication — the platform_operators table only.
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -24,19 +24,7 @@ type PlatformAuthOptions = {
   requireMfa?: boolean;
 };
 
-function emailAllowlist(): Set<string> {
-  const raw = process.env.PLATFORM_OPERATOR_EMAILS ?? "";
-  return new Set(
-    raw
-      .split(",")
-      .map((e) => e.trim().toLowerCase())
-      .filter(Boolean),
-  );
-}
-
-export async function isPlatformOperator(userId: string, email?: string | null): Promise<boolean> {
-  if (email && emailAllowlist().has(email.toLowerCase())) return true;
-
+export async function isPlatformOperator(userId: string): Promise<boolean> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("platform_operators")
@@ -58,7 +46,7 @@ export async function requirePlatformOperator(
 
   if (!user) return { ok: false, error: "Not signed in.", reason: "signed_out" };
 
-  const allowed = await isPlatformOperator(user.id, user.email);
+  const allowed = await isPlatformOperator(user.id);
   if (!allowed) {
     return {
       ok: false,

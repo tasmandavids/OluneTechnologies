@@ -11,7 +11,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { CURRENCY } from "@/lib/currency";
 import { siblingDiscountInfo } from "@/lib/discounts";
-import { monthlyFromTermFeeCents } from "@/lib/term-payments";
+import { autoPayMonthlyCents } from "@/lib/term-payments";
 import { getOrCreateClassStripePrice } from "@/lib/stripe/class-price";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customer";
 import { resolveDestinationCharge } from "@/lib/stripe/connect";
@@ -135,12 +135,25 @@ export async function createEnrollmentSubscription(
   // live subscription for the same programme, however it was reached.
   const { data: existingSubs } = await supabase
     .from("subscriptions")
-    .select("class_id, status, classes(name)")
+    .select("id, class_id, status, stripe_subscription_id, classes(name)")
     .eq("student_id", studentId)
     .in("status", ["active", "trialing", "past_due", "incomplete"]);
+  // An abandoned, never-confirmed attempt for this very class (a closed payment
+  // sheet, a double click) must not lock the family out or leave a second live
+  // subscription behind: cancel it and start clean (audit B-15).
+  const stale = (existingSubs ?? []).filter(
+    (s) => s.class_id === classId && s.status === "incomplete" && s.stripe_subscription_id,
+  );
+  if (stale.length) {
+    const { stripe: stripeClient } = await import("@/lib/stripe");
+    for (const s of stale) {
+      await stripeClient.subscriptions.cancel(s.stripe_subscription_id as string).catch(() => undefined);
+      await createAdminClient().from("subscriptions").delete().eq("id", s.id as string);
+    }
+  }
+  const live = (existingSubs ?? []).filter((s) => !stale.includes(s));
   const target = className.trim().toLowerCase().replace(/\s+/g, " ");
-  const alreadySubscribed = (existingSubs ?? []).some((s) => {
-    if (s.class_id === classId) return false;
+  const alreadySubscribed = live.some((s) => {
     const clsName = (s.classes as { name: string } | { name: string }[] | null);
     const name = Array.isArray(clsName) ? clsName[0]?.name : clsName?.name;
     return name && name.trim().toLowerCase().replace(/\s+/g, " ") === target;
@@ -156,7 +169,10 @@ export async function createEnrollmentSubscription(
   // Class fees are quoted as a full-term total; auto-pay spreads it over the
   // same 3 monthly installments as the manual plan, so the recurring charge is
   // the per-installment amount — not the whole term fee.
-  const monthlyCents = monthlyFromTermFeeCents(priceCents);
+  const monthlyCents = autoPayMonthlyCents(cls);
+  if (monthlyCents === null || monthlyCents <= 0) {
+    return { ok: false, error: t("classNoRecurringFee") };
+  }
 
   // Sibling / family discount (Phase 3.3) — applied to recurring auto-pay too.
   // Reusable per-class Prices are immutable, so the family discount is applied

@@ -188,7 +188,7 @@ export default async function AdminDashboardPage() {
 
   const paidCentsThisMonth = totals.paidCents;
   const collectedDenomCents = paidCentsThisMonth + attention.overdueAmountCents;
-  const collectedPercent = collectedDenomCents > 0 ? Math.round((paidCentsThisMonth / collectedDenomCents) * 100) : 100;
+  const collectedPercent = collectedDenomCents > 0 ? Math.round((paidCentsThisMonth / collectedDenomCents) * 100) : 0;
 
   const pulse: PulseStat[] = [
     { id: "occupancy", value: occupancyPercent, format: "percent" },

@@ -49,3 +49,48 @@ export function studioLocalYmdOffset(
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);
 }
+
+/** Offset (ms) of `timezone` from UTC at the given instant. */
+function tzOffsetMs(timezone: string, at: Date): number {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: timezone,
+    hourCycle: "h23",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).formatToParts(at);
+  const m: Record<string, number> = {};
+  for (const p of parts) if (p.type !== "literal") m[p.type] = Number(p.value);
+  const asUtc = Date.UTC(m.year, m.month - 1, m.day, m.hour, m.minute, m.second);
+  return asUtc - Math.floor(at.getTime() / 1000) * 1000;
+}
+
+/**
+ * Turn a studio-local wall-clock time ("2026-11-20T19:00" or with seconds)
+ * into the UTC instant it denotes, as an ISO string. An offset-less literal
+ * sent to Postgres is read in the session timezone (UTC on Supabase), which
+ * shifts a NZ evening recital to the next morning. Strings that already carry
+ * an offset or "Z" are passed through as instants. Returns null if unparsable.
+ */
+export function studioLocalToUtcIso(local: string, timezone?: string | null): string | null {
+  if (/(?:Z|[+-]\d{2}:?\d{2})$/i.test(local)) {
+    const d = new Date(local);
+    return Number.isNaN(d.getTime()) ? null : d.toISOString();
+  }
+  const m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?)?$/.exec(local.trim());
+  if (!m) return null;
+  const [y, mo, d, h = "0", mi = "0", s = "0"] = m.slice(1);
+  const wall = Date.UTC(+y, +mo - 1, +d, +h, +mi, +s);
+  const tz = timezone || DEFAULT_STUDIO_TIMEZONE;
+  try {
+    // Two passes so the offset is taken at the resolved instant (DST edges).
+    let utc = wall - tzOffsetMs(tz, new Date(wall));
+    utc = wall - tzOffsetMs(tz, new Date(utc));
+    return new Date(utc).toISOString();
+  } catch {
+    return null;
+  }
+}

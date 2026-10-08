@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { createPublicClient } from "@/lib/supabase/public";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { buildTrialLeadNotes, splitParentName } from "@/lib/enrol/trial-request";
 import { getTranslations } from "@/lib/i18n/server";
 import { checkRateLimit, clientIpKey } from "@/lib/rate-limit";
@@ -29,8 +29,8 @@ export async function submitTrialRequest(input: unknown): Promise<ActionResult> 
     disciplineLabel: z.string().max(80).optional().or(z.literal("")),
   });
 
-  // The only write path in the app an anonymous caller can reach (RLS policy
-  // leads_public_trial_insert, 0050). Everything else is keyed by user id;
+  // The only write path in the app an anonymous caller can reach (the
+  // service-role insert below; the anon insert policy was removed in audit R-10). Everything else is keyed by user id;
   // there is no user here, so it is keyed by address. 5/hour is far above what
   // a family filling in a trial form does and far below what makes flooding a
   // studio's lead inbox worthwhile.
@@ -50,7 +50,9 @@ export async function submitTrialRequest(input: unknown): Promise<ActionResult> 
   const { firstName, lastName } = splitParentName(d.parentName);
   if (!firstName) return { ok: false, error: t("nameRequired") };
 
-  const supabase = createPublicClient();
+  // Service role: the anon role may no longer insert leads (audit R-10). The
+  // rate limit, validation and studio check above are the gate.
+  const supabase = createAdminClient();
   const { data: studio } = await supabase
     .from("studios")
     .select("id")

@@ -21,6 +21,7 @@
 //                SUPABASE_SERVICE_ROLE_KEY.
 // ============================================================================
 
+import { claimStripeEvent, markStripeEventProcessed } from "@/lib/webhooks/claim-event";
 import { NextRequest, NextResponse } from "next/server";
 import { reportHandledError, reportHandledMessage } from "@/lib/observability/report";
 import { stripe } from "@/lib/stripe";
@@ -79,17 +80,15 @@ export async function POST(req: NextRequest) {
   // and the same uniqueness guarantee, so one table still covers every
   // delivery path — and a destination that re-delivers after a timeout cannot
   // double-apply anything.
-  const { error: ledgerError } = await supabase.from("stripe_events").insert({
-    id: notification.id,
-    type: notification.type,
-    account: notification.related_object?.id ?? null,
-  });
+  const claim = await claimStripeEvent(supabase, { id: notification.id, type: notification.type, account: notification.related_object?.id ?? null });
+  const ledgerError = claim.status === "error" ? claim : null;
+
+  if (claim.status === "duplicate") {
+    console.log(`[stripe-v2-webhook] duplicate event ${notification.id} ignored`);
+    return NextResponse.json({ received: true, duplicate: true });
+  }
 
   if (ledgerError) {
-    if (ledgerError.code === "23505") {
-      console.log(`[stripe-v2-webhook] duplicate event ${notification.id} ignored`);
-      return NextResponse.json({ received: true, duplicate: true });
-    }
     // Processing without a claim makes concurrent deliveries race and lets a
     // later retry apply the same transition twice. Return 500 so Stripe retries
     // after the ledger is healthy again.
@@ -108,6 +107,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const outcome = await processStripeV2Event(notification, supabase);
+    await markStripeEventProcessed(supabase, notification.id);
     console.log(
       `[stripe-v2-webhook] ${notification.type}` +
         (outcome.accountId ? ` ${outcome.accountId}` : "") +

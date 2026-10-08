@@ -10,10 +10,24 @@
 //  So these tests guard the pairing rather than the happy path.
 // ============================================================================
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import type { SupabaseClient } from "@supabase/supabase-js";
+// Parents cannot read stripe_connect_accounts under RLS, so the routing lookup
+// runs with the service role (audit B-01). The "service role" here is whatever
+// `adminRow` holds; the client handed in by the caller is deliberately blind.
+let adminRow: Record<string, unknown> | null = null;
+vi.mock("@/lib/supabase/admin", () => ({
+  createAdminClient: () => ({
+    from: () => ({
+      select: () => ({
+        eq: () => ({ maybeSingle: async () => ({ data: adminRow, error: null }) }),
+      }),
+    }),
+  }),
+}));
+
 import {
   resolveDestinationCharge,
   chargesEnabledFrom,
@@ -57,7 +71,19 @@ function v2Account(over: Record<string, unknown> = {}) {
 }
 
 describe("resolveDestinationCharge", () => {
+  it("routes a parent's payment to the studio even though the parent's own session cannot read the account (B-01)", async () => {
+    adminRow = CHARGEABLE;
+    const blindParentSession = supabaseReturning(null);
+    const out = await resolveDestinationCharge(blindParentSession, "studio-1");
+
+    expect(out).toEqual({
+      transfer_data: { destination: "acct_studio_123" },
+      on_behalf_of: "acct_studio_123",
+    });
+  });
+
   it("returns transfer_data and on_behalf_of together, pointing at the same account", async () => {
+    adminRow = CHARGEABLE;
     const out = await resolveDestinationCharge(supabaseReturning(CHARGEABLE), "studio-1");
 
     expect(out).toEqual({
@@ -69,6 +95,7 @@ describe("resolveDestinationCharge", () => {
   it("never yields transfer_data without on_behalf_of", async () => {
     // The whole point. If a future edit splits these, the studio stops being
     // merchant of record and nothing else in the codebase notices.
+    adminRow = CHARGEABLE;
     const out = (await resolveDestinationCharge(
       supabaseReturning(CHARGEABLE),
       "studio-1",
@@ -78,11 +105,13 @@ describe("resolveDestinationCharge", () => {
   });
 
   it("is empty for a studio that has not onboarded, so the charge stays on the platform", async () => {
+    adminRow = null;
     expect(await resolveDestinationCharge(supabaseReturning(null), "studio-1")).toEqual({});
   });
 
   it("is empty while the account exists but cannot yet take charges", async () => {
     const pending = { stripe_account_id: "acct_x", charges_enabled: false };
+    adminRow = pending;
 
     expect(await resolveDestinationCharge(supabaseReturning(pending), "studio-1")).toEqual({});
     expect(isChargeable(pending as never)).toBe(false);

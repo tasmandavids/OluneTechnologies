@@ -8,6 +8,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getEntitlementsCached } from "@/lib/portal/entitlements";
+import { studioLocalToUtcIso } from "@/lib/date/studio-date";
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 
@@ -43,6 +44,19 @@ async function getAdminStudio() {
   return { error: null, supabase, studioId: profile.studio_id as string, userId: user.id };
 }
 
+async function studioTimezone(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  studioId: string,
+): Promise<string | null> {
+  const { data } = await supabase.from("studios").select("timezone").eq("id", studioId).maybeSingle();
+  return (data?.timezone as string | null) ?? null;
+}
+
+/** Studio-local wall clock → UTC instant (audit F1-03); falls back to the input. */
+function toInstant(local: string, tz: string | null): string {
+  return studioLocalToUtcIso(local, tz) ?? local;
+}
+
 // ─── Legacy types (kept for backward compat with existing EventsManager) ─────
 
 const EventSchema = z.object({
@@ -67,11 +81,12 @@ export async function createEvent(input: unknown): Promise<ActionResult> {
   if (error || !studioId) return { ok: false, error: error ?? "Unknown" };
 
   const d = parsed.data;
+  const tz = await studioTimezone(supabase, studioId);
   const { error: dbErr } = await supabase.from("events").insert({
     studio_id:     studioId,
     name:          d.name,
     description:   d.description || null,
-    event_date:    d.eventDate,
+    event_date:    toInstant(d.eventDate, tz),
     venue_name:    d.venueName || null,
     venue_address: d.venueAddress || null,
     ticket_price:  d.ticketPrice,
@@ -94,12 +109,13 @@ export async function updateEvent(eventId: string, input: unknown): Promise<Acti
   if (error || !studioId) return { ok: false, error: error ?? "Unknown" };
 
   const d = parsed.data;
+  const tz = await studioTimezone(supabase, studioId);
   const { error: dbErr } = await supabase
     .from("events")
     .update({
       name:          d.name,
       description:   d.description || null,
-      event_date:    d.eventDate,
+      event_date:    toInstant(d.eventDate, tz),
       venue_name:    d.venueName || null,
       venue_address: d.venueAddress || null,
       ticket_price:  d.ticketPrice,
@@ -353,9 +369,10 @@ export async function initProductionEvent(
 
   // Use first performance date as the canonical event_date
   const firstPerf = state.performances[0];
-  const eventDate = firstPerf.curtainUp
-    ? `${firstPerf.date}T${firstPerf.curtainUp}:00`
-    : `${firstPerf.date}T19:00:00`;
+  const eventDate = toInstant(
+    `${firstPerf.date}T${firstPerf.curtainUp || "19:00"}:00`,
+    await studioTimezone(supabase, studioId),
+  );
 
   const { data: ev, error: evErr } = await supabase
     .from("events")

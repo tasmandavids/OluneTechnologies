@@ -31,13 +31,14 @@ vi.mock("@/lib/supabase/admin", () => ({
 const { requirePlatformOperator } = await import("@/lib/platform/auth");
 
 beforeEach(() => {
+  // The old env allow-list must grant nothing, even if it is still set.
   process.env.PLATFORM_OPERATOR_EMAILS = "operator@olune.test";
   getUser.mockReset();
   getAuthenticatorAssuranceLevel.mockReset();
   operatorRow.mockReset();
   adminOperatorRow.mockReset();
   operatorRow.mockResolvedValue({ data: { full_name: "Operator" }, error: null });
-  adminOperatorRow.mockResolvedValue({ data: null, error: null });
+  adminOperatorRow.mockResolvedValue({ data: { user_id: "operator-1" }, error: null });
 });
 
 afterEach(() => {
@@ -45,6 +46,22 @@ afterEach(() => {
 });
 
 describe("platform operator MFA guard", () => {
+  it("does not treat an allow-listed email as an operator without a platform_operators row", async () => {
+    adminOperatorRow.mockResolvedValue({ data: null, error: null });
+    getUser.mockResolvedValue({
+      data: { user: { id: "someone", email: "operator@olune.test", user_metadata: {} } },
+    });
+    getAuthenticatorAssuranceLevel.mockResolvedValue({
+      data: { currentLevel: "aal2", nextLevel: "aal2" },
+      error: null,
+    });
+
+    await expect(requirePlatformOperator()).resolves.toMatchObject({
+      ok: false,
+      reason: "not_operator",
+    });
+  });
+
   it("rejects signed-out requests before checking MFA", async () => {
     getUser.mockResolvedValue({ data: { user: null } });
 

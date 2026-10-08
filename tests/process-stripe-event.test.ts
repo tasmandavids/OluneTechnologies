@@ -4,6 +4,7 @@ import { processStripeEvent } from "@/lib/webhooks/process-stripe-event";
 import { CLASS_PASS_XERO_ACCOUNT_CODE } from "@/lib/passes/constants";
 import { xeroSyncAfterPayment, xeroSyncAfterRefund } from "@/lib/xero/webhook-sync";
 import { dispatchStudioEvent } from "@/lib/integrations/events";
+import { listChargeRefunds } from "@/lib/webhooks/charge-refunds";
 
 vi.mock("@/lib/xero/webhook-sync", () => ({
   xeroSyncAfterPayment: vi.fn(),
@@ -18,6 +19,11 @@ vi.mock("@/lib/term-payment-plan-service", () => ({
 vi.mock("@/lib/stripe/connect", () => ({
   syncStripeAccountStatus: vi.fn(),
 }));
+
+vi.mock("@/lib/webhooks/charge-refunds", async (orig) => {
+  const actual = await orig<typeof import("@/lib/webhooks/charge-refunds")>();
+  return { ...actual, listChargeRefunds: vi.fn(actual.listChargeRefunds) };
+});
 
 vi.mock("@/lib/integrations/events", () => ({
   dispatchStudioEvent: vi.fn(),
@@ -94,6 +100,10 @@ class QueryFake implements PromiseLike<QueryResponse> {
 
   neq(column: string, value: unknown) {
     this.filters.push({ op: "neq", column, value });
+    return this;
+  }
+
+  in(_column: string, _values: unknown[]) {
     return this;
   }
 
@@ -296,6 +306,63 @@ describe("processStripeEvent class-pass payments", () => {
     expect(passRefundUpdate).toSatisfy((operation: Operation) => hasFilter(operation, "status", "paid"));
     expect(passRefundUpdate).not.toSatisfy((operation: Operation) => hasFilter(operation, "status", "redeemed"));
     expect(xeroSyncAfterRefund).toHaveBeenCalledWith(supabase, "invoice", "invoice_1", 2500);
+  });
+});
+
+describe("processStripeEvent partial refunds (audit B-03)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("records a partial Dashboard refund once and leaves the sale paid", async () => {
+    vi.mocked(listChargeRefunds).mockResolvedValueOnce([
+      { id: "re_new", amountCents: 1000 },
+      { id: "re_admin", amountCents: 4000 },
+    ]);
+    const supabase = new SupabaseFake();
+    // The admin's own $40 refund is already in the ledger.
+    supabase.queue("payments", "select", { data: [{ stripe_refund_id: "re_admin" }] });
+    supabase.queue("invoices", "update", {
+      data: [{ id: "invoice_1", studio_id: "studio_1", payer_id: "student_1" }],
+    });
+
+    await processStripeEvent(
+      chargeRefunded({ amount: 10000, amount_refunded: 5000, refunded: false, refunds: undefined }),
+      supabase as never,
+    );
+
+    const invoiceUpdate = supabase.operations.find((o) => o.kind === "update" && o.table === "invoices");
+    expect(invoiceUpdate).toBeDefined();
+    expect((invoiceUpdate as { payload: Record<string, unknown> }).payload).not.toHaveProperty("status");
+    expect((invoiceUpdate as { payload: Record<string, unknown> }).payload.refund_amount_cents).toBe(5000);
+
+    const ledgerRows = supabase.operations.filter((o) => o.kind === "insert" && o.table === "payments");
+    expect(ledgerRows).toHaveLength(1);
+    expect((ledgerRows[0] as { payload: Record<string, unknown> }).payload).toMatchObject({
+      amount_cents: -1000,
+      stripe_refund_id: "re_new",
+    });
+    expect(xeroSyncAfterRefund).toHaveBeenCalledWith(supabase, "invoice", "invoice_1", 1000);
+
+    const passUpdate = supabase.operations.find((o) => o.kind === "update" && o.table === "class_passes");
+    expect(passUpdate).toBeUndefined();
+  });
+
+  it("flips the sale to refunded only when the charge is fully refunded", async () => {
+    vi.mocked(listChargeRefunds).mockResolvedValueOnce([{ id: "re_full", amountCents: 10000 }]);
+    const supabase = new SupabaseFake();
+    supabase.queue("payments", "select", { data: [] });
+    supabase.queue("invoices", "update", {
+      data: [{ id: "invoice_1", studio_id: "studio_1", payer_id: "student_1" }],
+    });
+
+    await processStripeEvent(
+      chargeRefunded({ amount: 10000, amount_refunded: 10000, refunded: true, refunds: undefined }),
+      supabase as never,
+    );
+
+    const invoiceUpdate = supabase.operations.find((o) => o.kind === "update" && o.table === "invoices");
+    expect((invoiceUpdate as { payload: Record<string, unknown> }).payload.status).toBe("refunded");
   });
 });
 

@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     // Fetch invoice — RLS ensures the user can only access their own invoices
     const { data: invoice, error: invErr } = await supabase
       .from("invoices")
-      .select("id, amount_cents, studio_id, payer_id, status, stripe_payment_intent_id")
+      .select("id, amount_cents, studio_id, payer_id, status, stripe_payment_intent_id, term_payment_plan_id")
       .eq("id", invoiceId)
       .single();
 
@@ -65,6 +65,22 @@ export async function POST(req: NextRequest) {
     }
     if ((invoice.amount_cents as number) <= 0) {
       return NextResponse.json({ error: "Nothing to pay on this invoice." }, { status: 409 });
+    }
+
+    // An invoice on an active instalment plan is collected by the plan.
+    // Paying it here as well bills the family twice (audit B-06).
+    if (invoice.term_payment_plan_id) {
+      const { data: plan } = await createAdminClient()
+        .from("term_payment_plans")
+        .select("status")
+        .eq("id", invoice.term_payment_plan_id as string)
+        .maybeSingle();
+      if (plan?.status === "active") {
+        return NextResponse.json(
+          { error: "This invoice is part of a payment plan. Pay the next instalment instead." },
+          { status: 409 },
+        );
+      }
     }
 
     // Return existing intent if already created (idempotency)
@@ -108,6 +124,10 @@ export async function POST(req: NextRequest) {
       },
       automatic_payment_methods: { enabled: true },
       ...(await resolveDestinationCharge(supabase, invoice.studio_id as string)),
+    }, {
+      // Two tabs or two guardians pressing Pay at once get the same intent
+      // (audit B-04); the amount is in the key so an edited invoice mints a new one.
+      idempotencyKey: `pi:invoice:${invoiceId}:${invoice.amount_cents}:${invoice.stripe_payment_intent_id ?? "new"}`,
     });
 
     // Persist the intent ID on the invoice. The webhook only marks the invoice
@@ -120,9 +140,26 @@ export async function POST(req: NextRequest) {
       .update({ stripe_payment_intent_id: intent.id })
       .eq("id", invoiceId)
       .in("status", [...PAYABLE_INVOICE_STATUSES])
+      .or(`stripe_payment_intent_id.is.null,stripe_payment_intent_id.eq.${intent.id}${invoice.stripe_payment_intent_id ? `,stripe_payment_intent_id.eq.${invoice.stripe_payment_intent_id}` : ""}`)
       .select("id");
     if (persistErr || !stamped?.length) {
-      await stripe.paymentIntents.cancel(intent.id).catch(() => undefined);
+      // Lost a race: another request stamped its own intent first. Hand back
+      // that one rather than cancel a live payment, and never leave two open.
+      const { data: winner } = await createAdminClient()
+        .from("invoices")
+        .select("stripe_payment_intent_id")
+        .eq("id", invoiceId)
+        .maybeSingle();
+      const winnerId = winner?.stripe_payment_intent_id as string | null | undefined;
+      if (winnerId && winnerId !== intent.id) {
+        await stripe.paymentIntents.cancel(intent.id).catch(() => undefined);
+        const existing = await stripe.paymentIntents.retrieve(winnerId);
+        if (existing.status !== "canceled" && existing.client_secret) {
+          return NextResponse.json({ clientSecret: existing.client_secret });
+        }
+      } else {
+        await stripe.paymentIntents.cancel(intent.id).catch(() => undefined);
+      }
       return NextResponse.json({ error: "Could not start payment. Please try again." }, { status: 500 });
     }
 

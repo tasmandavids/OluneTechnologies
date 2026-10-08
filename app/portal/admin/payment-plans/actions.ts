@@ -24,6 +24,29 @@ export async function createTermPaymentPlan(data: z.infer<typeof CreatePlanSchem
 
   const installment_amounts = splitInstallments(p.total_cents, p.installment_count);
 
+  // Linked invoices must be this payer's open invoices at this studio, not
+  // already on another plan, and the plan may not collect more than they total
+  // (audit B-06). Otherwise the parent flow re-adds them and double-bills.
+  if (p.invoice_ids?.length) {
+    const { data: invoices } = await supabase
+      .from("invoices")
+      .select("id, amount_cents, payer_id, studio_id, status, term_payment_plan_id")
+      .in("id", p.invoice_ids);
+    const rows = invoices ?? [];
+    const valid =
+      rows.length === new Set(p.invoice_ids).size &&
+      rows.every(
+        (r) =>
+          r.payer_id === p.payer_id &&
+          r.studio_id === studioId &&
+          ["sent", "overdue"].includes(r.status as string) &&
+          !r.term_payment_plan_id,
+      );
+    if (!valid) return { error: "Those invoices can't be put on a plan." };
+    const sum = rows.reduce((acc, r) => acc + (r.amount_cents as number), 0);
+    if (p.total_cents > sum) return { error: "The plan total is more than the invoices it covers." };
+  }
+
   const { data: plan, error } = await supabase
     .from("term_payment_plans")
     .insert({
@@ -44,6 +67,11 @@ export async function createTermPaymentPlan(data: z.infer<typeof CreatePlanSchem
     await supabase.from("term_payment_plan_invoices").insert(
       p.invoice_ids.map((invoice_id) => ({ plan_id: plan.id, invoice_id })),
     );
+    await supabase
+      .from("invoices")
+      .update({ term_payment_plan_id: plan.id })
+      .in("id", p.invoice_ids)
+      .eq("studio_id", studioId);
   }
 
   return { ok: true, planId: plan?.id };

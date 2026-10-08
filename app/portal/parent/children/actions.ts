@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { inviteRedirectUrl } from "@/lib/app-url";
+import { buildTokenHashUrl, createInviteLink, sendInviteEmail } from "@/lib/auth/invite-link";
 import { createStudentAuthUser } from "@/lib/students/login-email";
 import { escapeHtml } from "@/lib/notify/messages";
 import { getParentStudio } from "@/lib/portal/access";
@@ -46,12 +46,10 @@ export async function addChildToFamily(input: unknown): Promise<ChildActionResul
   let generatedLoginEmail: string | null = null;
 
   if (d.email) {
-    const { data: inviteData, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(d.email, {
-      data: { full_name: d.fullName },
-      redirectTo: inviteRedirectUrl(),
-    });
-    if (inviteErr) return { ok: false, error: inviteErr.message };
-    studentId = inviteData.user.id;
+    const invite = await createInviteLink(admin, d.email, { full_name: d.fullName });
+    if (!invite.ok) return { ok: false, error: invite.error };
+    studentId = invite.link.userId;
+    await sendInviteEmail({ to: d.email, url: invite.link.url, name: d.fullName });
   } else {
     try {
       const created = await createStudentAuthUser(admin, d.fullName, { full_name: d.fullName });
@@ -120,9 +118,9 @@ async function notifyParentOfStudentLogin(params: {
   const { data: linkData } = await admin.auth.admin.generateLink({
     type: "invite",
     email: loginEmail,
-    options: { redirectTo: inviteRedirectUrl() },
   });
-  const inviteUrl = linkData?.properties?.action_link;
+  const hashed = linkData?.properties?.hashed_token;
+  const inviteUrl = hashed ? buildTokenHashUrl(hashed, "invite") : undefined;
 
   const { sendEmail } = await import("@/lib/notify/providers");
   const safeStudentName = escapeHtml(studentName);

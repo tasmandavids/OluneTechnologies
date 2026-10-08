@@ -18,6 +18,7 @@
 //  Requires env: STRIPE_WEBHOOK_SECRET
 // ============================================================================
 
+import { claimStripeEvent, markStripeEventProcessed } from "@/lib/webhooks/claim-event";
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { getServiceSupabase } from "@/lib/webhooks/service-supabase";
@@ -71,15 +72,15 @@ export async function POST(req: NextRequest) {
   // Stripe retries on non-2xx and can deliver the same event more than once.
   // Record the event.id first as a processing claim; if it's already present,
   // this is a replay — ack with 200 and do no further work.
-  const { error: ledgerError } = await supabase
-    .from("stripe_events")
-    .insert({ id: event.id, type: event.type, account: event.account ?? null });
+  const claim = await claimStripeEvent(supabase, { id: event.id, type: event.type, account: event.account ?? null });
+  const ledgerError = claim.status === "error" ? claim : null;
+
+  if (claim.status === "duplicate") {
+    console.log(`[stripe-webhook] duplicate event ${event.id} ignored`);
+    return NextResponse.json({ received: true, duplicate: true });
+  }
 
   if (ledgerError) {
-    if (ledgerError.code === "23505") {
-      console.log(`[stripe-webhook] duplicate event ${event.id} ignored`);
-      return NextResponse.json({ received: true, duplicate: true });
-    }
     // Processing without a claim lets concurrent deliveries race and a later
     // retry apply the same payment twice. Return 500 so Stripe retries once
     // the ledger is healthy again — same rule as /api/webhooks/stripe-v2.
@@ -94,6 +95,7 @@ export async function POST(req: NextRequest) {
 
   try {
     await processStripeEvent(event, supabase);
+    await markStripeEventProcessed(supabase, event.id);
     return NextResponse.json({ received: true });
   } catch (err) {
     console.error("[stripe-webhook] handler error:", err);

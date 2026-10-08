@@ -28,6 +28,10 @@ export type ClassPriceRow = {
   itemCode: string | null;
   taxTreatment: TaxTreatment;
   taxRateBp: number;
+  /** Catalogue pricing model of the linked product; null for a legacy class with no product. */
+  pricingModel: string | null;
+  recurringInterval: string | null;
+  recurringIntervalCount: number;
   /** Weekly hours, for studios pricing on an hours ladder. 0 with no end time. */
   hours: number;
 };
@@ -35,7 +39,7 @@ export type ClassPriceRow = {
 const CLASS_PRICE_COLUMNS = `
   id, name, price_cents, studio_id, recurring_group_id, start_time, end_time,
   xero_account_code, xero_item_code, product_id,
-  product:billing_products ( id, unit_amount_cents, account_code, item_code, tax_treatment, tax_rate_bp, active )
+  product:billing_products ( id, unit_amount_cents, account_code, item_code, tax_treatment, tax_rate_bp, active, pricing_model, recurring_interval, recurring_interval_count )
 `;
 
 type ClassProduct = {
@@ -46,6 +50,9 @@ type ClassProduct = {
   tax_treatment: string | null;
   tax_rate_bp: number | null;
   active: boolean | null;
+  pricing_model: string | null;
+  recurring_interval: string | null;
+  recurring_interval_count: number | null;
 };
 
 function mapClassRow(row: Record<string, unknown>): ClassPriceRow {
@@ -64,6 +71,9 @@ function mapClassRow(row: Record<string, unknown>): ClassPriceRow {
     itemCode: product?.item_code ?? (row.xero_item_code as string | null) ?? null,
     taxTreatment: ((product?.tax_treatment as TaxTreatment | null) ?? "standard") as TaxTreatment,
     taxRateBp: Number(product?.tax_rate_bp ?? 1500),
+    pricingModel: product?.pricing_model ?? null,
+    recurringInterval: product?.recurring_interval ?? null,
+    recurringIntervalCount: Math.max(1, Number(product?.recurring_interval_count ?? 1)),
     // classes.end_time is nullable, and a class without one can't be measured.
     // Counting it as zero is the honest answer; the Products screen warns a
     // studio how many of these they have before they switch to hours pricing.

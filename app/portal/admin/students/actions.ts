@@ -9,7 +9,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { inviteRedirectUrl } from "@/lib/app-url";
+import { createInviteLink, sendInviteEmail } from "@/lib/auth/invite-link";
 import { getStudioOpsStudio } from "@/lib/portal/access";
 import { insertTuitionInvoice, quoteEnrollment } from "@/lib/billing/tuition-invoice";
 import { loadStudioTuitionContext } from "@/lib/billing/tuition-model";
@@ -222,12 +222,10 @@ export async function addStudent(input: unknown): Promise<ActionResult> {
   let userId: string;
 
   if (d.email) {
-    const { data: inviteData, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(d.email, {
-      data: { full_name: d.fullName },
-      redirectTo: inviteRedirectUrl(),
-    });
-    if (inviteErr) return { ok: false, error: inviteErr.message };
-    userId = inviteData.user.id;
+    const invite = await createInviteLink(admin, d.email, { full_name: d.fullName });
+    if (!invite.ok) return { ok: false, error: invite.error };
+    userId = invite.link.userId;
+    await sendInviteEmail({ to: d.email, url: invite.link.url, name: d.fullName });
   } else {
     const authEmail = `${crypto.randomUUID()}@students.olune.local`;
     const { data: authData, error: authErr } = await admin.auth.admin.createUser({

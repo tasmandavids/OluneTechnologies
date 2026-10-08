@@ -149,6 +149,12 @@ export async function getAvailableClasses(): Promise<
   // Prices come from the same server-authoritative loader the enrolment charge
   // uses, so the quote a parent sees can't drift from what they're billed.
   const ids = (data ?? []).map((r) => r.id as string);
+  // class_capacity counts only the enrolments this parent can read, so most
+  // classes looked half empty. The RPC counts every active enrolment.
+  const { data: counts } = await supabase.rpc("class_enrolled_counts", { p_class_ids: ids });
+  const enrolledById = new Map(
+    ((counts ?? []) as { class_id: string; enrolled: number }[]).map((c) => [c.class_id, c.enrolled]),
+  );
   const [priceRows, context] = await Promise.all([
     loadStudioClassPrices(supabase, studioId, ids),
     loadStudioTuitionContext(supabase, studioId),
@@ -164,7 +170,7 @@ export async function getAvailableClasses(): Promise<
       dayOfWeek: r.day_of_week as number | null,
       startTime: r.start_time ? (r.start_time as string).slice(0, 5) : null,
       capacity: Number(r.capacity ?? 0),
-      enrolled: Number(r.enrolled ?? 0),
+      enrolled: enrolledById.get(r.id as string) ?? Number(r.enrolled ?? 0),
       priceCents: priced?.priceCents ?? 0,
       hours: priced?.hours ?? 0,
       productId: priced?.productId ?? null,

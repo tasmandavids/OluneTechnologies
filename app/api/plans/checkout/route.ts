@@ -52,6 +52,24 @@ export async function POST(req: NextRequest) {
 
   try {
     const admin = createAdminClient();
+
+    // A studio with a live subscription changes tier in the billing portal.
+    // A second Checkout would leave two subscriptions billing (audit B-05).
+    const { data: existing } = await admin
+      .from("studio_subscriptions")
+      .select("status, stripe_subscription_id")
+      .eq("studio_id", access.studioId)
+      .maybeSingle();
+    if (
+      existing?.stripe_subscription_id &&
+      (existing.status === "active" || existing.status === "past_due")
+    ) {
+      return NextResponse.json(
+        { error: "You already have an active subscription. Change plan from Manage billing." },
+        { status: 409 },
+      );
+    }
+
     const priceId = await resolvePriceId(admin, plan, interval);
 
     if (!priceId) {

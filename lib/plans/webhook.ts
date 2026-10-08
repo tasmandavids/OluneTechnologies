@@ -165,6 +165,36 @@ function intervalFrom(sub: Stripe.Subscription): "month" | "year" | undefined {
 }
 
 /**
+ * An event for a subscription that is not the one the studio row tracks
+ * (audit B-05). A cancelled or failed old subscription must not lock a studio
+ * that is paying on a newer one.
+ *
+ * Only `created`/`updated` may replace the tracked subscription, and only once
+ * the tracked one has ended: that is a lapsed studio re-subscribing, whose
+ * events can arrive before `checkout.session.completed`.
+ */
+export async function isStaleSubscriptionEvent(
+  event: Stripe.Event,
+  studioId: string,
+  supabase: ServiceSupabase,
+): Promise<boolean> {
+  const { subscriptionId } = stripeIdsFor(event);
+  if (!subscriptionId) return false;
+
+  const { data } = await supabase
+    .from("studio_subscriptions")
+    .select("stripe_subscription_id, status")
+    .eq("studio_id", studioId)
+    .maybeSingle();
+  const current = data?.stripe_subscription_id as string | null | undefined;
+  if (!current || current === subscriptionId) return false;
+
+  const mayReplace =
+    event.type === "customer.subscription.created" || event.type === "customer.subscription.updated";
+  return !(mayReplace && data?.status === "canceled");
+}
+
+/**
  * Apply one Olune-billing event to the studio's subscription row.
  *
  * Every branch is a full restatement of the row's billing fields rather than a
@@ -175,6 +205,11 @@ export async function handleStudioPlanEvent(
   studioId: string,
   supabase: ServiceSupabase,
 ): Promise<void> {
+  if (event.type !== "checkout.session.completed" && (await isStaleSubscriptionEvent(event, studioId, supabase))) {
+    console.log(`[plans] ${event.type} for a superseded subscription ignored — studio ${studioId}`);
+    return;
+  }
+
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;

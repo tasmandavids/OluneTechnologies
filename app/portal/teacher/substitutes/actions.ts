@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { notifySubstituteFilled } from "@/lib/notify/substitutes";
 
 async function getUser() {
@@ -34,8 +35,9 @@ export async function claimSubstituteRequest(requestId: string) {
     .eq("id", userId)
     .maybeSingle();
 
+  // The notification queue is server-written; the teacher's own session cannot insert for the poster.
   await notifySubstituteFilled(
-    supabase,
+    createAdminClient(),
     {
       id: claimed.id as string,
       studioId: claimed.studio_id as string,

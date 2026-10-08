@@ -33,6 +33,40 @@ export function monthlyFromTermFeeCents(termCents: number): number {
   return splitTermInstallments(termCents)[0] ?? 0;
 }
 
+/**
+ * Monthly auto-pay charge for a class, from its catalogue product (audit B-08).
+ * The product price is per its own pricing model, so a $90/month class charges
+ * $90 — not a third of it. Returns null when the model cannot be auto-paid
+ * (one-off and per-session fees have no recurring cycle).
+ *
+ * A class with no product (legacy price_cents) keeps the term-fee rule.
+ */
+export function autoPayMonthlyCents(cls: {
+  priceCents: number;
+  pricingModel: string | null;
+  recurringInterval: string | null;
+  recurringIntervalCount: number;
+}): number | null {
+  const { priceCents, pricingModel, recurringInterval, recurringIntervalCount } = cls;
+  if (pricingModel === null || pricingModel === "term") return monthlyFromTermFeeCents(priceCents);
+  if (pricingModel !== "recurring") return null;
+  const n = Math.max(1, recurringIntervalCount);
+  switch (recurringInterval) {
+    case "month":
+      return Math.round(priceCents / n);
+    case "week":
+      return Math.round((priceCents * 52) / 12 / n);
+    case "fortnight":
+      return Math.round((priceCents * 26) / 12 / n);
+    case "year":
+      return Math.round(priceCents / 12 / n);
+    case "term":
+      return monthlyFromTermFeeCents(Math.round(priceCents / n));
+    default:
+      return null;
+  }
+}
+
 /** Next installment amount for a plan, or null when complete. */
 export function nextInstallmentAmountCents(
   installmentAmounts: number[],

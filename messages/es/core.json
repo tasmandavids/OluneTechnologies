@@ -274,7 +274,8 @@
     "sendResetLink": "Enviar enlace de restablecimiento",
     "sendingResetLink": "Enviando…",
     "resetLinkSent": "Revisa tu correo — te hemos enviado un enlace para restablecer la contraseña.",
-    "resetLinkError": "No se pudo enviar el correo de restablecimiento. Inténtalo de nuevo."
+    "resetLinkError": "No se pudo enviar el correo de restablecimiento. Inténtalo de nuevo.",
+    "networkError": "No se puede conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
   },
   "marketing": {
     "features": "Funciones",

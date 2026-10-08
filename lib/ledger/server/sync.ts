@@ -281,7 +281,9 @@ async function runSync(supabase: SupabaseClient, ctx: BooksContext, report: Sync
       reference: `ORD-${(o.id as string).slice(0, 8)}`,
       date,
       contactName: name(o, "user"),
-      taxInclusive: settings.pricesIncludeTax,
+      // Checkout never adds tax on top, so what the customer paid is the gross
+      // whatever the studio's pricing posture is today (audit D-01).
+      taxInclusive: true,
       amountCents: total,
       lines: Math.abs(itemsTotal - total) <= 1 ? items : [],
     });
@@ -297,7 +299,7 @@ async function runSync(supabase: SupabaseClient, ctx: BooksContext, report: Sync
       reference: `TKT-${(t.id as string).slice(0, 8)}`,
       date,
       contactName: name(t, "user"),
-      taxInclusive: settings.pricesIncludeTax,
+      taxInclusive: true, // see the order above (audit D-01)
       amountCents: Number(t.total_cents ?? 0),
       lines: [
         {

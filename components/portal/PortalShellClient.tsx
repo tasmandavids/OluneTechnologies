@@ -494,7 +494,7 @@ export function PortalShellClient({
         )}
         <main
           className={`flex-1 overflow-auto ${isAdminRail ? "px-[18px] pb-[70px] md:px-[26px]" : ""} ${
-            isParentRail ? "px-[14px] pb-[110px] md:px-[26px] md:pb-[70px]" : ""
+            isParentRail ? "px-[14px] pb-[calc(110px+env(safe-area-inset-bottom))] md:px-[26px] md:pb-[70px]" : ""
           } ${showBell && !isGlass ? "" : "md:pt-0 pt-[53px]"}`}
         >
           {children}

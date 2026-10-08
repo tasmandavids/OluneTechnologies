@@ -1,8 +1,10 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { OpsTasksBoard } from "@/components/platform/OpsTasksBoard";
 import type { PlatformTask } from "@/lib/platform/types";
+import { requirePlatformPage } from "@/lib/platform/page-guard";
 
 export default async function PlatformTasksPage() {
+  if (!(await requirePlatformPage())) return null;
   const admin = createAdminClient();
 
   const [{ data: tasks }, { data: studios }] = await Promise.all([

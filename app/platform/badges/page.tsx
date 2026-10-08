@@ -5,6 +5,7 @@
 // ============================================================================
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requirePlatformPage } from "@/lib/platform/page-guard";
 import PlatformBadgeManager, {
   type GlobalBadge,
 } from "@/components/platform/PlatformBadgeManager";
@@ -12,6 +13,7 @@ import PlatformBadgeManager, {
 export const dynamic = "force-dynamic";
 
 export default async function PlatformBadgesPage() {
+  if (!(await requirePlatformPage())) return null;
   const admin = createAdminClient();
 
   const { data: rows } = await admin

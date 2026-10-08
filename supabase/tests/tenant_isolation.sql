@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
-select plan(18);
+select plan(22);
 
 insert into public.studios (id, name, slug, status) values
   ('00000000-0000-0000-0000-00000000a001', 'RLS studio A', 'rls-studio-a', 'trial'),
@@ -74,9 +74,17 @@ select throws_ok(
   '42501', null, 'parent cannot promote their own role'
 );
 
+select is((select count(*) from public.profiles where id = '00000000-0000-0000-0000-00000000a103'), 0::bigint, 'parent A cannot read another family profile');
+select is((select count(*) from public.profiles where id = '00000000-0000-0000-0000-00000000a101'), 1::bigint, 'parent A can still read studio staff profiles');
+select throws_ok(
+  $$insert into public.guardianships (studio_id, guardian_id, student_id)
+    values ('00000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-00000000a102', '00000000-0000-0000-0000-00000000a103')$$,
+  '42501', null, 'parent cannot self-link as guardian of another studio member'
+);
+
 reset role;
 set local role anon;
-select throws_ok('select count(*) from public.profiles', '42501', null, 'anonymous caller cannot query private profiles');
+select throws_ok('select email, phone, birthday, stripe_customer_id from public.profiles', '42501', null, 'anonymous caller cannot read private profile columns (R-11)');
 select throws_ok('select count(*) from public.invoices', '42501', null, 'anonymous caller cannot query invoices');
 
 reset role;
@@ -99,5 +107,10 @@ select is((select count(*) from pg_class c join pg_namespace n on n.oid = c.reln
            join pg_attribute a on a.attrelid = c.oid and a.attname = 'studio_id' and not a.attisdropped
            where n.nspname = 'public' and c.relkind in ('r', 'p') and not c.relrowsecurity),
           0::bigint, 'all studio-scoped public tables have RLS enabled');
+select throws_ok(
+  $$insert into public.guardianships (studio_id, guardian_id, student_id)
+    values ('00000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-00000000a102', '00000000-0000-0000-0000-00000000b102')$$,
+  '23514', null, 'guardianship cannot tie a student from another studio'
+);
 select * from finish();
 rollback;

@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (profile?.studio_id) {
-      await supabase.from("notifications").insert({
+      await admin.from("notifications").insert({
         studio_id: profile.studio_id,
         user_id:   user.id,
         type:      "event_ticket",
@@ -189,6 +189,15 @@ export async function POST(req: NextRequest) {
       status:                   "reserved",
       checked_in_at:            null,
       checked_in_by:            null,
+      // Re-buying after a refund reuses this row (unique on event+user), so
+      // clear the previous sale's refund and Xero state: otherwise the new
+      // sale is skipped as "already synced" and shows as "already refunded"
+      // (audit D-04).
+      purchased_at:             new Date().toISOString(),
+      xero_invoice_id:          null,
+      refunded_at:              null,
+      refund_amount_cents:      null,
+      stripe_refund_id:         null,
     },
     { onConflict: "event_id,user_id" }
   );
