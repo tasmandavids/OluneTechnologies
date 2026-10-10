@@ -36,6 +36,16 @@ export function canAccessPortalPath(role: Role, pathname: string): boolean {
   if (role === "office") return isOfficeAllowedPath(pathname);
   if (role === "teacher") return pathname.startsWith("/portal/teacher");
   if (role === "parent") return pathname.startsWith("/portal/parent");
-  if (role === "student") return pathname.startsWith("/portal/student");
+  if (role === "student") {
+    // Self-managed adults reach billing and forms through the parent pages;
+    // RLS (inv_student_read) limits what those pages can see to their own rows.
+    return (
+      pathname.startsWith("/portal/student") ||
+      pathname === "/portal/parent/billing" ||
+      pathname.startsWith("/portal/parent/billing/") ||
+      pathname === "/portal/parent/forms" ||
+      pathname.startsWith("/portal/parent/forms/")
+    );
+  }
   return false;
 }
