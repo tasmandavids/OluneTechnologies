@@ -29,19 +29,40 @@ export async function loadParentsByEmails(
   return out;
 }
 
-function parentEmailsInThread(
-  participants: string[],
+function messageAddresses(msg: SyncedMessage): Set<string> {
+  const out = new Set<string>();
+  for (const a of [msg.fromAddress, ...msg.toAddresses, ...msg.ccAddresses]) {
+    if (a) out.add(a.toLowerCase().trim());
+  }
+  return out;
+}
+
+/**
+ * Which messages of a thread a parent may see: only those they sent or received
+ * (from / to / cc). Thread membership is not enough: a reply to a group send
+ * is private to the replier and the studio (audit E-01).
+ */
+export function messagesForParent<T extends { synced: SyncedMessage }>(
+  parent: ParentProfile,
+  messages: T[],
+): T[] {
+  return messages.filter((m) => messageAddresses(m.synced).has(parent.email));
+}
+
+function parentsOnMessages(
+  messages: Array<{ synced: SyncedMessage }>,
   accountEmail: string,
   parentsByEmail: Map<string, ParentProfile>,
 ): ParentProfile[] {
   const studioAddress = accountEmail.toLowerCase();
   const matched = new Map<string, ParentProfile>();
 
-  for (const address of participants) {
-    const key = address.toLowerCase();
-    if (key === studioAddress) continue;
-    const parent = parentsByEmail.get(key);
-    if (parent) matched.set(parent.id, parent);
+  for (const m of messages) {
+    for (const address of messageAddresses(m.synced)) {
+      if (address === studioAddress) continue;
+      const parent = parentsByEmail.get(address);
+      if (parent) matched.set(parent.id, parent);
+    }
   }
 
   return [...matched.values()];
@@ -65,16 +86,21 @@ export async function archiveThreadForParents(
     parentsByEmail: Map<string, ParentProfile>;
   },
 ): Promise<number> {
-  const parents = parentEmailsInThread(
-    input.participants,
-    input.accountEmail,
-    input.parentsByEmail,
-  );
+  const parents = parentsOnMessages(input.messages, input.accountEmail, input.parentsByEmail);
   if (!parents.length) return 0;
 
   let archived = 0;
 
   for (const parent of parents) {
+    const visible = messagesForParent(parent, input.messages);
+    if (!visible.length) continue;
+    const lastVisible = visible.reduce((a, b) =>
+      (b.synced.sentAt ?? "") >= (a.synced.sentAt ?? "") ? b : a,
+    );
+    const participants = [
+      ...new Set(visible.flatMap((m) => [...messageAddresses(m.synced)])),
+    ];
+
     const { data: parentThread, error: threadErr } = await supabase
       .from("parent_email_threads")
       .upsert(
@@ -82,11 +108,11 @@ export async function archiveThreadForParents(
           studio_id: input.studioId,
           parent_id: parent.id,
           source_email_thread_id: input.sourceThreadId,
-          subject: input.subject,
-          snippet: input.snippet,
-          participant_addresses: input.participants,
-          message_count: input.messageCount,
-          last_message_at: input.lastMessageAt,
+          subject: lastVisible.synced.subject,
+          snippet: lastVisible.synced.snippet,
+          participant_addresses: participants,
+          message_count: visible.length,
+          last_message_at: lastVisible.synced.sentAt,
           updated_at: new Date().toISOString(),
         },
         { onConflict: "parent_id,source_email_thread_id" },
@@ -96,7 +122,7 @@ export async function archiveThreadForParents(
 
     if (threadErr || !parentThread) continue;
 
-    for (const msg of input.messages) {
+    for (const msg of visible) {
       const { error: msgErr } = await supabase.from("parent_email_messages").upsert(
         {
           studio_id: input.studioId,

@@ -264,6 +264,20 @@ export async function checkDomainDns(input: unknown): Promise<DomainActionResult
   const validationError = validateCustomDomain(domain, ROOT);
   if (validationError) return { ok: false, error: validationError };
 
+  // The self-heal path below registers the hostname on Olune's hosting project,
+  // so only an admin may reach it, and only for the domain their studio saved.
+  const auth = await getAdminStudioId();
+  if ("error" in auth) return { ok: false, error: auth.error };
+  const supabase = await createClient();
+  const { data: own } = await supabase
+    .from("studios")
+    .select("custom_domain")
+    .eq("id", auth.studioId)
+    .maybeSingle();
+  if ((own?.custom_domain as string | null)?.toLowerCase() !== domain) {
+    return { ok: false, error: "That isn't the domain connected to your studio." };
+  }
+
   const targets = domainTargets();
   const expected = buildDnsRecords(domain, parsed.data.kind as DomainKind, targets);
 

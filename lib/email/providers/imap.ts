@@ -2,13 +2,11 @@ import { ImapFlow } from "imapflow";
 import nodemailer from "nodemailer";
 import type { ImapCredentials, SyncedMessage } from "../types";
 
-function threadKey(subject: string | null, references: string | null, messageId: string): string {
-  if (references) {
-    const first = references.split(/\s+/)[0]?.replace(/[<>]/g, "");
-    if (first) return first;
-  }
-  const normalized = (subject ?? "(no subject)").replace(/^(re|fwd?):\s*/gi, "").trim().toLowerCase();
-  return normalized || messageId;
+// Threads are keyed on the reply chain only. Grouping by subject merged unrelated
+// families who both wrote "Question" into one thread (audit E-01).
+function threadKey(references: string | null, messageId: string): string {
+  const first = references?.split(/\s+/)[0]?.replace(/[<>]/g, "");
+  return first || messageId.replace(/[<>]/g, "");
 }
 
 export async function syncImapInbox(
@@ -50,7 +48,7 @@ export async function syncImapInbox(
 
         messages.push({
           providerMessageId: String(msg.uid),
-          providerThreadId: threadKey(subject, references, messageId),
+          providerThreadId: threadKey(references, messageId),
           fromAddress: from?.address?.toLowerCase() ?? null,
           fromName: from?.name ?? null,
           toAddresses: (msg.envelope.to ?? []).map((a) => a.address?.toLowerCase()).filter(Boolean) as string[],
