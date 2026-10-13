@@ -40,6 +40,7 @@ const ALLOWED_AUTHENTICATED_RPCS = new Set([
   "accept_private_lesson", // app/portal/teacher/private-lessons/actions.ts
   "accept_studio_invite", // app/portal/teacher/affiliations/actions.ts
   "admin_record_installment_payment", // app/portal/admin/payment-plans/actions.ts
+  "class_enrolled_counts", // counts only for the caller's own studio (parent enrol)
   "create_instructor_workspace_for_user", // components/onboarding/OnboardingWizard.tsx
   "create_studio_for_user", // components/onboarding/OnboardingWizard.tsx
   "decline_private_lesson", // app/portal/teacher/private-lessons/actions.ts
