@@ -102,6 +102,37 @@ export async function loadStudioXeroClient(
   };
 }
 
+/** Reads `authentication_event_id` from a Xero access token (a JWT) without verifying it. */
+function authEventIdFromAccessToken(accessToken: string | undefined): string | null {
+  try {
+    const payload = accessToken?.split(".")[1];
+    if (!payload) return null;
+    const claims = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+    return typeof claims.authentication_event_id === "string" ? claims.authentication_event_id : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * /connections lists every organisation the Xero user ever connected to this
+ * app. Pick the one(s) authorised in this consent flow (matching authEventId),
+ * never simply the first. Returns undefined when the choice is ambiguous.
+ */
+export function chooseAuthorisedTenant<T extends { authEventId?: string; updatedDateUtc?: string }>(
+  tenants: T[],
+  accessToken: string | undefined,
+): T | undefined {
+  const eventId = authEventIdFromAccessToken(accessToken);
+  if (eventId) {
+    const matches = tenants.filter((t) => t.authEventId === eventId);
+    if (matches.length === 1) return matches[0];
+    if (matches.length > 1) return undefined;
+  }
+  // No usable event id: only safe when there is exactly one connection.
+  return tenants.length === 1 ? tenants[0] : undefined;
+}
+
 export async function exchangeXeroCallback(
   callbackUrl: string,
   redirectUri: string,
@@ -117,8 +148,8 @@ export async function exchangeXeroCallback(
   const tokenSet = await client.apiCallback(callbackUrl);
   const tokens = storedFromTokenSet(tokenSet);
   await client.updateTenants(true);
-  const tenant = client.tenants[0];
-  if (!tenant) throw new Error("No Xero organisation was authorised");
+  const tenant = chooseAuthorisedTenant(client.tenants, tokens.access_token);
+  if (!tenant) throw new Error("Could not tell which Xero organisation was authorised; reconnect and select a single organisation");
 
   return {
     tokens,

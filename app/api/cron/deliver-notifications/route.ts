@@ -48,11 +48,24 @@ import {
 } from "@/lib/notify/messages";
 import { sendEmail, sendPush, sendSms } from "@/lib/notify/providers";
 import { createStudioReplyToResolver } from "@/lib/notify/reply-to";
+import { isSendableParentEmail } from "@/lib/parents/mass-email";
 import { nextAttemptAt } from "@/lib/notify/backoff";
 
 export const dynamic = "force-dynamic";
+// Room for several batches per run (audit E-03). Hobby caps this lower; the
+// loop below stops on its own budget either way.
+export const maxDuration = 300;
 
 const DEFAULT_BATCH = 200;
+const MAX_PASSES = 20;
+const DRAIN_BUDGET_MS = 200_000;
+
+function batchSize(req: NextRequest): number {
+  const limitParam = Number(req.nextUrl.searchParams.get("limit"));
+  return Number.isFinite(limitParam) && limitParam > 0 && limitParam <= 1000
+    ? Math.floor(limitParam)
+    : DEFAULT_BATCH;
+}
 
 type ProfileContact = { id: string; email: string | null; phone: string | null };
 
@@ -75,11 +88,7 @@ async function deliver(req: NextRequest) {
     );
   }
 
-  const limitParam = Number(req.nextUrl.searchParams.get("limit"));
-  const batch =
-    Number.isFinite(limitParam) && limitParam > 0 && limitParam <= 1000
-      ? Math.floor(limitParam)
-      : DEFAULT_BATCH;
+  const batch = batchSize(req);
 
   const summary = {
     processed: 0,
@@ -239,7 +248,7 @@ async function deliver(req: NextRequest) {
       !alreadySent("email") &&
       channelEnabled(row.user_id as string, row.type as string, "email")
     ) {
-      if (contact?.email) {
+      if (contact?.email && isSendableParentEmail(contact.email)) {
         // Studio-branded mail — an invoice or a class reminder — must reply to
         // the studio, not to Olune support. Memoised across the whole run, so
         // a batch spanning many studios costs one lookup each, not one per row.
@@ -400,7 +409,20 @@ export async function GET(req: NextRequest) {
   }
   if (!acquired) return NextResponse.json({ ok: true, skipped: "already-running" });
   try {
-    return await deliver(req);
+    // Drain the queue: keep taking batches while the previous one was full and
+    // the time budget allows, so one run clears more than DEFAULT_BATCH rows.
+    const started = Date.now();
+    const total: Record<string, number> = {};
+    let last: NextResponse | null = null;
+    for (let pass = 0; pass < MAX_PASSES; pass++) {
+      last = await deliver(req);
+      if (!last.ok) return last;
+      const body = (await last.clone().json()) as { summary?: Record<string, number> };
+      for (const [k, v] of Object.entries(body.summary ?? {})) total[k] = (total[k] ?? 0) + v;
+      const full = (body.summary?.processed ?? 0) >= batchSize(req);
+      if (!full || Date.now() - started > DRAIN_BUDGET_MS) break;
+    }
+    return NextResponse.json({ ok: true, ranAt: new Date().toISOString(), summary: total });
   } finally {
     const { error: releaseError } = await supabase.rpc("release_notification_delivery_lease", { p_token: token });
     if (releaseError) await reportHandledMessage("Notification delivery lease release failed", { route: "cron.deliver-notifications" });

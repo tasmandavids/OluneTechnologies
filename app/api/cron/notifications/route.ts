@@ -33,6 +33,7 @@
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
+import { recipientsForStudents, type GuardianLink } from "@/lib/notify/recipients";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { authorizedCron } from "@/lib/cron/auth";
 import { reportHandledError } from "@/lib/observability/report";
@@ -141,21 +142,37 @@ export async function GET(req: NextRequest) {
       ),
     );
 
-    const rows = (enrollments ?? [])
-      .filter((e) => !already.has(`${e.student_id}:${e.class_id}`))
-      .map((e) => {
-        const cls = classById.get(e.class_id as string);
-        const time = (cls?.start_time as string | null)?.slice(0, 5);
-        return {
+    // Children have no phone or routable email: remind their guardians (E-04).
+    const studentIds = [...new Set((enrollments ?? []).map((e) => e.student_id as string))];
+    const { data: links } = studentIds.length
+      ? await supabase
+          .from("guardianships")
+          .select("student_id, guardian_id")
+          .in("student_id", studentIds)
+      : { data: [] };
+    const recipients = recipientsForStudents(studentIds, (links ?? []) as GuardianLink[]);
+
+    const seen = new Set<string>();
+    const rows = (enrollments ?? []).flatMap((e) => {
+      const cls = classById.get(e.class_id as string);
+      const time = (cls?.start_time as string | null)?.slice(0, 5);
+      return (recipients.get(e.student_id as string) ?? [])
+        .filter((userId) => {
+          const key = `${userId}:${e.class_id}`;
+          if (already.has(key) || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .map((userId) => ({
           studio_id: e.studio_id,
-          user_id: e.student_id,
+          user_id: userId,
           type: "class_reminder",
           title: `Class tomorrow: ${cls?.name ?? "your class"}`,
           body: time ? `Starts at ${time}. See you there!` : "See you there!",
-          link: "/portal/student",
+          link: userId === e.student_id ? "/portal/student" : "/portal/parent",
           payload: { class_id: e.class_id },
-        };
-      });
+        }));
+    });
 
     if (rows.length) {
       const { error } = await supabase.from("notifications").insert(rows);

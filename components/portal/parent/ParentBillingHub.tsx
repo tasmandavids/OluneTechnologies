@@ -175,20 +175,80 @@ export function ParentBillingHub({
         <p className="rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-500">{portalError}</p>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="box rounded-2xl p-4">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-muted">{t("outstanding")}</p>
-          <p className="my-1 font-display text-[25px] font-medium leading-[1.1] tabular-nums text-ink">{formatMoney(outstanding)}</p>
-        </div>
-        <div className="box rounded-2xl p-4">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-muted">{t("totalPaid")}</p>
-          <p className="my-1 font-display text-[25px] font-medium leading-[1.1] tabular-nums text-ink">{formatMoney(totalPaid)}</p>
-        </div>
-        <div className="box rounded-2xl p-4">
-          <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-muted">{t("invoiceCount")}</p>
-          <p className="my-1 font-display text-[25px] font-medium leading-[1.1] tabular-nums text-ink">{invoices.length}</p>
-        </div>
-      </div>
+      <p className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm text-muted">
+        <span>
+          {t("outstanding")}:{" "}
+          <span className="font-display text-xl font-medium tabular-nums text-ink">{formatMoney(outstanding)}</span>
+        </span>
+        <span>
+          {t("totalPaid")}: <span className="tabular-nums text-ink">{formatMoney(totalPaid)}</span>
+        </span>
+        <span>
+          {t("invoiceCount")}: <span className="tabular-nums text-ink">{invoices.length}</span>
+        </span>
+      </p>
+
+      <section>
+        <h2 className="mb-3 font-display text-lg font-medium tracking-tight text-ink">{t("invoicesTitle")}</h2>
+        {invoices.length === 0 ? (
+          <div className="box rounded-2xl px-6 py-10 text-center">
+            <p className="text-sm text-muted">{t("noInvoices")}</p>
+          </div>
+        ) : (
+          <div className="box overflow-hidden rounded-2xl">
+            <table className="w-full min-w-[520px] text-sm">
+              <thead>
+                <tr className="border-b border-(--hair)">
+                  {[t("table.number"), t("table.issued"), t("table.student"), t("table.amount"), t("table.due"), t("table.status"), t("table.actions")].map(
+                    (h) => (
+                      <th
+                        key={h}
+                        className="px-4 py-3 text-left text-[0.62rem] font-semibold uppercase tracking-wider text-muted"
+                      >
+                        {h}
+                      </th>
+                    ),
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {invoices.map((inv) => (
+                  <tr
+                    key={inv.id}
+                    className={`border-b border-(--hair) last:border-0 ${
+                      inv.status === "overdue" ? "bg-[color-mix(in_srgb,#ef4444_4%,transparent)]" : ""
+                    }`}
+                  >
+                    <td className="px-4 py-3 font-mono text-xs text-ink">
+                      {formatInvoiceNumber(inv.invoiceNumber)}
+                    </td>
+                    <td className="px-4 py-3 text-ink">{fmtDate(inv.issuedAt, locale)}</td>
+                    <td className="px-4 py-3 text-ink">{inv.studentName ?? "—"}</td>
+                    <td className="px-4 py-3 font-semibold tabular-nums text-ink">
+                      {formatMoney(inv.amountCents)}
+                    </td>
+                    <td className="px-4 py-3 text-muted">{fmtDate(inv.dueDate, locale)}</td>
+                    <td className="px-4 py-3">
+                      <StatusBadge status={inv.status} />
+                    </td>
+                    <td className="px-4 py-3">
+                      {(inv.status === "sent" || inv.status === "overdue") && stripeConfigured && (
+                        <button
+                          type="button"
+                          onClick={() => setPayInvoice(inv)}
+                          className="rounded-lg border border-(--brand) px-3 py-1.5 text-xs font-bold text-(--brand) transition hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]"
+                        >
+                          {t("payNow")}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
 
       {/* Wallet summary band — plan progress, subscriptions, saved payment
           method access. Merged here from the old Family Wallet page (1.6.1). */}
@@ -281,68 +341,6 @@ export function ParentBillingHub({
           </div>
         </section>
       )}
-
-      <section>
-        <h2 className="mb-3 font-display text-lg font-medium tracking-tight text-ink">{t("invoicesTitle")}</h2>
-        {invoices.length === 0 ? (
-          <div className="box rounded-2xl px-6 py-10 text-center">
-            <p className="text-sm text-muted">{t("noInvoices")}</p>
-          </div>
-        ) : (
-          <div className="box overflow-hidden rounded-2xl">
-            <table className="w-full min-w-[520px] text-sm">
-              <thead>
-                <tr className="border-b border-(--hair)">
-                  {[t("table.number"), t("table.issued"), t("table.student"), t("table.amount"), t("table.due"), t("table.status"), t("table.actions")].map(
-                    (h) => (
-                      <th
-                        key={h}
-                        className="px-4 py-3 text-left text-[0.62rem] font-semibold uppercase tracking-wider text-muted"
-                      >
-                        {h}
-                      </th>
-                    ),
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {invoices.map((inv) => (
-                  <tr
-                    key={inv.id}
-                    className={`border-b border-(--hair) last:border-0 ${
-                      inv.status === "overdue" ? "bg-[color-mix(in_srgb,#ef4444_4%,transparent)]" : ""
-                    }`}
-                  >
-                    <td className="px-4 py-3 font-mono text-xs text-ink">
-                      {formatInvoiceNumber(inv.invoiceNumber)}
-                    </td>
-                    <td className="px-4 py-3 text-ink">{fmtDate(inv.issuedAt, locale)}</td>
-                    <td className="px-4 py-3 text-ink">{inv.studentName ?? "—"}</td>
-                    <td className="px-4 py-3 font-semibold tabular-nums text-ink">
-                      {formatMoney(inv.amountCents)}
-                    </td>
-                    <td className="px-4 py-3 text-muted">{fmtDate(inv.dueDate, locale)}</td>
-                    <td className="px-4 py-3">
-                      <StatusBadge status={inv.status} />
-                    </td>
-                    <td className="px-4 py-3">
-                      {(inv.status === "sent" || inv.status === "overdue") && stripeConfigured && (
-                        <button
-                          type="button"
-                          onClick={() => setPayInvoice(inv)}
-                          className="rounded-lg border border-(--brand) px-3 py-1.5 text-xs font-bold text-(--brand) transition hover:bg-[color-mix(in_srgb,var(--brand)_10%,transparent)]"
-                        >
-                          {t("payNow")}
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
 
       <section>
         <h2 className="mb-3 font-display text-lg font-medium tracking-tight text-ink">{t("paymentsTitle")}</h2>
