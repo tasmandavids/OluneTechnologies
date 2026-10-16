@@ -39,7 +39,7 @@ export function PulseRow({ pulse }: { pulse: PulseStat[] }) {
             {t(`${stat.id}.label`)}
           </div>
           <div className="relative my-1 font-display text-[25px] font-medium leading-[1.1] tabular-nums text-ink">
-            {stat.format === "percent" ? `${stat.value}%` : numberFmt.format(stat.value)}
+            {stat.value === null ? "—" : stat.format === "percent" ? `${stat.value}%` : numberFmt.format(stat.value)}
           </div>
         </div>
       ))}
