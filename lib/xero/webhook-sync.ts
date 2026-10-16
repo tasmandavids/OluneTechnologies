@@ -75,9 +75,10 @@ export async function xeroSyncAfterRefund(
   sourceType: XeroSyncSourceType,
   sourceId: string,
   refundCents: number,
+  refundId?: string,
 ): Promise<void> {
   try {
-    await syncRefundToXero(syncSupabase(supabase), sourceType, sourceId, refundCents, redirectUri());
+    await syncRefundToXero(syncSupabase(supabase), sourceType, sourceId, refundCents, redirectUri(), refundId);
   } catch (err) {
     console.warn(`[xero-sync] refund ${sourceType} ${sourceId} failed:`, err);
   }

@@ -722,13 +722,16 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           });
         }
 
-        const newCents = rows.reduce((sum, r) => sum + r.amountCents, 0);
-        if (refInvoiceId) {
-          await xeroSyncAfterRefund(supabase, "invoice", refInvoiceId, newCents);
-        } else if (refOrderId) {
-          await xeroSyncAfterRefund(supabase, "order", refOrderId, newCents);
-        } else if (refTicketId) {
-          await xeroSyncAfterRefund(supabase, "ticket", refTicketId, newCents);
+        // One credit note per Stripe refund, keyed by refund id so a redelivery
+        // cannot duplicate it (audit D-02).
+        for (const r of rows) {
+          if (refInvoiceId) {
+            await xeroSyncAfterRefund(supabase, "invoice", refInvoiceId, r.amountCents, r.id);
+          } else if (refOrderId) {
+            await xeroSyncAfterRefund(supabase, "order", refOrderId, r.amountCents, r.id);
+          } else if (refTicketId) {
+            await xeroSyncAfterRefund(supabase, "ticket", refTicketId, r.amountCents, r.id);
+          }
         }
 
         console.log(`[stripe-webhook] charge.refunded — reconciled ${rows.map((r) => r.id).join(", ")} (${piId})`);
