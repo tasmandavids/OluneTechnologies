@@ -18,6 +18,7 @@ import { CURRENCY } from "@/lib/currency";
 import { getAdminStudio } from "@/lib/portal/access";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { refundPaidClassPassesForInvoice } from "@/lib/passes/refunds";
+import { xeroSyncAfterRefund } from "@/lib/xero/webhook-sync";
 
 export type RefundKind = "invoice" | "order" | "ticket" | "class_pass";
 export type ActionResult = { ok: true } | { ok: false; error: string };
@@ -251,6 +252,12 @@ export async function refundSale(
       status: "refunded",
       description: fullyRefunded ? `Refund — ${kind}` : `Partial refund — ${kind}`,
     });
+  }
+
+  // The Stripe webhook skips refunds already in the ledger, so this is the one
+  // place an admin refund reaches Xero (audit D-02).
+  if (kind === "invoice" || kind === "order" || kind === "ticket") {
+    await xeroSyncAfterRefund(supabase, kind, id, refundCents, refundId);
   }
 
   revalidatePath("/portal/admin/money");

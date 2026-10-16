@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
+  Allocations,
   Contact,
   CreditNote,
   CreditNotes,
@@ -898,6 +899,7 @@ export async function syncRefundToXero(
   sourceId: string,
   refundCents: number,
   redirectUri: string,
+  refundId?: string,
 ): Promise<void> {
   let studioId: string | null = null;
   let xeroInvoiceId: string | null = null;
@@ -938,29 +940,69 @@ export async function syncRefundToXero(
   const loaded = await loadXeroPushClient(supabase, studioId, redirectUri);
   if (!loaded) return;
 
-  const contact = await resolveContact(supabase, loaded, payerId);
   const cfg = settings(loaded.connection.settings);
+  if (cfg.sync_enabled === false) return;
 
-  const creditNote: CreditNote = {
-    type: CreditNote.TypeEnum.ACCRECCREDIT,
-    contact,
-    lineItems: [
-      {
-        description: "Refund — Olune",
-        quantity: 1,
-        unitAmount: dollarsFromCents(refundCents),
-        accountCode: cfg.sales_account_code ?? DEFAULT_XERO_SETTINGS.sales_account_code,
-        taxType: "OUTPUT2",
-      },
-    ],
-    lineAmountTypes: LineAmountTypes.Inclusive,
-    status: CreditNote.StatusEnum.AUTHORISED,
-    reference: `REF-${sourceId.slice(0, 8)}`,
-  };
+  try {
+    const contact = await resolveContact(supabase, loaded, payerId);
 
-  await loaded.client.accountingApi.createCreditNotes(loaded.tenantId, {
-    creditNotes: [creditNote],
-  } as CreditNotes);
+    // Credit the sale under the tax treatment it was invoiced with (audit D-02):
+    // a hard-coded NZ OUTPUT2 claims back GST a non-registered studio never
+    // charged, and other countries' orgs reject the code outright.
+    const original = await loaded.client.accountingApi.getInvoice(loaded.tenantId, xeroInvoiceId);
+    const invoice = original.body.invoices?.[0];
+    const taxType = invoice?.lineItems?.find((l) => l.taxType)?.taxType;
+    const lineAmountTypes = invoice?.lineAmountTypes ?? LineAmountTypes.Inclusive;
+
+    const creditNote: CreditNote = {
+      type: CreditNote.TypeEnum.ACCRECCREDIT,
+      contact,
+      lineItems: [
+        {
+          description: "Refund — Olune",
+          quantity: 1,
+          unitAmount: dollarsFromCents(refundCents),
+          accountCode: cfg.sales_account_code ?? DEFAULT_XERO_SETTINGS.sales_account_code,
+          ...(taxType ? { taxType } : {}),
+        },
+      ],
+      lineAmountTypes,
+      status: CreditNote.StatusEnum.AUTHORISED,
+      reference: `REF-${sourceId.slice(0, 8)}${refundId ? `-${refundId.slice(-8)}` : ""}`,
+    };
+
+    const created = await loaded.client.accountingApi.createCreditNotes(
+      loaded.tenantId,
+      { creditNotes: [creditNote] } as CreditNotes,
+      undefined,
+      undefined,
+      refundId ? `refund-${refundId}` : undefined,
+    );
+
+    // Net the credit against the sale so the invoice ends at amount due 0
+    // instead of leaving an open customer credit.
+    const creditNoteId = created.body.creditNotes?.[0]?.creditNoteID;
+    if (creditNoteId) {
+      await loaded.client.accountingApi.createCreditNoteAllocation(loaded.tenantId, creditNoteId, {
+        allocations: [
+          {
+            invoice: { invoiceID: xeroInvoiceId } as Invoice,
+            amount: dollarsFromCents(refundCents),
+            date: new Date().toISOString().slice(0, 10),
+          },
+        ],
+      } as Allocations);
+    }
+  } catch (err) {
+    // Surface it on the connection: a refund that never reached Xero is
+    // otherwise invisible (audit D-02).
+    const message = err instanceof Error ? err.message : "Xero refund sync failed";
+    await supabase
+      .from("xero_connections")
+      .update({ sync_error: `Refund ${sourceType} ${sourceId.slice(0, 8)}: ${message}` })
+      .eq("studio_id", studioId);
+    throw err;
+  }
 }
 
 export async function voidInvoiceInXero(

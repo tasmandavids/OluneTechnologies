@@ -305,7 +305,7 @@ describe("processStripeEvent class-pass payments", () => {
     );
     expect(passRefundUpdate).toSatisfy((operation: Operation) => hasFilter(operation, "status", "paid"));
     expect(passRefundUpdate).not.toSatisfy((operation: Operation) => hasFilter(operation, "status", "redeemed"));
-    expect(xeroSyncAfterRefund).toHaveBeenCalledWith(supabase, "invoice", "invoice_1", 2500);
+    expect(xeroSyncAfterRefund).toHaveBeenCalledWith(supabase, "invoice", "invoice_1", 2500, expect.any(String));
   });
 });
 
@@ -342,7 +342,7 @@ describe("processStripeEvent partial refunds (audit B-03)", () => {
       amount_cents: -1000,
       stripe_refund_id: "re_new",
     });
-    expect(xeroSyncAfterRefund).toHaveBeenCalledWith(supabase, "invoice", "invoice_1", 1000);
+    expect(xeroSyncAfterRefund).toHaveBeenCalledWith(supabase, "invoice", "invoice_1", 1000, expect.any(String));
 
     const passUpdate = supabase.operations.find((o) => o.kind === "update" && o.table === "class_passes");
     expect(passUpdate).toBeUndefined();
