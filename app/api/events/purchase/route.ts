@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
     if (prior && (prior.status === "succeeded" || prior.status === "processing")) {
       // Paid or settling; the webhook will promote the row. Do not mint another.
       return NextResponse.json(
-        { error: "Your payment for this event is still being processed." },
+        { error: "You already have tickets for this event." },
         { status: 409 },
       );
     }
