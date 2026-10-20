@@ -300,6 +300,7 @@
       "termPlanActiveHint": "Vous avez un échéancier en cours ({paid} échéances payées sur {total}). Prochain paiement : {next}.",
       "startTermPlan": "Payer la première échéance",
       "payNextInstallment": "Payer la prochaine échéance",
+      "onPlan": "Sur plan de paiement",
       "termPayTitle": "Paiement mensuel du trimestre",
       "termPaySubtitle": "Vos factures en cours sont regroupées et réparties sur le trimestre.",
       "termPayExplain": "Nous totalisons tout ce qui figure sur votre compte et prélevons la prochaine mensualité en toute sécurité par carte.",

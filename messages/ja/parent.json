@@ -305,6 +305,7 @@
       "termPlanActiveHint": "支払いプランをご利用中です（{total}回中{paid}回分お支払い済み）。次回のお支払い：{next}。",
       "startTermPlan": "1回目の支払いを行う",
       "payNextInstallment": "次回分を支払う",
+      "onPlan": "支払いプラン対象",
       "termPayTitle": "学期の月次支払い",
       "termPaySubtitle": "未払いの請求書をまとめて、学期に分けてお支払いいただけます。",
       "termPayExplain": "アカウント内の合計金額を算出し、次回分の月払いをカードで安全にご請求します。",

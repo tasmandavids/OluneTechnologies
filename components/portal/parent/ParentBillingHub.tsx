@@ -22,6 +22,8 @@ export type BillingInvoice = {
   issuedAt: string | null;
   paidAt: string | null;
   studentName: string | null;
+  /** Collected by an active instalment plan; not individually payable (audit B-06). */
+  onPlan?: boolean;
 };
 
 export type BillingPayment = {
@@ -232,7 +234,10 @@ export function ParentBillingHub({
                       <StatusBadge status={inv.status} />
                     </td>
                     <td className="px-4 py-3">
-                      {(inv.status === "sent" || inv.status === "overdue") && stripeConfigured && (
+                      {inv.onPlan && (inv.status === "sent" || inv.status === "overdue") && (
+                        <span className="text-xs text-muted">{t("onPlan")}</span>
+                      )}
+                      {!inv.onPlan && (inv.status === "sent" || inv.status === "overdue") && stripeConfigured && (
                         <button
                           type="button"
                           onClick={() => setPayInvoice(inv)}

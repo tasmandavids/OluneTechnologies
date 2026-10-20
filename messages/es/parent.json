@@ -305,6 +305,7 @@
       "termPlanActiveHint": "Tienes un plan de pago activo ({paid} de {total} cuotas pagadas). Próximo pago: {next}.",
       "startTermPlan": "Pagar primera cuota",
       "payNextInstallment": "Pagar siguiente cuota",
+      "onPlan": "En plan de pago",
       "termPayTitle": "Pago mensual del trimestre",
       "termPaySubtitle": "Tus facturas pendientes se combinan y se dividen a lo largo del trimestre.",
       "termPayExplain": "Sumaremos todo lo que hay en tu cuenta y cobraremos la próxima cuota mensual de forma segura con tarjeta.",

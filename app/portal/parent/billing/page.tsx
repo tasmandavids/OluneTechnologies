@@ -18,7 +18,7 @@ export default async function ParentBillingPage() {
       supabase
         .from("invoices")
         .select(`
-          id, invoice_number, amount_cents, status, due_date, issued_at, paid_at,
+          id, invoice_number, amount_cents, status, due_date, issued_at, paid_at, term_payment_plan_id,
           profiles!student_id ( full_name )
         `)
         .eq("payer_id", user!.id)
@@ -72,6 +72,7 @@ export default async function ParentBillingPage() {
         .limit(20),
     ]);
 
+  const activePlanIds = new Set((plansRes.data ?? []).map((p) => p.id as string));
   const invoices = (invoicesRes.data ?? []).map((inv) => {
     const student = inv.profiles as unknown as { full_name: string | null } | null;
     return {
@@ -83,6 +84,7 @@ export default async function ParentBillingPage() {
       issuedAt: inv.issued_at as string | null,
       paidAt: inv.paid_at as string | null,
       studentName: student?.full_name ?? null,
+      onPlan: !!inv.term_payment_plan_id && activePlanIds.has(inv.term_payment_plan_id as string),
     };
   });
 
