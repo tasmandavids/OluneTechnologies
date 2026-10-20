@@ -445,6 +445,7 @@ describe("processStripeEvent order and ticket dispatch", () => {
 
   it("emits payment.succeeded for a ticket, resolving the studio via its event", async () => {
     const supabase = new SupabaseFake();
+    supabase.queue("event_tickets", "update", { data: [{ id: "tk_1" }] });
     supabase.queue("events", "select", { data: { studio_id: "studio_from_event" } });
 
     await processStripeEvent(
@@ -465,8 +466,22 @@ describe("processStripeEvent order and ticket dispatch", () => {
     });
   });
 
+  it("does not emit when the ticket no longer holds the paid intent", async () => {
+    // Superseded intent (audit B-04): money moved but the row points elsewhere.
+    const supabase = new SupabaseFake();
+    supabase.queue("event_tickets", "update", { data: [] });
+
+    await processStripeEvent(
+      paymentIntentSucceeded({ event_id: "ev_1", user_id: "u_1", studio_id: "studio_meta" }),
+      supabase as never,
+    );
+
+    expect(dispatchStudioEvent).not.toHaveBeenCalled();
+  });
+
   it("skips the event lookup when a ticket intent carries its studio", async () => {
     const supabase = new SupabaseFake();
+    supabase.queue("event_tickets", "update", { data: [{ id: "tk_1" }] });
 
     await processStripeEvent(
       paymentIntentSucceeded({ event_id: "ev_1", studio_id: "studio_meta" }),

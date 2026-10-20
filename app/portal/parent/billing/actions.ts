@@ -169,6 +169,10 @@ export async function createTermInstallmentIntent(
     // lets an unsettled `processing` intent look "paid". One installment = one card charge.
     payment_method_types: ["card"],
     ...(await resolveDestinationCharge(supabase, plan.studio_id)),
+  }, {
+    // A double-click or second guardian gets the same intent for this
+    // instalment instead of a second charge (audit B-04).
+    idempotencyKey: `pi:plan:${plan.id}:${installmentNumber}:${installmentCents}`,
   });
 
   if (!intent.client_secret) {
