@@ -305,6 +305,7 @@
       "termPlanActiveHint": "您正在使用付款计划（已付 {paid}/{total} 期）。下次付款：{next}。",
       "startTermPlan": "支付首期",
       "payNextInstallment": "支付下一期",
+      "onPlan": "已在付款计划中",
       "termPayTitle": "每月学期付款",
       "termPaySubtitle": "您的未结账单将合并并分摊到整个学期。",
       "termPayExplain": "我们会汇总您账户上的所有款项，并通过银行卡安全收取下一期月付款。",

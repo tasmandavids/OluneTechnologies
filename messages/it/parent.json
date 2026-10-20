@@ -300,6 +300,7 @@
       "termPlanActiveHint": "Hai un piano di pagamento attivo ({paid} rate su {total} pagate). Prossimo pagamento: {next}.",
       "startTermPlan": "Paga la prima rata",
       "payNextInstallment": "Paga la rata successiva",
+      "onPlan": "In piano di pagamento",
       "termPayTitle": "Pagamento mensile del trimestre",
       "termPaySubtitle": "Le tue fatture aperte vengono unite e distribuite sul trimestre.",
       "termPayExplain": "Sommeremo tutto ciò che risulta sul tuo conto e addebiteremo la rata mensile successiva in sicurezza con carta.",

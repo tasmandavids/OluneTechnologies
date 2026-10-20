@@ -305,6 +305,7 @@
       "termPlanActiveHint": "You are on a payment plan ({paid} of {total} instalments paid). Next payment: {next}.",
       "startTermPlan": "Pay first instalment",
       "payNextInstallment": "Pay next instalment",
+      "onPlan": "On payment plan",
       "termPayTitle": "Monthly term payment",
       "termPaySubtitle": "Your open invoices are combined and split across the term.",
       "termPayExplain": "We will total everything on your account and charge the next monthly instalment securely by card.",
