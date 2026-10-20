@@ -243,6 +243,8 @@ export async function createEnrollmentSubscription(
     // The webhook syncs status onto an existing row; without one, auto-pay
     // would charge the family while the studio never sees the subscription.
     await stripe.subscriptions.cancel(sub.id).catch(() => undefined);
+    // 23505: a concurrent request already created this class's auto-pay (B-15).
+    if (mirrorErr.code === "23505") return { ok: false, error: t("autoPayAlreadySetUp") };
     return { ok: false, error: mirrorErr.message };
   }
 
