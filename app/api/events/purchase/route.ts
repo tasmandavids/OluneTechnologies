@@ -20,6 +20,8 @@ const PurchaseSchema = z.object({
   quantity: z.number().int().min(1).max(10).default(1),
 });
 
+const ALREADY_HAS_TICKETS = "You already have tickets for this event.";
+
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const {
@@ -76,7 +78,7 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
   if (existingTicket?.status === "paid") {
     return NextResponse.json(
-      { error: "You already have tickets for this event." },
+      { error: ALREADY_HAS_TICKETS },
       { status: 409 },
     );
   }
@@ -94,7 +96,7 @@ export async function POST(req: NextRequest) {
     if (prior && (prior.status === "succeeded" || prior.status === "processing")) {
       // Paid or settling; the webhook will promote the row. Do not mint another.
       return NextResponse.json(
-        { error: "You already have tickets for this event." },
+        { error: ALREADY_HAS_TICKETS },
         { status: 409 },
       );
     }
