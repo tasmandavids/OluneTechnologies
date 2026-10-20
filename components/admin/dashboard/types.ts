@@ -83,7 +83,8 @@ export interface AttentionData {
  *  fabricate a trend it can't compute. */
 export interface PulseStat {
   id: "occupancy" | "enrolled" | "collected";
-  value: number;
+  /** null = nothing to measure yet (rendered as an em dash). */
+  value: number | null;
   format: "percent" | "number";
 }
 
