@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
   // checkout left the buyer locked out at the door despite having paid.
   const { data: existingTicket } = await admin
     .from("event_tickets")
-    .select("status")
+    .select("status, stripe_payment_intent_id")
     .eq("event_id", event.id)
     .eq("user_id", user.id)
     .maybeSingle();
@@ -160,6 +160,7 @@ export async function POST(req: NextRequest) {
 
   // Paid event — create Stripe PaymentIntent
   const stripe = (await import("@/lib/stripe")).stripe;
+  const previousIntentId = (existingTicket?.stripe_payment_intent_id as string | null | undefined) ?? null;
   const customerId = await getOrCreateStripeCustomer(supabase, user.id, event.studio_id as string);
 
   const intent = await stripe.paymentIntents.create({
@@ -174,6 +175,11 @@ export async function POST(req: NextRequest) {
       studio_id: event.studio_id as string,
     },
     ...(await resolveDestinationCharge(supabase, event.studio_id as string)),
+  }, {
+    // A double-click or second tab gets the same intent instead of a second
+    // live one (audit B-04); the previous intent is part of the key so a
+    // genuine re-purchase mints a fresh one.
+    idempotencyKey: `pi:ticket:${event.id}:${user.id}:${quantity}:${totalCents}:${previousIntentId ?? "new"}`,
   });
 
   // Reserve ticket row (pending payment)
@@ -206,6 +212,12 @@ export async function POST(req: NextRequest) {
     // not be handed a secret they could pay with.
     await stripe.paymentIntents.cancel(intent.id).catch(() => undefined);
     return NextResponse.json({ error: reserveErr.message }, { status: 500 });
+  }
+
+  // The row now holds the new intent, so the one it replaced can never be
+  // matched by the webhook: cancel it so it cannot be paid and orphaned.
+  if (previousIntentId && previousIntentId !== intent.id) {
+    await stripe.paymentIntents.cancel(previousIntentId).catch(() => undefined);
   }
 
   return NextResponse.json({
