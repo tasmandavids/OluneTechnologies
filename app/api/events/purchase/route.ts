@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
   // checkout left the buyer locked out at the door despite having paid.
   const { data: existingTicket } = await admin
     .from("event_tickets")
-    .select("status")
+    .select("status, stripe_payment_intent_id")
     .eq("event_id", event.id)
     .eq("user_id", user.id)
     .maybeSingle();
@@ -79,6 +79,28 @@ export async function POST(req: NextRequest) {
       { error: "You already have tickets for this event." },
       { status: 409 },
     );
+  }
+
+  // A reserved row still holds an earlier intent. Overwriting it without
+  // cancelling leaves two live intents, and a payment on the orphaned one is
+  // charged but never recorded (audit B-04).
+  const supersededIntentId =
+    existingTicket?.status === "reserved"
+      ? (existingTicket.stripe_payment_intent_id as string | null)
+      : null;
+  if (supersededIntentId) {
+    const { stripe: stripeClient } = await import("@/lib/stripe");
+    const prior = await stripeClient.paymentIntents.retrieve(supersededIntentId).catch(() => null);
+    if (prior && (prior.status === "succeeded" || prior.status === "processing")) {
+      // Paid or settling; the webhook will promote the row. Do not mint another.
+      return NextResponse.json(
+        { error: "Your payment for this event is still being processed." },
+        { status: 409 },
+      );
+    }
+    if (prior && prior.status !== "canceled") {
+      await stripeClient.paymentIntents.cancel(prior.id).catch(() => undefined);
+    }
   }
 
   // Family discount (opt-in per studio) — applied to tickets when the buyer
@@ -174,6 +196,10 @@ export async function POST(req: NextRequest) {
       studio_id: event.studio_id as string,
     },
     ...(await resolveDestinationCharge(supabase, event.studio_id as string)),
+  }, {
+    // A double-click returns the same intent. Quantity, amount and the intent
+    // being replaced are in the key so a changed purchase mints a new one.
+    idempotencyKey: `pi:ticket:${event.id}:${user.id}:${quantity}:${totalCents}:${supersededIntentId ?? "new"}`,
   });
 
   // Reserve ticket row (pending payment)

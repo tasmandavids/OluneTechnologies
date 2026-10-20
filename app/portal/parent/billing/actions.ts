@@ -169,8 +169,16 @@ export async function createTermInstallmentIntent(
     // lets an unsettled `processing` intent look "paid". One installment = one card charge.
     payment_method_types: ["card"],
     ...(await resolveDestinationCharge(supabase, plan.studio_id)),
+  }, {
+    // Two clicks (or two guardians) on the same instalment get the same intent
+    // instead of a second one that would throw "Unexpected installment number"
+    // in the webhook (audit B-04).
+    idempotencyKey: `pi:plan:${plan.id}:${installmentNumber}:${installmentCents}`,
   });
 
+  if (intent.status === "succeeded" || intent.status === "processing") {
+    return { ok: false, error: t("termPlanComplete") };
+  }
   if (!intent.client_secret) {
     return { ok: false, error: t("stripeNoClientSecret") };
   }

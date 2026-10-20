@@ -287,7 +287,18 @@ export async function processStripeEvent(event: Stripe.Event, supabase: ServiceS
           .eq("event_id", target.eventId)
           .eq("stripe_payment_intent_id", intent.id);
         if (target.userId) q = q.eq("user_id", target.userId);
-        await q;
+        const { data: paidTickets, error: ticketErr } = await q.select("id");
+        if (ticketErr) {
+          throw new Error(`ticket for event ${target.eventId} paid but not updated: ${ticketErr.message}`);
+        }
+        if (!paidTickets?.length) {
+          // Money taken for an intent the ticket row no longer holds (audit B-04).
+          await reportHandledMessage("Unallocated payment: succeeded PaymentIntent does not match its ticket", {
+            route: "webhook.stripe.unallocated",
+            tags: { kind: "ticket" },
+            extra: { eventId: target.eventId, paymentIntentId: intent.id, amount: intent.amount_received },
+          });
+        }
 
         await xeroSyncTicketByPaymentIntent(supabase, target.eventId, intent.id, target.userId);
 
