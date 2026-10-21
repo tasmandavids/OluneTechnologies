@@ -152,7 +152,7 @@ export default async function StudentPortal() {
       .eq("studio_id", studioId)
       .eq("status", "published")
       .order("event_date", { ascending: true }),
-    supabase.from("event_tickets").select("event_id, quantity, status, qr_code").eq("user_id", user!.id),
+    supabase.from("event_tickets").select("event_id, quantity, status, qr_code").eq("user_id", user!.id).order("purchased_at", { ascending: true }),
     supabase
       .from("class_passes")
       .select("id, status, price_cents, qr_code, purchased_at, redeemed_at")

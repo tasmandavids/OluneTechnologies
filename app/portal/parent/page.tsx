@@ -139,7 +139,10 @@ export default async function ParentPortal() {
     supabase
       .from("event_tickets")
       .select("event_id, quantity, status, qr_code")
-      .eq("user_id", user!.id),
+      .eq("user_id", user!.id)
+      // Oldest first, so the newest purchase wins when an event has several
+      // (a refunded ticket and its re-purchase; audit D-04).
+      .order("purchased_at", { ascending: true }),
 
     // Unread notifications
     supabase

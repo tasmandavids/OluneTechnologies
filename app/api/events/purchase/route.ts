@@ -65,14 +65,17 @@ export async function POST(req: NextRequest) {
 
   const admin = createAdminClient();
 
-  // One ticket row per (event, buyer). Re-purchasing used to overwrite a PAID
-  // row back to 'reserved' with a new intent, so abandoning the second
-  // checkout left the buyer locked out at the door despite having paid.
+  // One LIVE (reserved or paid) ticket row per (event, buyer); refunded and
+  // cancelled rows stay as history, so a re-purchase is a new row and the first
+  // sale and its refund keep their own place in Books and Xero (audit D-04).
+  // A paid row is never overwritten: abandoning a second checkout must not
+  // lock a paying buyer out at the door.
   const { data: existingTicket } = await admin
     .from("event_tickets")
-    .select("status, stripe_payment_intent_id")
+    .select("id, status, stripe_payment_intent_id")
     .eq("event_id", event.id)
     .eq("user_id", user.id)
+    .in("status", ["reserved", "paid"])
     .maybeSingle();
   if (existingTicket?.status === "paid") {
     return NextResponse.json(
@@ -80,6 +83,16 @@ export async function POST(req: NextRequest) {
       { status: 409 },
     );
   }
+
+  // Reuse the buyer's own unpaid reservation (rotating its QR and intent);
+  // otherwise this is a new purchase and gets a new row. Two racing requests
+  // collide on the live-row unique index rather than both inserting.
+  const writeTicket = async (fields: Record<string, unknown>) => {
+    const query = existingTicket?.id
+      ? admin.from("event_tickets").update(fields).eq("id", existingTicket.id as string).eq("status", "reserved")
+      : admin.from("event_tickets").insert({ event_id: event.id, user_id: user.id, ...fields });
+    return query.select().single();
+  };
 
   // Family discount (opt-in per studio) — applied to tickets when the buyer
   // already has an actively-enrolled student. No-op unless the studio enabled it.
@@ -97,7 +110,7 @@ export async function POST(req: NextRequest) {
   //
   // Generating it here rather than leaning on the column default is deliberate:
   // the payload has to be encoded into the image before the row is written, and
-  // on re-purchase the upsert below rotates the token, invalidating the old QR.
+  // on re-purchase of an unpaid reservation the write below rotates the token, invalidating the old QR.
   const qrToken = crypto.randomUUID();
   const qrPayload = JSON.stringify({
     kind:       "event_ticket",
@@ -112,28 +125,18 @@ export async function POST(req: NextRequest) {
 
   if (totalCents === 0) {
     // Free event — reserve immediately
-    const { data: ticket, error: tickErr } = await admin
-      .from("event_tickets")
-      .upsert(
-        {
-          event_id:      event.id,
-          user_id:       user.id,
-          quantity,
-          total_cents:   0,
-          qr_code:       qrDataUrl,
-          qr_token:      qrToken,
-          status:        "paid",
-          // Re-issuing supersedes the old QR, so any earlier check-in against
-          // it is cleared — otherwise a re-purchase would arrive at the door
-          // already marked as admitted.
-          checked_in_at: null,
-          checked_in_by: null,
-        },
-        { onConflict: "event_id,user_id" }
-      )
-      .select()
-      .single();
-
+    const { data: ticket, error: tickErr } = await writeTicket({
+      quantity,
+      total_cents:   0,
+      qr_code:       qrDataUrl,
+      qr_token:      qrToken,
+      status:        "paid",
+      // Re-issuing supersedes the old QR, so any earlier check-in against
+      // it is cleared — otherwise a re-purchase would arrive at the door
+      // already marked as admitted.
+      checked_in_at: null,
+      checked_in_by: null,
+    });
     if (tickErr) return NextResponse.json({ error: tickErr.message }, { status: 500 });
 
     // Notify user
@@ -183,30 +186,17 @@ export async function POST(req: NextRequest) {
   });
 
   // Reserve ticket row (pending payment)
-  const { error: reserveErr } = await admin.from("event_tickets").upsert(
-    {
-      event_id:                 event.id,
-      user_id:                  user.id,
-      quantity,
-      total_cents:              totalCents,
-      qr_code:                  qrDataUrl,
-      qr_token:                 qrToken,
-      stripe_payment_intent_id: intent.id,
-      status:                   "reserved",
-      checked_in_at:            null,
-      checked_in_by:            null,
-      // Re-buying after a refund reuses this row (unique on event+user), so
-      // clear the previous sale's refund and Xero state: otherwise the new
-      // sale is skipped as "already synced" and shows as "already refunded"
-      // (audit D-04).
-      purchased_at:             new Date().toISOString(),
-      xero_invoice_id:          null,
-      refunded_at:              null,
-      refund_amount_cents:      null,
-      stripe_refund_id:         null,
-    },
-    { onConflict: "event_id,user_id" }
-  );
+  const { error: reserveErr } = await writeTicket({
+    quantity,
+    total_cents:              totalCents,
+    qr_code:                  qrDataUrl,
+    qr_token:                 qrToken,
+    stripe_payment_intent_id: intent.id,
+    status:                   "reserved",
+    checked_in_at:            null,
+    checked_in_by:            null,
+    purchased_at:             new Date().toISOString(),
+  });
   if (reserveErr) {
     // Without the row the webhook has nothing to mark paid, so the buyer must
     // not be handed a secret they could pay with.
