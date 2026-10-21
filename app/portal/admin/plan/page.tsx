@@ -22,7 +22,9 @@ function formatDate(iso: string | null, locale: string): string | null {
   if (!iso) return null;
   const ms = Date.parse(iso);
   if (Number.isNaN(ms)) return null;
-  return new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(new Date(ms));
+  return new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(
+    new Date(ms),
+  );
 }
 
 export default async function AdminPlanPage() {
@@ -30,7 +32,11 @@ export default async function AdminPlanPage() {
   if (access.error || !access.studioId) redirect("/portal");
 
   const [studioRes, subscription, t, locale] = await Promise.all([
-    access.supabase.from("studios").select("status").eq("id", access.studioId).single(),
+    access.supabase
+      .from("studios")
+      .select("status")
+      .eq("id", access.studioId)
+      .single(),
     loadStudioSubscription(access.supabase, access.studioId),
     getTranslations("plan"),
     getLocale(),
@@ -45,6 +51,11 @@ export default async function AdminPlanPage() {
   const renewsOn = formatDate(subscription?.currentPeriodEnd ?? null, locale);
   const trialEnds = formatDate(subscription?.trialEndsAt ?? null, locale);
   const status = subscription?.status ?? "trialing";
+  // A live subscription changes tier in the billing portal; a second Checkout
+  // would leave two billing (audit B-05, and /api/plans/checkout refuses it).
+  const hasLiveSubscription =
+    !!subscription?.stripeSubscriptionId &&
+    (status === "active" || status === "past_due");
 
   return (
     <div className="mx-auto w-full max-w-4xl px-5 py-8">
@@ -69,7 +80,9 @@ export default async function AdminPlanPage() {
             </p>
             {!subscription?.comped && (
               <p className="mt-1 text-sm text-muted">
-                {formatMoney(planAmountCents(plan, interval), { maximumFractionDigits: 0 })}
+                {formatMoney(planAmountCents(plan, interval), {
+                  maximumFractionDigits: 0,
+                })}
                 {interval === "year" ? t("perYear") : t("perMonth")}
               </p>
             )}
@@ -79,7 +92,9 @@ export default async function AdminPlanPage() {
             <p className="text-xs font-semibold uppercase tracking-wide text-muted">
               {t("current.status")}
             </p>
-            <p className="mt-2 text-sm font-semibold text-ink">{t(`status.${status}`)}</p>
+            <p className="mt-2 text-sm font-semibold text-ink">
+              {t(`status.${status}`)}
+            </p>
             {status === "trialing" && trialEnds && (
               <p className="mt-1 text-xs text-muted">
                 {t("current.trialEnds", { date: trialEnds })}
@@ -105,16 +120,22 @@ export default async function AdminPlanPage() {
         )}
       </section>
 
-      <section>
-        <h2 className="mb-1 text-base font-bold text-ink">
-          {status === "trialing" ? t("choose.trialHeading") : t("choose.changeHeading")}
-        </h2>
-        <p className="mb-6 text-sm text-muted">{t("choose.body")}</p>
-        <PlanPicker
-          currentPlan={status === "trialing" ? null : (subscription?.planKey ?? null)}
-          defaultInterval={interval}
-        />
-      </section>
+      {!hasLiveSubscription && (
+        <section>
+          <h2 className="mb-1 text-base font-bold text-ink">
+            {status === "trialing"
+              ? t("choose.trialHeading")
+              : t("choose.changeHeading")}
+          </h2>
+          <p className="mb-6 text-sm text-muted">{t("choose.body")}</p>
+          <PlanPicker
+            currentPlan={
+              status === "trialing" ? null : (subscription?.planKey ?? null)
+            }
+            defaultInterval={interval}
+          />
+        </section>
+      )}
     </div>
   );
 }
