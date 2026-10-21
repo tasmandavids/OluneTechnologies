@@ -9,7 +9,6 @@ import {
 } from "@/app/portal/parent/subscriptions/actions";
 import CheckoutForm from "@/components/payments/CheckoutForm";
 import { PaymentModalBody, PaymentModalShell } from "@/components/payments/PaymentModalShell";
-import { monthlyFromTermFeeCents } from "@/lib/term-payments";
 import { useFormatMoney } from "@/lib/i18n/format";
 
 export type AutoPayItem = {
@@ -18,6 +17,8 @@ export type AutoPayItem = {
   classId: string;
   className: string;
   priceCents: number;
+  /** Monthly auto-pay charge for this class (audit B-08). */
+  monthlyCents: number;
   subscriptionId: string | null;
   status: string | null;
   cancelAtPeriodEnd: boolean;
@@ -92,7 +93,7 @@ export default function AutoPaySetup({ items }: { items: AutoPayItem[] }) {
                   <p className="font-semibold text-ink">{item.className}</p>
                   <p className="text-xs text-muted">
                     {item.studentName ?? t("studentFallback")} ·{" "}
-                    {t("pricePerMonth", { price: formatMoney(monthlyFromTermFeeCents(item.priceCents)) })}
+                    {t("pricePerMonth", { price: formatMoney(item.monthlyCents) })}
                   </p>
                 </div>
                 {isActive && !isCancelling && (
