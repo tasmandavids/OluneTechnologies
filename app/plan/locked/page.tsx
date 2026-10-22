@@ -91,10 +91,12 @@ export default async function PlanLockedPage() {
           </div>
         ) : (
           <>
-            <PlanPicker
-              currentPlan={subscription?.planKey ?? null}
-              defaultInterval={subscription?.billingInterval ?? "month"}
-            />
+            {!(subscription?.stripeSubscriptionId && subscription.status === "past_due") && (
+              <PlanPicker
+                currentPlan={subscription?.planKey ?? null}
+                defaultInterval={subscription?.billingInterval ?? "month"}
+              />
+            )}
             {access.reason === "payment_failed" && subscription?.stripeCustomerId && (
               <div className="mt-8 text-center">
                 <p className="mb-3 text-xs text-muted">{t("locked.payment_failed.orUpdateCard")}</p>

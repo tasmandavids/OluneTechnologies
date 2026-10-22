@@ -360,7 +360,8 @@ async function runSync(supabase: SupabaseClient, ctx: BooksContext, report: Sync
         reference: (p.description as string | null) ?? null,
         contactName: payer,
         narration: `${(p.description as string | null) ?? "Refund"}${payer ? ` — ${payer}` : ""}`,
-        taxInclusive: settings.pricesIncludeTax,
+        // Ticket and shop sales are booked tax-inclusive (D-01); refund them the same way.
+        taxInclusive: originalKey && !originalKey.startsWith("invoice:") ? true : settings.pricesIncludeTax,
       });
       await reconcile(`refund:${p.id}`, draft, "Refund", p.id as string);
     }
