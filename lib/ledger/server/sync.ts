@@ -360,7 +360,8 @@ async function runSync(supabase: SupabaseClient, ctx: BooksContext, report: Sync
         reference: (p.description as string | null) ?? null,
         contactName: payer,
         narration: `${(p.description as string | null) ?? "Refund"}${payer ? ` — ${payer}` : ""}`,
-        taxInclusive: settings.pricesIncludeTax,
+        // Fallback path only: card refunds undo a sale taken at the gross paid (audit D-01).
+        taxInclusive: true,
       });
       await reconcile(`refund:${p.id}`, draft, "Refund", p.id as string);
     }
