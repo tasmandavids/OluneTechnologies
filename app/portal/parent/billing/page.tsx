@@ -5,6 +5,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { ParentBillingHub } from "@/components/portal/parent/ParentBillingHub";
 import type { AutoPayItem } from "@/components/portal/parent/AutoPaySetup";
+import { loadStudioClassPrices, type ClassPriceRow } from "@/lib/enrollment-class-price";
+import { autoPayMonthlyCents } from "@/lib/term-payments";
 import { getAccountBillingSummary } from "@/app/portal/parent/billing/actions";
 
 export default async function ParentBillingPage() {
@@ -49,7 +51,7 @@ export default async function ParentBillingPage() {
             enrollments (
               id,
               status,
-              classes ( id, name, price_cents, recurring_group_id )
+              classes ( id, name, price_cents, studio_id, recurring_group_id )
             )
           )
         `)
@@ -131,20 +133,39 @@ export default async function ParentBillingPage() {
   // merged just for sharing a name — only an explicit recurring_group_id
   // groups them, so unrelated classes that happen to share a label (e.g. two
   // separately-created "Intermediate" classes) each keep their own card.
+  // Auto-pay quotes the monthly equivalent of each class's catalogue product
+  // (audit B-08), not a third of its price.
+  const enrolledClasses = new Map<string, string>();
+  for (const g of guardianshipsRes.data ?? []) {
+    const profile = g.profiles as unknown as {
+      enrollments: { status: string; classes: { id: string; studio_id: string } | null }[];
+    } | null;
+    for (const enr of profile?.enrollments ?? []) {
+      if (enr.status === "active" && enr.classes) enrolledClasses.set(enr.classes.id, enr.classes.studio_id);
+    }
+  }
+  const classPrices = new Map<string, ClassPriceRow>();
+  for (const studio of new Set(enrolledClasses.values())) {
+    const ids = [...enrolledClasses].filter(([, s]) => s === studio).map(([id]) => id);
+    for (const [id, price] of await loadStudioClassPrices(supabase, studio, ids)) classPrices.set(id, price);
+  }
+
   const autoPayByProgramme = new Map<string, AutoPayItem>();
   for (const g of guardianshipsRes.data ?? []) {
     const profile = g.profiles as unknown as {
       full_name: string | null;
       enrollments: {
         status: string;
-        classes: { id: string; name: string; price_cents: number; recurring_group_id: string | null } | null;
+        classes: { id: string; name: string; price_cents: number; studio_id: string; recurring_group_id: string | null } | null;
       }[];
     } | null;
 
     for (const enr of profile?.enrollments ?? []) {
       if (enr.status !== "active" || !enr.classes) continue;
       const cls = enr.classes;
-      if ((cls.price_cents ?? 0) <= 0) continue;
+      const price = classPrices.get(cls.id);
+      const monthlyCents = price ? autoPayMonthlyCents(price) : null;
+      if (!monthlyCents || monthlyCents <= 0) continue;
 
       const sub = subByKey.get(`${g.student_id}:${cls.id}`);
       const active =
@@ -155,7 +176,8 @@ export default async function ParentBillingPage() {
         studentName: profile?.full_name ?? null,
         classId: cls.id,
         className: cls.name,
-        priceCents: cls.price_cents ?? 0,
+        priceCents: price?.priceCents ?? cls.price_cents ?? 0,
+        monthlyCents,
         subscriptionId: active ? (sub!.stripe_subscription_id ?? null) : null,
         status: active ? sub!.status : null,
         cancelAtPeriodEnd: active ? (sub!.cancel_at_period_end ?? false) : false,

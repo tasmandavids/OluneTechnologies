@@ -7,6 +7,8 @@
 // ============================================================================
 
 import { requirePortalSession } from "@/lib/portal/session";
+import { loadStudioClassPrices } from "@/lib/enrollment-class-price";
+import { autoPayMonthlyCents } from "@/lib/term-payments";
 import { getTranslations } from "@/lib/i18n/server";
 import { TermPaymentPlansManager } from "@/components/admin/payment-plans/TermPaymentPlansManager";
 import SubscriptionsManager from "@/components/admin/subscriptions/SubscriptionsManager";
@@ -185,11 +187,22 @@ async function SubscriptionsSection() {
     students: studentsByParent.get(p.id as string) ?? [],
   }));
 
-  const classes: ClassOption[] = (classesRes.data ?? []).map((c) => ({
-    id: c.id as string,
-    name: c.name as string,
-    priceCents: Number(c.price_cents ?? 0),
-  }));
+  // Monthly figure comes from each class's catalogue product (audit B-08);
+  // null means the pricing model has no recurring cycle (one-off, per-session).
+  const classPrices = await loadStudioClassPrices(
+    supabase,
+    studioId ?? "",
+    (classesRes.data ?? []).map((c) => c.id as string),
+  );
+  const classes: ClassOption[] = (classesRes.data ?? []).map((c) => {
+    const price = classPrices.get(c.id as string);
+    return {
+      id: c.id as string,
+      name: c.name as string,
+      priceCents: Number(c.price_cents ?? 0),
+      monthlyCents: price ? autoPayMonthlyCents(price) : null,
+    };
+  });
 
   const products: ProductOption[] = (productsRes.data ?? []).map((p) => ({
     id: p.id as string,

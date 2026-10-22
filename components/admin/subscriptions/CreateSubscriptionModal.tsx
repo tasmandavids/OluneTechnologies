@@ -20,7 +20,6 @@ import {
   type SubscriptionLineInput,
 } from "@/lib/subscriptions/pricing";
 import { formatMoney } from "@/lib/currency";
-import { monthlyFromTermFeeCents } from "@/lib/term-payments";
 
 type DraftLine = SubscriptionLineInput & { key: string };
 
@@ -63,7 +62,8 @@ export function CreateSubscriptionModal({
 
   const addClass = (classId: string) => {
     const cls = classes.find((c) => c.id === classId);
-    if (!cls) return;
+    const monthlyCents = cls?.monthlyCents;
+    if (!cls || monthlyCents == null) return;
     setLines((prev) => [
       ...prev,
       {
@@ -72,7 +72,7 @@ export function CreateSubscriptionModal({
         referenceId: cls.id,
         description: cls.name,
         quantity: 1,
-        unitMonthlyCents: monthlyFromTermFeeCents(cls.priceCents),
+        unitMonthlyCents: monthlyCents,
       },
     ]);
   };
@@ -220,9 +220,9 @@ export function CreateSubscriptionModal({
                 className="rounded-lg border border-(--hair) bg-surface px-3 py-1.5 text-xs font-semibold text-ink"
               >
                 <option value="">{t("addClass")}</option>
-                {classes.map((c) => (
+                {classes.filter((c) => c.monthlyCents !== null).map((c) => (
                   <option key={c.id} value={c.id}>
-                    {t("classOption", { name: c.name, price: formatMoney(monthlyFromTermFeeCents(c.priceCents)) })}
+                    {t("classOption", { name: c.name, price: formatMoney(c.monthlyCents ?? 0) })}
                   </option>
                 ))}
               </select>

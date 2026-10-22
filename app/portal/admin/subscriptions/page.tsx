@@ -33,6 +33,8 @@ export type ClassOption = {
   id: string;
   name: string;
   priceCents: number;
+  /** Monthly auto-pay equivalent from the class's pricing model; null when it cannot be auto-paid. */
+  monthlyCents: number | null;
 };
 
 export type ProductOption = {
