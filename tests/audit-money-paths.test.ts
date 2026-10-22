@@ -85,3 +85,22 @@ describe("payer write lock migration", () => {
     }
   });
 });
+
+describe("ticket re-purchase after a refund (audit D-04)", () => {
+  const route = read("app/api/events/purchase/route.ts");
+  const sql = read("supabase/migrations/20261021090000_audit_d04_ticket_per_purchase.sql");
+
+  it("only live tickets are unique per buyer, so a refunded row stays as history", () => {
+    expect(sql).toMatch(/drop constraint if exists event_tickets_event_id_user_id_key/);
+    expect(sql).toMatch(/unique index[\s\S]*?\(event_id, user_id\)[\s\S]*?where status in \('reserved', 'paid'\)/);
+  });
+
+  it("the purchase route inserts a new row instead of rewriting a refunded one", () => {
+    expect(route).not.toContain("upsert(");
+    expect(route).not.toContain('onConflict: "event_id,user_id"');
+    expect(route).toMatch(/\.in\("status", \["reserved", "paid"\]\)/);
+    expect(route).toMatch(/\.insert\(\{ event_id: event\.id, user_id: user\.id/);
+    // Only the buyer's own unpaid reservation is ever updated in place.
+    expect(route).toMatch(/\.update\(fields\)[\s\S]*?\.eq\("status", "reserved"\)/);
+  });
+});

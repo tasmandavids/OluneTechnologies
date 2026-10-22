@@ -105,6 +105,10 @@ export async function POST(req: NextRequest) {
       .select("status, quantity, checked_in_at, checked_in_by, user_id")
       .eq("event_id", eventId)
       .eq(idColumn, idValue)
+      // A buyer can hold a refunded ticket beside a newer one (audit D-04);
+      // diagnose against the most recent purchase.
+      .order("purchased_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     if (!existing) {
